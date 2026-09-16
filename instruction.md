@@ -102,6 +102,18 @@ function doPost(e) {
       targetRow = Math.max(2, targetSheet.getLastRow() + 1);
     }
     
+    // Tự động khôi phục hàng tiêu đề Dòng 1 nếu dòng 1 bị sai hoặc ghi đè dữ liệu
+    var STANDARD_HEADERS = [
+      "STT", "Họ tên", "D.O.B", "Giới tính", "Quốc tịch", "Loại giấy tờ", "Tên giấy tờ", "Số giấy tờ",
+      "Tỉnh", "Quận/Huyện", "Phường/Xã", "Địa chỉ", "(từ ngày)", "(đến ngày)", "Số phòng", "Đã đăng ký"
+    ];
+    try {
+      var firstRowVal = targetSheet.getRange(1, 2).getValue();
+      if (String(firstRowVal).trim() !== "Họ tên") {
+        targetSheet.getRange(1, 1, 1, 16).setValues([STANDARD_HEADERS]);
+      }
+    } catch(errHeader) {}
+
     var rowData = body.row || body.data || {};
     var orderedValues = body.orderedValues || body.values;
     

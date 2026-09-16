@@ -11,6 +11,7 @@ export interface TabInfo {
 
 export class GoogleSheetService {
 	public sheetId: string;
+	private tabHeadersMap = new Map<string, string[]>();
 	private tabsCache = new Map<
 		string,
 		{
@@ -246,7 +247,7 @@ export class GoogleSheetService {
 					"GoogleSheetService",
 					`Nhận được nội dung CSV độ dài ${text.length} ký tự`,
 				);
-				const rows = this.parseCsv(text);
+				const rows = this.parseCsv(text, `${sheetId}_${gid}`);
 				if (rows.length > 0) {
 					logger.info(
 						"GoogleSheetService",
@@ -311,7 +312,10 @@ export class GoogleSheetService {
 		};
 	}
 
-	public parseCsv(csvText: string): Record<string, string>[] {
+	public parseCsv(
+		csvText: string,
+		cacheKey?: string,
+	): Record<string, string>[] {
 		if (!csvText || !csvText.trim()) {
 			logger.warn("GoogleSheetService", "Nội dung CSV rỗng");
 			return [];
@@ -357,6 +361,13 @@ export class GoogleSheetService {
 		}
 
 		if (lines.length === 0) return [];
+
+		if (cacheKey && lines[0]) {
+			this.tabHeadersMap.set(
+				cacheKey,
+				lines[0].map((h) => h.trim()),
+			);
+		}
 
 		logger.debug(
 			"GoogleSheetService",
@@ -795,6 +806,67 @@ export class GoogleSheetService {
 				? params.orderedValues
 				: this.buildOrderedRowValues(params.rowData, params.rowIndex ?? 0);
 
+		const cacheKey = `${params.sheetId || CONFIG.GOOGLE_SHEET_ID}_${params.gid || "0"}`;
+		const rawHeaders = this.tabHeadersMap.get(cacheKey) || [];
+
+		const enrichedRow: Record<string, unknown> = {
+			...params.rowData,
+			STT: orderedValues[0],
+			stt: orderedValues[0],
+			"Họ tên": orderedValues[1],
+			hoTen: orderedValues[1],
+			"D.O.B": orderedValues[2],
+			"Ngày sinh": orderedValues[2],
+			ngaySinh: orderedValues[2],
+			"Giới tính": orderedValues[3],
+			gioiTinh: orderedValues[3],
+			"Quốc tịch": orderedValues[4],
+			"Quốc gia": orderedValues[4],
+			quocTich: orderedValues[4],
+			"Loại giấy tờ": orderedValues[5],
+			loaiGiayTo: orderedValues[5],
+			"Tên giấy tờ": orderedValues[6],
+			tenGiayTo: orderedValues[6],
+			"Số giấy tờ": orderedValues[7],
+			"Số CCCD": orderedValues[7],
+			"Số hộ chiếu": orderedValues[7],
+			soGiayTo: orderedValues[7],
+			Tỉnh: orderedValues[8],
+			"Tỉnh/TP": orderedValues[8],
+			tinhTp: orderedValues[8],
+			"Quận/Huyện": orderedValues[9],
+			Quận: orderedValues[9],
+			Huyện: orderedValues[9],
+			quanHuyen: orderedValues[9],
+			"Phường/Xã": orderedValues[10],
+			Phường: orderedValues[10],
+			Xã: orderedValues[10],
+			phuongXa: orderedValues[10],
+			"Địa chỉ": orderedValues[11],
+			"Địa chỉ chi tiết": orderedValues[11],
+			diaChi: orderedValues[11],
+			"(từ ngày)": orderedValues[12],
+			"Ngày đến": orderedValues[12],
+			"Từ ngày": orderedValues[12],
+			ngayDen: orderedValues[12],
+			"(đến ngày)": orderedValues[13],
+			"Ngày đi": orderedValues[13],
+			"Đến ngày": orderedValues[13],
+			ngayDi: orderedValues[13],
+			"Số phòng": orderedValues[14],
+			Phòng: orderedValues[14],
+			soPhong: orderedValues[14],
+			"Đã đăng ký": orderedValues[15],
+			daDangKy: orderedValues[15],
+		};
+
+		// Ánh xạ mọi header thực tế đang tồn tại trên Sheet dòng 1
+		rawHeaders.forEach((h, idx) => {
+			if (h && orderedValues[idx] !== undefined) {
+				enrichedRow[h] = orderedValues[idx];
+			}
+		});
+
 		try {
 			const res = await fetch(appsScriptUrl, {
 				method: "POST",
@@ -806,7 +878,8 @@ export class GoogleSheetService {
 					sheetName: params.sheetName,
 					rowIndex: params.rowIndex,
 					sheetRowIndex,
-					row: params.rowData,
+					row: enrichedRow,
+					data: enrichedRow,
 					orderedValues,
 					values: orderedValues,
 				}),

@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 271 nodes · 497 edges · 16 communities (7 shown, 6 thin omitted)
+- 273 nodes · 501 edges · 16 communities (7 shown, 6 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2159f8ff`
+- Built from commit: `5591a8f4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -17,8 +17,8 @@
 - app.js
 - syncPipeline.ts
 - scripts
-- devDependencies
 - +page.svelte
+- devDependencies
 - compilerOptions
 - DataTransformer
 - TokenManager
@@ -33,8 +33,8 @@
 2. `CatalogManager` - 20 edges
 3. `Logger` - 18 edges
 4. `SyncPipeline` - 17 edges
-5. `TokenManager` - 17 edges
-6. `GoogleSheetService` - 16 edges
+5. `GoogleSheetService` - 17 edges
+6. `TokenManager` - 17 edges
 7. `runTests()` - 15 edges
 8. `renderTable()` - 13 edges
 9. `KbttClient` - 12 edges
@@ -69,13 +69,13 @@ Nodes (12): CatalogItem, CONFIG, CompletenessResult, RawOcrRow, TransformedRowRe
 Cohesion: 0.07
 Nodes (26): author, description, keywords, license, main, name, scripts, build (+18 more)
 
-### Community 3 - "devDependencies"
+### Community 3 - "+page.svelte"
+Cohesion: 0.14
+Nodes (16): addNewGuest(), buildOrderedRowValues(), checkToken(), closeEditModal(), executeSyncBatch(), handleManualLogin(), openEditModal(), parseAndApplyAddress() (+8 more)
+
+### Community 4 - "devDependencies"
 Cohesion: 0.09
 Nodes (23): @biomejs/biome, jiti, devDependencies, @biomejs/biome, jiti, svelte, svelte-check, @sveltejs/adapter-node (+15 more)
-
-### Community 4 - "+page.svelte"
-Cohesion: 0.15
-Nodes (15): addNewGuest(), checkToken(), closeEditModal(), executeSyncBatch(), handleManualLogin(), openEditModal(), parseAndApplyAddress(), pushSelectedRows() (+7 more)
 
 ### Community 5 - "compilerOptions"
 Cohesion: 0.10
@@ -87,7 +87,7 @@ Nodes (11): entry, ignoreDependencies, test/**/*.ts, project, $schema, tailwindc
 
 ## Knowledge Gaps
 - **72 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `ApiResponse`, `LogEntry` (+67 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 109 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 108 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -96,9 +96,9 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`?**
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `TokenManager`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `devDependencies` to `scripts`, `entry`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `scripts`, `entry`?**
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?**
   _72 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.js` be split into smaller, more focused modules?**
