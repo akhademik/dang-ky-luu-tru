@@ -89,52 +89,81 @@ function doPost(e) {
       targetSheet = sheets[0];
     }
     
-    var rowIndex = Number(body.rowIndex) || 2; // Vị trí dòng (bắt đầu từ 2 sau tiêu đề)
+    // Xác định dòng trên Google Sheet (Tuyệt đối không bao giờ ghi vào Dòng 1 Tiêu đề)
+    // 1. Nếu có body.sheetRowIndex (1-based): dùng trực tiếp (yêu cầu >= 2)
+    // 2. Nếu có body.rowIndex (0-based): sheetRowIndex = body.rowIndex + 2
+    // 3. Nếu là thêm mới hoặc không xác định: ghi vào dòng trống tiếp theo (targetSheet.getLastRow() + 1)
+    var targetRow = null;
+    if (body.sheetRowIndex !== undefined && body.sheetRowIndex !== null && Number(body.sheetRowIndex) >= 2) {
+      targetRow = Number(body.sheetRowIndex);
+    } else if (body.rowIndex !== undefined && body.rowIndex !== null && Number(body.rowIndex) >= 0) {
+      targetRow = Number(body.rowIndex) + 2;
+    } else {
+      targetRow = Math.max(2, targetSheet.getLastRow() + 1);
+    }
+    
     var rowData = body.row || body.data || {};
     
     // Đọc hàng tiêu đề ở dòng 1
-    var lastCol = targetSheet.getLastColumn();
-    if (lastCol > 0) {
-      var headers = targetSheet.getRange(1, 1, 1, lastCol).getValues()[0];
-      
-      // Hàm chuẩn hóa loại bỏ dấu và ký tự đặc biệt để so khớp tên cột linh hoạt
-      function cleanKey(str) {
-        return String(str || '').toLowerCase()
-          .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
-          .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
-          .replace(/[ìíịỉĩ]/g, 'i')
-          .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
-          .replace(/[ùúụủũưừứựửữ]/g, 'u')
-          .replace(/[ỳýỵỷỹ]/g, 'y')
-          .replace(/đ/g, 'd')
-          .replace(/[^a-z0-9]/g, '');
-      }
-      
-      var cleanMap = {};
-      for (var k in rowData) {
-        cleanMap[cleanKey(k)] = rowData[k];
-      }
-      
-      for (var col = 0; col < headers.length; col++) {
-        var h = headers[col];
-        var cKey = cleanKey(h);
-        
-        if (rowData[h] !== undefined && rowData[h] !== '') {
-          targetSheet.getRange(rowIndex, col + 1).setValue(rowData[h]);
-        } else if (cleanMap[cKey] !== undefined && cleanMap[cKey] !== '') {
-          targetSheet.getRange(rowIndex, col + 1).setValue(cleanMap[cKey]);
-        }
-      }
-      
-      // Bắt buộc flush để Google Sheets ghi đè dữ liệu ngay lập tức
-      SpreadsheetApp.flush();
+    var lastCol = targetSheet.getLastColumn() || 16;
+    var headers = [];
+    if (targetSheet.getLastColumn() > 0) {
+      headers = targetSheet.getRange(1, 1, 1, lastCol).getValues()[0];
     }
+    
+    // Hàm chuẩn hóa loại bỏ dấu và ký tự đặc biệt để so khớp tên cột linh hoạt
+    function cleanKey(str) {
+      return String(str || '').toLowerCase()
+        .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+        .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+        .replace(/[ìíịỉĩ]/g, 'i')
+        .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+        .replace(/[ùúụủũưừứựửữ]/g, 'u')
+        .replace(/[ỳýỵỷỹ]/g, 'y')
+        .replace(/đ/g, 'd')
+        .replace(/[^a-z0-9]/g, '');
+    }
+    
+    // 16 cột chuẩn của Google Sheet
+    var standardCols = [
+      'stt', 'hoten', 'ngaysinh', 'gioitinh', 'quoctich', 'loaigiayto', 'tengiayto', 'sogiayto',
+      'tinh', 'quanhuyen', 'phuongxa', 'diachi', 'tungay', 'denngay', 'sophong', 'dadangky'
+    ];
+    
+    var cleanMap = {};
+    for (var k in rowData) {
+      cleanMap[cleanKey(k)] = rowData[k];
+    }
+    
+    // Ghi dữ liệu vào từng cột
+    for (var col = 0; col < Math.max(headers.length, 16); col++) {
+      var h = headers[col] || '';
+      var cKey = cleanKey(h);
+      var standardKey = standardCols[col] || '';
+      var valToSet = undefined;
+      
+      if (h && rowData[h] !== undefined && rowData[h] !== '') {
+        valToSet = rowData[h];
+      } else if (cKey && cleanMap[cKey] !== undefined && cleanMap[cKey] !== '') {
+        valToSet = cleanMap[cKey];
+      } else if (standardKey && cleanMap[standardKey] !== undefined && cleanMap[standardKey] !== '') {
+        valToSet = cleanMap[standardKey];
+      }
+      
+      if (valToSet !== undefined) {
+        targetSheet.getRange(targetRow, col + 1).setValue(valToSet);
+      }
+    }
+    
+    // Bắt buộc flush để Google Sheets ghi đè dữ liệu ngay lập tức
+    SpreadsheetApp.flush();
     
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
-      message: "Đã cập nhật dòng " + rowIndex + " trên sheet [" + targetSheet.getName() + "]",
+      message: "Đã cập nhật dòng " + targetRow + " trên sheet [" + targetSheet.getName() + "]",
       sheetName: targetSheet.getName(),
-      rowIndex: rowIndex
+      rowIndex: targetRow - 2,
+      sheetRowIndex: targetRow
     })).setMimeType(ContentService.MimeType.JSON);
     
   } catch (err) {

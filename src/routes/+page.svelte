@@ -11,6 +11,7 @@ interface CatalogItem {
 	tenQT?: string;
 	maQT?: string;
 	tenQTEn?: string;
+	[key: string]: unknown;
 }
 
 interface TabItem {
@@ -191,6 +192,49 @@ function validateArrivalDate(val: string): { valid: boolean; error?: string } {
 	return { valid: true };
 }
 
+function isValidAlpha3Country(code: string): boolean {
+	const clean = String(code || "")
+		.trim()
+		.toUpperCase();
+	if (!clean || clean.length !== 3 || !/^[A-Z]{3}$/.test(clean)) return false;
+	const commonValid = [
+		"VNM",
+		"USA",
+		"RUS",
+		"CHN",
+		"KOR",
+		"JPN",
+		"GBR",
+		"FRA",
+		"DEU",
+		"AUS",
+		"THA",
+		"LAO",
+		"KHM",
+		"SGP",
+		"MYS",
+		"IDN",
+		"PHL",
+		"IND",
+		"ITA",
+		"ESP",
+		"CAN",
+		"BRA",
+		"TWN",
+		"VAA",
+	];
+	if (commonValid.includes(clean)) return true;
+	if (catalogs.quocTich.length > 0) {
+		return catalogs.quocTich.some((item) => {
+			const ma = String(item.maQT || item.id || item.code || "")
+				.trim()
+				.toUpperCase();
+			return ma === clean;
+		});
+	}
+	return /^[A-Z]{3}$/.test(clean);
+}
+
 let liveVal = $derived.by(() => {
 	const isVN =
 		["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
@@ -243,7 +287,10 @@ let liveVal = $derived.by(() => {
 	const qt = modalForm.quocTich.trim().toUpperCase();
 	if (!qt) {
 		quocTichValid = false;
-		quocTichError = "Vui lòng nhập mã quốc tịch";
+		quocTichError = "Vui lòng nhập mã quốc tịch Alpha-3 (ví dụ: VNM, USA, CHN)";
+	} else if (!isValidAlpha3Country(qt)) {
+		quocTichValid = false;
+		quocTichError = `Mã Alpha-3 không hợp lệ: "${qt}" (Phải là 3 chữ cái chuẩn ISO, vd: VNM, USA, CHN, RUS)`;
 	}
 
 	const allValid =
@@ -568,8 +615,12 @@ function updateCell(idx: number, field: string, value: string) {
 	} else if (field === "gioiTinh") {
 		currentRows[idx]["Giới tính"] = value;
 	} else if (field === "quocTich") {
-		currentRows[idx]["Quốc tịch"] = value;
-		currentRows[idx]["Quốc gia"] = value;
+		const upper = String(value || "")
+			.trim()
+			.toUpperCase();
+		currentRows[idx].quocTich = upper;
+		currentRows[idx]["Quốc tịch"] = upper;
+		currentRows[idx]["Quốc gia"] = upper;
 	} else if (field === "loaiGiayTo") {
 		currentRows[idx]["Loại giấy tờ"] = value;
 	} else if (field === "soGiayTo") {
@@ -677,7 +728,9 @@ function saveModal() {
 }
 
 async function syncRowToGoogleSheet(idx: number) {
-	showToast("LƯU", `Đang lưu dòng ${idx + 1} lên Google Sheet...`);
+	// Dòng 1 luôn là Header, dữ liệu bắt đầu từ Dòng 2 (sheetRowIndex = idx + 2)
+	const sheetRowIndex = idx + 2;
+	showToast("LƯU", `Đang lưu dòng ${sheetRowIndex} lên Google Sheet...`);
 	const selectedTab = availableTabs.find(
 		(t) => String(t.gid) === String(selectedGid),
 	);
@@ -689,6 +742,7 @@ async function syncRowToGoogleSheet(idx: number) {
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				rowIndex: idx,
+				sheetRowIndex,
 				row: currentRows[idx],
 				gid: selectedGid,
 				sheetName,
@@ -696,9 +750,9 @@ async function syncRowToGoogleSheet(idx: number) {
 		});
 		const data = await res.json();
 		if (data.success) {
-			showToast("OK", `Đã cập nhật dòng ${idx + 1} lên Google Sheet!`);
+			showToast("OK", `Đã cập nhật dòng ${sheetRowIndex} lên Google Sheet!`);
 		} else if (data.notConfigured) {
-			showToast("LƯU", `Đã lưu dòng ${idx + 1} vào bộ nhớ.`);
+			showToast("LƯU", `Đã lưu dòng ${sheetRowIndex} vào bộ nhớ.`);
 		} else {
 			showToast("CẢNH BÁO", `Lỗi cập nhật Sheet: ${data.message}`);
 		}
@@ -1079,11 +1133,21 @@ onMount(() => {
                   <!-- Quốc tịch -->
                   <td class="p-3">
                     {#if isEditing}
-                      <input type="text" value={row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'} onchange={(e) => updateCell(idx, 'quocTich', (e.target as HTMLInputElement).value)} class="w-20 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
-                    {:else if fStatus.quocTich?.valid ?? true}
+                      <input
+                        type="text"
+                        value={row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'}
+                        oninput={(e) => {
+                          const upper = (e.target as HTMLInputElement).value.toUpperCase();
+                          (e.target as HTMLInputElement).value = upper;
+                          updateCell(idx, 'quocTich', upper);
+                        }}
+                        maxlength="3"
+                        class="w-20 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800"
+                      >
+                    {:else if fStatus.quocTich?.valid ?? isValidAlpha3Country(String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'))}
                       <span class="font-bold text-slate-700 text-xs">{String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>
                     {:else}
-                      <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-bold px-1.5 py-0.5 rounded text-xs cursor-help" title={fStatus.quocTich?.error}>{String(row.quocTich || 'LỖI').toUpperCase()} <i class="fa-solid fa-circle-exclamation"></i></span>
+                      <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-bold px-1.5 py-0.5 rounded text-xs cursor-help" title={fStatus.quocTich?.error || 'Mã quốc tịch Alpha-3 không hợp lệ'}>{String(row.quocTich || 'LỖI').toUpperCase()} <i class="fa-solid fa-circle-exclamation"></i></span>
                     {/if}
                   </td>
 
@@ -1387,14 +1451,19 @@ onMount(() => {
           <!-- Quốc tịch -->
           <div>
             <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1">
-              Quốc tịch (Mã 3 ký tự) <span class="text-rose-500">*</span>
+              Quốc tịch (Mã Alpha-3 chuẩn) <span class="text-rose-500">*</span>
             </label>
             <input
               type="text"
               id="modalQuocTich"
-              bind:value={modalForm.quocTich}
+              value={modalForm.quocTich}
+              oninput={(e) => {
+                const upper = (e.target as HTMLInputElement).value.toUpperCase();
+                modalForm.quocTich = upper;
+              }}
               class={`w-full px-3 py-2 text-sm uppercase font-bold rounded-lg outline-none transition ${!liveVal.quocTich.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
-              placeholder="VNM, RUS, KOR..."
+              placeholder="VNM, USA, RUS, KOR..."
+              maxlength="3"
             >
             {#if !liveVal.quocTich.valid}
               <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">

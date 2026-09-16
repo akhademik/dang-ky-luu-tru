@@ -658,7 +658,9 @@ export class GoogleSheetService {
 	public async updateSheetRow(params: {
 		sheetId: string;
 		gid: string;
-		rowIndex: number;
+		sheetName?: string;
+		rowIndex?: number;
+		sheetRowIndex?: number;
 		rowData: Record<string, unknown>;
 	}): Promise<{ success: boolean; message: string; notConfigured?: boolean }> {
 		const appsScriptUrl = (
@@ -675,6 +677,14 @@ export class GoogleSheetService {
 			};
 		}
 
+		// Dòng 1 luôn là Header, dữ liệu bắt đầu từ dòng 2 (1-based sheetRowIndex >= 2)
+		const sheetRowIndex =
+			params.sheetRowIndex !== undefined && Number(params.sheetRowIndex) >= 2
+				? Number(params.sheetRowIndex)
+				: params.rowIndex !== undefined && Number(params.rowIndex) >= 0
+					? Number(params.rowIndex) + 2
+					: undefined;
+
 		try {
 			const res = await fetch(appsScriptUrl, {
 				method: "POST",
@@ -683,7 +693,9 @@ export class GoogleSheetService {
 					action: "updateRow",
 					sheetId: params.sheetId || CONFIG.GOOGLE_SHEET_ID,
 					gid: params.gid || "0",
+					sheetName: params.sheetName,
 					rowIndex: params.rowIndex,
+					sheetRowIndex,
 					row: params.rowData,
 				}),
 			});

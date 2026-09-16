@@ -159,7 +159,7 @@ async function runTests(): Promise<void> {
 	assert.equal(compDmy.isComplete, true);
 	assert.equal(compDmy.fieldStatus.ngayDen?.valid, true);
 
-	// Test Validation (nationality code check)
+	// Test Validation (nationality code check - valid RUS)
 	const rusRow: RawOcrRow = {
 		"Họ tên": "GRACHEV NIKITA",
 		"Ngày sinh": "1995-11-25",
@@ -171,8 +171,22 @@ async function runTests(): Promise<void> {
 	};
 	const compRus = DataTransformer.checkCompleteness(rusRow);
 	assert.equal(compRus.fieldStatus.quocTich?.valid, true);
+
+	// Test Validation (nationality code check - invalid XYZ code flagged)
+	const invalidQtRow: RawOcrRow = {
+		"Họ tên": "JOHN DOE",
+		"Ngày sinh": "1990-05-10",
+		"Quốc tịch": "XYZ123",
+		"Số giấy tờ": "A12345678",
+		"Số phòng": "2",
+		"Ngày đến": todayStr,
+		"Ngày đi": next2DaysStr,
+	};
+	const compInvalidQt = DataTransformer.checkCompleteness(invalidQtRow);
+	assert.equal(compInvalidQt.isComplete, false);
+	assert.equal(compInvalidQt.fieldStatus.quocTich?.valid, false);
 	console.log(
-		"✅ DataTransformer (Validation, DD/MM/YYYY & Past Date Blocking) test passed!",
+		"✅ DataTransformer (Validation, Alpha-3 Country Code & Past Date Blocking) test passed!",
 	);
 
 	// 3. Test GoogleSheetService (CSV Parsing & Tabs)

@@ -282,6 +282,29 @@ export class DataTransformer {
 				"",
 		).trim();
 
+		// Kiểm tra mã quốc tịch chuẩn Alpha-3 (3 chữ cái ISO, ví dụ VNM, USA, CHN, RUS)
+		const rawQt = String(
+			row.quocTich ||
+				row["Quốc tịch"] ||
+				row["Quốc gia"] ||
+				(isVN ? "VNM" : ""),
+		).trim();
+		const mappedQt = this.mapQuocTich(rawQt);
+		const isQtValid = Boolean(
+			mappedQt &&
+				mappedQt.length === 3 &&
+				/^[A-Z]{3}$/.test(mappedQt) &&
+				(mappedQt === "VNM" || catalogManager.isValidQuocTichCode(mappedQt)),
+		);
+		status.quocTich = {
+			valid: isQtValid,
+			value: rawQt,
+			error: !isQtValid
+				? `Mã quốc tịch Alpha-3 không hợp lệ: "${rawQt}"`
+				: undefined,
+		};
+		if (!isQtValid) missing.push("Mã quốc tịch Alpha-3 chuẩn");
+
 		if (isVN) {
 			if (docTypeName.includes("cccd") || docTypeName.includes("căn cước")) {
 				const digits = docNumRaw.replace(/\D/g, "");
@@ -311,20 +334,6 @@ export class DataTransformer {
 				if (!valid) missing.push("Số giấy tờ");
 			}
 		} else {
-			const rawQt = String(
-				row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "",
-			).trim();
-			const mappedQt = this.mapQuocTich(rawQt);
-			const isQtValid = Boolean(
-				mappedQt && catalogManager.isValidQuocTichCode(mappedQt),
-			);
-			status.quocTich = {
-				valid: isQtValid,
-				value: rawQt,
-				error: !isQtValid ? `Mã quốc tịch không hợp lệ: "${rawQt}"` : undefined,
-			};
-			if (!isQtValid) missing.push("Mã quốc tịch chuẩn");
-
 			const cleanPassport = this.cleanDocNumber(docNumRaw);
 			const isPassportValid =
 				cleanPassport.length >= 6 && cleanPassport.length <= 12;
