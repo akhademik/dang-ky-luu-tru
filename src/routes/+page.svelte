@@ -139,18 +139,12 @@ let deletingIndices = $state<Set<number>>(new Set());
 function validateDateString(val: string): boolean {
 	if (!val) return false;
 	const str = val.trim();
+	// Bắt buộc chuẩn DD/MM/YYYY (không chấp nhận YYYY-MM-DD)
 	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
 	if (dmy) {
 		const d = parseInt(dmy[1], 10);
 		const m = parseInt(dmy[2], 10);
 		const y = parseInt(dmy[3], 10);
-		return d >= 1 && d <= 31 && m >= 1 && m <= 12 && y >= 1900 && y <= 2100;
-	}
-	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-	if (ymd) {
-		const y = parseInt(ymd[1], 10);
-		const m = parseInt(ymd[2], 10);
-		const d = parseInt(ymd[3], 10);
 		return d >= 1 && d <= 31 && m >= 1 && m <= 12 && y >= 1900 && y <= 2100;
 	}
 	return false;
@@ -180,24 +174,17 @@ function validateArrivalDate(val: string): { valid: boolean; error?: string } {
 	if (!val || !val.trim())
 		return { valid: false, error: "Vui lòng nhập ngày đến" };
 	const str = val.trim();
-	let year = 0,
-		month = 0,
-		day = 0;
+	// Bắt buộc chuẩn DD/MM/YYYY hoặc DD/MM/YYYY HH:mm:ss (không chấp nhận YYYY-MM-DD)
 	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
-	if (dmy) {
-		day = parseInt(dmy[1], 10);
-		month = parseInt(dmy[2], 10);
-		year = parseInt(dmy[3], 10);
-	} else {
-		const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-		if (ymd) {
-			year = parseInt(ymd[1], 10);
-			month = parseInt(ymd[2], 10);
-			day = parseInt(ymd[3], 10);
-		} else {
-			return { valid: false, error: "Định dạng ngày đến không hợp lệ" };
-		}
+	if (!dmy) {
+		return {
+			valid: false,
+			error: "Định dạng ngày đến phải là DD/MM/YYYY (ví dụ: 16/09/2026)",
+		};
 	}
+	const day = parseInt(dmy[1], 10);
+	const month = parseInt(dmy[2], 10);
+	const year = parseInt(dmy[3], 10);
 
 	const arrivalDay = new Date(year, month - 1, day);
 	const today = new Date();
@@ -224,51 +211,71 @@ function validateArrivalDate(val: string): { valid: boolean; error?: string } {
 	return { valid: true };
 }
 
+function getCountryInfo(
+	codeRaw: string,
+): { maQT: string; tenQT: string; tenQTEn: string } | null {
+	const code = String(codeRaw || "")
+		.trim()
+		.toUpperCase();
+	if (!code) return null;
+	if (catalogs.quocTich && catalogs.quocTich.length > 0) {
+		const found = catalogs.quocTich.find((item) => {
+			const ma = String(item.maQT || item.id || item.code || "")
+				.trim()
+				.toUpperCase();
+			return ma === code;
+		});
+		if (found) {
+			return {
+				maQT: String(found.maQT || code).toUpperCase(),
+				tenQT: String(found.tenQT || found.ten || ""),
+				tenQTEn: String(found.tenQTEn || found.tenEn || found.name || ""),
+			};
+		}
+	}
+	const fallbackMap: Record<string, { tenQT: string; tenQTEn: string }> = {
+		VNM: { tenQT: "Việt Nam", tenQTEn: "Vietnam" },
+		USA: { tenQT: "Hoa Kỳ", tenQTEn: "United States" },
+		RUS: { tenQT: "Nga", tenQTEn: "Russia" },
+		CHN: { tenQT: "Trung Quốc", tenQTEn: "China" },
+		KOR: { tenQT: "Hàn Quốc", tenQTEn: "Korea (South)" },
+		JPN: { tenQT: "Nhật Bản", tenQTEn: "Japan" },
+		GBR: { tenQT: "Vương quốc Anh", tenQTEn: "United Kingdom" },
+		FRA: { tenQT: "Pháp", tenQTEn: "France" },
+		DEU: { tenQT: "CH Liên bang Đức", tenQTEn: "Germany" },
+		D: { tenQT: "CH Liên bang Đức", tenQTEn: "Germany" },
+		AUS: { tenQT: "Úc", tenQTEn: "Australia" },
+		THA: { tenQT: "Thái Lan", tenQTEn: "Thailand" },
+		LAO: { tenQT: "Lào", tenQTEn: "Laos" },
+		KHM: { tenQT: "Campuchia", tenQTEn: "Cambodia" },
+		SGP: { tenQT: "Singapore", tenQTEn: "Singapore" },
+		MYS: { tenQT: "Malaysia", tenQTEn: "Malaysia" },
+		IDN: { tenQT: "Indonesia", tenQTEn: "Indonesia" },
+		PHL: { tenQT: "Philippines", tenQTEn: "Philippines" },
+		IND: { tenQT: "Ấn Độ", tenQTEn: "India" },
+		ITA: { tenQT: "Ý (Italia)", tenQTEn: "Italy" },
+		ESP: { tenQT: "Tây Ban Nha", tenQTEn: "Spain" },
+		CAN: { tenQT: "Canada", tenQTEn: "Canada" },
+		BRA: { tenQT: "Brazil", tenQTEn: "Brazil" },
+		ARG: { tenQT: "Ac-hen-ti-na", tenQTEn: "Argentina" },
+		TWN: { tenQT: "Đài Loan", tenQTEn: "Taiwan" },
+	};
+	if (fallbackMap[code]) {
+		return { maQT: code, ...fallbackMap[code] };
+	}
+	return null;
+}
+
 function isValidAlpha3Country(code: string): boolean {
 	const clean = String(code || "")
 		.trim()
 		.toUpperCase();
 	if (!clean) return false;
-	// Đức (Germany) là trường hợp ngoại lệ duy nhất có mã 1 ký tự: "D" trong CSDL KBTT
-	if (clean === "D") return true;
+	if (getCountryInfo(clean)) return true;
 	if (clean.length === 3 && /^[A-Z]{3}$/.test(clean)) {
-		const commonValid = [
-			"VNM",
-			"USA",
-			"RUS",
-			"CHN",
-			"KOR",
-			"JPN",
-			"GBR",
-			"FRA",
-			"DEU",
-			"AUS",
-			"THA",
-			"LAO",
-			"KHM",
-			"SGP",
-			"MYS",
-			"IDN",
-			"PHL",
-			"IND",
-			"ITA",
-			"ESP",
-			"CAN",
-			"BRA",
-			"TWN",
-			"VAA",
-		];
-		if (commonValid.includes(clean)) return true;
+		return true;
 	}
-	if (catalogs.quocTich.length > 0) {
-		return catalogs.quocTich.some((item) => {
-			const ma = String(item.maQT || item.id || item.code || "")
-				.trim()
-				.toUpperCase();
-			return ma === clean;
-		});
-	}
-	return clean.length === 3 && /^[A-Z]{3}$/.test(clean);
+	return false;
 }
 
 function isNumericDocType(docTypeRaw: unknown): boolean {
@@ -329,6 +336,12 @@ function handleDocNumberKeyDown(e: KeyboardEvent, docTypeRaw: unknown): void {
 	}
 }
 
+let countryInfoHint = $derived.by(() => {
+	const qt = modalForm.quocTich.trim().toUpperCase();
+	if (!qt) return null;
+	return getCountryInfo(qt);
+});
+
 let liveVal = $derived.by(() => {
 	const isVN =
 		["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
@@ -343,6 +356,27 @@ let liveVal = $derived.by(() => {
 	const roomNum = parseInt(modalForm.soPhong, 10);
 	const soPhongValid = roomNum >= 1 && roomNum <= 9;
 	const arrivalCheck = validateArrivalDate(modalForm.ngayDen);
+
+	let ngayDiValid = true;
+	let ngayDiError = "";
+	if (modalForm.ngayDi.trim()) {
+		const dmyDi = modalForm.ngayDi
+			.trim()
+			.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+		if (!dmyDi) {
+			ngayDiValid = false;
+			ngayDiError =
+				"Ngày đi phải theo định dạng DD/MM/YYYY (ví dụ: 18/09/2026 12:00:00)";
+		} else {
+			const d = parseInt(dmyDi[1], 10);
+			const m = parseInt(dmyDi[2], 10);
+			const y = parseInt(dmyDi[3], 10);
+			if (d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > 2100) {
+				ngayDiValid = false;
+				ngayDiError = "Ngày đi không hợp lệ";
+			}
+		}
+	}
 
 	const docNum = modalForm.soGiayTo.trim();
 	let soGiayToValid = true;
@@ -392,6 +426,7 @@ let liveVal = $derived.by(() => {
 		ngaySinhValid &&
 		soPhongValid &&
 		arrivalCheck.valid &&
+		ngayDiValid &&
 		soGiayToValid &&
 		quocTichValid;
 
@@ -404,7 +439,7 @@ let liveVal = $derived.by(() => {
 		ngaySinh: {
 			valid: ngaySinhValid,
 			error: !ngaySinhValid
-				? "Ngày sinh không đúng định dạng (YYYY-MM-DD)"
+				? "Ngày sinh phải theo định dạng DD/MM/YYYY (ví dụ: 22/09/2002)"
 				: undefined,
 		},
 		soPhong: {
@@ -412,6 +447,10 @@ let liveVal = $derived.by(() => {
 			error: !soPhongValid ? "Số phòng phải từ 1 đến 9" : undefined,
 		},
 		ngayDen: arrivalCheck,
+		ngayDi: {
+			valid: ngayDiValid,
+			error: ngayDiError || undefined,
+		},
 		soGiayTo: { valid: soGiayToValid, error: soGiayToError || undefined },
 		quocTich: { valid: quocTichValid, error: quocTichError || undefined },
 	};
@@ -1775,14 +1814,14 @@ onMount(() => {
           <!-- Ngày sinh -->
           <div>
             <label for="modalNgaySinh" class="block font-semibold text-slate-700 mb-1">
-              Ngày sinh (YYYY-MM-DD) <span class="text-rose-500">*</span>
+              Ngày sinh (DD/MM/YYYY) <span class="text-rose-500">*</span>
             </label>
             <input
               type="text"
               id="modalNgaySinh"
               bind:value={modalForm.ngaySinh}
               class={`w-full px-3 py-2 text-sm font-mono rounded-lg outline-none transition ${!liveVal.ngaySinh.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
-              placeholder="1995-10-15"
+              placeholder="22/09/2002"
             >
             {#if !liveVal.ngaySinh.valid}
               <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
@@ -1793,8 +1832,13 @@ onMount(() => {
 
           <!-- Quốc tịch -->
           <div>
-            <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1">
-              Quốc tịch (Mã Alpha-3 chuẩn) <span class="text-rose-500">*</span>
+            <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1 flex items-center justify-between">
+              <span>Quốc tịch (Mã Alpha-3) <span class="text-rose-500">*</span></span>
+              {#if countryInfoHint}
+                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 truncate max-w-[170px]" title={countryInfoHint.tenQTEn ? `${countryInfoHint.tenQT} (${countryInfoHint.tenQTEn})` : countryInfoHint.tenQT}>
+                  <i class="fa-solid fa-earth-americas text-emerald-600"></i> {countryInfoHint.tenQTEn ? `${countryInfoHint.tenQT} (${countryInfoHint.tenQTEn})` : countryInfoHint.tenQT}
+                </span>
+              {/if}
             </label>
             <input
               type="text"
@@ -1805,12 +1849,16 @@ onMount(() => {
                 modalForm.quocTich = upper;
               }}
               class={`w-full px-3 py-2 text-sm uppercase font-bold rounded-lg outline-none transition ${!liveVal.quocTich.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
-              placeholder="VNM, USA, RUS, KOR..."
+              placeholder="VNM, USA, RUS, KOR, DEU..."
               maxlength="3"
             >
             {#if !liveVal.quocTich.valid}
               <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
                 <i class="fa-solid fa-circle-exclamation"></i> {liveVal.quocTich.error}
+              </p>
+            {:else if countryInfoHint}
+              <p class="text-emerald-700 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-check"></i> Quốc gia: <strong>{countryInfoHint.tenQT}</strong> {countryInfoHint.tenQTEn ? `(${countryInfoHint.tenQTEn})` : ''}
               </p>
             {/if}
           </div>
@@ -1886,7 +1934,7 @@ onMount(() => {
           <!-- Ngày đến -->
           <div>
             <label for="modalNgayDen" class="block font-semibold text-slate-700 mb-1">
-              Ngày đến (DD/MM/YYYY hoặc YYYY-MM-DD) <span class="text-rose-500">*</span>
+              Ngày đến (DD/MM/YYYY) <span class="text-rose-500">*</span>
             </label>
             <input
               type="text"
@@ -1904,8 +1952,19 @@ onMount(() => {
 
           <!-- Ngày đi -->
           <div>
-            <label for="modalNgayDi" class="block font-semibold text-slate-700 mb-1">Ngày đi (DD/MM/YYYY hoặc YYYY-MM-DD)</label>
-            <input type="text" id="modalNgayDi" bind:value={modalForm.ngayDi} class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="18/09/2026 12:00:00">
+            <label for="modalNgayDi" class="block font-semibold text-slate-700 mb-1">Ngày đi (DD/MM/YYYY)</label>
+            <input
+              type="text"
+              id="modalNgayDi"
+              bind:value={modalForm.ngayDi}
+              class={`w-full px-3 py-2 text-xs font-mono rounded-lg outline-none transition ${!liveVal.ngayDi.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+              placeholder="18/09/2026 12:00:00"
+            >
+            {#if !liveVal.ngayDi.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.ngayDi.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Thời hạn tạm trú -->

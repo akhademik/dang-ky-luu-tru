@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 278 nodes · 513 edges · 16 communities (7 shown, 6 thin omitted)
+- 255 nodes · 474 edges · 16 communities (6 shown, 6 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `90fa3a17`
+- Built from commit: `d75ee2f6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -17,7 +17,6 @@
 - app.js
 - syncPipeline.ts
 - scripts
-- +page.svelte
 - devDependencies
 - compilerOptions
 - DataTransformer
@@ -69,36 +68,32 @@ Nodes (12): CatalogItem, CONFIG, CompletenessResult, RawOcrRow, TransformedRowRe
 Cohesion: 0.07
 Nodes (26): author, description, keywords, license, main, name, scripts, build (+18 more)
 
-### Community 3 - "+page.svelte"
-Cohesion: 0.13
-Nodes (16): addNewGuest(), buildOrderedRowValues(), checkToken(), closeEditModal(), confirmDeleteRow(), executeSyncBatch(), handleManualLogin(), openEditModal() (+8 more)
-
-### Community 4 - "devDependencies"
+### Community 3 - "devDependencies"
 Cohesion: 0.09
 Nodes (23): @biomejs/biome, jiti, devDependencies, @biomejs/biome, jiti, svelte, svelte-check, @sveltejs/adapter-node (+15 more)
 
-### Community 5 - "compilerOptions"
+### Community 4 - "compilerOptions"
 Cohesion: 0.10
 Nodes (20): node_modules/**, public/**, src/**/*.js, src/**/*.svelte, src/**/*.ts, ./.svelte-kit/tsconfig.json, test/**/*.ts, compilerOptions (+12 more)
 
-### Community 10 - "entry"
+### Community 9 - "entry"
 Cohesion: 0.18
 Nodes (11): entry, ignoreDependencies, test/**/*.ts, project, $schema, tailwindcss, src/index.ts, src/**/*.{js,ts,svelte} (+3 more)
 
 ## Knowledge Gaps
-- **72 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `ApiResponse`, `LogEntry` (+67 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 111 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **72 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `TabInfo`, `ApiResponse` (+67 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 104 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`, `DataTransformer`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **Why does `DataTransformer` connect `DataTransformer` to `TokenManager`, `syncPipeline.ts`, `CatalogManager`?**
-  _High betweenness centrality (0.039) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `devDependencies` to `scripts`, `entry`?**
-  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+- **Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `CatalogManager`, `TokenManager`?**
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `entry`, `scripts`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?**
   _72 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.js` be split into smaller, more focused modules?**
