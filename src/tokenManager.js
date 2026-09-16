@@ -17,11 +17,10 @@ export class TokenManager {
    */
   async login() {
     const url = `${this.config.BASE_URL}${this.config.ENDPOINTS.TOKEN}`;
-    const params = new URLSearchParams({
-      username: this.config.AUTH.USERNAME,
-      password: this.config.AUTH.PASSWORD,
-      grant_type: this.config.AUTH.GRANT_TYPE,
-    });
+    const params = new URLSearchParams();
+    params.append('username', this.config.AUTH.USERNAME);
+    params.append('password', this.config.AUTH.PASSWORD);
+    params.append('grant-type', this.config.AUTH.GRANT_TYPE || 'api_cslt');
 
     try {
       console.log('[TokenManager] Đang thực hiện đăng nhập...');
@@ -136,18 +135,17 @@ export class TokenManager {
 
   _saveTokenData(data) {
     const payload = data.data || data;
-    this.accessToken = payload.access_token || payload.accessToken;
-    this.refreshToken = payload.refresh_token || payload.refreshToken || this.refreshToken;
+    this.accessToken = payload.AccessToken || payload.access_token || payload.accessToken;
+    this.refreshToken = payload.RefreshToken || payload.refresh_token || payload.refreshToken || this.refreshToken;
 
     const nowInSec = Math.floor(Date.now() / 1000);
-    if (payload.exp) {
-      // Nếu exp là timestamp tính bằng giây hoặc mili-giây
-      this.expiresAt = payload.exp > 1e11 ? Math.floor(payload.exp / 1000) : payload.exp;
+    const expVal = payload.Exp || payload.exp;
+    if (expVal) {
+      this.expiresAt = expVal > 1e11 ? Math.floor(expVal / 1000) : expVal;
     } else if (payload.expires_in || payload.expiresIn) {
       const expiresIn = Number(payload.expires_in || payload.expiresIn);
       this.expiresAt = nowInSec + expiresIn;
     } else {
-      // Mặc định 3600s nếu không có
       this.expiresAt = nowInSec + 3600;
     }
   }

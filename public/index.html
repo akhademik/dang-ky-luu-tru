@@ -84,7 +84,7 @@
         <i class="fa-solid fa-cloud-arrow-up"></i> Thực Thi Đồng Bộ & Log Phản Hồi
       </button>
       <button onclick="switchTab('catalogTab')" id="tab-catalogTab" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2">
-        <i class="fa-solid fa-book-bookmark"></i> Tra Cứu Danh Mục
+        <i class="fa-solid fa-book-bookmark"></i> Tra Cứu Danh Mục Rút Gọn
       </button>
     </div>
 
@@ -103,7 +103,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2 text-xs">
-            <span id="tabFetchStatus" class="text-emerald-200"></span>
+            <span id="tabFetchStatus" class="text-emerald-200 font-mono"></span>
             <button onclick="fetchSheetTabsList()" class="bg-emerald-800 hover:bg-emerald-700 px-2.5 py-1 rounded border border-emerald-600 transition" title="Làm mới danh sách Tab ngày">
               <i class="fa-solid fa-arrows-rotate"></i> Nạp Tabs
             </button>
@@ -143,26 +143,32 @@
           <h2 class="text-base font-semibold text-slate-900">Danh sách bản ghi OCR cần đồng bộ</h2>
           <p class="text-xs text-slate-500" id="currentSourceLabel">Đang hiển thị dữ liệu mẫu</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <button onclick="loadSampleData()" class="px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-300 font-medium transition flex items-center gap-1.5">
             <i class="fa-solid fa-rotate-left"></i> Dữ liệu mẫu
           </button>
           <button onclick="addNewRow()" class="px-3 py-1.5 text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg border border-indigo-200 font-medium transition flex items-center gap-1.5">
             <i class="fa-solid fa-plus"></i> Thêm dòng
           </button>
-          <button onclick="processAndSyncNow()" class="px-4 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-paper-plane"></i> Đồng bộ ngay
+          <button onclick="pushSelectedRows()" id="btnPushSelected" class="px-3.5 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow transition flex items-center gap-1.5">
+            <i class="fa-solid fa-check-double"></i> Push đăng ký đã chọn (<span id="selectedCountBadge">0</span>)
+          </button>
+          <button onclick="processAndSyncNow()" class="px-3.5 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow transition flex items-center gap-1.5">
+            <i class="fa-solid fa-paper-plane"></i> Push tất cả
           </button>
         </div>
       </div>
 
-      <!-- Table -->
+      <!-- Table with Read-only / Edit Mode & Checkbox Selection -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto max-h-[500px]">
+        <div class="overflow-x-auto max-h-[520px]">
           <table class="w-full text-left text-xs text-slate-600">
-            <thead class="bg-slate-100/80 text-slate-700 uppercase font-semibold text-[11px] sticky top-0 z-10 border-b border-slate-200">
+            <thead class="bg-slate-100/90 text-slate-700 uppercase font-semibold text-[11px] sticky top-0 z-10 border-b border-slate-200">
               <tr>
-                <th class="p-3 w-10 text-center">#</th>
+                <th class="p-3 w-8 text-center">
+                  <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                </th>
+                <th class="p-3 w-8 text-center">#</th>
                 <th class="p-3">Họ tên *</th>
                 <th class="p-3">Ngày sinh *</th>
                 <th class="p-3">Giới tính *</th>
@@ -171,8 +177,9 @@
                 <th class="p-3">Số giấy tờ *</th>
                 <th class="p-3">Số phòng *</th>
                 <th class="p-3">Ngày đến / đi *</th>
-                <th class="p-3">Kiểm tra Required</th>
-                <th class="p-3 w-16 text-center">Thao tác</th>
+                <th class="p-3">Địa chỉ ghép (VN) / Tạm trú (NN)</th>
+                <th class="p-3 text-center">Kiểm tra Required</th>
+                <th class="p-3 w-28 text-center">Thao tác</th>
               </tr>
             </thead>
             <tbody id="dataTableBody" class="divide-y divide-slate-200">
@@ -191,7 +198,7 @@
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-              <h3 class="font-semibold text-slate-800 text-sm">Nhánh A: Khách Việt Nam (API 5)</h3>
+              <h3 class="font-semibold text-slate-800 text-sm">Nhánh A: Khách Việt Nam (API 5 - Thông báo lưu trú)</h3>
             </div>
             <span id="vnCountBadge" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">0 bản ghi</span>
           </div>
@@ -204,7 +211,7 @@
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-              <h3 class="font-semibold text-slate-800 text-sm">Nhánh B: Khách Nước Ngoài (API 4)</h3>
+              <h3 class="font-semibold text-slate-800 text-sm">Nhánh B: Khách Nước Ngoài (API 4 - Khai báo tạm trú)</h3>
             </div>
             <span id="foreignCountBadge" class="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-bold">0 bản ghi</span>
           </div>
@@ -221,45 +228,43 @@
         <div id="syncResultsList" class="space-y-3">
           <div class="text-center py-8 text-slate-400 text-xs">
             <i class="fa-solid fa-inbox text-3xl mb-2"></i>
-            <p>Chưa có lượt chạy đồng bộ nào. Nhấn "Đồng bộ ngay" để bắt đầu.</p>
+            <p>Chưa có lượt chạy đồng bộ nào. Nhấn "Push đăng ký đã chọn" hoặc "Push tất cả" để bắt đầu.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TAB 4: Catalog Browser -->
+    <!-- TAB 4: Catalog Browser (Rút gọn) -->
     <section id="catalogTab" class="tab-content hidden space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Tỉnh / TP -->
+        <!-- Loại giấy tờ -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
           <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Tỉnh / Thành phố</span>
-            <span id="tinhCount" class="text-indigo-600 font-mono">0</span>
+            <span>Loại Giấy Tờ (API 10)</span>
+            <span class="text-indigo-600 font-mono">5 loại</span>
           </h4>
-          <input type="text" id="filterTinh" oninput="filterCatalog('tinh')" placeholder="Tìm kiếm tỉnh..." class="text-xs border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
-          <ul id="tinhList" class="text-xs space-y-1 overflow-y-auto max-h-80 divide-y divide-slate-100"></ul>
+          <p class="text-[11px] text-slate-500 mb-2">Chỉ sử dụng 5 loại giấy tờ theo quy định:</p>
+          <ul id="loaiGiayToList" class="text-xs space-y-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200"></ul>
         </div>
 
-        <!-- Quốc tịch -->
+        <!-- Lý do cư trú -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
           <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Quốc tịch</span>
+            <span>Lý Do Cư Trú (API 9)</span>
+            <span class="text-indigo-600 font-mono">2 lý do</span>
+          </h4>
+          <p class="text-[11px] text-slate-500 mb-2">Chỉ sử dụng 2 lý do cho cả khách VN và Nước ngoài:</p>
+          <ul id="lyDoCuTruList" class="text-xs space-y-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200"></ul>
+        </div>
+
+        <!-- Quốc tịch tra cứu -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span>Quốc Tịch (API 6)</span>
             <span id="quocTichCount" class="text-indigo-600 font-mono">0</span>
           </h4>
-          <input type="text" id="filterQuocTich" oninput="filterCatalog('quocTich')" placeholder="Tìm quốc tịch..." class="text-xs border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
-          <ul id="quocTichList" class="text-xs space-y-1 overflow-y-auto max-h-80 divide-y divide-slate-100"></ul>
-        </div>
-
-        <!-- Loại giấy tờ & Lý do cư trú -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col space-y-4">
-          <div>
-            <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2">Loại Giấy Tờ (API 10)</h4>
-            <ul id="loaiGiayToList" class="text-xs space-y-1 bg-slate-50 p-2.5 rounded border border-slate-200"></ul>
-          </div>
-          <div>
-            <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2">Lý Do Cư Trú (API 9)</h4>
-            <ul id="lyDoCuTruList" class="text-xs space-y-1 bg-slate-50 p-2.5 rounded border border-slate-200 max-h-48 overflow-y-auto"></ul>
-          </div>
+          <input type="text" id="filterQuocTich" oninput="filterCatalog('quocTich')" placeholder="Tìm quốc gia / ISO mã..." class="text-xs border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
+          <ul id="quocTichList" class="text-xs space-y-1 overflow-y-auto max-h-72 divide-y divide-slate-100"></ul>
         </div>
       </div>
     </section>
