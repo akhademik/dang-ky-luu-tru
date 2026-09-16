@@ -311,15 +311,90 @@ export class DataTransformer {
   }
 
   /**
+   * Kiểm tra mức độ hoàn thiện các trường bắt buộc (Required Fields) của dòng
+   */
+  async checkRowCompleteness(rawRow) {
+    const isVN = this.isVietnamese(rawRow);
+    const branch = isVN ? 'VN' : 'FOREIGN';
+    const missingFields = [];
+    const fieldStatus = {};
+
+    const hoTen = (rawRow.hoTen || rawRow['Họ tên'] || rawRow.fullName || '').trim();
+    if (!hoTen) missingFields.push('Họ tên (hoTen)');
+    fieldStatus.hoTen = { label: 'Họ tên', value: hoTen, required: true, valid: !!hoTen };
+
+    const rawDob = rawRow.ngaySinh || rawRow['Ngày sinh'] || rawRow['D.O.B'] || rawRow.dob || '';
+    const ngaySinhStr = this.formatDateOnly(rawDob);
+    if (!ngaySinhStr) missingFields.push('Ngày sinh (ngayThangNamSinhStr)');
+    fieldStatus.ngaySinh = { label: 'Ngày sinh', value: ngaySinhStr, required: true, valid: !!ngaySinhStr };
+
+    const gioiTinh = this.normalizeGender(rawRow.gioiTinh || rawRow['Giới tính'] || rawRow.gender);
+    fieldStatus.gioiTinh = { label: 'Giới tính', value: gioiTinh, required: true, valid: true };
+
+    const soPhong = String(rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '').trim();
+    if (!soPhong) missingFields.push('Số phòng (soPhong)');
+    fieldStatus.soPhong = { label: 'Số phòng', value: soPhong, required: true, valid: !!soPhong };
+
+    const ngayDen = this.formatDateTime(rawRow.ngayDen || rawRow['(từ ngày)'] || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
+    if (!ngayDen) missingFields.push('Ngày đến (ngayDenCsltStr)');
+    fieldStatus.ngayDen = { label: 'Ngày đến', value: ngayDen, required: true, valid: !!ngayDen };
+
+    const ngayDi = this.formatDateTime(rawRow.ngayDi || rawRow['(đến ngày)'] || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
+    if (!ngayDi) missingFields.push('Ngày đi (ngayDiDuKienStr)');
+    fieldStatus.ngayDi = { label: 'Ngày đi', value: ngayDi, required: true, valid: !!ngayDi };
+
+    if (isVN) {
+      const rawLoaiGiayTo = rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow['Tên giấy tờ'] || rawRow.idType;
+      const loaiGiayToId = this.catalog.findLoaiGiayTo(rawLoaiGiayTo);
+      const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số CCCD'] || rawRow.idNumber || '';
+      const docVal = this.validateDocNumber(rawDocNum, loaiGiayToId);
+
+      if (!docVal.valid) {
+        missingFields.push(`Số giấy tờ hợp lệ (${docVal.error})`);
+      }
+      fieldStatus.soGiayTo = { label: 'Số giấy tờ (CCCD/CMND)', value: docVal.cleanNumber || rawDocNum, required: true, valid: docVal.valid, error: docVal.error };
+      fieldStatus.loaiGiayTo = { label: 'Loại giấy tờ', value: loaiGiayToId, required: true, valid: true };
+    } else {
+      const quocTich = this.catalog.findQuocTich(rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality);
+      fieldStatus.quocTich = { label: 'Quốc tịch', value: quocTich, required: true, valid: !!quocTich };
+
+      const rawPassport = rawRow.soHoChieu || rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số hộ chiếu'] || rawRow.passportNumber || '';
+      const docVal = this.validateDocNumber(rawPassport, 4);
+      if (!docVal.valid) {
+        missingFields.push(`Số Hộ chiếu hợp lệ (${docVal.error})`);
+      }
+      fieldStatus.soHoChieu = { label: 'Số Hộ chiếu', value: docVal.cleanNumber || rawPassport, required: true, valid: docVal.valid, error: docVal.error };
+
+      const thoiHanTamTru = this.formatDateTime(
+        rawRow.thoiHanTamTru || rawRow.thoiHanTamTruStr || rawRow['Thời hạn tạm trú'] || ngayDi,
+        '23:59:59'
+      );
+      if (!thoiHanTamTru) missingFields.push('Thời hạn tạm trú (thoiHanTamTruStr)');
+      fieldStatus.thoiHanTamTru = { label: 'Thời hạn tạm trú', value: thoiHanTamTru, required: true, valid: !!thoiHanTamTru };
+    }
+
+    return {
+      branch,
+      isComplete: missingFields.length === 0,
+      missingFields,
+      fieldStatus,
+    };
+  }
+
+  /**
    * Chuyển đổi và phân loại danh sách các dòng dữ liệu thành 2 nhóm payload
    */
   async transformBatch(rows) {
     const vnPayloads = [];
     const foreignPayloads = [];
     const logs = [];
+    const completenessList = [];
 
     for (let index = 0; index < rows.length; index++) {
       const row = rows[index];
+      const completeness = await this.checkRowCompleteness(row);
+      completenessList.push({ rowIndex: index, completeness });
+
       const res = await this.transformRow(row);
       if (res.validationError) {
         logs.push({
@@ -327,14 +402,15 @@ export class DataTransformer {
           status: 'Lỗi chuẩn hóa',
           message: res.validationError,
           row,
+          completeness,
         });
       } else if (res.branch === 'VN') {
-        vnPayloads.push({ rowIndex: index, payload: res.payload, row });
+        vnPayloads.push({ rowIndex: index, payload: res.payload, row, completeness });
       } else if (res.branch === 'FOREIGN') {
-        foreignPayloads.push({ rowIndex: index, payload: res.payload, row });
+        foreignPayloads.push({ rowIndex: index, payload: res.payload, row, completeness });
       }
     }
 
-    return { vnPayloads, foreignPayloads, logs };
+    return { vnPayloads, foreignPayloads, logs, completenessList };
   }
 }

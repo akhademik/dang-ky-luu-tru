@@ -80,13 +80,23 @@ export class CatalogManager {
   }
 
   async loadLyDoCuTru() {
-    const data = await this._fetchPublic(CONFIG.ENDPOINTS.DM_LY_DO_CU_TRU);
-    this.lyDoCuTruList = data || this._readLocalFallback('ly_do_cu_tru.json');
+    const raw = this._readLocalFallback('ly_do_cu_tru.json');
+    // Chỉ giữ Du lịch (1) và Mục đích khác (20) theo instruction.md
+    this.lyDoCuTruList = [
+      { id: 1, name: 'Du lịch (1)' },
+      { id: 20, name: 'Mục đích khác (20)' }
+    ];
   }
 
   async loadLoaiGiayTo() {
-    const data = await this._fetchPublic(CONFIG.ENDPOINTS.DM_LOAI_GIAY_TO);
-    this.loaiGiayToList = data || this._readLocalFallback('loai_giay_to.json');
+    // Chỉ giữ CCCD (1), CMND (2), GPLX (3), Hộ chiếu (4), Thẻ Căn Cước (8) theo instruction.md
+    this.loaiGiayToList = [
+      { id: 1, name: 'Thẻ CCCD (1)', for: 'VN' },
+      { id: 2, name: 'Thẻ CMND (2)', for: 'VN' },
+      { id: 3, name: 'Giấy phép lái xe (3)', for: 'VN' },
+      { id: 4, name: 'Hộ chiếu / Passport (4)', for: 'VN,FOREIGN' },
+      { id: 8, name: 'Thẻ Căn Cước (8)', for: 'VN' }
+    ];
   }
 
   async loadNoiCuTru() {

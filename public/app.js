@@ -1,6 +1,7 @@
 let currentRows = [];
 let catalogData = {};
 let availableTabs = [];
+let rowValidationStates = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   setupHotReload();
@@ -29,9 +30,6 @@ function setupHotReload() {
       } catch (err) {
         // ignore
       }
-    };
-    eventSource.onerror = () => {
-      // Reconnect automatically
     };
   }
 }
@@ -69,7 +67,6 @@ async function fetchSheetTabsList() {
 
       statusLabel.textContent = `Tìm thấy ${availableTabs.length} tabs`;
 
-      // Tự động kéo dữ liệu tab mặc định
       if (defaultGid) {
         await pullDataFromGoogleSheet(defaultGid);
       }
@@ -114,8 +111,8 @@ async function pullDataFromGoogleSheet(forcedGid = null) {
 
     if (data.success && data.rows && data.rows.length > 0) {
       currentRows = data.rows;
+      await updatePayloadPreview();
       renderTable();
-      updatePayloadPreview();
 
       const selectedTab = availableTabs.find(t => t.gid === String(gid));
       const tabName = selectedTab ? selectedTab.name : `GID ${gid}`;
@@ -165,41 +162,74 @@ function renderTable() {
   tbody.innerHTML = '';
 
   currentRows.forEach((row, idx) => {
+    const valState = rowValidationStates[idx] || { isComplete: true, missingFields: [] };
+    const isComplete = valState.isComplete;
+    const missing = valState.missingFields || [];
+
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/80 transition';
+    tr.className = `hover:bg-slate-50/80 transition ${!isComplete ? 'bg-rose-50/30' : ''}`;
     tr.innerHTML = `
       <td class="p-3 text-center font-mono text-slate-400">${idx + 1}</td>
+      
+      <!-- Họ tên (Required) -->
       <td class="p-3 font-medium text-slate-900">
-        <input type="text" value="${row.hoTen || row['Họ tên'] || ''}" onchange="updateCell(${idx}, 'hoTen', this.value)" class="w-full bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.hoTen || row['Họ tên'] || ''}" onchange="updateCell(${idx}, 'hoTen', this.value)" placeholder="* Bắt buộc" class="w-full bg-transparent border-b ${!row.hoTen && !row['Họ tên'] ? 'border-rose-400 bg-rose-50' : 'border-transparent focus:border-indigo-500'} outline-none uppercase font-semibold">
       </td>
+
+      <!-- Ngày sinh (Required) -->
       <td class="p-3 font-mono">
-        <input type="text" value="${row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''}" onchange="updateCell(${idx}, 'ngaySinh', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''}" onchange="updateCell(${idx}, 'ngaySinh', this.value)" placeholder="* YYYY-MM-DD" class="w-24 bg-transparent border-b ${!row.ngaySinh && !row['D.O.B'] && !row['Ngày sinh'] ? 'border-rose-400 bg-rose-50' : 'border-transparent focus:border-indigo-500'} outline-none">
       </td>
+
+      <!-- Giới tính (Required) -->
       <td class="p-3">
         <select onchange="updateCell(${idx}, 'gioiTinh', this.value)" class="bg-transparent border border-slate-200 rounded px-1 py-0.5 outline-none text-xs">
-          <option value="Nam" ${(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M' ? 'selected' : ''}>Nam</option>
-          <option value="Nữ" ${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'selected' : ''}>Nữ</option>
+          <option value="Nam" ${(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M' ? 'selected' : ''}>Nam (M)</option>
+          <option value="Nữ" ${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'selected' : ''}>Nữ (F)</option>
         </select>
       </td>
+
+      <!-- Quốc tịch (Required với NNN) -->
       <td class="p-3">
-        <input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || ''}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-20 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none uppercase font-bold text-slate-700">
       </td>
+
+      <!-- Loại giấy tờ (Required) -->
       <td class="p-3">
-        <input type="text" value="${row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || ''}" onchange="updateCell(${idx}, 'loaiGiayTo', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <select onchange="updateCell(${idx}, 'loaiGiayTo', this.value)" class="bg-transparent border border-slate-200 rounded px-1 py-0.5 outline-none text-xs max-w-[130px]">
+          <option value="Thẻ CCCD" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Thẻ CCCD' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'CCCD' ? 'selected' : ''}>Thẻ CCCD (1)</option>
+          <option value="Thẻ CMND" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Thẻ CMND' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'CMND' ? 'selected' : ''}>Thẻ CMND (2)</option>
+          <option value="Giấy phép lái xe" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Giấy phép lái xe' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'GPLX' ? 'selected' : ''}>GPLX (3)</option>
+          <option value="Hộ chiếu" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Hộ chiếu' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'Passport' ? 'selected' : ''}>Hộ chiếu (4)</option>
+          <option value="Thẻ Căn Cước" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Thẻ Căn Cước' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'Căn cước' ? 'selected' : ''}>Thẻ Căn Cước (8)</option>
+        </select>
       </td>
+
+      <!-- Số giấy tờ (Required) -->
       <td class="p-3 font-mono">
-        <input type="text" value="${row.soGiayTo || row['Số giấy tờ'] || ''}" onchange="updateCell(${idx}, 'soGiayTo', this.value)" class="w-28 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none font-bold text-indigo-700">
+        <input type="text" value="${row.soGiayTo || row['Số giấy tờ'] || ''}" onchange="updateCell(${idx}, 'soGiayTo', this.value)" placeholder="* 12 số CCCD / HC" class="w-28 bg-transparent border-b ${!row.soGiayTo && !row['Số giấy tờ'] ? 'border-rose-400 bg-rose-50' : 'border-transparent focus:border-indigo-500'} outline-none font-bold text-indigo-700">
       </td>
+
+      <!-- Số phòng (Required) -->
       <td class="p-3">
-        <input type="text" value="${row.soPhong || row['Số phòng'] || ''}" onchange="updateCell(${idx}, 'soPhong', this.value)" class="w-16 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.soPhong || row['Số phòng'] || ''}" onchange="updateCell(${idx}, 'soPhong', this.value)" placeholder="* Phòng" class="w-14 bg-transparent border-b ${!row.soPhong && !row['Số phòng'] ? 'border-rose-400 bg-rose-50' : 'border-transparent focus:border-indigo-500'} outline-none font-medium">
       </td>
+
+      <!-- Ngày đến / đi (Required) -->
       <td class="p-3 text-[11px] text-slate-500">
-        <div>Đến: ${row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || 'N/A'}</div>
-        <div>Đi: ${row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || 'N/A'}</div>
+        <div>Đến: ${row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || '<span class="text-rose-500 font-bold">Thiếu</span>'}</div>
+        <div>Đi: ${row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || '<span class="text-rose-500 font-bold">Thiếu</span>'}</div>
       </td>
-      <td class="p-3 text-slate-500 truncate max-w-xs" title="${row.diaChi || row['Địa chỉ'] || ''}">
-        ${row.diaChi || row['Địa chỉ'] || (row.tinhTp ? `${row.phuongXa || ''}, ${row.tinhTp}` : 'N/A')}
+
+      <!-- Trạng thái chuẩn hóa & Thiếu thông tin -->
+      <td class="p-3">
+        ${isComplete 
+          ? `<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-check"></i> Đủ chuẩn</span>` 
+          : `<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full cursor-help" title="Thiếu: ${missing.join(', ')}"><i class="fa-solid fa-triangle-exclamation"></i> Thiếu ${missing.length} trường</span>`
+        }
       </td>
+
+      <!-- Thao tác -->
       <td class="p-3 text-center">
         <button onclick="removeRow(${idx})" class="text-rose-500 hover:text-rose-700 p-1 rounded hover:bg-rose-50 transition" title="Xóa dòng">
           <i class="fa-solid fa-trash-can"></i>
@@ -219,8 +249,7 @@ function updateCell(idx, field, value) {
 
 function removeRow(idx) {
   currentRows.splice(idx, 1);
-  renderTable();
-  updatePayloadPreview();
+  updatePayloadPreview().then(() => renderTable());
 }
 
 function addNewRow() {
@@ -228,16 +257,16 @@ function addNewRow() {
     hoTen: 'NGUYỄN VĂN MỚI',
     ngaySinh: '1995-01-01',
     gioiTinh: 'Nam',
-    quocTich: 'Việt Nam',
+    quocTich: 'VNM',
     loaiGiayTo: 'Thẻ CCCD',
     soGiayTo: '001095000999',
     soPhong: 'P.102',
     diaChi: 'Hà Nội',
     ngayDen: '2026-09-16 14:00:00',
     ngayDi: '2026-09-18 12:00:00',
+    lyDo: 'Du lịch',
   });
-  renderTable();
-  updatePayloadPreview();
+  updatePayloadPreview().then(() => renderTable());
 }
 
 function loadSampleData() {
@@ -272,11 +301,21 @@ function loadSampleData() {
       'Số phòng': 'P.09',
       'Loại giấy tờ': 'Hộ chiếu',
       'Ảnh hộ chiếu': '',
+    },
+    {
+      'Họ tên': 'TRẦN THỊ THIẾU',
+      'Ngày sinh': '1998-05-12',
+      'Giới tính': 'Nữ',
+      'Quốc tịch': 'VNM',
+      'Loại giấy tờ': 'Thẻ CCCD',
+      'Số giấy tờ': '12345', // Lỗi: thiếu số CCCD
+      'Số phòng': '', // Lỗi: thiếu phòng
+      'Ngày đến': '2026-09-16 14:00:00',
+      'Ngày đi': '2026-09-18 12:00:00',
     }
   ];
   document.getElementById('currentSourceLabel').textContent = 'Đang hiển thị dữ liệu mẫu chuẩn v1.4';
-  renderTable();
-  updatePayloadPreview();
+  updatePayloadPreview().then(() => renderTable());
 }
 
 async function updatePayloadPreview() {
@@ -296,6 +335,9 @@ async function updatePayloadPreview() {
 
     document.getElementById('vnCountBadge').textContent = `${vnPayloads.length} bản ghi`;
     document.getElementById('foreignCountBadge').textContent = `${foreignPayloads.length} bản ghi`;
+
+    // Cập nhật trạng thái validation cho từng dòng
+    rowValidationStates = (data.completenessList || []).map(item => item.completeness);
   } catch (err) {
     console.error('Error previewing payloads:', err);
   }
@@ -373,10 +415,10 @@ async function loadCatalogs() {
     renderCatalogList('quocTich', catalogData.quocTich || []);
 
     const lgUl = document.getElementById('loaiGiayToList');
-    lgUl.innerHTML = (catalogData.loaiGiayTo || []).map(lg => `<li><span class="font-mono text-indigo-600 font-bold">${lg.id}</span> - ${lg.name}</li>`).join('');
+    lgUl.innerHTML = (catalogData.loaiGiayTo || []).map(lg => `<li class="py-0.5"><span class="font-mono text-indigo-600 font-bold">${lg.id}</span> - ${lg.name} ${lg.for ? `<span class="text-[10px] bg-slate-200 px-1 py-0.2 rounded text-slate-600">${lg.for}</span>` : ''}</li>`).join('');
 
     const ldUl = document.getElementById('lyDoCuTruList');
-    ldUl.innerHTML = (catalogData.lyDoCuTru || []).map(ld => `<li><span class="font-mono text-indigo-600 font-bold">${ld.id}</span> - ${ld.name}</li>`).join('');
+    ldUl.innerHTML = (catalogData.lyDoCuTru || []).map(ld => `<li class="py-0.5"><span class="font-mono text-indigo-600 font-bold">${ld.id}</span> - ${ld.name}</li>`).join('');
   } catch (err) {
     document.getElementById('catDot').className = 'w-2 h-2 rounded-full bg-rose-400';
     document.getElementById('catCountText').textContent = 'Lỗi nạp';

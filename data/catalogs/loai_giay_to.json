@@ -2,13 +2,10 @@
   "code": "200",
   "message": "Thành công",
   "data": [
-    { "id": 1, "name": "Thẻ CCCD" },
-    { "id": 2, "name": "Thẻ CMND" },
-    { "id": 3, "name": "Giấy phép lái xe" },
-    { "id": 4, "name": "Hộ chiếu" },
-    { "id": 5, "name": "Giấy khai sinh" },
-    { "id": 6, "name": "Thẻ BHYT" },
-    { "id": 7, "name": "Thông báo số định danh cá nhân" },
-    { "id": 8, "name": "Thẻ Căn Cước" }
+    { "id": 1, "name": "Thẻ CCCD (1)", "for": "VN" },
+    { "id": 2, "name": "Thẻ CMND (2)", "for": "VN" },
+    { "id": 3, "name": "Giấy phép lái xe (3)", "for": "VN" },
+    { "id": 4, "name": "Hộ chiếu / Passport (4)", "for": "VN,FOREIGN" },
+    { "id": 8, "name": "Thẻ Căn Cước (8)", "for": "VN" }
   ]
 }

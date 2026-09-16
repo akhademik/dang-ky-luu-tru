@@ -2,25 +2,7 @@
   "code": "200",
   "message": "Thành công",
   "data": [
-    { "id": 1, "name": "Du lịch" },
-    { "id": 2, "name": "Công tác" },
-    { "id": 3, "name": "Học tập" },
-    { "id": 4, "name": "Thăm viếng" },
-    { "id": 5, "name": "Hội nghị" },
-    { "id": 6, "name": "Thăm thân" },
-    { "id": 7, "name": "Từ thiện" },
-    { "id": 8, "name": "Tổ chức quốc tế" },
-    { "id": 9, "name": "Kết hôn" },
-    { "id": 10, "name": "Lãnh sự quán" },
-    { "id": 11, "name": "Viện trợ" },
-    { "id": 12, "name": "Đại sứ quán" },
-    { "id": 13, "name": "Định cư" },
-    { "id": 14, "name": "Tiếp thị" },
-    { "id": 15, "name": "Báo chí, phóng viên" },
-    { "id": 16, "name": "Thương mại" },
-    { "id": 17, "name": "Gia hạn thị thực" },
-    { "id": 18, "name": "Chữa bệnh" },
-    { "id": 19, "name": "Lao động" },
-    { "id": 20, "name": "Mục đích khác" }
+    { "id": 1, "name": "Du lịch (1)" },
+    { "id": 20, "name": "Mục đích khác (20)" }
   ]
 }
