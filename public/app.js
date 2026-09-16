@@ -134,7 +134,7 @@ async function pullDataFromGoogleSheet(forcedGid = null) {
         }
         return row;
       });
-      selectedRowIndices = new Set(currentRows.map((_, i) => i)); // Mặc định chọn tất cả
+      selectedRowIndices = new Set(); // Mặc định select none (chỉ chọn khi click)
       editingRowIndices.clear();
 
       await updatePayloadPreview();
@@ -155,13 +155,6 @@ async function pullDataFromGoogleSheet(forcedGid = null) {
   }
 }
 
-async function pullAndSyncDirectly() {
-  const select = document.getElementById('sheetTabSelect');
-  const gid = select ? select.value : '0';
-  await pullDataFromGoogleSheet(gid);
-  await processAndSyncNow();
-}
-
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -179,6 +172,18 @@ function switchTab(tabId) {
   }
 }
 
+function isGuestVN(row) {
+  const qt = (row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || '').trim().toLowerCase();
+  const docType = (row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || '').toLowerCase();
+  const docNum = String(row.soGiayTo || row['Số giấy tờ'] || row['Số CCCD'] || '').replace(/\D/g, '');
+
+  if (docType.includes('cccd') || docType.includes('cmnd') || docType.includes('căn cước')) return true;
+  if (['vn', 'vnm', 'viet nam', 'vietnam', 'vvv', 'vv', 'v', 'viet'].includes(qt)) return true;
+  if (qt && !['vn', 'vnm', 'viet nam', 'vietnam', 'vvv', 'vv', 'v', 'viet'].includes(qt)) return false;
+  if (docNum.length === 12 || docNum.length === 9) return true;
+  return false;
+}
+
 function getCombinedAddress(row) {
   const loaiGiayToName = (row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || '').toLowerCase();
   // Khách đăng ký bằng Hộ chiếu / Passport thì để địa chỉ trống theo yêu cầu
@@ -187,29 +192,29 @@ function getCombinedAddress(row) {
   }
 
   const rawAddress = (row.diaChi || row['Địa chỉ'] || row['Địa chỉ chi tiết'] || row.address || '').trim();
-  const tinhRaw = row.tinhTp || row['Tỉnh'] || row['Tỉnh/TP'] || row.province || '';
-  const phuongXaRaw = row.phuongXa || row['Phường/Xã'] || row.ward || '';
-  const quanHuyenRaw = row.quanHuyen || row['Quận/Huyện'] || row.district || '';
+  const tinhRaw = (row.tinhTp || row['Tỉnh'] || row['Tỉnh/TP'] || row.province || '').trim();
+  const phuongXaRaw = (row.phuongXa || row['Phường/Xã'] || row.ward || '').trim();
+  const quanHuyenRaw = (row.quanHuyen || row['Quận/Huyện'] || row.district || '').trim();
 
   const parts = [rawAddress, phuongXaRaw, quanHuyenRaw, tinhRaw].filter(Boolean);
   return parts.length > 0 ? parts.join(', ') : '';
 }
 
 function getDisplayAddress(row) {
-  const loaiGiayToName = (row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || '').toLowerCase();
-  if (loaiGiayToName.includes('hộ chiếu') || loaiGiayToName.includes('passport')) {
-    return { shortText: '-', fullText: '-' };
-  }
-
-  const isVN = (row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase() === 'VNM' || (row.quocTich || '').toLowerCase() === 'việt nam';
+  const isVN = isGuestVN(row);
   if (!isVN) {
     const val = row.thoiHanTamTru || row.thoiHanTamTruStr || row['Thời hạn tạm trú'] || '-';
-    return { shortText: val, fullText: val };
+    return { shortText: val, fullText: `Thời hạn tạm trú: ${val}` };
+  }
+
+  const loaiGiayToName = (row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || '').toLowerCase();
+  if (loaiGiayToName.includes('hộ chiếu') || loaiGiayToName.includes('passport')) {
+    return { shortText: '-', fullText: 'Khách hộ chiếu: địa chỉ để trống' };
   }
 
   const fullAddr = getCombinedAddress(row);
   if (!fullAddr) {
-    return { shortText: '-', fullText: '-' };
+    return { shortText: '-', fullText: 'Chưa có địa chỉ' };
   }
 
   // Ưu tiên lấy trực tiếp tỉnh nếu có trường tỉnh riêng
@@ -368,25 +373,28 @@ function renderTable() {
         }
       </td>
 
-      <!-- Địa chỉ (Hiển thị Tỉnh gọn gàng, Hover hiển thị đầy đủ tooltip) -->
-      <td class="p-3 text-slate-700 text-[11px] max-w-[140px] truncate" title="${addrInfo.fullText}">
-        <span class="cursor-help hover:text-indigo-600 transition underline decoration-dotted decoration-slate-300" title="${addrInfo.fullText}">
-          ${addrInfo.shortText}
-        </span>
+      <!-- Địa chỉ (Hiển thị Tỉnh gọn gàng, Hover hiển thị đầy đủ tooltip; Khi Edit hiển thị ô nhập) -->
+      <td class="p-3 text-slate-700 text-[11px] max-w-[150px]">
+        ${isEditing
+          ? `<input type="text" value="${row.diaChi || row['Địa chỉ'] || row['Địa chỉ chi tiết'] || ''}" onchange="updateCell(${idx}, 'diaChi', this.value)" placeholder="Địa chỉ / Tỉnh" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] bg-emerald-50/50 border border-emerald-400 text-slate-800 focus:ring-1 focus:ring-emerald-400">`
+          : `<span class="cursor-help hover:text-indigo-600 transition underline decoration-dotted decoration-slate-400 font-medium truncate inline-block max-w-[130px]" title="${addrInfo.fullText}">
+              ${addrInfo.shortText}
+            </span>`
+        }
       </td>
 
       <!-- Thao tác: Edit/Save + Push + Delete -->
       <td class="p-3 text-center whitespace-nowrap">
         <div class="inline-flex items-center gap-1">
           ${isEditing 
-            ? `<button onclick="toggleEditRow(${idx})" class="text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-50 transition" title="Lưu chỉnh sửa">
+            ? `<button onclick="toggleEditRow(${idx})" class="text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-50 transition" title="Lưu chỉnh sửa & cập nhật Sheet">
                 <i class="fa-solid fa-floppy-disk"></i>
                </button>`
             : `<button onclick="toggleEditRow(${idx})" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50 transition" title="Chỉnh sửa dòng">
                 <i class="fa-solid fa-pen-to-square"></i>
                </button>`
           }
-          <button onclick="pushSingleRow(${idx})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition" title="Push đăng ký riêng dòng này">
+          <button onclick="pushSingleRow(${idx})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition" title="Đăng ký riêng dòng này">
             <i class="fa-solid fa-paper-plane"></i>
           </button>
           <button onclick="removeRow(${idx})" class="text-rose-500 hover:text-rose-700 p-1.5 rounded hover:bg-rose-50 transition" title="Xóa dòng">
@@ -421,13 +429,31 @@ function toggleRowSelect(idx, checked) {
 
 function updateSelectedCountBadge() {
   const badge = document.getElementById('selectedCountBadge');
-  if (badge) badge.textContent = selectedRowIndices.size;
+  if (badge) {
+    badge.textContent = selectedRowIndices.size > 0 ? selectedRowIndices.size : 'Tất cả';
+  }
 }
 
-function toggleEditRow(idx) {
+async function toggleEditRow(idx) {
   if (editingRowIndices.has(idx)) {
     editingRowIndices.delete(idx);
-    updatePayloadPreview().then(() => renderTable());
+    
+    // Gửi cập nhật dòng về backend/sheet
+    const sheetId = (document.getElementById('sheetIdInput') ? document.getElementById('sheetIdInput').value : '16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q').trim();
+    const select = document.getElementById('sheetTabSelect');
+    const gid = select ? select.value : '0';
+    try {
+      await fetch('/api/sheets/update-row', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rowIndex: idx, row: currentRows[idx], sheetId, gid }),
+      });
+    } catch (err) {
+      console.warn('Lỗi ghi nhận dòng:', err);
+    }
+
+    await updatePayloadPreview();
+    renderTable();
   } else {
     editingRowIndices.add(idx);
     renderTable();
@@ -547,7 +573,7 @@ function loadSampleData() {
       'Ảnh hộ chiếu': '',
     }
   ];
-  selectedRowIndices = new Set(currentRows.map((_, i) => i));
+  selectedRowIndices = new Set(); // Mặc định select none
   editingRowIndices.clear();
   const sourceLabel = document.getElementById('currentSourceLabel');
   if (sourceLabel) sourceLabel.textContent = 'Đang hiển thị dữ liệu mẫu chuẩn v1.4';
@@ -582,6 +608,19 @@ async function updatePayloadPreview() {
     rowValidationStates = (data.completenessList || []).map(item => item.completeness);
   } catch (err) {
     console.error('Error previewing payloads:', err);
+  }
+}
+
+async function handleRegisterClick() {
+  if (currentRows.length === 0) {
+    alert('Bảng dữ liệu đang trống!');
+    return;
+  }
+  if (selectedRowIndices.size > 0) {
+    const rowsToSubmit = Array.from(selectedRowIndices).map(i => currentRows[i]).filter(Boolean);
+    await executeSyncBatch(rowsToSubmit, `Đăng ký ${rowsToSubmit.length} khách đã chọn`);
+  } else {
+    await executeSyncBatch(currentRows, `Đăng ký toàn bộ ${currentRows.length} khách`);
   }
 }
 

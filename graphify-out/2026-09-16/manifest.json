@@ -42,10 +42,10 @@
     "semantic_hash": "1932a3005365bbefee753d2bb89ff6aa"
   },
   "public/app.js": {
-    "mtime": 1789542676.4768052,
-    "seen": 1789543005.9834988,
-    "ast_hash": "3340f01113232c9aa1791c086f0a1124",
-    "semantic_hash": "3340f01113232c9aa1791c086f0a1124"
+    "mtime": 1789543786.584267,
+    "seen": 1789543802.5524144,
+    "ast_hash": "62960958153c82b29eafa4b9dbac222d",
+    "semantic_hash": "62960958153c82b29eafa4b9dbac222d"
   },
   "src/catalogManager.js": {
     "mtime": 1789542970.4568174,
@@ -60,10 +60,10 @@
     "semantic_hash": "6d82f74f3087a43f2fc25edce06ae494"
   },
   "src/dataTransformer.js": {
-    "mtime": 1789542973.965711,
-    "seen": 1789543005.9835443,
-    "ast_hash": "b2329294afdc6c3f05809041d431795a",
-    "semantic_hash": "b2329294afdc6c3f05809041d431795a"
+    "mtime": 1789543431.6930006,
+    "seen": 1789543802.5525053,
+    "ast_hash": "822fd57ebc56036aa270d15414039c56",
+    "semantic_hash": "822fd57ebc56036aa270d15414039c56"
   },
   "src/googleSheetService.js": {
     "mtime": 1789533074.0019846,
@@ -84,10 +84,10 @@
     "semantic_hash": "af30b61f3f0615e9580399ec7b51cbb4"
   },
   "src/server.js": {
-    "mtime": 1789533109.2503884,
-    "seen": 1789541817.069021,
-    "ast_hash": "8844904e460be4186729f417e8ea0b19",
-    "semantic_hash": "8844904e460be4186729f417e8ea0b19"
+    "mtime": 1789543436.8783357,
+    "seen": 1789543802.5526385,
+    "ast_hash": "9408870f70e0da118cf61d90b3707177",
+    "semantic_hash": "9408870f70e0da118cf61d90b3707177"
   },
   "src/syncPipeline.js": {
     "mtime": 1789533097.4973319,
@@ -102,9 +102,9 @@
     "semantic_hash": "2e6ec2eb1e6d98e274d58cc50a81e9e9"
   },
   "test/test-pipeline.js": {
-    "mtime": 1789542980.1274025,
-    "seen": 1789543005.9838278,
-    "ast_hash": "6888791b4604fc718a6706b9ee70060c",
-    "semantic_hash": "6888791b4604fc718a6706b9ee70060c"
+    "mtime": 1789543792.196103,
+    "seen": 1789543802.5527253,
+    "ast_hash": "ba37f35659921bf52bf45b6704ccaff0",
+    "semantic_hash": "ba37f35659921bf52bf45b6704ccaff0"
   }
 }

@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 150 nodes · 315 edges · 9 communities (4 shown, 5 thin omitted)
+- 150 nodes · 316 edges · 9 communities (4 shown, 5 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3e546079`
+- Built from commit: `09bdba54`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -82,7 +82,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `runTests()` connect `runTests` to `TokenManager`, `CatalogManager`, `syncPipeline.js`, `GoogleSheetService`?**
   _High betweenness centrality (0.078) - this node is a cross-community bridge._
 - **Why does `DataTransformer` connect `runTests` to `syncPipeline.js`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Are the 15 inferred relationships involving `runTests()` (e.g. with `.findLoaiGiayTo()` and `.findQuocTich()`) actually correct?**
   _`runTests()` has 15 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `availableTabs`, `catalogData`, `currentRows` to the rest of the system?**

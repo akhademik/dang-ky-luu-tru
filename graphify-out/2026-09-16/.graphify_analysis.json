@@ -15,12 +15,13 @@
       "public_app_getcombinedaddress",
       "public_app_getdisplayaddress",
       "public_app_handlemanuallogin",
+      "public_app_handleregisterclick",
       "public_app_handletabchange",
+      "public_app_isguestvn",
       "public_app_loadcatalogs",
       "public_app_loadsampledata",
       "public_app_normalizestr",
       "public_app_processandsyncnow",
-      "public_app_pullandsyncdirectly",
       "public_app_pulldatafromgooglesheet",
       "public_app_pushselectedrows",
       "public_app_pushsinglerow",
@@ -170,7 +171,7 @@
     ]
   },
   "cohesion": {
-    "0": 0.11587301587301588,
+    "0": 0.1111111111111111,
     "1": 0.09090909090909091,
     "2": 0.19480519480519481,
     "3": 0.35833333333333334,
@@ -235,6 +236,17 @@
   "surprises": [
     {
       "source": "runTests()",
+      "target": "CatalogManager",
+      "source_files": [
+        "test/test-pipeline.js",
+        "src/catalogManager.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "runTests()",
       "target": "KbttClient",
       "source_files": [
         "test/test-pipeline.js",
@@ -261,17 +273,6 @@
       "source_files": [
         "test/test-pipeline.js",
         "src/tokenManager.js"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "calls",
-      "why": "connects across different repos/directories; bridges separate communities"
-    },
-    {
-      "source": "runTests()",
-      "target": "CatalogManager",
-      "source_files": [
-        "test/test-pipeline.js",
-        "src/catalogManager.js"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",

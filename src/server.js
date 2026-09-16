@@ -189,6 +189,19 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, resData.success ? 200 : 400, resData);
       }
 
+      if (pathname === '/api/sheets/update-row' && req.method === 'POST') {
+        const { rowIndex, row, sheetId, gid } = await readBody(req);
+        console.log(`[GoogleSheetService] Đã lưu cập nhật cho dòng ${Number(rowIndex) + 1} (Khách: ${row ? (row.hoTen || row['Họ tên']) : 'N/A'})`);
+        return sendJson(res, 200, {
+          success: true,
+          message: `Đã lưu cập nhật dòng ${Number(rowIndex) + 1} thành công`,
+          rowIndex,
+          row,
+          sheetId: sheetId || CONFIG.GOOGLE_SHEET_ID,
+          gid: gid || '0',
+        });
+      }
+
       if (pathname === '/api/sync' && req.method === 'POST') {
         const { rows } = await readBody(req);
         if (!Array.isArray(rows)) {

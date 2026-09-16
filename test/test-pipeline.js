@@ -128,24 +128,23 @@ async function runTests() {
   assert.ok(pastRes.validationError, 'Phải chặn ngày đến trong quá khứ');
   assert.ok(pastRes.validationError.includes('quá khứ'));
 
-  // Test Validation Failure (invalid nationality code not in quoc_tich.json)
-  const invalidNationalityRow = {
-    'Họ tên': 'UNKNOWN GUEST',
+  // Test Validation Failure (invalid nationality code like VAA)
+  const vaaRow = {
+    'Họ tên': 'NGUYEN TEST',
     'Ngày sinh': '1990-05-15',
-    'Quốc tịch': 'XYZ_INVALID_CODE',
-    'Số giấy tờ': 'P12345678',
+    'Quốc tịch': 'VAA',
+    'Số giấy tờ': '001092000001',
     'Số phòng': 'P.05',
-    'Loại giấy tờ': 'Hộ chiếu',
     'Ngày đến': todayStr,
     'Ngày đi': next2DaysStr
   };
-  const invalidNatRes = await transformer.transformRow(invalidNationalityRow);
-  assert.ok(invalidNatRes.validationError, 'Phải chặn mã quốc tịch không tồn tại trong danh mục quoc_tich.json');
-  assert.ok(invalidNatRes.validationError.includes('quốc tịch'));
+  const vaaRes = await transformer.transformRow(vaaRow);
+  assert.ok(vaaRes.validationError, 'Phải chặn mã quốc tịch VAA');
+  assert.ok(vaaRes.validationError.includes('VAA'), 'Lỗi phải nêu rõ mã VAA không hợp lệ');
 
-  const compInvalidNat = await transformer.checkRowCompleteness(invalidNationalityRow);
-  assert.equal(compInvalidNat.fieldStatus.quocTich.valid, false, 'Field status quốc tịch phải invalid');
-  console.log('✅ DataTransformer (Validation, Past Date Blocking & Nationality Cross-Check) test passed!');
+  const compVaa = await transformer.checkRowCompleteness(vaaRow);
+  assert.equal(compVaa.fieldStatus.quocTich.valid, false, 'Field status quốc tịch VAA phải invalid');
+  console.log('✅ DataTransformer (Validation, Past Date Blocking & Nationality Cross-Check including VAA) test passed!');
 
   // 3. Test GoogleSheetService (CSV Parsing & Header Normalization)
   const sheetService = new GoogleSheetService();

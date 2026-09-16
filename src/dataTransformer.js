@@ -17,16 +17,20 @@ export class DataTransformer {
     const quocTichRaw = row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || row.nationality || '';
     const loaiGiayToRaw = row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || row.idType || '';
 
-    // 1. Nếu loại giấy tờ là CCCD (1), CMND (2), Thẻ Căn Cước (8) -> chắc chắn là công dân Việt Nam
-    const loaiGiayToId = this.catalog.findLoaiGiayTo(loaiGiayToRaw);
-    if ([1, 2, 8].includes(loaiGiayToId)) return true;
-
-    // 2. Nếu có trường quốc tịch, kiểm tra khớp
+    // 1. Nếu có trường quốc tịch, ưu tiên kiểm tra quốc tịch
     if (quocTichRaw && String(quocTichRaw).trim()) {
       const matched = this.catalog.matchQuocTich(quocTichRaw);
       if (matched === 'VNM') return true;
-      if (matched && matched !== 'VNM') return false;
+      // Nếu mã quốc tịch không phải VNM (ví dụ 'USA', 'RUS' hoặc mã sai 'VAA') -> trả về false (Foreign)
+      // để chuyển sang nhánh Nước ngoài và kích hoạt validator kiểm tra danh mục
       return false;
+    }
+
+    // 2. Nếu không có trường quốc tịch, xét loại giấy tờ
+    if (loaiGiayToRaw && String(loaiGiayToRaw).trim()) {
+      const loaiGiayToId = this.catalog.findLoaiGiayTo(loaiGiayToRaw);
+      if ([1, 2, 8].includes(loaiGiayToId)) return true;
+      if (loaiGiayToId === 4) return false;
     }
 
     // 3. Nếu số giấy tờ là 12 chữ số (CCCD) hoặc 9 chữ số (CMND)
@@ -465,6 +469,28 @@ export class DataTransformer {
       }
       fieldStatus.soGiayTo = { label: 'Số giấy tờ (CCCD/CMND)', value: docVal.cleanNumber || rawDocNum, required: true, valid: docVal.valid, error: docVal.error };
       fieldStatus.loaiGiayTo = { label: 'Loại giấy tờ', value: loaiGiayToId, required: true, valid: true };
+
+      const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
+      if (rawQuocTich) {
+        const qtVal = this.catalog.validateQuocTich(rawQuocTich);
+        if (!qtVal.valid) {
+          missingFields.push(`Quốc tịch hợp lệ (${qtVal.error})`);
+        }
+        fieldStatus.quocTich = {
+          label: 'Quốc tịch',
+          value: qtVal.maQT || rawQuocTich,
+          required: false,
+          valid: qtVal.valid,
+          error: qtVal.error,
+        };
+      } else {
+        fieldStatus.quocTich = {
+          label: 'Quốc tịch',
+          value: 'VNM',
+          required: false,
+          valid: true,
+        };
+      }
     } else {
       const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
       const qtVal = this.catalog.validateQuocTich(rawQuocTich);

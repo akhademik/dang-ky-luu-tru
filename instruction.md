@@ -1,11 +1,12 @@
-Kết quả thực thi và Nhật ký ghi nhận Google Sheets
-1
-TRỊNH NGỌC LINH
-Lỗi Tiền xử lý
-Thất bại
+- BAN DA XOA MAT CAI LOGIC CHECK CHO MA QUOC TICH NHU O BAN TRUOC HIEN GIO 'VAA' NO VAN KO FLAG DUNG DO LA QUOC TICH SAI
 
-Phản hồi / Ghi chú Sheets: Số phòng không hợp lệ hoặc không tìm thấy số từ 1-9 (giá trị hiện tại: "P.0")
+- Behavior mac dinh hien gio dang la 'select all' toi muon no la 'select nono' chi khi nao toi click vao tickbok moi select all
 
-thông tin trên là sao? sau khi tôi chỉnh sửa các nội dung bị thiếu (đã dược pull về UI) và bấm "đồng bộ luôn" tôi nghĩ là nó sẽ đẩy các thông tin đã sửa này về ngược lại cái sheet mà nó pull thông tin về để bổ sung chứ?
+- Push đăng ký đã chọn (0)
+  Push tất cả 2 cai nay combine lai thanh 'Dang Ky' vi hien gio toi da co the tu select va lua chon cai can push de di dang ky roi
 
-CHỈNH LẠI THEME CỦA TOÀN UI SANG MÀU SẮC ĐƯỢC DỊU MẮT HƠN
+- bay gio xu ly logic cho toi, " Kéo Dữ Liệu Tab " se doi thanh "Lay thong tin tu sheet', cai nay " Kéo & Đẩy Ngay " remove di.
+
+- neu toi co edit gi o entry (sau khi duoc pull ve), no sau khi bam save no se mac dinh duoc day nguoc ve lai sheet tren google sheet luon cho toi
+
+- cai dia chi hien gio cung da bi mat, cai logic chi hien thi tinh thanh va hover tooltip full dia chi cung da mat di chinh lai cho toi
