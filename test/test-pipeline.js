@@ -184,8 +184,8 @@ async function runTests() {
       console.log('✅ Đã phát hiện và flag thành công ô số phòng không hợp lệ (P.0) từ Google Sheet!');
     }
 
-    // Kiểm tra chuẩn hóa khi bổ sung số phòng hợp lệ
-    const validLiveRow = { ...liveRow, soPhong: 'P.07' };
+    // Kiểm tra chuẩn hóa khi bổ sung số phòng hợp lệ và ngày đến hợp lệ
+    const validLiveRow = { ...liveRow, soPhong: 'P.07', 'Số phòng': 'P.07', ngayDen: `${todayStr} 14:00:00`, '(từ ngày)': `${todayStr} 14:00:00`, ngayDi: `${next2DaysStr} 12:00:00`, '(đến ngày)': `${next2DaysStr} 12:00:00` };
     const transformed = await transformer.transformRow(validLiveRow);
     assert.equal(transformed.branch, 'VN');
     assert.equal(transformed.payload.hoTen, 'TRỊNH NGỌC LINH');

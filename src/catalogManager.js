@@ -165,7 +165,7 @@ export class CatalogManager {
     if (!input) return null;
     const clean = this._normalizeText(input);
 
-    if (clean === 'vn' || clean === 'vnm' || clean === 'viet nam' || clean === 'vietnam') {
+    if (clean === 'vn' || clean === 'vnm' || clean === 'viet nam' || clean === 'vietnam' || clean === 'vvv' || clean === 'vv' || clean === 'v' || clean === 'viet') {
       return 'VNM';
     }
 

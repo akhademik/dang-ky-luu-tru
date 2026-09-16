@@ -42,16 +42,16 @@
     "semantic_hash": "1932a3005365bbefee753d2bb89ff6aa"
   },
   "public/app.js": {
-    "mtime": 1789542279.0913386,
-    "seen": 1789542318.7998676,
-    "ast_hash": "14f966ec19c89abc6a265dbb39927ce4",
-    "semantic_hash": "14f966ec19c89abc6a265dbb39927ce4"
+    "mtime": 1789542676.4768052,
+    "seen": 1789543005.9834988,
+    "ast_hash": "3340f01113232c9aa1791c086f0a1124",
+    "semantic_hash": "3340f01113232c9aa1791c086f0a1124"
   },
   "src/catalogManager.js": {
-    "mtime": 1789542208.4170954,
-    "seen": 1789542318.7998695,
-    "ast_hash": "4fa516587c413eed151c22abb69cd80e",
-    "semantic_hash": "4fa516587c413eed151c22abb69cd80e"
+    "mtime": 1789542970.4568174,
+    "seen": 1789543005.9835005,
+    "ast_hash": "78c8053235b7eabb94c091b1e4d41278",
+    "semantic_hash": "78c8053235b7eabb94c091b1e4d41278"
   },
   "src/config.js": {
     "mtime": 1789528899.330833,
@@ -60,10 +60,10 @@
     "semantic_hash": "6d82f74f3087a43f2fc25edce06ae494"
   },
   "src/dataTransformer.js": {
-    "mtime": 1789542307.935869,
-    "seen": 1789542318.7999163,
-    "ast_hash": "7d5588ca25b3a791d3d4e19564474941",
-    "semantic_hash": "7d5588ca25b3a791d3d4e19564474941"
+    "mtime": 1789542973.965711,
+    "seen": 1789543005.9835443,
+    "ast_hash": "b2329294afdc6c3f05809041d431795a",
+    "semantic_hash": "b2329294afdc6c3f05809041d431795a"
   },
   "src/googleSheetService.js": {
     "mtime": 1789533074.0019846,
@@ -102,9 +102,9 @@
     "semantic_hash": "2e6ec2eb1e6d98e274d58cc50a81e9e9"
   },
   "test/test-pipeline.js": {
-    "mtime": 1789542285.022289,
-    "seen": 1789542318.8001728,
-    "ast_hash": "13e9aad2906142d3e894127e3827f157",
-    "semantic_hash": "13e9aad2906142d3e894127e3827f157"
+    "mtime": 1789542980.1274025,
+    "seen": 1789543005.9838278,
+    "ast_hash": "6888791b4604fc718a6706b9ee70060c",
+    "semantic_hash": "6888791b4604fc718a6706b9ee70060c"
   }
 }

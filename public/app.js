@@ -437,6 +437,30 @@ function toggleEditRow(idx) {
 function updateCell(idx, field, value) {
   if (currentRows[idx]) {
     currentRows[idx][field] = value;
+    // Đồng bộ cả alias tiếng Việt để tránh xung đột
+    if (field === 'soPhong') {
+      currentRows[idx]['Số phòng'] = value;
+    } else if (field === 'hoTen') {
+      currentRows[idx]['Họ tên'] = value;
+    } else if (field === 'ngaySinh') {
+      currentRows[idx]['Ngày sinh'] = value;
+    } else if (field === 'gioiTinh') {
+      currentRows[idx]['Giới tính'] = value;
+    } else if (field === 'quocTich') {
+      currentRows[idx]['Quốc tịch'] = value;
+    } else if (field === 'soGiayTo') {
+      currentRows[idx]['Số giấy tờ'] = value;
+      currentRows[idx]['Số CCCD'] = value;
+      currentRows[idx]['Số hộ chiếu'] = value;
+      currentRows[idx].soHoChieu = value;
+    } else if (field === 'ngayDen') {
+      currentRows[idx]['Ngày đến'] = value;
+    } else if (field === 'ngayDi') {
+      currentRows[idx]['Ngày đi'] = value;
+    } else if (field === 'diaChi') {
+      currentRows[idx]['Địa chỉ'] = value;
+      currentRows[idx]['Địa chỉ chi tiết'] = value;
+    }
     updatePayloadPreview();
   }
 }

@@ -17,18 +17,23 @@ export class DataTransformer {
     const quocTichRaw = row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || row.nationality || '';
     const loaiGiayToRaw = row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || row.idType || '';
 
-    // Nếu có trường quốc tịch, kiểm tra khớp
+    // 1. Nếu loại giấy tờ là CCCD (1), CMND (2), Thẻ Căn Cước (8) -> chắc chắn là công dân Việt Nam
+    const loaiGiayToId = this.catalog.findLoaiGiayTo(loaiGiayToRaw);
+    if ([1, 2, 8].includes(loaiGiayToId)) return true;
+
+    // 2. Nếu có trường quốc tịch, kiểm tra khớp
     if (quocTichRaw && String(quocTichRaw).trim()) {
       const matched = this.catalog.matchQuocTich(quocTichRaw);
       if (matched === 'VNM') return true;
       if (matched && matched !== 'VNM') return false;
-      // Nếu không khớp trong danh mục nhưng có giá trị khác rỗng thì coi là Nước ngoài (để validator bắt lỗi)
       return false;
     }
 
-    // Nếu không có trường quốc tịch thì xét loại giấy tờ
-    const loaiGiayToId = this.catalog.findLoaiGiayTo(loaiGiayToRaw);
-    if ([1, 2, 8].includes(loaiGiayToId)) return true;
+    // 3. Nếu số giấy tờ là 12 chữ số (CCCD) hoặc 9 chữ số (CMND)
+    const docNum = this.cleanDocNumber(row.soGiayTo || row['Số giấy tờ'] || row['Số CCCD'] || '');
+    if (/^\d{12}$/.test(docNum) || /^\d{9}$/.test(docNum)) {
+      return true;
+    }
 
     return false;
   }
@@ -250,9 +255,9 @@ export class DataTransformer {
     const roomNum = this.cleanRoomNumber(rawRoom);
     const rawAddress = (rawRow.diaChi || rawRow['Địa chỉ'] || rawRow['Địa chỉ chi tiết'] || rawRow.address || '').trim();
 
-    const ngaySinhStr = this.formatDateOnly(rawRow.ngaySinh || rawRow.ngayThangNamSinhStr || rawRow['Ngày sinh'] || rawRow.birthDate);
-    const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDenCsltStr || rawRow.ngayDen || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
-    const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDiDuKienStr || rawRow.ngayDi || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
+    const ngaySinhStr = this.formatDateOnly(rawRow.ngaySinh || rawRow.ngayThangNamSinhStr || rawRow['Ngày sinh'] || rawRow['D.O.B'] || rawRow.dob || rawRow.birthDate);
+    const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDenCsltStr || rawRow.ngayDen || rawRow['(từ ngày)'] || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
+    const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDiDuKienStr || rawRow.ngayDi || rawRow['(đến ngày)'] || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
 
     if (!hoTen) {
       return { validationError: 'Thiếu thông tin Họ tên khách' };

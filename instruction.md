@@ -1,7 +1,11 @@
-trong phan 'Quốc Tịch" phải kiểm tra tréo code đó có đúng với quốc tịch code đã qui định trong @quoc_tich.json hay ko neu ko đúng cũng phải flag lên de user biết mà chỉnh sửa
+Kết quả thực thi và Nhật ký ghi nhận Google Sheets
+1
+TRỊNH NGỌC LINH
+Lỗi Tiền xử lý
+Thất bại
 
-chỉnh sửa lại giao diện cho màu sắc nó dịu mắt hơn hiện giờ nó quá sáng
+Phản hồi / Ghi chú Sheets: Số phòng không hợp lệ hoặc không tìm thấy số từ 1-9 (giá trị hiện tại: "P.0")
 
-địa chỉ chỉ cần hiển thị tỉnh ví dụ "Tổ 16, Thịnh Liệt, Hoàng Mai, Hà Nội" chỉ hiển thị "Hà Nộ" khi hovertext lên mới hiển thị dđầy đủ trong tooltip để tối ưu hóa space
+thông tin trên là sao? sau khi tôi chỉnh sửa các nội dung bị thiếu (đã dược pull về UI) và bấm "đồng bộ luôn" tôi nghĩ là nó sẽ đẩy các thông tin đã sửa này về ngược lại cái sheet mà nó pull thông tin về để bổ sung chứ?
 
-bỏ cột 'CHUẨN' đi, entry nào ko dầy đủ thì đã có flag rồi, cái nào ko flag thì chắc chắn đúng chuẩn
+CHỈNH LẠI THEME CỦA TOÀN UI SANG MÀU SẮC ĐƯỢC DỊU MẮT HƠN
