@@ -47,23 +47,68 @@ export class DataTransformer {
     return DataTransformer.formatDateOnly(dateRaw);
   }
 
+  public static parseDateTime(dateRaw: unknown): { year: number; month: number; day: number; hour: number; minute: number; second: number; date: Date } | null {
+    if (!dateRaw) return null;
+    const str = String(dateRaw).trim();
+    if (!str) return null;
+
+    // Try DD/MM/YYYY or DD-MM-YYYY with optional time
+    const dmyMatch = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+    if (dmyMatch) {
+      const day = parseInt(dmyMatch[1], 10);
+      const month = parseInt(dmyMatch[2], 10);
+      const year = parseInt(dmyMatch[3], 10);
+      const hour = dmyMatch[4] ? parseInt(dmyMatch[4], 10) : 0;
+      const minute = dmyMatch[5] ? parseInt(dmyMatch[5], 10) : 0;
+      const second = dmyMatch[6] ? parseInt(dmyMatch[6], 10) : 0;
+      const date = new Date(year, month - 1, day, hour, minute, second);
+      if (!isNaN(date.getTime()) && date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day) {
+        return { year, month, day, hour, minute, second, date };
+      }
+    }
+
+    // Try YYYY-MM-DD or YYYY/MM/DD with optional time
+    const ymdMatch = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+    if (ymdMatch) {
+      const year = parseInt(ymdMatch[1], 10);
+      const month = parseInt(ymdMatch[2], 10);
+      const day = parseInt(ymdMatch[3], 10);
+      const hour = ymdMatch[4] ? parseInt(ymdMatch[4], 10) : 0;
+      const minute = ymdMatch[5] ? parseInt(ymdMatch[5], 10) : 0;
+      const second = ymdMatch[6] ? parseInt(ymdMatch[6], 10) : 0;
+      const date = new Date(year, month - 1, day, hour, minute, second);
+      if (!isNaN(date.getTime()) && date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day) {
+        return { year, month, day, hour, minute, second, date };
+      }
+    }
+
+    // Fallback standard Date
+    const fallback = new Date(str.includes('T') ? str : str.replace(' ', 'T'));
+    if (!isNaN(fallback.getTime())) {
+      return {
+        year: fallback.getFullYear(),
+        month: fallback.getMonth() + 1,
+        day: fallback.getDate(),
+        hour: fallback.getHours(),
+        minute: fallback.getMinutes(),
+        second: fallback.getSeconds(),
+        date: fallback
+      };
+    }
+
+    return null;
+  }
+
   public static formatDateOnly(dateRaw: unknown): string {
     if (!dateRaw) return '';
-    const str = String(dateRaw).trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
-
-    const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
-    if (dmy) {
-      const [, d, m, y] = dmy;
-      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    const parsed = this.parseDateTime(dateRaw);
+    if (parsed) {
+      const y = parsed.year;
+      const m = String(parsed.month).padStart(2, '0');
+      const d = String(parsed.day).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     }
-
-    const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-    if (ymd) {
-      const [, y, m, d] = ymd;
-      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-    }
-    return str;
+    return String(dateRaw).trim();
   }
 
   public normalizeGender(genderRaw: unknown): 'M' | 'F' {
@@ -88,14 +133,12 @@ export class DataTransformer {
 
   public static isArrivalDateValid(dateStr: unknown): { valid: boolean; error?: string } {
     if (!dateStr) return { valid: false, error: 'Thiếu ngày đến' };
-    const str = String(dateStr).trim();
-    const arrivalDate = new Date(str.includes('T') ? str : str.replace(' ', 'T'));
-    if (isNaN(arrivalDate.getTime())) {
-      const match = str.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-      if (!match) return { valid: false, error: 'Định dạng ngày đến không hợp lệ' };
+    const parsed = this.parseDateTime(dateStr);
+    if (!parsed) {
+      return { valid: false, error: 'Định dạng ngày đến không hợp lệ' };
     }
 
-    const arrivalDay = new Date(arrivalDate.getFullYear(), arrivalDate.getMonth(), arrivalDate.getDate());
+    const arrivalDay = new Date(parsed.year, parsed.month - 1, parsed.day);
     const today = new Date();
     const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const yesterday = new Date(currentDay);
@@ -320,9 +363,20 @@ export class DataTransformer {
     if (!dateRaw) return '';
     const str = String(dateRaw).trim();
     if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(str)) return str;
-    const dateOnly = this.formatDateOnly(str);
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
-      return `${dateOnly} ${defaultTime}`;
+
+    const parsed = this.parseDateTime(dateRaw);
+    if (parsed) {
+      const y = parsed.year;
+      const m = String(parsed.month).padStart(2, '0');
+      const d = String(parsed.day).padStart(2, '0');
+      const hasTime = str.includes(':');
+      if (hasTime) {
+        const hh = String(parsed.hour).padStart(2, '0');
+        const mm = String(parsed.minute).padStart(2, '0');
+        const ss = String(parsed.second).padStart(2, '0');
+        return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+      }
+      return `${y}-${m}-${d} ${defaultTime}`;
     }
     return str;
   }

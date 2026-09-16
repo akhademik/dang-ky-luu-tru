@@ -191,6 +191,7 @@
       "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
       "src_lib_server_datatransformer_datatransformer_cleandocnumber",
       "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
+      "src_lib_server_datatransformer_datatransformer_constructor",
       "src_lib_server_datatransformer_datatransformer_formatdateonly",
       "src_lib_server_datatransformer_datatransformer_formatdatetime",
       "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
@@ -199,6 +200,7 @@
       "src_lib_server_datatransformer_datatransformer_maploaigiayto",
       "src_lib_server_datatransformer_datatransformer_mapquoctich",
       "src_lib_server_datatransformer_datatransformer_normalizegender",
+      "src_lib_server_datatransformer_datatransformer_parsedatetime",
       "src_lib_server_datatransformer_datatransformer_transformbatch",
       "src_lib_server_datatransformer_datatransformer_transformrow",
       "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
@@ -238,8 +240,7 @@
       "src_lib_server_catalogmanager_catalogmanager_getinstance",
       "src_lib_server_catalogmanager_catalogmanager_initialize",
       "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
-      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
-      "src_lib_server_datatransformer_datatransformer_constructor"
+      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich"
     ],
     "9": [
       "knip",
@@ -289,9 +290,9 @@
     "3": 0.13,
     "4": 0.09523809523809523,
     "5": 0.09523809523809523,
-    "6": 0.3333333333333333,
+    "6": 0.2904761904761905,
     "7": 0.2,
-    "8": 0.2,
+    "8": 0.21978021978021978,
     "9": 0.18181818181818182,
     "10": 0.35555555555555557,
     "11": 1.0,
@@ -308,7 +309,7 @@
     {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "CatalogManager",
-      "degree": 21
+      "degree": 19
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline",
@@ -386,10 +387,10 @@
       "why": "connects across different repos/directories"
     },
     {
-      "source": "DataTransformer",
+      "source": "SyncPipeline",
       "target": "CatalogManager",
       "source_files": [
-        "src/lib/server/dataTransformer.ts",
+        "src/lib/server/syncPipeline.ts",
         "src/lib/server/catalogManager.ts"
       ],
       "confidence": "EXTRACTED",
@@ -398,10 +399,10 @@
     },
     {
       "source": "SyncPipeline",
-      "target": "CatalogManager",
+      "target": "DataTransformer",
       "source_files": [
         "src/lib/server/syncPipeline.ts",
-        "src/lib/server/catalogManager.ts"
+        "src/lib/server/dataTransformer.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",

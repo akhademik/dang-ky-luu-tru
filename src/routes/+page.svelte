@@ -961,11 +961,8 @@
                   <!-- Thao tác -->
                   <td class="p-3 text-center whitespace-nowrap">
                     <div class="inline-flex items-center gap-1">
-                      <button onclick={() => openEditModal(idx)} class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition" title="Bung Modal Chỉnh sửa chi tiết">
-                        <i class="fa-solid fa-up-right-from-square"></i>
-                      </button>
-                      <button onclick={() => toggleEditInline(idx)} class={`p-1.5 rounded transition ${isEditing ? 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50' : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'}`} title={isEditing ? 'Lưu nhanh' : 'Sửa nhanh'}>
-                        <i class={`fa-solid ${isEditing ? 'fa-floppy-disk' : 'fa-pen'}`}></i>
+                      <button onclick={() => openEditModal(idx)} class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition" title="Chỉnh sửa chi tiết">
+                        <i class="fa-solid fa-pen"></i>
                       </button>
                       <button onclick={() => pushSingleRow(idx)} class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition" title="Đăng ký riêng dòng này">
                         <i class="fa-solid fa-paper-plane"></i>

@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 251 nodes · 457 edges · 15 communities (7 shown, 5 thin omitted)
+- 252 nodes · 458 edges · 15 communities (7 shown, 5 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `243f42f6`
+- Built from commit: `6619ad9e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -29,7 +29,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `DataTransformer` - 25 edges
-2. `CatalogManager` - 21 edges
+2. `CatalogManager` - 19 edges
 3. `SyncPipeline` - 17 edges
 4. `TokenManager` - 17 edges
 5. `GoogleSheetService` - 16 edges
@@ -46,10 +46,10 @@
   test/test-pipeline.ts → src/lib/server/kbttClient.ts
 - `ignoreDependencies` --extends--> `tailwindcss`  [EXTRACTED]
   knip.json → package.json
-- `SyncResult` --references--> `RawOcrRow`  [EXTRACTED]
-  src/lib/server/syncPipeline.ts → src/lib/server/dataTransformer.ts
 - `SyncPipeline` --references--> `CatalogManager`  [EXTRACTED]
   src/lib/server/syncPipeline.ts → src/lib/server/catalogManager.ts
+- `SyncPipeline` --references--> `DataTransformer`  [EXTRACTED]
+  src/lib/server/syncPipeline.ts → src/lib/server/dataTransformer.ts
 
 ## Import Cycles
 - None detected.
@@ -85,8 +85,8 @@ Cohesion: 0.18
 Nodes (11): entry, ignoreDependencies, test/**/*.ts, project, $schema, tailwindcss, src/index.ts, src/**/*.{js,ts,svelte} (+3 more)
 
 ## Knowledge Gaps
-- **67 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `TabInfo`, `ApiResponse` (+62 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 99 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **67 isolated node(s):** `CatalogItem`, `TabInfo`, `ApiResponse`, `TokenState`, `CompletenessResult` (+62 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 100 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -94,11 +94,11 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `devDependencies` connect `devDependencies` to `entry`, `package.json`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
-- **Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`, `DataTransformer`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Why does `DataTransformer` connect `DataTransformer` to `CatalogManager`, `syncPipeline.ts`, `TokenManager`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?**
+- **Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `TokenManager`?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **What connects `CatalogItem`, `TabInfo`, `ApiResponse` to the rest of the system?**
   _67 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.js` be split into smaller, more focused modules?**
   _Cohesion score 0.09797979797979799 - nodes in this community are weakly interconnected._

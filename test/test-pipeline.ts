@@ -128,6 +128,22 @@ async function runTests(): Promise<void> {
   assert.equal(compPast.isComplete, false);
   assert.equal(compPast.fieldStatus.ngayDen?.valid, false);
 
+  // Test Validation (DD/MM/YYYY HH:mm:ss arrival date format)
+  const d = new Date();
+  const dmyToday = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} 14:51:47`;
+  const dmyRow: RawOcrRow = {
+    'Họ tên': 'NGUYỄN VĂN AN',
+    'Ngày sinh': '25/11/1995',
+    'Quốc tịch': 'VNM',
+    'Số giấy tờ': '001095000123',
+    'Số phòng': '3',
+    'Ngày đến': dmyToday,
+    'Ngày đi': next2DaysStr,
+  };
+  const compDmy = DataTransformer.checkCompleteness(dmyRow);
+  assert.equal(compDmy.isComplete, true);
+  assert.equal(compDmy.fieldStatus.ngayDen?.valid, true);
+
   // Test Validation (nationality code check)
   const rusRow: RawOcrRow = {
     'Họ tên': 'GRACHEV NIKITA',
@@ -140,7 +156,7 @@ async function runTests(): Promise<void> {
   };
   const compRus = DataTransformer.checkCompleteness(rusRow);
   assert.equal(compRus.fieldStatus.quocTich?.valid, true);
-  console.log('✅ DataTransformer (Validation & Past Date Blocking) test passed!');
+  console.log('✅ DataTransformer (Validation, DD/MM/YYYY & Past Date Blocking) test passed!');
 
   // 3. Test GoogleSheetService (CSV Parsing & Tabs)
   const sheetService = new GoogleSheetService();
