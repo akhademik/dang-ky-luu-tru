@@ -537,6 +537,17 @@ async function executeSyncBatch(rows, actionTitle) {
   }
 }
 
+function normalizeStr(str) {
+  return String(str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 async function loadCatalogs() {
   try {
     const res = await fetch('/api/catalogs');
@@ -546,7 +557,11 @@ async function loadCatalogs() {
     document.getElementById('catDot').className = 'w-2 h-2 rounded-full bg-emerald-400';
     document.getElementById('catCountText').textContent = 'Đã sẵn sàng';
 
+    // Counts
+    document.getElementById('tinhCount').textContent = `${data.tinhTpCount} tỉnh/tp`;
     document.getElementById('quocTichCount').textContent = `${data.quocTichCount} quốc gia`;
+
+    renderCatalogList('tinh', catalogData.tinhTp || []);
     renderCatalogList('quocTich', catalogData.quocTich || []);
 
     const lgUl = document.getElementById('loaiGiayToList');
@@ -561,16 +576,52 @@ async function loadCatalogs() {
 }
 
 function renderCatalogList(type, list) {
-  if (type === 'quocTich') {
+  if (type === 'tinh') {
+    const ul = document.getElementById('tinhList');
+    if (!ul) return;
+    ul.innerHTML = list.map(t => `<li class="py-1 flex items-center justify-between"><span class="font-semibold text-slate-800">${t.tenTT}</span><span class="font-mono text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded text-[11px]">${t.maTT} (${t.maTTChu || ''})</span></li>`).join('');
+  } else if (type === 'quocTich') {
     const ul = document.getElementById('quocTichList');
-    ul.innerHTML = list.map(q => `<li class="py-1"><span class="font-mono text-indigo-600 font-bold">${q.maQT}</span>: ${q.tenQT} (${q.tenQTEn || ''})</li>`).join('');
+    if (!ul) return;
+    ul.innerHTML = list.map(q => `<li class="py-1 flex items-center justify-between"><span class="font-semibold text-slate-800">${q.tenQT}</span><span class="font-mono text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded text-[11px]">${q.maQT}</span></li>`).join('');
   }
 }
 
 function filterCatalog(type) {
-  if (type === 'quocTich') {
-    const q = (document.getElementById('filterQuocTich').value || '').toLowerCase();
-    const filtered = (catalogData.quocTich || []).filter(item => item.tenQT.toLowerCase().includes(q) || (item.tenQTEn && item.tenQTEn.toLowerCase().includes(q)) || item.maQT.toLowerCase().includes(q));
+  if (type === 'tinh') {
+    const rawQ = document.getElementById('filterTinh').value || '';
+    const cleanQ = normalizeStr(rawQ);
+    const tokens = cleanQ.split(' ').filter(Boolean);
+
+    const filtered = (catalogData.tinhTp || []).filter(t => {
+      const ten = normalizeStr(t.tenTT);
+      const tenEn = normalizeStr(t.tenTTEn || '');
+      const maChu = normalizeStr(t.maTTChu || '');
+      const maTT = String(t.maTT || '');
+
+      if (maTT.includes(cleanQ) || maChu.includes(cleanQ) || ten.includes(cleanQ) || tenEn.includes(cleanQ)) {
+        return true;
+      }
+      return tokens.length > 0 && tokens.every(tok => ten.includes(tok) || tenEn.includes(tok) || maChu.includes(tok));
+    });
+
+    renderCatalogList('tinh', filtered);
+  } else if (type === 'quocTich') {
+    const rawQ = document.getElementById('filterQuocTich').value || '';
+    const cleanQ = normalizeStr(rawQ);
+    const tokens = cleanQ.split(' ').filter(Boolean);
+
+    const filtered = (catalogData.quocTich || []).filter(q => {
+      const ten = normalizeStr(q.tenQT);
+      const tenEn = normalizeStr(q.tenQTEn || '');
+      const ma = normalizeStr(q.maQT);
+
+      if (ma.includes(cleanQ) || ten.includes(cleanQ) || tenEn.includes(cleanQ)) {
+        return true;
+      }
+      return tokens.length > 0 && tokens.every(tok => ten.includes(tok) || tenEn.includes(tok) || ma.includes(tok));
+    });
+
     renderCatalogList('quocTich', filtered);
   }
 }

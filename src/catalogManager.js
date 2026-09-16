@@ -230,6 +230,47 @@ export class CatalogManager {
     return match ? match.id : 1;
   }
 
+  /**
+   * Tìm kiếm Tỉnh / Thành phố hỗ trợ Fuzzy Matching & Tiếng Việt không dấu
+   */
+  searchTinhTp(query) {
+    if (!query) return this.tinhTpList;
+    const cleanQ = this._normalizeText(query);
+    const tokens = cleanQ.split(' ').filter(Boolean);
+
+    return this.tinhTpList.filter(t => {
+      const ten = this._normalizeText(t.tenTT);
+      const tenEn = this._normalizeText(t.tenTTEn || '');
+      const maChu = this._normalizeText(t.maTTChu || '');
+      const maTT = String(t.maTT || '');
+
+      if (maTT.includes(cleanQ) || maChu.includes(cleanQ) || ten.includes(cleanQ) || tenEn.includes(cleanQ)) {
+        return true;
+      }
+      return tokens.every(tok => ten.includes(tok) || tenEn.includes(tok) || maChu.includes(tok));
+    });
+  }
+
+  /**
+   * Tìm kiếm Quốc tịch hỗ trợ Fuzzy Matching & Tiếng Việt không dấu
+   */
+  searchQuocTich(query) {
+    if (!query) return this.quocTichList;
+    const cleanQ = this._normalizeText(query);
+    const tokens = cleanQ.split(' ').filter(Boolean);
+
+    return this.quocTichList.filter(q => {
+      const ma = this._normalizeText(q.maQT);
+      const ten = this._normalizeText(q.tenQT);
+      const tenEn = this._normalizeText(q.tenQTEn || '');
+
+      if (ma.includes(cleanQ) || ten.includes(cleanQ) || tenEn.includes(cleanQ)) {
+        return true;
+      }
+      return tokens.every(tok => ten.includes(tok) || tenEn.includes(tok) || ma.includes(tok));
+    });
+  }
+
   _normalizeText(str) {
     if (!str) return '';
     return String(str)

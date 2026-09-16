@@ -234,37 +234,49 @@
       </div>
     </section>
 
-    <!-- TAB 4: Catalog Browser (Rút gọn) -->
+    <!-- TAB 4: Catalog Browser -->
     <section id="catalogTab" class="tab-content hidden space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Tỉnh / Thành phố -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-1 flex items-center justify-between">
+            <span>Tỉnh / TP (API 7)</span>
+            <span id="tinhCount" class="text-indigo-600 font-mono font-bold">0</span>
+          </h4>
+          <p class="text-[11px] text-slate-500 mb-2">Tra cứu mã TT (Hỗ trợ không dấu):</p>
+          <input type="text" id="filterTinh" oninput="filterCatalog('tinh')" placeholder="Tìm tỉnh (vd: ha noi, hn, 101)..." class="text-xs border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
+          <ul id="tinhList" class="text-xs space-y-1 overflow-y-auto max-h-72 divide-y divide-slate-100"></ul>
+        </div>
+
+        <!-- Quốc tịch tra cứu -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-1 flex items-center justify-between">
+            <span>Quốc Tịch (API 6)</span>
+            <span id="quocTichCount" class="text-indigo-600 font-mono font-bold">0</span>
+          </h4>
+          <p class="text-[11px] text-slate-500 mb-2">Tra cứu mã QT (Hỗ trợ không dấu):</p>
+          <input type="text" id="filterQuocTich" oninput="filterCatalog('quocTich')" placeholder="Tìm quốc gia (vd: viet nam, rus)..." class="text-xs border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
+          <ul id="quocTichList" class="text-xs space-y-1 overflow-y-auto max-h-72 divide-y divide-slate-100"></ul>
+        </div>
+
         <!-- Loại giấy tờ -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
-          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center justify-between">
+          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>Loại Giấy Tờ (API 10)</span>
-            <span class="text-indigo-600 font-mono">5 loại</span>
+            <span class="text-indigo-600 font-mono font-bold">5 loại</span>
           </h4>
-          <p class="text-[11px] text-slate-500 mb-2">Chỉ sử dụng 5 loại giấy tờ theo quy định:</p>
+          <p class="text-[11px] text-slate-500 mb-2">Mã ID quy định trong API:</p>
           <ul id="loaiGiayToList" class="text-xs space-y-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200"></ul>
         </div>
 
         <!-- Lý do cư trú -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
-          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center justify-between">
+          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>Lý Do Cư Trú (API 9)</span>
-            <span class="text-indigo-600 font-mono">2 lý do</span>
+            <span class="text-indigo-600 font-mono font-bold">2 lý do</span>
           </h4>
-          <p class="text-[11px] text-slate-500 mb-2">Chỉ sử dụng 2 lý do cho cả khách VN và Nước ngoài:</p>
+          <p class="text-[11px] text-slate-500 mb-2">Mã ID quy định trong API:</p>
           <ul id="lyDoCuTruList" class="text-xs space-y-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200"></ul>
-        </div>
-
-        <!-- Quốc tịch tra cứu -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
-          <h4 class="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Quốc Tịch (API 6)</span>
-            <span id="quocTichCount" class="text-indigo-600 font-mono">0</span>
-          </h4>
-          <input type="text" id="filterQuocTich" oninput="filterCatalog('quocTich')" placeholder="Tìm quốc gia / ISO mã..." class="text-xs border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
-          <ul id="quocTichList" class="text-xs space-y-1 overflow-y-auto max-h-72 divide-y divide-slate-100"></ul>
         </div>
       </div>
     </section>

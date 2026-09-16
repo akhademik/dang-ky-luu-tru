@@ -1,52 +1,63 @@
-trong nội dung 'TRA CỨU DANH MỤC' vẫn còn các nội dung mà tôi không dùng hãy loại bỏ nó:
+Kết quả thực thi và Nhật ký ghi nhận Google Sheets
+1
+TRỊNH NGỌC LINH
+Khách Việt Nam (API 5)
+Thất bại
 
-- khi khách có quốc tịch là việt nam thì trên sheet, quốc tịch là VNM, thì hãy ghép các địa chỉ trên sheet lại theo dạng ""diaChi": "Tổ 16, Thịnh Liệt, Hoàng Mai, Hà Nội"," để bỏ vào api khi đăng ký, khi pull du lieu ve hay hien thi cac truong nhap lieu BAT BUOC (REQUIRED) TREN giao dien frontend, ko sua, chỉ khi nào click edit thì mói cho phép sửa thôi, và cho tickbock 1 hoac all de push dang ky cho khach nhu api ben duoi
+Phản hồi / Ghi chú Sheets: Lỗi kết nối hoặc hệ thống: response.unable_to_decode_password
+Xem Request Payload gửi đi (API 5)
 
-2. API Demo có cho đăng ký thử không?HOÀN TOÀN CÓ THỂ ĐĂNG KÝ THỬ. Môi trường Demo tại [https://api-kbtt.ai-vlab.com](https://api-kbtt.ai-vlab.com) mở đầy đủ cả 2 endpoint tiếp nhận khai báo:API 4: Khai báo tạm trú cho người nước ngoài (/client-service/kbtt/kbtt-3th) API 5: Khai báo lưu trú cho người Việt Nam (/client-service/kbtt-vn/kbtt-3th) 3. Làm sao để push lên đăng ký thử? (Quy trình 2 bước chi tiết)Để push dữ liệu lên server Demo thành công, bạn phải tuân thủ luồng xác thực OAuth 2.0 gồm 2 bước: Bước 1: Lấy AccessToken từ API Demo (API 1)Gọi request lấy Token bằng tài khoản demo được cấp sẵn trong tài liệu (demo*tich_hop / Demo@#$12345): Bashcurl --location 'https://api-kbtt.ai-vlab.com/authorization-service/oauth/token' \
-    --header 'Authorization: Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ' \
-    --header 'Content-Type: application/x-www-form-urlencoded' \
-    --data-urlencode 'username=demo_tich_hop' \
-    --data-urlencode 'password=Demo@#$12345' \
-    --data-urlencode 'grant-type=api_cslt'
-   Kết quả trả về sẽ có chuỗi AccessToken trong trường data.AccessToken. Bước 2: Push dữ liệu đăng kýTrường hợp A: Khách Nước Ngoài (Gọi API 4)Endpoint: [https://api-kbtt.ai-vlab.com/client-service/kbtt/kbtt-3th](https://api-kbtt.ai-vlab.com/client-service/kbtt/kbtt-3th) Header: Authorization: Bearer <AccessToken*ở*Bước_1> Lưu ý nghiệp vụ bắt buộc:ngayDenCsltStr phải là ngày hôm nay hoặc hôm qua. thoiHanTamTruStr phải lớn hơn hoặc bằng ngày hiện tại. Bashcurl --location 'https://api-kbtt.ai-vlab.com/client-service/kbtt/kbtt-3th' \
-    --header 'Content-Type: application/json' \
-    --header 'Authorization: Bearer <AccessToken_cua_ban>' \
-    --data '[
-   {
-   "hoTen": "GRACHEV NIKITA",
-   "quocTich": "RUS",
-   "soHoChieu": "552165656",
-   "gioiTinh": "M",
-   "loaiNgayThangNamSinh": "D",
-   "ngayThangNamSinhStr": "1995-11-25",
-   "ngayDenCsltStr": "2026-09-16 12:00:00",
-   "ngayDiDuKienStr": "2026-09-19 12:00:00",
-   "soPhong": "P.09",
-   "anhHoChieuB64": "",
-   "thoiHanTamTruStr": "2026-12-31 23:59:59"
-   }
-   ]'
-   Trường hợp B: Khách Việt Nam (Gọi API 5)Endpoint: [https://api-kbtt.ai-vlab.com/client-service/kbtt-vn/kbtt-3th](https://api-kbtt.ai-vlab.com/client-service/kbtt-vn/kbtt-3th) Header: Authorization: Bearer <AccessToken*ở_Bước_1> Bashcurl --location 'https://api-kbtt.ai-vlab.com/client-service/kbtt-vn/kbtt-3th' \
-    --header 'Content-Type: application/json' \
-    --header 'Authorization: Bearer <AccessToken_cua_ban>' \
-    --data '[
-   {
-   "hoTen": "BUI TAN DUNG",
-   "gioiTinh": "M",
-   "soDienThoai": "0987654321",
-   "ngayThangNamSinhStr": "2001-10-16",
-   "noiCuTru": 1,
-   "maTT": "",
-   "maPX": "",
-   "diaChi": "Tổ Dân Phố 5, Krông Năng, Krông Năng, Đắk Lắk",
-   "ngayDenCsltStr": "2026-09-16 12:00:00",
-   "ngayDiDuKienStr": "2026-09-18 12:00:00",
-   "soPhong": "P.06",
-   "lyDoCuTru": 1,
-   "loaiGiayTo": 1,
-   "soGiayTo": "066201008768",
-   "anhTruocB64": "",
-   "anhSauB64": ""
-   }
-   ]'
-   Kết quả nhận được:Nếu thành công: Server trả về HTTP 200 { "code": "200", "message": "Thành công", "data": null }. Nếu dữ liệu sai (ví dụ ngày đến là quá khứ nhiều ngày): Server trả về HTTP 400 kèm câu thông báo lỗi chi tiết để bạn chỉnh sửa.
+{
+"hoTen": "TRỊNH NGỌC LINH",
+"gioiTinh": "F",
+"soDienThoai": "",
+"ngayThangNamSinhStr": "2002-09-22",
+"noiCuTru": 1,
+"maTT": "",
+"maPX": "",
+"diaChi": "Tổ 16, Thịnh Liệt, Hoàng Mai, Hà Nội",
+"ngayDenCsltStr": "2026-09-15 16:53:29",
+"ngayDiDuKienStr": "2026-09-16 12:00:00",
+"soPhong": "P.07",
+"lyDoCuTru": 1,
+"lyDoChiTiet": "",
+"loaiGiayTo": 1,
+"soGiayTo": "001302011971",
+"anhTruocB64": "",
+"anhSauB64": "",
+"ghiChu": ""
+}
+
+bang tra cuu danh muc van bi sai, toi muon de lai code tinh thanh, code quoc gia, va cho phep tim kiem theo kieu fuzzy matching va bao gom ca ko co dau van tra duoc.
+con ly do cu tru chi de lai la 'du lich', 'muc dich khac' la duoc, va toi muon sau do co ma so qui dinh trong api, co the vao trong datasource de xem api no qui dinh code do la bao nhiu va map vao de khi post len api khi gan vao so code toi con biet no la y nghia gi de ma debug nua
+
+Lỗi response.unable_to_decode_password xảy ra ngay ở bước API 1 (Lấy Token) trong tokenManager.js trước khi gửi được dữ liệu sang API 5. Hệ thống Spring/OAuth2 của máy chủ Demo (api-kbtt.ai-vlab.com) trả về mã lỗi này khi không thể giải mã tham số password được gửi lên trong body của API 1. 1. Nguyên nhân cốt lõiMật khẩu tài khoản demo là Demo@#$12345. Mật khẩu này chứa các ký tự đặc biệt nhạy cảm trong URL encoding: @, #, $. Trong tokenManager.js, hàm gọi API 1 cần tuân thủ nghiêm ngặt 2 điểm sau theo mục 2 của tài liệu: Phương thức & Header: POST /authorization-service/oauth/token với Content-Type: application/x-www-form-urlencoded. Body Encoding:Nếu bạn truyền qua template string thuần: username=demo_tich_hop&password=Demo@#$12345&grant-type=api_cslt, ký tự # sẽ bị xem là URL fragment, cắt đứt chuỗi password khiến server nhận thiếu hoặc sai ký tự và báo unable_to_decode_password.Nếu dùng JSON.stringify(...) thay vì form-urlencoded: Server sẽ không đọc được form field password. Header Authorization: Bắt buộc là Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ. 2. Cách khắc phục trực tiếp trong tokenManager.jsHãy mở src/tokenManager.js (hoặc vị trí thực hiện hàm lấy AccessToken) và kiểm tra lại đoạn fetch của API 1. Chuẩn hóa cách đóng gói body bằng URLSearchParams: JavaScript// Cấu hình chuẩn API 1
+const TOKEN_URL = 'https://api-kbtt.ai-vlab.com/authorization-service/oauth/token';
+const BASIC_AUTH = 'Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ'; // Cố định theo tài liệu v1.4
+
+async function getAccessToken() {
+// Dùng URLSearchParams để tự động encode các ký tự @, #, $ an toàn
+const bodyParams = new URLSearchParams();
+bodyParams.append('username', 'demo_tich_hop');
+bodyParams.append('password', 'Demo@#$12345');
+bodyParams.append('grant-type', 'api_cslt');
+
+const response = await fetch(TOKEN_URL, {
+method: 'POST',
+headers: {
+'Authorization': BASIC_AUTH,
+'Content-Type': 'application/x-www-form-urlencoded'
+},
+body: bodyParams.toString()
+});
+
+const data = await response.json();
+
+if (response.status !== 200 || data.code !== '200') {
+throw new Error(`Lỗi lấy token: ${data.message || JSON.stringify(data)}`);
+}
+
+return data.data; // { AccessToken, RefreshToken, Exp, ... }
+} 3. Lưu ý thêm về Payload API 5 trước khi bấm gửi lạiSau khi sửa được Token, khi gửi bản ghi của chị TRỊNH NGỌC LINH lên API 5, hãy đảm bảo:Mảng JSON (JSON Array): Payload gửi qua API 5 bắt buộc phải là mảng bọc trong [ và ] (ví dụ: [{ ... }]). Trong ảnh xem trước bạn đang hiển thị một Object đơn lẻ { ... }. Nếu gửi Object đơn, API 5 sẽ báo lỗi cú pháp payload. Trường soPhong: Bắt buộc có giá trị đối với loại hình khách sạn/nhà trọ (P.07 của bạn đã hợp lệ). Thời gian: ngayDenCsltStr là 2026-09-15 16:53:29 (ngày hôm qua) và ngayDiDuKienStr là 2026-09-16 12:00:00 (hôm nay) hoàn toàn đúng luật nghiệp vụ (chỉ chấp nhận ngày đến là hôm nay hoặc hôm qua). 4. Cần debug thêm thông tin gì nếu vẫn gặp lỗi?Nếu sau khi dùng URLSearchParams mà vẫn gặp lỗi, bạn chỉ cần copy thêm:Raw response body mà server trả về ở bước lấy token (HTTP Status code + JSON body đầy đủ). Đoạn code cấu hình request của hàm đăng nhập / lấy token trong tokenManager.js.
+
+va khi send request toi bi loi, nen lam them muc test de khi edit code run do bo test cac case dam bao ko co loi
