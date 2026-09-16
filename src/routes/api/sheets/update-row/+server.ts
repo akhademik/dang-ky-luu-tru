@@ -5,7 +5,15 @@ import { logger } from "$lib/server/logger.js";
 
 export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json().catch(() => ({}));
-	const { rowIndex, sheetRowIndex, row, sheetId, gid, sheetName } = body;
+	const {
+		rowIndex,
+		sheetRowIndex,
+		row,
+		orderedValues,
+		sheetId,
+		gid,
+		sheetName,
+	} = body;
 
 	const actualSheetRow =
 		sheetRowIndex !== undefined && Number(sheetRowIndex) >= 2
@@ -27,6 +35,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		rowIndex: rowIndex !== undefined ? Number(rowIndex) : undefined,
 		sheetRowIndex: actualSheetRow,
 		rowData: row,
+		orderedValues,
 	});
 
 	logger.info(

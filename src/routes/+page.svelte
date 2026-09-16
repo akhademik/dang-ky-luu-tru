@@ -816,6 +816,81 @@ function saveModal() {
 	syncRowToGoogleSheet(savedIdx);
 }
 
+function buildOrderedRowValues(row: RowData, idx = 0): string[] {
+	const stt = String(row.stt || row.STT || idx + 1);
+	const hoTen = String(row.hoTen || row["Họ tên"] || "");
+	const ngaySinh = String(
+		row.ngaySinh || row["Ngày sinh"] || row["D.O.B"] || "",
+	);
+	const gioiTinh = String(row.gioiTinh || row["Giới tính"] || "Nam");
+	const quocTich = String(
+		row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "VNM",
+	).toUpperCase();
+	const loaiGiayTo = String(
+		row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD",
+	);
+	const tenGiayTo = String(row.tenGiayTo || row["Tên giấy tờ"] || loaiGiayTo);
+	const soGiayTo = String(
+		row.soGiayTo ||
+			row["Số giấy tờ"] ||
+			row["Số CCCD"] ||
+			row.soHoChieu ||
+			row["Số hộ chiếu"] ||
+			"",
+	);
+	const tinhTp = String(
+		row.tinhTp || row.tinh || row["Tỉnh"] || row["Tỉnh/TP"] || "",
+	);
+	const quanHuyen = String(
+		row.quanHuyen ||
+			row.huyen ||
+			row["Quận/Huyện"] ||
+			row["Quận"] ||
+			row["Huyện"] ||
+			"",
+	);
+	const phuongXa = String(
+		row.phuongXa ||
+			row.xa ||
+			row["Phường/Xã"] ||
+			row["Phường"] ||
+			row["Xã"] ||
+			"",
+	);
+	const diaChi = String(
+		row.diaChi || row["Địa chỉ"] || row["Địa chỉ chi tiết"] || "",
+	);
+	const ngayDen = String(
+		row.ngayDen || row["(từ ngày)"] || row["Ngày đến"] || row.tuNgay || "",
+	);
+	const ngayDi = String(
+		row.ngayDi || row["(đến ngày)"] || row["Ngày đi"] || row.denNgay || "",
+	);
+	const rawRoom = row.soPhong || row["Số phòng"] || row.room || "1";
+	const matchRoom = String(rawRoom).match(/\d+/);
+	const soPhong = matchRoom ? matchRoom[0] : String(rawRoom || "1");
+	const daDangKy = String(row.daDangKy || row["Đã đăng ký"] || "Chưa đăng ký");
+
+	return [
+		stt,
+		hoTen,
+		ngaySinh,
+		gioiTinh,
+		quocTich,
+		loaiGiayTo,
+		tenGiayTo,
+		soGiayTo,
+		tinhTp,
+		quanHuyen,
+		phuongXa,
+		diaChi,
+		ngayDen,
+		ngayDi,
+		soPhong,
+		daDangKy,
+	];
+}
+
 async function syncRowToGoogleSheet(idx: number) {
 	const row = currentRows[idx];
 	if (!row) return;
@@ -833,6 +908,7 @@ async function syncRowToGoogleSheet(idx: number) {
 		(t) => String(t.gid) === String(selectedGid),
 	);
 	const sheetName = selectedTab ? selectedTab.name : "";
+	const orderedValues = buildOrderedRowValues(row, idx);
 
 	try {
 		const res = await fetch("/api/sheets/update-row", {
@@ -842,6 +918,7 @@ async function syncRowToGoogleSheet(idx: number) {
 				rowIndex: targetSheetRow,
 				sheetRowIndex: targetSheetRow,
 				row: currentRows[idx],
+				orderedValues,
 				gid: selectedGid,
 				sheetName,
 			}),

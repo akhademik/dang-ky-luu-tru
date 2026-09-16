@@ -801,6 +801,18 @@
       "source_location": "L6"
     },
     {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
+      "label": ".buildOrderedRowValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".buildorderedrowvalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L665"
+    },
+    {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
       "label": ".constructor()",
       "_callable": true,
@@ -906,7 +918,7 @@
       "file_type": "code",
       "norm_label": ".updatesheetrow()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L665"
+      "source_location": "L760"
     },
     {
       "id": "src_routes_api_events_server_get",
@@ -925,31 +937,43 @@
       "label": "addNewGuest()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "addnewguest()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L873"
+      "source_location": "L950"
+    },
+    {
+      "id": "src_routes_page_buildorderedrowvalues",
+      "label": "buildOrderedRowValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "+page.svelte",
+      "file_type": "code",
+      "norm_label": "buildorderedrowvalues()",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L819"
     },
     {
       "id": "src_routes_page_checktoken",
       "label": "checkToken()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "checktoken()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L986"
+      "source_location": "L1063"
     },
     {
       "id": "src_routes_page_closeeditmodal",
       "label": "closeEditModal()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "closeeditmodal()",
@@ -961,31 +985,31 @@
       "label": "copyCode()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "copycode()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1024"
+      "source_location": "L1101"
     },
     {
       "id": "src_routes_page_executesyncbatch",
       "label": "executeSyncBatch()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "executesyncbatch()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L933"
+      "source_location": "L1010"
     },
     {
       "id": "src_routes_page_fetchsheettabslist",
       "label": "fetchSheetTabsList()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "fetchsheettabslist()",
@@ -997,19 +1021,19 @@
       "label": "handleManualLogin()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "handlemanuallogin()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L997"
+      "source_location": "L1074"
     },
     {
       "id": "src_routes_page_handletabchange",
       "label": "handleTabChange()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "handletabchange()",
@@ -1021,19 +1045,19 @@
       "label": "loadCatalogs()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "loadcatalogs()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1012"
+      "source_location": "L1089"
     },
     {
       "id": "src_routes_page_openeditmodal",
       "label": "openEditModal()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "openeditmodal()",
@@ -1045,7 +1069,7 @@
       "label": "parseAndApplyAddress()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "parseandapplyaddress()",
@@ -1057,43 +1081,43 @@
       "label": "pushSelectedRows()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "pushselectedrows()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L960"
+      "source_location": "L1037"
     },
     {
       "id": "src_routes_page_pushsinglerow",
       "label": "pushSingleRow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "pushsinglerow()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L978"
+      "source_location": "L1055"
     },
     {
       "id": "src_routes_page_removerow",
       "label": "removeRow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "removerow()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L862"
+      "source_location": "L939"
     },
     {
       "id": "src_routes_page_savemodal",
       "label": "saveModal()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "savemodal()",
@@ -1105,19 +1129,19 @@
       "label": "syncRowToGoogleSheet()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "syncrowtogooglesheet()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L819"
+      "source_location": "L894"
     },
     {
       "id": "src_routes_page_toggleeditinline",
       "label": "toggleEditInline()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "toggleeditinline()",
@@ -1129,7 +1153,7 @@
       "label": "toggleRowSelect()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "togglerowselect()",
@@ -1141,7 +1165,7 @@
       "label": "toggleSelectAll()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "toggleselectall()",
@@ -1153,7 +1177,7 @@
       "label": "updateCell()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "updatecell()",
@@ -1165,7 +1189,7 @@
       "label": "updatePayloadPreview()",
       "_callable": true,
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "updatepayloadpreview()",
@@ -2640,263 +2664,10 @@
       "source_location": "L19"
     },
     {
-      "id": "package_devdependencies",
-      "label": "devDependencies",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "devdependencies",
-      "source_file": "package.json",
-      "source_location": "L30"
-    },
-    {
-      "id": "package_devdependencies_biomejs_biome",
-      "label": "@biomejs/biome",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@biomejs/biome",
-      "source_file": "package.json",
-      "source_location": "L31"
-    },
-    {
-      "id": "package_devdependencies_jiti",
-      "label": "jiti",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "jiti",
-      "source_file": "package.json",
-      "source_location": "L37"
-    },
-    {
-      "id": "package_devdependencies_svelte",
-      "label": "svelte",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "svelte",
-      "source_file": "package.json",
-      "source_location": "L38"
-    },
-    {
-      "id": "package_devdependencies_svelte_check",
-      "label": "svelte-check",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "svelte-check",
-      "source_file": "package.json",
-      "source_location": "L39"
-    },
-    {
-      "id": "package_devdependencies_sveltejs_adapter_node",
-      "label": "@sveltejs/adapter-node",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@sveltejs/adapter-node",
-      "source_file": "package.json",
-      "source_location": "L32"
-    },
-    {
-      "id": "package_devdependencies_sveltejs_kit",
-      "label": "@sveltejs/kit",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@sveltejs/kit",
-      "source_file": "package.json",
-      "source_location": "L33"
-    },
-    {
-      "id": "package_devdependencies_sveltejs_vite_plugin_svelte",
-      "label": "@sveltejs/vite-plugin-svelte",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@sveltejs/vite-plugin-svelte",
-      "source_file": "package.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "package_devdependencies_tailwindcss_vite",
-      "label": "@tailwindcss/vite",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@tailwindcss/vite",
-      "source_file": "package.json",
-      "source_location": "L35"
-    },
-    {
-      "id": "package_devdependencies_types_node",
-      "label": "@types/node",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/node",
-      "source_file": "package.json",
-      "source_location": "L36"
-    },
-    {
-      "id": "package_devdependencies_typescript",
-      "label": "typescript",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "typescript",
-      "source_file": "package.json",
-      "source_location": "L41"
-    },
-    {
-      "id": "package_devdependencies_vite",
-      "label": "vite",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "vite",
-      "source_file": "package.json",
-      "source_location": "L42"
-    },
-    {
-      "id": "biomejs_biome",
-      "label": "@biomejs/biome",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "@biomejs/biome",
-      "source_file": "package.json",
-      "source_location": "L31"
-    },
-    {
-      "id": "jiti",
-      "label": "jiti",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "jiti",
-      "source_file": "package.json",
-      "source_location": "L37"
-    },
-    {
-      "id": "package_json_svelte",
-      "label": "svelte",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "svelte",
-      "source_file": "package.json",
-      "source_location": "L38"
-    },
-    {
-      "id": "svelte_check",
-      "label": "svelte-check",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "svelte-check",
-      "source_file": "package.json",
-      "source_location": "L39"
-    },
-    {
-      "id": "sveltejs_adapter_node",
-      "label": "@sveltejs/adapter-node",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "@sveltejs/adapter-node",
-      "source_file": "package.json",
-      "source_location": "L32"
-    },
-    {
-      "id": "sveltejs_kit",
-      "label": "@sveltejs/kit",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "@sveltejs/kit",
-      "source_file": "package.json",
-      "source_location": "L33"
-    },
-    {
-      "id": "sveltejs_vite_plugin_svelte",
-      "label": "@sveltejs/vite-plugin-svelte",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "@sveltejs/vite-plugin-svelte",
-      "source_file": "package.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "tailwindcss_vite",
-      "label": "@tailwindcss/vite",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "@tailwindcss/vite",
-      "source_file": "package.json",
-      "source_location": "L35"
-    },
-    {
-      "id": "types_node",
-      "label": "@types/node",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "@types/node",
-      "source_file": "package.json",
-      "source_location": "L36"
-    },
-    {
-      "id": "typescript",
-      "label": "typescript",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "typescript",
-      "source_file": "package.json",
-      "source_location": "L41"
-    },
-    {
-      "id": "vite",
-      "label": "vite",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "vite",
-      "source_file": "package.json",
-      "source_location": "L42"
-    },
-    {
       "id": "svelte",
       "label": "svelte",
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "confidence": "EXTRACTED",
       "file_type": "code",
@@ -2907,12 +2678,265 @@
       "id": "src_routes_page",
       "label": "+page.svelte",
       "_origin": "ast",
-      "community": 4,
+      "community": 3,
       "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "+page.svelte",
       "source_file": "src/routes/+page.svelte",
       "source_location": "L1"
+    },
+    {
+      "id": "package_devdependencies",
+      "label": "devDependencies",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "devdependencies",
+      "source_file": "package.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "package_devdependencies_biomejs_biome",
+      "label": "@biomejs/biome",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@biomejs/biome",
+      "source_file": "package.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "package_devdependencies_jiti",
+      "label": "jiti",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "jiti",
+      "source_file": "package.json",
+      "source_location": "L37"
+    },
+    {
+      "id": "package_devdependencies_svelte",
+      "label": "svelte",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "svelte",
+      "source_file": "package.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "package_devdependencies_svelte_check",
+      "label": "svelte-check",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "svelte-check",
+      "source_file": "package.json",
+      "source_location": "L39"
+    },
+    {
+      "id": "package_devdependencies_sveltejs_adapter_node",
+      "label": "@sveltejs/adapter-node",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@sveltejs/adapter-node",
+      "source_file": "package.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "package_devdependencies_sveltejs_kit",
+      "label": "@sveltejs/kit",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@sveltejs/kit",
+      "source_file": "package.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "package_devdependencies_sveltejs_vite_plugin_svelte",
+      "label": "@sveltejs/vite-plugin-svelte",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@sveltejs/vite-plugin-svelte",
+      "source_file": "package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "package_devdependencies_tailwindcss_vite",
+      "label": "@tailwindcss/vite",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@tailwindcss/vite",
+      "source_file": "package.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "package_devdependencies_types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/node",
+      "source_file": "package.json",
+      "source_location": "L36"
+    },
+    {
+      "id": "package_devdependencies_typescript",
+      "label": "typescript",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "typescript",
+      "source_file": "package.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "package_devdependencies_vite",
+      "label": "vite",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "vite",
+      "source_file": "package.json",
+      "source_location": "L42"
+    },
+    {
+      "id": "biomejs_biome",
+      "label": "@biomejs/biome",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@biomejs/biome",
+      "source_file": "package.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "jiti",
+      "label": "jiti",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "jiti",
+      "source_file": "package.json",
+      "source_location": "L37"
+    },
+    {
+      "id": "package_json_svelte",
+      "label": "svelte",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "svelte",
+      "source_file": "package.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "svelte_check",
+      "label": "svelte-check",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "svelte-check",
+      "source_file": "package.json",
+      "source_location": "L39"
+    },
+    {
+      "id": "sveltejs_adapter_node",
+      "label": "@sveltejs/adapter-node",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@sveltejs/adapter-node",
+      "source_file": "package.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "sveltejs_kit",
+      "label": "@sveltejs/kit",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@sveltejs/kit",
+      "source_file": "package.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "sveltejs_vite_plugin_svelte",
+      "label": "@sveltejs/vite-plugin-svelte",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@sveltejs/vite-plugin-svelte",
+      "source_file": "package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "tailwindcss_vite",
+      "label": "@tailwindcss/vite",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@tailwindcss/vite",
+      "source_file": "package.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/node",
+      "source_file": "package.json",
+      "source_location": "L36"
+    },
+    {
+      "id": "typescript",
+      "label": "typescript",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "typescript",
+      "source_file": "package.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "vite",
+      "label": "vite",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "vite",
+      "source_file": "package.json",
+      "source_location": "L42"
     },
     {
       "id": "tsconfig",
@@ -4359,6 +4383,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L796",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_kbttclient_kbttclient_submitforeignguests",
       "target": "src_lib_server_kbttclient_kbttclient_postpayload",
       "relation": "calls",
@@ -4631,7 +4667,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L928",
+      "source_location": "L1005",
       "weight": 1.0
     },
     {
@@ -4643,7 +4679,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L929",
+      "source_location": "L1006",
       "weight": 1.0
     },
     {
@@ -4655,7 +4691,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L930",
+      "source_location": "L1007",
       "weight": 1.0
     },
     {
@@ -4667,7 +4703,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L947",
+      "source_location": "L1024",
       "weight": 1.0
     },
     {
@@ -4679,7 +4715,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1006",
+      "source_location": "L1083",
       "weight": 1.0
     },
     {
@@ -4691,7 +4727,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L975",
+      "source_location": "L1052",
       "weight": 1.0
     },
     {
@@ -4703,7 +4739,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L980",
+      "source_location": "L1057",
       "weight": 1.0
     },
     {
@@ -4715,7 +4751,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L870",
+      "source_location": "L947",
       "weight": 1.0
     },
     {
@@ -4764,6 +4800,18 @@
       "context": "call",
       "source_file": "src/routes/+page.svelte",
       "source_location": "L816",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page_syncrowtogooglesheet",
+      "target": "src_routes_page_buildorderedrowvalues",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L911",
       "weight": 1.0
     },
     {
@@ -7768,13 +7816,68 @@
     },
     {
       "source": "src_routes_page",
+      "target": "src_routes_page_executesyncbatch",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1010",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_pushselectedrows",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1037",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_pushsinglerow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1055",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_checktoken",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1063",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_handlemanuallogin",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1074",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
       "target": "src_routes_page_loadcatalogs",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1012",
+      "source_location": "L1089",
       "weight": 1.0
     },
     {
@@ -7785,7 +7888,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1024",
+      "source_location": "L1101",
       "weight": 1.0
     },
     {
@@ -7911,7 +8014,7 @@
     },
     {
       "source": "src_routes_page",
-      "target": "src_routes_page_syncrowtogooglesheet",
+      "target": "src_routes_page_buildorderedrowvalues",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -7922,13 +8025,24 @@
     },
     {
       "source": "src_routes_page",
+      "target": "src_routes_page_syncrowtogooglesheet",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L894",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
       "target": "src_routes_page_removerow",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L862",
+      "source_location": "L939",
       "weight": 1.0
     },
     {
@@ -7939,62 +8053,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L873",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_executesyncbatch",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L933",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_pushselectedrows",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L960",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_pushsinglerow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L978",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_checktoken",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L986",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_handlemanuallogin",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L997",
+      "source_location": "L950",
       "weight": 1.0
     },
     {
@@ -8602,13 +8661,24 @@
     },
     {
       "source": "src_lib_server_googlesheetservice_googlesheetservice",
-      "target": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
       "source_location": "L665",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_googlesheetservice_googlesheetservice",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L760",
       "weight": 1.0
     },
     {
@@ -8914,5 +8984,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2159f8ff82715e3353123c6f65670a0b5141b3bb"
+  "built_at_commit": "5591a8f4ec304ed711f56c8512a4c533d4a63677"
 }

@@ -103,56 +103,36 @@ function doPost(e) {
     }
     
     var rowData = body.row || body.data || {};
+    var orderedValues = body.orderedValues || body.values;
     
-    // Đọc hàng tiêu đề ở dòng 1
-    var lastCol = targetSheet.getLastColumn() || 16;
-    var headers = [];
-    if (targetSheet.getLastColumn() > 0) {
-      headers = targetSheet.getRange(1, 1, 1, lastCol).getValues()[0];
-    }
-    
-    // Hàm chuẩn hóa loại bỏ dấu và ký tự đặc biệt để so khớp tên cột linh hoạt
-    function cleanKey(str) {
-      return String(str || '').toLowerCase()
-        .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
-        .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
-        .replace(/[ìíịỉĩ]/g, 'i')
-        .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
-        .replace(/[ùúụủũưừứựửữ]/g, 'u')
-        .replace(/[ỳýỵỷỹ]/g, 'y')
-        .replace(/đ/g, 'd')
-        .replace(/[^a-z0-9]/g, '');
-    }
-    
-    // 16 cột chuẩn của Google Sheet
-    var standardCols = [
-      'stt', 'hoten', 'ngaysinh', 'gioitinh', 'quoctich', 'loaigiayto', 'tengiayto', 'sogiayto',
-      'tinh', 'quanhuyen', 'phuongxa', 'diachi', 'tungay', 'denngay', 'sophong', 'dadangky'
-    ];
-    
-    var cleanMap = {};
-    for (var k in rowData) {
-      cleanMap[cleanKey(k)] = rowData[k];
-    }
-    
-    // Ghi dữ liệu vào từng cột
-    for (var col = 0; col < Math.max(headers.length, 16); col++) {
-      var h = headers[col] || '';
-      var cKey = cleanKey(h);
-      var standardKey = standardCols[col] || '';
-      var valToSet = undefined;
-      
-      if (h && rowData[h] !== undefined && rowData[h] !== '') {
-        valToSet = rowData[h];
-      } else if (cKey && cleanMap[cKey] !== undefined && cleanMap[cKey] !== '') {
-        valToSet = cleanMap[cKey];
-      } else if (standardKey && cleanMap[standardKey] !== undefined && cleanMap[standardKey] !== '') {
-        valToSet = cleanMap[standardKey];
+    // Nếu có orderedValues được truyền trực tiếp từ Web UI (16 cột chuẩn)
+    if (orderedValues && Array.isArray(orderedValues) && orderedValues.length > 0) {
+      var finalValues = [];
+      for (var v = 0; v < 16; v++) {
+        finalValues.push(orderedValues[v] !== undefined && orderedValues[v] !== null ? String(orderedValues[v]) : "");
       }
-      
-      if (valToSet !== undefined) {
-        targetSheet.getRange(targetRow, col + 1).setValue(valToSet);
-      }
+      targetSheet.getRange(targetRow, 1, 1, 16).setValues([finalValues]);
+    } else {
+      // 16 cột chuẩn của Google Sheet theo thứ tự
+      var colValues = [
+        rowData.stt || rowData.STT || String(targetRow - 1),
+        rowData.hoTen || rowData["Họ tên"] || "",
+        rowData.ngaySinh || rowData["Ngày sinh"] || rowData["D.O.B"] || "",
+        rowData.gioiTinh || rowData["Giới tính"] || "Nam",
+        (rowData.quocTich || rowData["Quốc tịch"] || rowData["Quốc gia"] || "VNM").toString().toUpperCase(),
+        rowData.loaiGiayTo || rowData["Loại giấy tờ"] || "Thẻ CCCD",
+        rowData.tenGiayTo || rowData["Tên giấy tờ"] || rowData.loaiGiayTo || rowData["Loại giấy tờ"] || "Thẻ CCCD",
+        rowData.soGiayTo || rowData["Số giấy tờ"] || rowData["Số CCCD"] || rowData.soHoChieu || rowData["Số hộ chiếu"] || "",
+        rowData.tinhTp || rowData.tinh || rowData["Tỉnh"] || rowData["Tỉnh/TP"] || "",
+        rowData.quanHuyen || rowData.huyen || rowData["Quận/Huyện"] || rowData["Quận"] || rowData["Huyện"] || "",
+        rowData.phuongXa || rowData.xa || rowData["Phường/Xã"] || rowData["Phường"] || rowData["Xã"] || "",
+        rowData.diaChi || rowData["Địa chỉ"] || rowData["Địa chỉ chi tiết"] || "",
+        rowData.ngayDen || rowData["(từ ngày)"] || rowData["Ngày đến"] || rowData.tuNgay || "",
+        rowData.ngayDi || rowData["(đến ngày)"] || rowData["Ngày đi"] || rowData.denNgay || "",
+        (String(rowData.soPhong || rowData["Số phòng"] || "1").match(/\d+/) || ["1"])[0],
+        rowData.daDangKy || rowData["Đã đăng ký"] || "Chưa đăng ký"
+      ];
+      targetSheet.getRange(targetRow, 1, 1, 16).setValues([colValues]);
     }
     
     // Bắt buộc flush để Google Sheets ghi đè dữ liệu ngay lập tức
@@ -160,7 +140,7 @@ function doPost(e) {
     
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
-      message: "Đã cập nhật dòng " + targetRow + " trên sheet [" + targetSheet.getName() + "]",
+      message: "Đã cập nhật đầy đủ 16 cột dòng " + targetRow + " trên sheet [" + targetSheet.getName() + "]",
       sheetName: targetSheet.getName(),
       rowIndex: targetRow - 2,
       sheetRowIndex: targetRow

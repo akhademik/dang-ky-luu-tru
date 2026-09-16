@@ -118,6 +118,32 @@
       "ref_tam_tru"
     ],
     "3": [
+      "src_routes_page",
+      "src_routes_page_addnewguest",
+      "src_routes_page_buildorderedrowvalues",
+      "src_routes_page_checktoken",
+      "src_routes_page_closeeditmodal",
+      "src_routes_page_copycode",
+      "src_routes_page_executesyncbatch",
+      "src_routes_page_fetchsheettabslist",
+      "src_routes_page_handlemanuallogin",
+      "src_routes_page_handletabchange",
+      "src_routes_page_loadcatalogs",
+      "src_routes_page_openeditmodal",
+      "src_routes_page_parseandapplyaddress",
+      "src_routes_page_pushselectedrows",
+      "src_routes_page_pushsinglerow",
+      "src_routes_page_removerow",
+      "src_routes_page_savemodal",
+      "src_routes_page_syncrowtogooglesheet",
+      "src_routes_page_toggleeditinline",
+      "src_routes_page_togglerowselect",
+      "src_routes_page_toggleselectall",
+      "src_routes_page_updatecell",
+      "src_routes_page_updatepayloadpreview",
+      "svelte"
+    ],
+    "4": [
       "biomejs_biome",
       "jiti",
       "package_devdependencies",
@@ -141,31 +167,6 @@
       "types_node",
       "typescript",
       "vite"
-    ],
-    "4": [
-      "src_routes_page",
-      "src_routes_page_addnewguest",
-      "src_routes_page_checktoken",
-      "src_routes_page_closeeditmodal",
-      "src_routes_page_copycode",
-      "src_routes_page_executesyncbatch",
-      "src_routes_page_fetchsheettabslist",
-      "src_routes_page_handlemanuallogin",
-      "src_routes_page_handletabchange",
-      "src_routes_page_loadcatalogs",
-      "src_routes_page_openeditmodal",
-      "src_routes_page_parseandapplyaddress",
-      "src_routes_page_pushselectedrows",
-      "src_routes_page_pushsinglerow",
-      "src_routes_page_removerow",
-      "src_routes_page_savemodal",
-      "src_routes_page_syncrowtogooglesheet",
-      "src_routes_page_toggleeditinline",
-      "src_routes_page_togglerowselect",
-      "src_routes_page_toggleselectall",
-      "src_routes_page_updatecell",
-      "src_routes_page_updatepayloadpreview",
-      "svelte"
     ],
     "5": [
       "ref_node_modules",
@@ -279,6 +280,7 @@
     ],
     "11": [
       "src_lib_server_googlesheetservice_googlesheetservice",
+      "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
       "src_lib_server_googlesheetservice_googlesheetservice_constructor",
       "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
       "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
@@ -308,15 +310,15 @@
     "0": 0.09797979797979799,
     "1": 0.1214574898785425,
     "2": 0.07407407407407407,
-    "3": 0.08695652173913043,
-    "4": 0.14624505928853754,
+    "3": 0.14130434782608695,
+    "4": 0.08695652173913043,
     "5": 0.09523809523809523,
     "6": 0.2904761904761905,
     "7": 0.2,
     "8": 0.20952380952380953,
     "9": 0.21794871794871795,
     "10": 0.18181818181818182,
-    "11": 0.35555555555555557,
+    "11": 0.32727272727272727,
     "12": 1.0,
     "13": 1.0,
     "14": 1.0,
@@ -344,14 +346,14 @@
       "degree": 17
     },
     {
-      "id": "src_lib_server_tokenmanager_tokenmanager",
-      "label": "TokenManager",
+      "id": "src_lib_server_googlesheetservice_googlesheetservice",
+      "label": "GoogleSheetService",
       "degree": 17
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
-      "degree": 16
+      "id": "src_lib_server_tokenmanager_tokenmanager",
+      "label": "TokenManager",
+      "degree": 17
     },
     {
       "id": "test_test_pipeline_runtests",
@@ -440,12 +442,12 @@
     {
       "type": "bridge_node",
       "question": "Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `TokenManager`?",
-      "why": "High betweenness centrality (0.040) - this node is a cross-community bridge."
+      "why": "High betweenness centrality (0.039) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",
       "question": "Why does `devDependencies` connect `devDependencies` to `scripts`, `entry`?",
-      "why": "High betweenness centrality (0.039) - this node is a cross-community bridge."
+      "why": "High betweenness centrality (0.038) - this node is a cross-community bridge."
     },
     {
       "type": "isolated_nodes",

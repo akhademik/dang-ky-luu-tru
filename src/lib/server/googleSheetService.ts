@@ -662,6 +662,101 @@ export class GoogleSheetService {
 		return null;
 	}
 
+	public buildOrderedRowValues(
+		rowData: Record<string, unknown>,
+		fallbackIndex = 0,
+	): string[] {
+		const stt = String(rowData.stt || rowData.STT || fallbackIndex + 1);
+		const hoTen = String(rowData.hoTen || rowData["Họ tên"] || "");
+		const ngaySinh = String(
+			rowData.ngaySinh || rowData["Ngày sinh"] || rowData["D.O.B"] || "",
+		);
+		const gioiTinh = String(rowData.gioiTinh || rowData["Giới tính"] || "Nam");
+		const quocTich = String(
+			rowData.quocTich || rowData["Quốc tịch"] || rowData["Quốc gia"] || "VNM",
+		).toUpperCase();
+		const loaiGiayTo = String(
+			rowData.loaiGiayTo || rowData["Loại giấy tờ"] || "Thẻ CCCD",
+		);
+		const tenGiayTo = String(
+			rowData.tenGiayTo || rowData["Tên giấy tờ"] || loaiGiayTo,
+		);
+		const soGiayTo = String(
+			rowData.soGiayTo ||
+				rowData["Số giấy tờ"] ||
+				rowData["Số CCCD"] ||
+				rowData.soHoChieu ||
+				rowData["Số hộ chiếu"] ||
+				"",
+		);
+		const tinhTp = String(
+			rowData.tinhTp ||
+				rowData.tinh ||
+				rowData["Tỉnh"] ||
+				rowData["Tỉnh/TP"] ||
+				"",
+		);
+		const quanHuyen = String(
+			rowData.quanHuyen ||
+				rowData.huyen ||
+				rowData["Quận/Huyện"] ||
+				rowData["Quận"] ||
+				rowData["Huyện"] ||
+				"",
+		);
+		const phuongXa = String(
+			rowData.phuongXa ||
+				rowData.xa ||
+				rowData["Phường/Xã"] ||
+				rowData["Phường"] ||
+				rowData["Xã"] ||
+				"",
+		);
+		const diaChi = String(
+			rowData.diaChi || rowData["Địa chỉ"] || rowData["Địa chỉ chi tiết"] || "",
+		);
+		const ngayDen = String(
+			rowData.ngayDen ||
+				rowData["(từ ngày)"] ||
+				rowData["Ngày đến"] ||
+				rowData.tuNgay ||
+				"",
+		);
+		const ngayDi = String(
+			rowData.ngayDi ||
+				rowData["(đến ngày)"] ||
+				rowData["Ngày đi"] ||
+				rowData.denNgay ||
+				"",
+		);
+		const rawRoom =
+			rowData.soPhong || rowData["Số phòng"] || rowData.room || "1";
+		const matchRoom = String(rawRoom).match(/\d+/);
+		const soPhong = matchRoom ? matchRoom[0] : String(rawRoom || "1");
+		const daDangKy = String(
+			rowData.daDangKy || rowData["Đã đăng ký"] || "Chưa đăng ký",
+		);
+
+		return [
+			stt,
+			hoTen,
+			ngaySinh,
+			gioiTinh,
+			quocTich,
+			loaiGiayTo,
+			tenGiayTo,
+			soGiayTo,
+			tinhTp,
+			quanHuyen,
+			phuongXa,
+			diaChi,
+			ngayDen,
+			ngayDi,
+			soPhong,
+			daDangKy,
+		];
+	}
+
 	public async updateSheetRow(params: {
 		sheetId: string;
 		gid: string;
@@ -669,6 +764,7 @@ export class GoogleSheetService {
 		rowIndex?: number;
 		sheetRowIndex?: number;
 		rowData: Record<string, unknown>;
+		orderedValues?: string[];
 	}): Promise<{ success: boolean; message: string; notConfigured?: boolean }> {
 		const appsScriptUrl = (
 			process.env.GOOGLE_APPS_SCRIPT_URL ||
@@ -692,6 +788,13 @@ export class GoogleSheetService {
 					? Number(params.rowIndex) + 2
 					: undefined;
 
+		const orderedValues =
+			params.orderedValues &&
+			Array.isArray(params.orderedValues) &&
+			params.orderedValues.length > 0
+				? params.orderedValues
+				: this.buildOrderedRowValues(params.rowData, params.rowIndex ?? 0);
+
 		try {
 			const res = await fetch(appsScriptUrl, {
 				method: "POST",
@@ -704,6 +807,8 @@ export class GoogleSheetService {
 					rowIndex: params.rowIndex,
 					sheetRowIndex,
 					row: params.rowData,
+					orderedValues,
+					values: orderedValues,
 				}),
 			});
 
