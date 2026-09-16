@@ -1,0 +1,9 @@
+{
+  "code": "200",
+  "message": "Thành công",
+  "data": [
+    { "id": 1, "name": "Thường trú" },
+    { "id": 2, "name": "Tạm trú" },
+    { "id": 3, "name": "Khác" }
+  ]
+}

@@ -1,0 +1,306 @@
+/**
+ * Module 2: Data Transformer & Validator
+ * Chuẩn hóa dữ liệu dòng từ Google Sheets / OCR thành payload API 4 hoặc API 5
+ */
+export class DataTransformer {
+  /**
+   * @param {import('./catalogManager.js').CatalogManager} catalogManager
+   */
+  constructor(catalogManager) {
+    this.catalog = catalogManager;
+  }
+
+  /**
+   * Xác định dòng dữ liệu thuộc diện Khách Việt Nam hay Nước ngoài
+   */
+  isVietnamese(row) {
+    const quocTichRaw = row.quocTich || row['Quốc tịch'] || row.nationality || '';
+    const loaiGiayToRaw = row.loaiGiayTo || row['Loại giấy tờ'] || row.idType || '';
+    const quocTich = this.catalog.findQuocTich(quocTichRaw);
+
+    if (quocTich === 'VNM') return true;
+
+    // Nếu loại giấy tờ là CCCD/CMND/Căn cước thì là VN
+    const loaiGiayToId = this.catalog.findLoaiGiayTo(loaiGiayToRaw);
+    if ([1, 2, 8].includes(loaiGiayToId)) return true;
+
+    return false;
+  }
+
+  /**
+   * Chuẩn hóa ngày sinh thành YYYY-MM-DD
+   */
+  formatDateOnly(dateStr) {
+    if (!dateStr) return '';
+    if (dateStr instanceof Date) {
+      return dateStr.toISOString().split('T')[0];
+    }
+    const str = String(dateStr).trim();
+    // Match DD/MM/YYYY or DD-MM-YYYY
+    const dmyMatch = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (dmyMatch) {
+      const day = dmyMatch[1].padStart(2, '0');
+      const month = dmyMatch[2].padStart(2, '0');
+      const year = dmyMatch[3];
+      return `${year}-${month}-${day}`;
+    }
+
+    // Match YYYY/MM/DD or YYYY-MM-DD
+    const ymdMatch = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if (ymdMatch) {
+      const year = ymdMatch[1];
+      const month = ymdMatch[2].padStart(2, '0');
+      const day = ymdMatch[3].padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split('T')[0];
+    }
+    return str;
+  }
+
+  /**
+   * Chuẩn hóa ngày giờ thành YYYY-MM-DD HH:mm:ss
+   */
+  formatDateTime(dateTimeStr, defaultTime = '12:00:00') {
+    if (!dateTimeStr) return '';
+    if (dateTimeStr instanceof Date) {
+      const d = dateTimeStr;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const hh = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      const ss = String(d.getSeconds()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+    }
+
+    const str = String(dateTimeStr).trim();
+    // Case có cả ngày và giờ
+    const fullMatch = str.match(/^(\d{1,2}|\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2}|\d{4})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+    if (fullMatch) {
+      let year, month, day;
+      if (fullMatch[1].length === 4) {
+        year = fullMatch[1];
+        month = fullMatch[2].padStart(2, '0');
+        day = fullMatch[3].padStart(2, '0');
+      } else {
+        day = fullMatch[1].padStart(2, '0');
+        month = fullMatch[2].padStart(2, '0');
+        year = fullMatch[3];
+      }
+      const hh = fullMatch[4].padStart(2, '0');
+      const min = fullMatch[5].padStart(2, '0');
+      const ss = (fullMatch[6] || '00').padStart(2, '0');
+      return `${year}-${month}-${day} ${hh}:${min}:${ss}`;
+    }
+
+    // Chỉ có ngày -> thêm default time
+    const dateOnly = this.formatDateOnly(str);
+    if (dateOnly && /^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+      return `${dateOnly} ${defaultTime}`;
+    }
+
+    return str;
+  }
+
+  /**
+   * Chuẩn hóa giới tính: "Nam"/"M" -> "M", "Nữ"/"F" -> "F"
+   */
+  normalizeGender(genderStr) {
+    if (!genderStr) return 'M';
+    const clean = String(genderStr).trim().toUpperCase();
+    if (clean === 'F' || clean === 'NU' || clean === 'NỮ' || clean === 'FEMALE') {
+      return 'F';
+    }
+    return 'M';
+  }
+
+  /**
+   * Chuẩn hóa và làm sạch số giấy tờ
+   */
+  cleanDocNumber(docNumber) {
+    if (!docNumber) return '';
+    return String(docNumber).replace(/[^a-zA-Z0-9]/g, '').trim();
+  }
+
+  /**
+   * Validate tính hợp lệ của số giấy tờ theo loại
+   */
+  validateDocNumber(docNumber, docTypeId) {
+    const clean = this.cleanDocNumber(docNumber);
+    if (!clean) {
+      return { valid: false, error: 'Số giấy tờ không được để trống' };
+    }
+
+    // CCCD (id: 1) hoặc Căn Cước (id: 8) -> 12 chữ số
+    if (docTypeId === 1 || docTypeId === 8) {
+      if (!/^\d{12}$/.test(clean)) {
+        return { valid: false, error: `Số CCCD/Căn cước (${clean}) phải có đúng 12 chữ số` };
+      }
+    } else if (docTypeId === 2) {
+      // CMND (id: 2) -> 9 hoặc 12 số
+      if (!/^\d{9}$/.test(clean) && !/^\d{12}$/.test(clean)) {
+        return { valid: false, error: `Số CMND (${clean}) phải có 9 hoặc 12 chữ số` };
+      }
+    } else if (docTypeId === 4) {
+      // Hộ chiếu -> tối đa 10 ký tự chữ và số
+      if (!/^[a-zA-Z0-9]{1,10}$/.test(clean)) {
+        return { valid: false, error: `Số Hộ chiếu (${clean}) chỉ được chứa chữ/số và tối đa 10 ký tự` };
+      }
+    }
+
+    return { valid: true, cleanNumber: clean };
+  }
+
+  /**
+   * Chuyển đổi một dòng dữ liệu thô sang payload API
+   * @param {Object} rawRow
+   * @returns {Promise<{ branch: 'VN'|'FOREIGN', payload: Object, validationError?: string }>}
+   */
+  async transformRow(rawRow) {
+    const hoTen = (rawRow.hoTen || rawRow['Họ tên'] || rawRow.fullName || '').trim();
+    const gioiTinh = this.normalizeGender(rawRow.gioiTinh || rawRow['Giới tính'] || rawRow.gender);
+    const ngaySinhStr = this.formatDateOnly(rawRow.ngaySinh || rawRow['Ngày sinh'] || rawRow.dob);
+    const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDen || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
+    const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDi || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
+    const soPhong = String(rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '').trim();
+    const rawAddress = (rawRow.diaChi || rawRow['Địa chỉ chi tiết'] || rawRow.address || '').trim();
+
+    if (!hoTen) {
+      return { validationError: 'Thiếu thông tin Họ tên khách' };
+    }
+    if (!ngaySinhStr) {
+      return { validationError: 'Thiếu hoặc sai định dạng Ngày sinh' };
+    }
+    if (!soPhong) {
+      return { validationError: 'Thiếu thông tin Số phòng' };
+    }
+    if (!ngayDenCsltStr || !ngayDiDuKienStr) {
+      return { validationError: 'Thiếu thông tin Ngày đến hoặc Ngày đi dự kiến' };
+    }
+
+    const isVN = this.isVietnamese(rawRow);
+
+    if (isVN) {
+      // Nhánh A: Khách Việt Nam
+      const loaiGiayToId = this.catalog.findLoaiGiayTo(rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow.idType);
+      const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow.idNumber || '';
+      const docVal = this.validateDocNumber(rawDocNum, loaiGiayToId);
+      if (!docVal.valid) {
+        return { validationError: docVal.error };
+      }
+
+      // Xử lý địa giới hành chính
+      let maTT = '';
+      let maPX = '';
+      let diaChi = rawAddress;
+
+      const tinhRaw = rawRow.tinhTp || rawRow['Tỉnh/TP'] || rawRow.province || '';
+      const phuongXaRaw = rawRow.phuongXa || rawRow['Phường/Xã'] || rawRow.ward || '';
+
+      if (tinhRaw) {
+        const foundMaTT = this.catalog.findTinhTp(tinhRaw);
+        if (foundMaTT) {
+          maTT = foundMaTT;
+          if (phuongXaRaw) {
+            const foundMaPX = await this.catalog.findPhuongXa(maTT, phuongXaRaw);
+            if (foundMaPX) {
+              maPX = foundMaPX;
+            }
+          }
+        }
+      }
+
+      // Nếu không tìm thấy maTT hoặc maPX, để trống và đưa địa chỉ đầy đủ vào diaChi
+      if (!maTT || !maPX) {
+        maTT = '';
+        maPX = '';
+        // Ghép địa chỉ nếu có thông tin rời
+        if (!diaChi) {
+          diaChi = [phuongXaRaw, tinhRaw].filter(Boolean).join(', ');
+        }
+      }
+
+      const payloadVN = {
+        hoTen,
+        gioiTinh,
+        soDienThoai: String(rawRow.soDienThoai || rawRow['Số điện thoại'] || rawRow.phone || '').trim(),
+        ngayThangNamSinhStr: ngaySinhStr,
+        noiCuTru: Number(rawRow.noiCuTru || this.catalog.findNoiCuTru(rawRow['Nơi cư trú'] || 'Thường trú')),
+        maTT: String(maTT),
+        maPX: String(maPX),
+        diaChi,
+        ngayDenCsltStr,
+        ngayDiDuKienStr,
+        soPhong,
+        lyDoCuTru: Number(rawRow.lyDoCuTru || this.catalog.findLyDoCuTru(rawRow.lyDo || rawRow['Lý do'] || 'Du lịch')),
+        loaiGiayTo: Number(loaiGiayToId),
+        soGiayTo: docVal.cleanNumber,
+        anhTruocB64: rawRow.anhTruocB64 || rawRow['Ảnh mặt trước'] || '',
+        anhSauB64: rawRow.anhSauB64 || rawRow['Ảnh mặt sau'] || '',
+      };
+
+      return { branch: 'VN', payload: payloadVN };
+    } else {
+      // Nhánh B: Khách Nước ngoài
+      const quocTich = this.catalog.findQuocTich(rawRow.quocTich || rawRow['Quốc tịch'] || rawRow.nationality);
+      const rawPassport = rawRow.soHoChieu || rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số hộ chiếu'] || rawRow.passportNumber || '';
+      const docVal = this.validateDocNumber(rawPassport, 4);
+      if (!docVal.valid) {
+        return { validationError: docVal.error };
+      }
+
+      const thoiHanTamTruStr = this.formatDateTime(
+        rawRow.thoiHanTamTru || rawRow.thoiHanTamTruStr || rawRow['Thời hạn tạm trú'] || ngayDiDuKienStr,
+        '23:59:59'
+      );
+
+      const payloadForeign = {
+        hoTen,
+        quocTich,
+        soHoChieu: docVal.cleanNumber,
+        gioiTinh,
+        loaiNgayThangNamSinh: 'D',
+        ngayThangNamSinhStr: ngaySinhStr,
+        ngayDenCsltStr,
+        ngayDiDuKienStr,
+        soPhong,
+        anhHoChieuB64: rawRow.anhHoChieuB64 || rawRow.anhTruocB64 || rawRow['Ảnh hộ chiếu'] || '',
+        thoiHanTamTruStr,
+      };
+
+      return { branch: 'FOREIGN', payload: payloadForeign };
+    }
+  }
+
+  /**
+   * Chuyển đổi và phân loại danh sách các dòng dữ liệu thành 2 nhóm payload
+   */
+  async transformBatch(rows) {
+    const vnPayloads = [];
+    const foreignPayloads = [];
+    const logs = [];
+
+    for (let index = 0; index < rows.length; index++) {
+      const row = rows[index];
+      const res = await this.transformRow(row);
+      if (res.validationError) {
+        logs.push({
+          rowIndex: index,
+          status: 'Lỗi chuẩn hóa',
+          message: res.validationError,
+          row,
+        });
+      } else if (res.branch === 'VN') {
+        vnPayloads.push({ rowIndex: index, payload: res.payload, row });
+      } else if (res.branch === 'FOREIGN') {
+        foreignPayloads.push({ rowIndex: index, payload: res.payload, row });
+      }
+    }
+
+    return { vnPayloads, foreignPayloads, logs };
+  }
+}
