@@ -1,6 +1,63 @@
 {
   "communities": {
     "0": [
+      "src_index",
+      "src_lib_server_catalogmanager",
+      "src_lib_server_catalogmanager_catalogitem",
+      "src_lib_server_config",
+      "src_lib_server_config_config",
+      "src_lib_server_config_loadenv",
+      "src_lib_server_datatransformer",
+      "src_lib_server_datatransformer_completenessresult",
+      "src_lib_server_datatransformer_rawocrrow",
+      "src_lib_server_datatransformer_transformedrowresult",
+      "src_lib_server_googlesheetservice",
+      "src_lib_server_googlesheetservice_googlesheetservice",
+      "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+      "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "src_lib_server_googlesheetservice_tabinfo",
+      "src_lib_server_kbttclient",
+      "src_lib_server_kbttclient_apiresponse",
+      "src_lib_server_kbttclient_kbttclient",
+      "src_lib_server_kbttclient_kbttclient_constructor",
+      "src_lib_server_kbttclient_kbttclient_postpayload",
+      "src_lib_server_kbttclient_kbttclient_submitforeignguests",
+      "src_lib_server_kbttclient_kbttclient_submitvietnameseguests",
+      "src_lib_server_syncpipeline",
+      "src_lib_server_syncpipeline_syncpipeline",
+      "src_lib_server_syncpipeline_syncpipeline_constructor",
+      "src_lib_server_syncpipeline_syncpipeline_initialize",
+      "src_lib_server_syncpipeline_syncresult",
+      "src_lib_server_tokenmanager",
+      "src_lib_server_tokenmanager_tokenmanager",
+      "src_lib_server_tokenmanager_tokenmanager_clear",
+      "src_lib_server_tokenmanager_tokenmanager_constructor",
+      "src_lib_server_tokenmanager_tokenmanager_getinstance",
+      "src_lib_server_tokenmanager_tokenmanager_getstatus",
+      "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
+      "src_lib_server_tokenmanager_tokenmanager_login",
+      "src_lib_server_tokenmanager_tokenmanager_refresh",
+      "src_lib_server_tokenmanager_tokenmanager_revoke",
+      "src_lib_server_tokenmanager_tokenmanager_savetoken",
+      "src_lib_server_tokenmanager_tokenstate",
+      "src_routes_api_catalogs_server",
+      "src_routes_api_catalogs_server_get",
+      "src_routes_api_sheets_pull_server",
+      "src_routes_api_sheets_pull_server_post",
+      "src_routes_api_sheets_tabs_server",
+      "src_routes_api_sheets_tabs_server_get",
+      "src_routes_api_sheets_update_row_server",
+      "src_routes_api_sheets_update_row_server_post",
+      "src_routes_api_sync_server",
+      "src_routes_api_sync_server_post",
+      "src_routes_api_token_server",
+      "src_routes_api_token_server_get",
+      "src_routes_api_token_server_post",
+      "src_routes_api_transform_server",
+      "src_routes_api_transform_server_post",
+      "test_test_pipeline"
+    ],
+    "1": [
       "public_app",
       "public_app_addnewrow",
       "public_app_availabletabs",
@@ -47,44 +104,6 @@
       "public_app_updatepayloadpreview",
       "public_app_updateselectedcountbadge"
     ],
-    "1": [
-      "src_index",
-      "src_lib_server_catalogmanager",
-      "src_lib_server_catalogmanager_catalogitem",
-      "src_lib_server_config",
-      "src_lib_server_config_config",
-      "src_lib_server_config_loadenv",
-      "src_lib_server_datatransformer",
-      "src_lib_server_datatransformer_completenessresult",
-      "src_lib_server_datatransformer_rawocrrow",
-      "src_lib_server_datatransformer_transformedrowresult",
-      "src_lib_server_googlesheetservice",
-      "src_lib_server_googlesheetservice_tabinfo",
-      "src_lib_server_kbttclient",
-      "src_lib_server_kbttclient_apiresponse",
-      "src_lib_server_syncpipeline",
-      "src_lib_server_syncpipeline_syncpipeline",
-      "src_lib_server_syncpipeline_syncpipeline_initialize",
-      "src_lib_server_syncpipeline_syncresult",
-      "src_lib_server_tokenmanager",
-      "src_lib_server_tokenmanager_tokenstate",
-      "src_routes_api_catalogs_server",
-      "src_routes_api_catalogs_server_get",
-      "src_routes_api_sheets_pull_server",
-      "src_routes_api_sheets_pull_server_post",
-      "src_routes_api_sheets_tabs_server",
-      "src_routes_api_sheets_tabs_server_get",
-      "src_routes_api_sheets_update_row_server",
-      "src_routes_api_sheets_update_row_server_post",
-      "src_routes_api_sync_server",
-      "src_routes_api_sync_server_post",
-      "src_routes_api_token_server",
-      "src_routes_api_token_server_get",
-      "src_routes_api_token_server_post",
-      "src_routes_api_transform_server",
-      "src_routes_api_transform_server_post",
-      "test_test_pipeline"
-    ],
     "2": [
       "package",
       "package_author",
@@ -98,8 +117,10 @@
       "package_scripts_check",
       "package_scripts_check_svelte",
       "package_scripts_dev",
+      "package_scripts_format",
       "package_scripts_knip",
       "package_scripts_lint",
+      "package_scripts_lint_biome",
       "package_scripts_preview",
       "package_scripts_test",
       "package_type",
@@ -113,35 +134,10 @@
       "ref_tam_tru"
     ],
     "3": [
-      "src_routes_page",
-      "src_routes_page_addnewrow",
-      "src_routes_page_checktoken",
-      "src_routes_page_closeeditmodal",
-      "src_routes_page_copycode",
-      "src_routes_page_executesyncbatch",
-      "src_routes_page_fetchsheettabslist",
-      "src_routes_page_handlemanuallogin",
-      "src_routes_page_handletabchange",
-      "src_routes_page_loadcatalogs",
-      "src_routes_page_loadsampledata",
-      "src_routes_page_openeditmodal",
-      "src_routes_page_parseandapplyaddress",
-      "src_routes_page_pushselectedrows",
-      "src_routes_page_pushsinglerow",
-      "src_routes_page_removerow",
-      "src_routes_page_savemodal",
-      "src_routes_page_syncallrows",
-      "src_routes_page_syncrowtogooglesheet",
-      "src_routes_page_toggleeditinline",
-      "src_routes_page_togglerowselect",
-      "src_routes_page_toggleselectall",
-      "src_routes_page_updatecell",
-      "src_routes_page_updatepayloadpreview",
-      "svelte"
-    ],
-    "4": [
+      "biomejs_biome",
       "jiti",
       "package_devdependencies",
+      "package_devdependencies_biomejs_biome",
       "package_devdependencies_jiti",
       "package_devdependencies_svelte",
       "package_devdependencies_svelte_check",
@@ -161,6 +157,30 @@
       "types_node",
       "typescript",
       "vite"
+    ],
+    "4": [
+      "src_routes_page",
+      "src_routes_page_addnewguest",
+      "src_routes_page_checktoken",
+      "src_routes_page_closeeditmodal",
+      "src_routes_page_copycode",
+      "src_routes_page_executesyncbatch",
+      "src_routes_page_fetchsheettabslist",
+      "src_routes_page_handlemanuallogin",
+      "src_routes_page_handletabchange",
+      "src_routes_page_loadcatalogs",
+      "src_routes_page_openeditmodal",
+      "src_routes_page_parseandapplyaddress",
+      "src_routes_page_pushselectedrows",
+      "src_routes_page_pushsinglerow",
+      "src_routes_page_removerow",
+      "src_routes_page_savemodal",
+      "src_routes_page_syncrowtogooglesheet",
+      "src_routes_page_toggleeditinline",
+      "src_routes_page_togglerowselect",
+      "src_routes_page_toggleselectall",
+      "src_routes_page_updatecell",
+      "src_routes_page_updatepayloadpreview"
     ],
     "5": [
       "ref_node_modules",
@@ -191,7 +211,6 @@
       "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
       "src_lib_server_datatransformer_datatransformer_cleandocnumber",
       "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
-      "src_lib_server_datatransformer_datatransformer_constructor",
       "src_lib_server_datatransformer_datatransformer_formatdateonly",
       "src_lib_server_datatransformer_datatransformer_formatdatetime",
       "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
@@ -209,24 +228,6 @@
       "test_test_pipeline_runtests"
     ],
     "7": [
-      "src_lib_server_kbttclient_kbttclient",
-      "src_lib_server_kbttclient_kbttclient_constructor",
-      "src_lib_server_kbttclient_kbttclient_postpayload",
-      "src_lib_server_kbttclient_kbttclient_submitforeignguests",
-      "src_lib_server_kbttclient_kbttclient_submitvietnameseguests",
-      "src_lib_server_syncpipeline_syncpipeline_constructor",
-      "src_lib_server_tokenmanager_tokenmanager",
-      "src_lib_server_tokenmanager_tokenmanager_clear",
-      "src_lib_server_tokenmanager_tokenmanager_constructor",
-      "src_lib_server_tokenmanager_tokenmanager_getinstance",
-      "src_lib_server_tokenmanager_tokenmanager_getstatus",
-      "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
-      "src_lib_server_tokenmanager_tokenmanager_login",
-      "src_lib_server_tokenmanager_tokenmanager_refresh",
-      "src_lib_server_tokenmanager_tokenmanager_revoke",
-      "src_lib_server_tokenmanager_tokenmanager_savetoken"
-    ],
-    "8": [
       "src_lib_server_catalogmanager_catalogmanager",
       "src_lib_server_catalogmanager_catalogmanager_constructor",
       "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
@@ -238,11 +239,13 @@
       "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
       "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
       "src_lib_server_catalogmanager_catalogmanager_getinstance",
+      "src_lib_server_catalogmanager_catalogmanager_initaliases",
       "src_lib_server_catalogmanager_catalogmanager_initialize",
       "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
-      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich"
+      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
+      "src_lib_server_datatransformer_datatransformer_constructor"
     ],
-    "9": [
+    "8": [
       "knip",
       "knip_entry",
       "knip_ignoredependencies",
@@ -256,45 +259,45 @@
       "ref_src_routes_js_ts_svelte",
       "tailwindcss"
     ],
-    "10": [
-      "src_lib_server_googlesheetservice_googlesheetservice",
-      "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+    "9": [
       "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
       "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
       "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
       "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
       "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
       "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
-      "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
-      "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow"
+      "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier"
     ],
-    "11": [
+    "10": [
       "src_routes_api_events_server",
       "src_routes_api_events_server_get"
     ],
-    "12": [
+    "11": [
       "svelte_config",
       "svelte_config_config"
     ],
-    "13": [
+    "12": [
       "src_routes_layout"
+    ],
+    "13": [
+      "svelte_svelte"
     ],
     "14": [
       "vite_config"
     ]
   },
   "cohesion": {
-    "0": 0.09797979797979799,
-    "1": 0.12857142857142856,
-    "2": 0.08,
-    "3": 0.13,
-    "4": 0.09523809523809523,
+    "0": 0.08417508417508418,
+    "1": 0.09797979797979799,
+    "2": 0.07407407407407407,
+    "3": 0.08695652173913043,
+    "4": 0.15584415584415584,
     "5": 0.09523809523809523,
-    "6": 0.2904761904761905,
-    "7": 0.2,
-    "8": 0.21978021978021978,
-    "9": 0.18181818181818182,
-    "10": 0.35555555555555557,
+    "6": 0.3157894736842105,
+    "7": 0.19166666666666668,
+    "8": 0.18181818181818182,
+    "9": 0.3333333333333333,
+    "10": 1.0,
     "11": 1.0,
     "12": 1.0,
     "13": 1.0,
@@ -304,12 +307,12 @@
     {
       "id": "src_lib_server_datatransformer_datatransformer",
       "label": "DataTransformer",
-      "degree": 25
+      "degree": 26
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "CatalogManager",
-      "degree": 19
+      "degree": 22
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline",
@@ -347,9 +350,9 @@
       "degree": 11
     },
     {
-      "id": "public_app_updatepayloadpreview",
-      "label": "updatePayloadPreview()",
-      "degree": 10
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 11
     }
   ],
   "surprises": [
@@ -387,6 +390,17 @@
       "why": "connects across different repos/directories"
     },
     {
+      "source": "SyncResult",
+      "target": "RawOcrRow",
+      "source_files": [
+        "src/lib/server/syncPipeline.ts",
+        "src/lib/server/dataTransformer.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "peripheral node `SyncResult` unexpectedly reaches hub `RawOcrRow`"
+    },
+    {
       "source": "SyncPipeline",
       "target": "CatalogManager",
       "source_files": [
@@ -396,39 +410,33 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "why": "bridges separate communities"
-    },
-    {
-      "source": "SyncPipeline",
-      "target": "DataTransformer",
-      "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "bridges separate communities"
     }
   ],
   "questions": [
     {
       "type": "bridge_node",
-      "question": "Why does `devDependencies` connect `devDependencies` to `entry`, `package.json`?",
-      "why": "High betweenness centrality (0.039) - this node is a cross-community bridge."
+      "question": "Why does `devDependencies` connect `devDependencies` to `entry`, `scripts`?",
+      "why": "High betweenness centrality (0.044) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",
-      "question": "Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `TokenManager`?",
-      "why": "High betweenness centrality (0.037) - this node is a cross-community bridge."
+      "question": "Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`, `DataTransformer`?",
+      "why": "High betweenness centrality (0.040) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",
-      "question": "Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`?",
+      "question": "Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `CatalogManager`?",
       "why": "High betweenness centrality (0.037) - this node is a cross-community bridge."
     },
     {
       "type": "isolated_nodes",
-      "question": "What connects `CatalogItem`, `TabInfo`, `ApiResponse` to the rest of the system?",
-      "why": "67 weakly-connected nodes found - possible documentation gaps or missing edges."
+      "question": "What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?",
+      "why": "70 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `syncPipeline.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.08417508417508418 - nodes in this community are weakly interconnected."
     },
     {
       "type": "low_cohesion",
@@ -437,13 +445,8 @@
     },
     {
       "type": "low_cohesion",
-      "question": "Should `syncPipeline.ts` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.12857142857142856 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `package.json` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.08 - nodes in this community are weakly interconnected."
+      "question": "Should `scripts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected."
     }
   ]
 }

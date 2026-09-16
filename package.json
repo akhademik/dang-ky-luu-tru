@@ -9,9 +9,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "check:svelte": "svelte-check --tsconfig ./tsconfig.json",
-    "test": "node --import jiti/register test/test-pipeline.ts",
+    "format": "biome format --write src test",
+    "lint:biome": "biome check src test",
     "lint": "pnpm run check:svelte",
     "knip": "pnpm dlx knip",
+    "test": "node --import jiti/register test/test-pipeline.ts",
     "check": "pnpm run check:svelte && pnpm run knip && pnpm test"
   },
   "keywords": [
@@ -26,6 +28,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@biomejs/biome": "^2.5.13",
     "@sveltejs/adapter-node": "^5.5.7",
     "@sveltejs/kit": "^2.70.3",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",

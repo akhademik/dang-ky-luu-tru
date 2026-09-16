@@ -1,684 +1,891 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+import { onMount } from "svelte";
 
-  interface CatalogItem {
-    id?: number | string;
-    name?: string;
-    tenTT?: string;
-    maTT?: string | number;
-    tenTTEn?: string;
-    maTTChu?: string;
-    tenQT?: string;
-    maQT?: string;
-    tenQTEn?: string;
-  }
+interface CatalogItem {
+	id?: number | string;
+	name?: string;
+	tenTT?: string;
+	maTT?: string | number;
+	tenTTEn?: string;
+	maTTChu?: string;
+	tenQT?: string;
+	maQT?: string;
+	tenQTEn?: string;
+}
 
-  interface TabItem {
-    gid: string;
-    name: string;
-    isDefault?: boolean;
-    isDateTab?: boolean;
-  }
+interface TabItem {
+	gid: string;
+	name: string;
+	isDefault?: boolean;
+	isDateTab?: boolean;
+}
 
-  interface RowData {
-    hoTen?: string;
-    gioiTinh?: string;
-    ngaySinh?: string;
-    quocTich?: string;
-    loaiGiayTo?: string;
-    soGiayTo?: string;
-    soHoChieu?: string;
-    soPhong?: string;
-    diaChi?: string;
-    tinhTp?: string;
-    phuongXa?: string;
-    quanHuyen?: string;
-    ngayDen?: string;
-    ngayDi?: string;
-    thoiHanTamTru?: string;
-    [key: string]: unknown;
-  }
+interface RowData {
+	hoTen?: string;
+	gioiTinh?: string;
+	ngaySinh?: string;
+	quocTich?: string;
+	loaiGiayTo?: string;
+	soGiayTo?: string;
+	soHoChieu?: string;
+	soPhong?: string;
+	diaChi?: string;
+	tinhTp?: string;
+	phuongXa?: string;
+	quanHuyen?: string;
+	ngayDen?: string;
+	ngayDi?: string;
+	thoiHanTamTru?: string;
+	[key: string]: unknown;
+}
 
-  interface ValidationState {
-    isComplete: boolean;
-    missingFields: string[];
-    fieldStatus: Record<string, { valid: boolean; value: unknown; error?: string }>;
-  }
+interface ValidationState {
+	isComplete: boolean;
+	missingFields: string[];
+	fieldStatus: Record<
+		string,
+		{ valid: boolean; value: unknown; error?: string }
+	>;
+}
 
-  interface SyncResult {
-    branch?: string;
-    status: string;
-    message: string;
-    payload?: unknown;
-    row?: RowData;
-  }
+interface SyncResult {
+	branch?: string;
+	status: string;
+	message: string;
+	payload?: unknown;
+	row?: RowData;
+}
 
-  // App State
-  let activeTab = $state<'dataTab' | 'syncTab' | 'catalogTab'>('dataTab');
-  let selectedGid = $state('0');
-  let availableTabs = $state<TabItem[]>([]);
-  let currentSourceLabel = $state('Đang tải dữ liệu từ Google Sheets...');
-  let tabFetchStatus = $state('');
-  let isLoadingSheet = $state(false);
+// App State
+let activeTab = $state<"dataTab" | "syncTab" | "catalogTab">("dataTab");
+let selectedGid = $state("0");
+let availableTabs = $state<TabItem[]>([]);
+let currentSourceLabel = $state("Đang tải dữ liệu từ Google Sheets...");
+let tabFetchStatus = $state("");
+let isLoadingSheet = $state(false);
 
-  // Rows & Selection
-  let currentRows = $state<RowData[]>([]);
-  let selectedIndices = $state<Set<number>>(new Set());
-  let editingIndices = $state<Set<number>>(new Set());
-  let validationStates = $state<ValidationState[]>([]);
+// Rows & Selection
+let currentRows = $state<RowData[]>([]);
+let selectedIndices = $state<Set<number>>(new Set());
+let editingIndices = $state<Set<number>>(new Set());
+let validationStates = $state<ValidationState[]>([]);
 
-  // Payloads Preview
-  let vnPayloads = $state<unknown[]>([]);
-  let foreignPayloads = $state<unknown[]>([]);
+// Payloads Preview
+let vnPayloads = $state<unknown[]>([]);
+let foreignPayloads = $state<unknown[]>([]);
 
-  // Sync Results
-  let syncResults = $state<SyncResult[]>([]);
-  let isSyncing = $state(false);
-  let syncActionTitle = $state('');
+// Sync Results
+let syncResults = $state<SyncResult[]>([]);
+let isSyncing = $state(false);
+let syncActionTitle = $state("");
 
-  // Token status
-  let tokenStatus = $state<{ hasToken: boolean; expiresInSeconds: number }>({ hasToken: false, expiresInSeconds: 0 });
+// Token status
+let tokenStatus = $state<{ hasToken: boolean; expiresInSeconds: number }>({
+	hasToken: false,
+	expiresInSeconds: 0,
+});
 
-  // Catalogs
-  let catalogs = $state<{
-    tinhTp: CatalogItem[];
-    quocTich: CatalogItem[];
-    loaiGiayTo: CatalogItem[];
-    lyDoCuTru: CatalogItem[];
-  }>({
-    tinhTp: [],
-    quocTich: [],
-    loaiGiayTo: [],
-    lyDoCuTru: [],
-  });
-  let filterTinh = $state('');
-  let filterQuocTich = $state('');
+// Catalogs
+let catalogs = $state<{
+	tinhTp: CatalogItem[];
+	quocTich: CatalogItem[];
+	loaiGiayTo: CatalogItem[];
+	lyDoCuTru: CatalogItem[];
+}>({
+	tinhTp: [],
+	quocTich: [],
+	loaiGiayTo: [],
+	lyDoCuTru: [],
+});
+let filterTinh = $state("");
+let filterQuocTich = $state("");
 
-  // Toast
-  let toastVisible = $state(false);
-  let toastCode = $state('');
-  let toastMsg = $state('');
-  let toastTimer: ReturnType<typeof setTimeout> | null = null;
+// Toast
+let toastVisible = $state(false);
+let toastCode = $state("");
+let toastMsg = $state("");
+let toastTimer: ReturnType<typeof setTimeout> | null = null;
 
-  // Edit Modal State
-  let modalOpen = $state(false);
-  let modalIndex = $state<number | null>(null);
-  let modalForm = $state({
-    hoTen: '',
-    gioiTinh: 'Nam',
-    ngaySinh: '',
-    quocTich: 'VNM',
-    soPhong: '1',
-    loaiGiayTo: 'Thẻ CCCD',
-    soGiayTo: '',
-    ngayDen: '',
-    ngayDi: '',
-    thoiHanTamTru: '',
-    diaChiFull: '',
-  });
+// Edit Modal State
+let modalOpen = $state(false);
+let modalIndex = $state<number | null>(null);
+let modalForm = $state({
+	hoTen: "",
+	gioiTinh: "Nam",
+	ngaySinh: "",
+	quocTich: "VNM",
+	soPhong: "1",
+	loaiGiayTo: "Thẻ CCCD",
+	soGiayTo: "",
+	ngayDen: "",
+	ngayDi: "",
+	thoiHanTamTru: "",
+	diaChiFull: "",
+});
 
-  function showToast(code: string, msg: string) {
-    toastCode = code;
-    toastMsg = msg;
-    toastVisible = true;
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toastVisible = false;
-    }, 2500);
-  }
+function validateDateString(val: string): boolean {
+	if (!val) return false;
+	const str = val.trim();
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	if (dmy) {
+		const d = parseInt(dmy[1], 10);
+		const m = parseInt(dmy[2], 10);
+		const y = parseInt(dmy[3], 10);
+		return d >= 1 && d <= 31 && m >= 1 && m <= 12 && y >= 1900 && y <= 2100;
+	}
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+	if (ymd) {
+		const y = parseInt(ymd[1], 10);
+		const m = parseInt(ymd[2], 10);
+		const d = parseInt(ymd[3], 10);
+		return d >= 1 && d <= 31 && m >= 1 && m <= 12 && y >= 1900 && y <= 2100;
+	}
+	return false;
+}
 
-  function cleanRoomNumber(rawRoom: unknown): string {
-    if (rawRoom === null || rawRoom === undefined) return '';
-    const str = String(rawRoom).trim();
-    if (!str) return '';
-    const matches = str.match(/\d+/g);
-    if (!matches || matches.length === 0) return '';
-    for (const m of matches) {
-      const num = parseInt(m, 10);
-      if (num >= 1 && num <= 9) {
-        return String(num);
-      }
-    }
-    return '';
-  }
+function validateArrivalDate(val: string): { valid: boolean; error?: string } {
+	if (!val || !val.trim())
+		return { valid: false, error: "Vui lòng nhập ngày đến" };
+	const str = val.trim();
+	let year = 0,
+		month = 0,
+		day = 0;
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	if (dmy) {
+		day = parseInt(dmy[1], 10);
+		month = parseInt(dmy[2], 10);
+		year = parseInt(dmy[3], 10);
+	} else {
+		const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+		if (ymd) {
+			year = parseInt(ymd[1], 10);
+			month = parseInt(ymd[2], 10);
+			day = parseInt(ymd[3], 10);
+		} else {
+			return { valid: false, error: "Định dạng ngày đến không hợp lệ" };
+		}
+	}
 
-  function isGuestVN(row: RowData): boolean {
-    const qt = String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || '').trim().toLowerCase();
-    const docType = String(row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || '').toLowerCase();
-    const docNum = String(row.soGiayTo || row['Số giấy tờ'] || row['Số CCCD'] || '').replace(/\D/g, '');
+	const arrivalDay = new Date(year, month - 1, day);
+	const today = new Date();
+	const currentDay = new Date(
+		today.getFullYear(),
+		today.getMonth(),
+		today.getDate(),
+	);
+	const yesterday = new Date(currentDay);
+	yesterday.setDate(yesterday.getDate() - 1);
 
-    if (docType.includes('cccd') || docType.includes('cmnd') || docType.includes('căn cước')) return true;
-    if (['vn', 'vnm', 'viet nam', 'vietnam', 'vvv', 'vv', 'v', 'viet'].includes(qt)) return true;
-    if (qt && !['vn', 'vnm', 'viet nam', 'vietnam', 'vvv', 'vv', 'v', 'viet'].includes(qt)) return false;
-    if (docNum.length === 12 || docNum.length === 9) return true;
-    return false;
-  }
+	if (
+		arrivalDay.getTime() === currentDay.getTime() ||
+		arrivalDay.getTime() === yesterday.getTime()
+	) {
+		return { valid: true };
+	}
+	if (arrivalDay.getTime() < yesterday.getTime()) {
+		return { valid: false, error: "Ngày đến ở quá khứ (> 1 ngày trước)" };
+	}
+	if (arrivalDay.getTime() > currentDay.getTime()) {
+		return { valid: false, error: "Ngày đến ở tương lai" };
+	}
+	return { valid: true };
+}
 
-  function getCombinedAddress(row: RowData): string {
-    const loaiGiayToName = String(row.loaiGiayTo || row['Loại giấy tờ'] || '').toLowerCase();
-    if (loaiGiayToName.includes('hộ chiếu') || loaiGiayToName.includes('passport')) {
-      return '';
-    }
-    const rawAddress = String(row.diaChi || row['Địa chỉ'] || row['Địa chỉ chi tiết'] || '').trim();
-    const tinhRaw = String(row.tinhTp || row['Tỉnh'] || row['Tỉnh/TP'] || '').trim();
-    const phuongXaRaw = String(row.phuongXa || row['Phường/Xã'] || '').trim();
-    const quanHuyenRaw = String(row.quanHuyen || row['Quận/Huyện'] || '').trim();
+let liveVal = $derived.by(() => {
+	const isVN =
+		["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
+			modalForm.quocTich.trim().toUpperCase(),
+		) ||
+		modalForm.loaiGiayTo.toLowerCase().includes("cccd") ||
+		modalForm.loaiGiayTo.toLowerCase().includes("cmnd") ||
+		modalForm.loaiGiayTo.toLowerCase().includes("căn cước");
 
-    const parts = [rawAddress, phuongXaRaw, quanHuyenRaw, tinhRaw].filter(Boolean);
-    return parts.length > 0 ? parts.join(', ') : '';
-  }
+	const hoTenValid = Boolean(modalForm.hoTen.trim());
+	const ngaySinhValid = validateDateString(modalForm.ngaySinh);
+	const roomNum = parseInt(modalForm.soPhong, 10);
+	const soPhongValid = roomNum >= 1 && roomNum <= 9;
+	const arrivalCheck = validateArrivalDate(modalForm.ngayDen);
 
-  function getDisplayAddress(row: RowData): { shortText: string; fullText: string } {
-    const isVN = isGuestVN(row);
-    if (!isVN) {
-      const val = String(row.thoiHanTamTru || row['Thời hạn tạm trú'] || '-');
-      return { shortText: val, fullText: `Thời hạn tạm trú: ${val}` };
-    }
-    const loaiGiayToName = String(row.loaiGiayTo || row['Loại giấy tờ'] || '').toLowerCase();
-    if (loaiGiayToName.includes('hộ chiếu') || loaiGiayToName.includes('passport')) {
-      return { shortText: '-', fullText: 'Khách hộ chiếu: địa chỉ để trống' };
-    }
-    const fullAddr = getCombinedAddress(row);
-    if (!fullAddr) {
-      return { shortText: '-', fullText: 'Chưa có địa chỉ' };
-    }
-    const tinhRaw = String(row.tinhTp || row['Tỉnh'] || row['Tỉnh/TP'] || '').trim();
-    if (tinhRaw) {
-      return { shortText: tinhRaw, fullText: fullAddr };
-    }
-    const parts = fullAddr.split(',').map(p => p.trim()).filter(Boolean);
-    return { shortText: parts[parts.length - 1] || fullAddr, fullText: fullAddr };
-  }
+	const docNum = modalForm.soGiayTo.trim();
+	let soGiayToValid = true;
+	let soGiayToError = "";
 
-  function normalizeStr(str: unknown): string {
-    return String(str || '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/[^a-z0-9]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+	const docType = modalForm.loaiGiayTo.toLowerCase();
+	if (docType.includes("cccd") || docType.includes("căn cước")) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 12) {
+			soGiayToValid = false;
+			soGiayToError = "Số CCCD phải đủ 12 chữ số";
+		}
+	} else if (docType.includes("cmnd")) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 9 && digits.length !== 12) {
+			soGiayToValid = false;
+			soGiayToError = "Số CMND phải 9 hoặc 12 chữ số";
+		}
+	} else if (
+		docType.includes("hộ chiếu") ||
+		docType.includes("passport") ||
+		!isVN
+	) {
+		const clean = docNum.replace(/[^a-zA-Z0-9]/g, "");
+		if (clean.length < 6 || clean.length > 12) {
+			soGiayToValid = false;
+			soGiayToError = "Số hộ chiếu phải từ 6 đến 12 ký tự";
+		}
+	} else if (!docNum) {
+		soGiayToValid = false;
+		soGiayToError = "Vui lòng nhập số giấy tờ";
+	}
 
-  async function fetchSheetTabsList() {
-    tabFetchStatus = 'Đang quét tabs...';
-    try {
-      const res = await fetch('/api/sheets/tabs');
-      const data = await res.json();
-      if (data.success && data.tabs && data.tabs.length > 0) {
-        availableTabs = data.tabs;
-        tabFetchStatus = `Tìm thấy ${availableTabs.length} tabs`;
+	let quocTichValid = true;
+	let quocTichError = "";
+	const qt = modalForm.quocTich.trim().toUpperCase();
+	if (!qt) {
+		quocTichValid = false;
+		quocTichError = "Vui lòng nhập mã quốc tịch";
+	}
 
-        let defaultGid = data.defaultGid;
-        const foundDef = availableTabs.find(t => t.isDefault);
-        if (foundDef) defaultGid = foundDef.gid;
-        else defaultGid = availableTabs[0].gid;
+	const allValid =
+		hoTenValid &&
+		ngaySinhValid &&
+		soPhongValid &&
+		arrivalCheck.valid &&
+		soGiayToValid &&
+		quocTichValid;
 
-        selectedGid = defaultGid;
-        await pullDataFromGoogleSheet(defaultGid);
-      } else {
-        availableTabs = [{ name: 'Tab Mặc định', gid: '0', isDefault: true }];
-        selectedGid = '0';
-        tabFetchStatus = 'Tab mặc định';
-        await pullDataFromGoogleSheet('0');
-      }
-    } catch (err) {
-      console.warn('Lỗi khi lấy tabs:', err);
-      tabFetchStatus = 'Lỗi nạp tabs';
-    }
-  }
+	return {
+		allValid,
+		hoTen: {
+			valid: hoTenValid,
+			error: !hoTenValid ? "Họ và tên không được để trống" : undefined,
+		},
+		ngaySinh: {
+			valid: ngaySinhValid,
+			error: !ngaySinhValid
+				? "Ngày sinh không đúng định dạng (YYYY-MM-DD)"
+				: undefined,
+		},
+		soPhong: {
+			valid: soPhongValid,
+			error: !soPhongValid ? "Số phòng phải từ 1 đến 9" : undefined,
+		},
+		ngayDen: arrivalCheck,
+		soGiayTo: { valid: soGiayToValid, error: soGiayToError || undefined },
+		quocTich: { valid: quocTichValid, error: quocTichError || undefined },
+	};
+});
 
-  async function pullDataFromGoogleSheet(forcedGid: string | null = null) {
-    const gid = forcedGid !== null ? forcedGid : selectedGid;
-    isLoadingSheet = true;
-    currentSourceLabel = 'Đang kéo dữ liệu từ Google Sheets...';
+function showToast(code: string, msg: string) {
+	toastCode = code;
+	toastMsg = msg;
+	toastVisible = true;
+	if (toastTimer) clearTimeout(toastTimer);
+	toastTimer = setTimeout(() => {
+		toastVisible = false;
+	}, 2500);
+}
 
-    try {
-      const res = await fetch('/api/sheets/pull', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gid }),
-      });
-      const data = await res.json();
-      if (data.success && data.rows && data.rows.length > 0) {
-        currentRows = data.rows.map((row: RowData) => {
-          const rawRoom = row.soPhong || row['Số phòng'] || row.room || '';
-          const cleaned = cleanRoomNumber(rawRoom);
-          if (cleaned) {
-            row.soPhong = cleaned;
-            row['Số phòng'] = cleaned;
-          }
-          return row;
-        });
-        selectedIndices = new Set();
-        editingIndices = new Set();
+function cleanRoomNumber(rawRoom: unknown): string {
+	if (rawRoom === null || rawRoom === undefined) return "";
+	const str = String(rawRoom).trim();
+	if (!str) return "";
+	const matches = str.match(/\d+/g);
+	if (!matches || matches.length === 0) return "";
+	for (const m of matches) {
+		const num = parseInt(m, 10);
+		if (num >= 1 && num <= 9) {
+			return String(num);
+		}
+	}
+	return "";
+}
 
-        const currentTab = availableTabs.find(t => String(t.gid) === String(gid));
-        const tabName = currentTab ? currentTab.name : `GID ${gid}`;
-        currentSourceLabel = `Tab: "${tabName}" (${currentRows.length} dòng dữ liệu)`;
-        await updatePayloadPreview();
-        showToast('NẠP', `Đã tải ${currentRows.length} dòng từ Google Sheet!`);
-      } else {
-        currentSourceLabel = 'Tab đã chọn không có dữ liệu phù hợp';
-        currentRows = [];
-        await updatePayloadPreview();
-      }
-    } catch (err) {
-      currentSourceLabel = `Lỗi kéo dữ liệu: ${(err as Error).message}`;
-    } finally {
-      isLoadingSheet = false;
-    }
-  }
+function isGuestVN(row: RowData): boolean {
+	const qt = String(row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "")
+		.trim()
+		.toLowerCase();
+	const docType = String(
+		row.loaiGiayTo || row["Loại giấy tờ"] || row["Tên giấy tờ"] || "",
+	).toLowerCase();
+	const docNum = String(
+		row.soGiayTo || row["Số giấy tờ"] || row["Số CCCD"] || "",
+	).replace(/\D/g, "");
 
-  function handleTabChange() {
-    pullDataFromGoogleSheet(selectedGid);
-  }
+	if (
+		docType.includes("cccd") ||
+		docType.includes("cmnd") ||
+		docType.includes("căn cước")
+	)
+		return true;
+	if (
+		["vn", "vnm", "viet nam", "vietnam", "vvv", "vv", "v", "viet"].includes(qt)
+	)
+		return true;
+	if (
+		qt &&
+		!["vn", "vnm", "viet nam", "vietnam", "vvv", "vv", "v", "viet"].includes(qt)
+	)
+		return false;
+	if (docNum.length === 12 || docNum.length === 9) return true;
+	return false;
+}
 
-  async function updatePayloadPreview() {
-    try {
-      const res = await fetch('/api/transform', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rows: currentRows }),
-      });
-      const data = await res.json();
-      vnPayloads = (data.vnPayloads || []).map((item: { payload: unknown }) => item.payload);
-      foreignPayloads = (data.foreignPayloads || []).map((item: { payload: unknown }) => item.payload);
-      validationStates = (data.completenessList || []).map((item: { completeness: ValidationState }) => item.completeness);
-    } catch (err) {
-      console.error('Lỗi phân tích payloads:', err);
-    }
-  }
+function getCombinedAddress(row: RowData): string {
+	const loaiGiayToName = String(
+		row.loaiGiayTo || row["Loại giấy tờ"] || "",
+	).toLowerCase();
+	if (
+		loaiGiayToName.includes("hộ chiếu") ||
+		loaiGiayToName.includes("passport")
+	) {
+		return "";
+	}
+	const rawAddress = String(
+		row.diaChi || row["Địa chỉ"] || row["Địa chỉ chi tiết"] || "",
+	).trim();
+	const tinhRaw = String(
+		row.tinhTp || row["Tỉnh"] || row["Tỉnh/TP"] || "",
+	).trim();
+	const phuongXaRaw = String(row.phuongXa || row["Phường/Xã"] || "").trim();
+	const quanHuyenRaw = String(row.quanHuyen || row["Quận/Huyện"] || "").trim();
 
-  function toggleRowSelect(idx: number, checked: boolean) {
-    const next = new Set(selectedIndices);
-    if (checked) next.add(idx);
-    else next.delete(idx);
-    selectedIndices = next;
-  }
+	const parts = [rawAddress, phuongXaRaw, quanHuyenRaw, tinhRaw].filter(
+		Boolean,
+	);
+	return parts.length > 0 ? parts.join(", ") : "";
+}
 
-  function toggleSelectAll(checked: boolean) {
-    if (checked) {
-      selectedIndices = new Set(currentRows.map((_, i) => i));
-    } else {
-      selectedIndices = new Set();
-    }
-  }
+function getDisplayAddress(row: RowData): {
+	shortText: string;
+	fullText: string;
+} {
+	const isVN = isGuestVN(row);
+	if (!isVN) {
+		const val = String(row.thoiHanTamTru || row["Thời hạn tạm trú"] || "-");
+		return { shortText: val, fullText: `Thời hạn tạm trú: ${val}` };
+	}
+	const loaiGiayToName = String(
+		row.loaiGiayTo || row["Loại giấy tờ"] || "",
+	).toLowerCase();
+	if (
+		loaiGiayToName.includes("hộ chiếu") ||
+		loaiGiayToName.includes("passport")
+	) {
+		return { shortText: "-", fullText: "Khách hộ chiếu: địa chỉ để trống" };
+	}
+	const fullAddr = getCombinedAddress(row);
+	if (!fullAddr) {
+		return { shortText: "-", fullText: "Chưa có địa chỉ" };
+	}
+	const tinhRaw = String(
+		row.tinhTp || row["Tỉnh"] || row["Tỉnh/TP"] || "",
+	).trim();
+	if (tinhRaw) {
+		return { shortText: tinhRaw, fullText: fullAddr };
+	}
+	const parts = fullAddr
+		.split(",")
+		.map((p) => p.trim())
+		.filter(Boolean);
+	return { shortText: parts[parts.length - 1] || fullAddr, fullText: fullAddr };
+}
 
-  function parseAndApplyAddress(row: RowData, fullAddress: string) {
-    const cleanAddr = (fullAddress || '').trim();
-    row.diaChi = cleanAddr;
-    row['Địa chỉ'] = cleanAddr;
-    row['Địa chỉ chi tiết'] = cleanAddr;
+function normalizeStr(str: unknown): string {
+	return String(str || "")
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/đ/g, "d")
+		.replace(/[^a-z0-9]/g, " ")
+		.replace(/\s+/g, " ")
+		.trim();
+}
 
-    if (cleanAddr.includes(',')) {
-      const parts: string[] = cleanAddr.split(',').map(s => s.trim()).filter(Boolean);
-      if (parts.length >= 4) {
-        const detail = parts.slice(0, parts.length - 3).join(', ');
-        row['Địa chỉ chi tiết'] = detail;
-        row.diaChi = detail;
-        row['Phường/Xã'] = parts[parts.length - 3];
-        row.phuongXa = parts[parts.length - 3];
-        row['Quận/Huyện'] = parts[parts.length - 2];
-        row.quanHuyen = parts[parts.length - 2];
-        row['Tỉnh/TP'] = parts[parts.length - 1];
-        row.tinhTp = parts[parts.length - 1];
-        row['Tỉnh'] = parts[parts.length - 1];
-      } else if (parts.length === 3) {
-        row['Địa chỉ chi tiết'] = parts[0];
-        row.diaChi = parts[0];
-        row['Quận/Huyện'] = parts[1];
-        row.quanHuyen = parts[1];
-        row['Tỉnh/TP'] = parts[2];
-        row.tinhTp = parts[2];
-        row['Tỉnh'] = parts[2];
-      } else if (parts.length === 2) {
-        row['Địa chỉ chi tiết'] = parts[0];
-        row.diaChi = parts[0];
-        row['Tỉnh/TP'] = parts[1];
-        row.tinhTp = parts[1];
-        row['Tỉnh'] = parts[1];
-      }
-    }
-  }
+async function fetchSheetTabsList() {
+	tabFetchStatus = "Đang quét tabs...";
+	try {
+		const res = await fetch("/api/sheets/tabs");
+		const data = await res.json();
+		if (data.success && data.tabs && data.tabs.length > 0) {
+			availableTabs = data.tabs;
+			tabFetchStatus = `Tìm thấy ${availableTabs.length} tabs`;
 
-  function updateCell(idx: number, field: string, value: string) {
-    if (!currentRows[idx]) return;
-    currentRows[idx][field] = value;
-    if (field === 'soPhong') {
-      currentRows[idx]['Số phòng'] = value;
-    } else if (field === 'hoTen') {
-      currentRows[idx]['Họ tên'] = value;
-    } else if (field === 'ngaySinh') {
-      currentRows[idx]['Ngày sinh'] = value;
-      currentRows[idx]['D.O.B'] = value;
-    } else if (field === 'gioiTinh') {
-      currentRows[idx]['Giới tính'] = value;
-    } else if (field === 'quocTich') {
-      currentRows[idx]['Quốc tịch'] = value;
-      currentRows[idx]['Quốc gia'] = value;
-    } else if (field === 'loaiGiayTo') {
-      currentRows[idx]['Loại giấy tờ'] = value;
-    } else if (field === 'soGiayTo') {
-      currentRows[idx]['Số giấy tờ'] = value;
-      currentRows[idx]['Số CCCD'] = value;
-      currentRows[idx]['Số hộ chiếu'] = value;
-      currentRows[idx].soHoChieu = value;
-    } else if (field === 'ngayDen') {
-      currentRows[idx]['Ngày đến'] = value;
-      currentRows[idx]['(từ ngày)'] = value;
-    } else if (field === 'ngayDi') {
-      currentRows[idx]['Ngày đi'] = value;
-      currentRows[idx]['(đến ngày)'] = value;
-    } else if (field === 'diaChi') {
-      parseAndApplyAddress(currentRows[idx], value);
-    }
-    updatePayloadPreview();
-  }
+			let defaultGid = data.defaultGid;
+			const foundDef = availableTabs.find((t) => t.isDefault);
+			if (foundDef) defaultGid = foundDef.gid;
+			else defaultGid = availableTabs[0].gid;
 
-  function toggleEditInline(idx: number) {
-    const next = new Set(editingIndices);
-    if (next.has(idx)) {
-      next.delete(idx);
-      editingIndices = next;
-      syncRowToGoogleSheet(idx);
-    } else {
-      next.add(idx);
-      editingIndices = next;
-    }
-  }
+			selectedGid = defaultGid;
+			await pullDataFromGoogleSheet(defaultGid);
+		} else {
+			availableTabs = [{ name: "Tab Mặc định", gid: "0", isDefault: true }];
+			selectedGid = "0";
+			tabFetchStatus = "Tab mặc định";
+			await pullDataFromGoogleSheet("0");
+		}
+	} catch (err) {
+		console.warn("Lỗi khi lấy tabs:", err);
+		tabFetchStatus = "Lỗi nạp tabs";
+	}
+}
 
-  function openEditModal(idx: number) {
-    const row = currentRows[idx];
-    if (!row) return;
-    modalIndex = idx;
-    modalForm = {
-      hoTen: String(row.hoTen || row['Họ tên'] || ''),
-      gioiTinh: (row.gioiTinh === 'Nữ' || row['Giới tính'] === 'Nữ' || row.gioiTinh === 'F' || row['Giới tính'] === 'F') ? 'Nữ' : 'Nam',
-      ngaySinh: String(row.ngaySinh || row['Ngày sinh'] || row['D.O.B'] || ''),
-      quocTich: String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase(),
-      soPhong: cleanRoomNumber(row.soPhong || row['Số phòng']) || '1',
-      loaiGiayTo: String(row.loaiGiayTo || row['Loại giấy tờ'] || 'Thẻ CCCD'),
-      soGiayTo: String(row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || ''),
-      ngayDen: String(row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || ''),
-      ngayDi: String(row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || ''),
-      thoiHanTamTru: String(row.thoiHanTamTru || row['Thời hạn tạm trú'] || ''),
-      diaChiFull: getCombinedAddress(row),
-    };
-    modalOpen = true;
-  }
+async function pullDataFromGoogleSheet(forcedGid: string | null = null) {
+	const gid = forcedGid !== null ? forcedGid : selectedGid;
+	isLoadingSheet = true;
+	currentSourceLabel = "Đang kéo dữ liệu từ Google Sheets...";
 
-  function closeEditModal() {
-    modalOpen = false;
-    modalIndex = null;
-  }
+	try {
+		const res = await fetch("/api/sheets/pull", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ gid }),
+		});
+		const data = await res.json();
+		if (data.success && data.rows && data.rows.length > 0) {
+			currentRows = data.rows.map((row: RowData) => {
+				const rawRoom = row.soPhong || row["Số phòng"] || row.room || "";
+				const cleaned = cleanRoomNumber(rawRoom);
+				if (cleaned) {
+					row.soPhong = cleaned;
+					row["Số phòng"] = cleaned;
+				}
+				return row;
+			});
+			selectedIndices = new Set();
+			editingIndices = new Set();
 
-  function saveModal() {
-    if (modalIndex === null || !currentRows[modalIndex]) return;
-    const row = currentRows[modalIndex];
-    row.hoTen = modalForm.hoTen.trim();
-    row['Họ tên'] = row.hoTen;
-    row.gioiTinh = modalForm.gioiTinh;
-    row['Giới tính'] = row.gioiTinh;
-    row.ngaySinh = modalForm.ngaySinh.trim();
-    row['Ngày sinh'] = row.ngaySinh;
-    row['D.O.B'] = row.ngaySinh;
-    row.quocTich = modalForm.quocTich.trim().toUpperCase();
-    row['Quốc tịch'] = row.quocTich;
-    row.soPhong = modalForm.soPhong;
-    row['Số phòng'] = row.soPhong;
-    row.loaiGiayTo = modalForm.loaiGiayTo;
-    row['Loại giấy tờ'] = row.loaiGiayTo;
-    row.soGiayTo = modalForm.soGiayTo.trim();
-    row['Số giấy tờ'] = row.soGiayTo;
-    row['Số CCCD'] = row.soGiayTo;
-    row.soHoChieu = row.soGiayTo;
-    row.ngayDen = modalForm.ngayDen.trim();
-    row['Ngày đến'] = row.ngayDen;
-    row.ngayDi = modalForm.ngayDi.trim();
-    row['Ngày đi'] = row.ngayDi;
-    if (modalForm.thoiHanTamTru) {
-      row.thoiHanTamTru = modalForm.thoiHanTamTru.trim();
-      row['Thời hạn tạm trú'] = row.thoiHanTamTru;
-    }
-    parseAndApplyAddress(row, modalForm.diaChiFull);
+			const currentTab = availableTabs.find(
+				(t) => String(t.gid) === String(gid),
+			);
+			const tabName = currentTab ? currentTab.name : `GID ${gid}`;
+			currentSourceLabel = `Tab: "${tabName}" (${currentRows.length} dòng dữ liệu)`;
+			await updatePayloadPreview();
+			showToast("NẠP", `Đã tải ${currentRows.length} dòng từ Google Sheet!`);
+		} else {
+			currentSourceLabel = "Tab đã chọn không có dữ liệu phù hợp";
+			currentRows = [];
+			await updatePayloadPreview();
+		}
+	} catch (err) {
+		currentSourceLabel = `Lỗi kéo dữ liệu: ${(err as Error).message}`;
+	} finally {
+		isLoadingSheet = false;
+	}
+}
 
-    const savedIdx = modalIndex;
-    closeEditModal();
-    updatePayloadPreview();
-    syncRowToGoogleSheet(savedIdx);
-  }
+function handleTabChange() {
+	pullDataFromGoogleSheet(selectedGid);
+}
 
-  async function syncRowToGoogleSheet(idx: number) {
-    showToast('LƯU', `Đang lưu dòng ${idx + 1} lên Google Sheet...`);
-    const selectedTab = availableTabs.find(t => String(t.gid) === String(selectedGid));
-    const sheetName = selectedTab ? selectedTab.name : '';
+async function updatePayloadPreview() {
+	try {
+		const res = await fetch("/api/transform", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ rows: currentRows }),
+		});
+		const data = await res.json();
+		vnPayloads = (data.vnPayloads || []).map(
+			(item: { payload: unknown }) => item.payload,
+		);
+		foreignPayloads = (data.foreignPayloads || []).map(
+			(item: { payload: unknown }) => item.payload,
+		);
+		validationStates = (data.completenessList || []).map(
+			(item: { completeness: ValidationState }) => item.completeness,
+		);
+	} catch (err) {
+		console.error("Lỗi phân tích payloads:", err);
+	}
+}
 
-    try {
-      const res = await fetch('/api/sheets/update-row', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          rowIndex: idx,
-          row: currentRows[idx],
-          gid: selectedGid,
-          sheetName,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast('OK', `Đã cập nhật dòng ${idx + 1} lên Google Sheet!`);
-      } else if (data.notConfigured) {
-        showToast('LƯU', `Đã lưu dòng ${idx + 1} vào bộ nhớ.`);
-      } else {
-        showToast('CẢNH BÁO', `Lỗi cập nhật Sheet: ${data.message}`);
-      }
-    } catch (err) {
-      showToast('LỖI', `Lỗi mạng khi lưu Sheet: ${(err as Error).message}`);
-    }
-  }
+function toggleRowSelect(idx: number, checked: boolean) {
+	const next = new Set(selectedIndices);
+	if (checked) next.add(idx);
+	else next.delete(idx);
+	selectedIndices = next;
+}
 
-  function removeRow(idx: number) {
-    currentRows = currentRows.filter((_, i) => i !== idx);
-    const nextSel = new Set<number>();
-    selectedIndices.forEach(i => {
-      if (i < idx) nextSel.add(i);
-      else if (i > idx) nextSel.add(i - 1);
-    });
-    selectedIndices = nextSel;
-    updatePayloadPreview();
-  }
+function toggleSelectAll(checked: boolean) {
+	if (checked) {
+		selectedIndices = new Set(currentRows.map((_, i) => i));
+	} else {
+		selectedIndices = new Set();
+	}
+}
 
-  function addNewRow() {
-    const now = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-    const next2Days = new Date(now);
-    next2Days.setDate(next2Days.getDate() + 2);
-    const next2DaysStr = `${next2Days.getFullYear()}-${pad(next2Days.getMonth() + 1)}-${pad(next2Days.getDate())}`;
+function parseAndApplyAddress(row: RowData, fullAddress: string) {
+	const cleanAddr = (fullAddress || "").trim();
+	row.diaChi = cleanAddr;
+	row["Địa chỉ"] = cleanAddr;
+	row["Địa chỉ chi tiết"] = cleanAddr;
 
-    currentRows = [
-      ...currentRows,
-      {
-        hoTen: 'NGUYỄN VĂN MỚI',
-        ngaySinh: '1995-01-01',
-        gioiTinh: 'Nam',
-        quocTich: 'VNM',
-        loaiGiayTo: 'Thẻ CCCD',
-        soGiayTo: '001095000999',
-        soPhong: '1',
-        diaChi: 'Hà Nội',
-        ngayDen: `${todayStr} 14:00:00`,
-        ngayDi: `${next2DaysStr} 12:00:00`,
-      },
-    ];
-    updatePayloadPreview();
-  }
+	if (cleanAddr.includes(",")) {
+		const parts: string[] = cleanAddr
+			.split(",")
+			.map((s) => s.trim())
+			.filter(Boolean);
+		if (parts.length >= 4) {
+			const detail = parts.slice(0, parts.length - 3).join(", ");
+			row["Địa chỉ chi tiết"] = detail;
+			row.diaChi = detail;
+			row["Phường/Xã"] = parts[parts.length - 3];
+			row.phuongXa = parts[parts.length - 3];
+			row["Quận/Huyện"] = parts[parts.length - 2];
+			row.quanHuyen = parts[parts.length - 2];
+			row["Tỉnh/TP"] = parts[parts.length - 1];
+			row.tinhTp = parts[parts.length - 1];
+			row["Tỉnh"] = parts[parts.length - 1];
+		} else if (parts.length === 3) {
+			row["Địa chỉ chi tiết"] = parts[0];
+			row.diaChi = parts[0];
+			row["Quận/Huyện"] = parts[1];
+			row.quanHuyen = parts[1];
+			row["Tỉnh/TP"] = parts[2];
+			row.tinhTp = parts[2];
+			row["Tỉnh"] = parts[2];
+		} else if (parts.length === 2) {
+			row["Địa chỉ chi tiết"] = parts[0];
+			row.diaChi = parts[0];
+			row["Tỉnh/TP"] = parts[1];
+			row.tinhTp = parts[1];
+			row["Tỉnh"] = parts[1];
+		}
+	}
+}
 
-  function loadSampleData() {
-    const now = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-    const next2Days = new Date(now);
-    next2Days.setDate(next2Days.getDate() + 2);
-    const next2DaysStr = `${next2Days.getFullYear()}-${pad(next2Days.getMonth() + 1)}-${pad(next2Days.getDate())}`;
+function updateCell(idx: number, field: string, value: string) {
+	if (!currentRows[idx]) return;
+	currentRows[idx][field] = value;
+	if (field === "soPhong") {
+		currentRows[idx]["Số phòng"] = value;
+	} else if (field === "hoTen") {
+		currentRows[idx]["Họ tên"] = value;
+	} else if (field === "ngaySinh") {
+		currentRows[idx]["Ngày sinh"] = value;
+		currentRows[idx]["D.O.B"] = value;
+	} else if (field === "gioiTinh") {
+		currentRows[idx]["Giới tính"] = value;
+	} else if (field === "quocTich") {
+		currentRows[idx]["Quốc tịch"] = value;
+		currentRows[idx]["Quốc gia"] = value;
+	} else if (field === "loaiGiayTo") {
+		currentRows[idx]["Loại giấy tờ"] = value;
+	} else if (field === "soGiayTo") {
+		currentRows[idx]["Số giấy tờ"] = value;
+		currentRows[idx]["Số CCCD"] = value;
+		currentRows[idx]["Số hộ chiếu"] = value;
+		currentRows[idx].soHoChieu = value;
+	} else if (field === "ngayDen") {
+		currentRows[idx]["Ngày đến"] = value;
+		currentRows[idx]["(từ ngày)"] = value;
+	} else if (field === "ngayDi") {
+		currentRows[idx]["Ngày đi"] = value;
+		currentRows[idx]["(đến ngày)"] = value;
+	} else if (field === "diaChi") {
+		parseAndApplyAddress(currentRows[idx], value);
+	}
+	updatePayloadPreview();
+}
 
-    currentRows = [
-      {
-        'Họ tên': 'BUI TAN DUNG',
-        'Giới tính': 'M',
-        'Số điện thoại': '0987654321',
-        'Ngày sinh': '2001-10-16',
-        'Nơi cư trú': 'Thường trú',
-        'Tỉnh/TP': 'Đắk Lắk',
-        'Quận/Huyện': 'Krông Năng',
-        'Phường/Xã': 'Krông Năng',
-        'Địa chỉ chi tiết': 'Tổ Dân Phố 5',
-        'Ngày đến': `${todayStr} 12:00:00`,
-        'Ngày đi': `${next2DaysStr} 12:00:00`,
-        'Số phòng': '6',
-        'Lý do': 'Du lịch',
-        'Loại giấy tờ': 'Thẻ CCCD',
-        'Số giấy tờ': '066201008768',
-      },
-      {
-        'Họ tên': 'GRACHEV NIKITA',
-        'Quốc tịch': 'RUS',
-        'Số giấy tờ': '552165656',
-        'Giới tính': 'Nam',
-        'Ngày sinh': '1995-11-25',
-        'Ngày đến': `${todayStr} 12:00:00`,
-        'Ngày đi': `${next2DaysStr} 12:00:00`,
-        'Thời hạn tạm trú': '2026-12-31 23:59:59',
-        'Số phòng': '9',
-        'Loại giấy tờ': 'Hộ chiếu',
-      },
-    ];
-    selectedIndices = new Set();
-    editingIndices = new Set();
-    currentSourceLabel = 'Đang hiển thị dữ liệu mẫu chuẩn v1.4';
-    updatePayloadPreview();
-  }
+function toggleEditInline(idx: number) {
+	const next = new Set(editingIndices);
+	if (next.has(idx)) {
+		next.delete(idx);
+		editingIndices = next;
+		syncRowToGoogleSheet(idx);
+	} else {
+		next.add(idx);
+		editingIndices = next;
+	}
+}
 
-  async function executeSyncBatch(rows: RowData[], title: string) {
-    activeTab = 'syncTab';
-    isSyncing = true;
-    syncActionTitle = title;
-    syncResults = [];
+function openEditModal(idx: number) {
+	const row = currentRows[idx];
+	if (!row) return;
+	modalIndex = idx;
+	modalForm = {
+		hoTen: String(row.hoTen || row["Họ tên"] || ""),
+		gioiTinh:
+			row.gioiTinh === "Nữ" ||
+			row["Giới tính"] === "Nữ" ||
+			row.gioiTinh === "F" ||
+			row["Giới tính"] === "F"
+				? "Nữ"
+				: "Nam",
+		ngaySinh: String(row.ngaySinh || row["Ngày sinh"] || row["D.O.B"] || ""),
+		quocTich: String(
+			row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "VNM",
+		).toUpperCase(),
+		soPhong: cleanRoomNumber(row.soPhong || row["Số phòng"]) || "1",
+		loaiGiayTo: String(row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD"),
+		soGiayTo: String(
+			row.soGiayTo ||
+				row["Số giấy tờ"] ||
+				row.soHoChieu ||
+				row["Số hộ chiếu"] ||
+				"",
+		),
+		ngayDen: String(row.ngayDen || row["(từ ngày)"] || row["Ngày đến"] || ""),
+		ngayDi: String(row.ngayDi || row["(đến ngày)"] || row["Ngày đi"] || ""),
+		thoiHanTamTru: String(row.thoiHanTamTru || row["Thời hạn tạm trú"] || ""),
+		diaChiFull: getCombinedAddress(row),
+	};
+	modalOpen = true;
+}
 
-    try {
-      const res = await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rows }),
-      });
-      const data = await res.json();
-      syncResults = data.results || [];
-      await checkToken();
-    } catch (err) {
-      syncResults = [{
-        status: 'Thất bại',
-        message: `Lỗi thực thi: ${(err as Error).message}`,
-      }];
-    } finally {
-      isSyncing = false;
-    }
-  }
+function closeEditModal() {
+	modalOpen = false;
+	modalIndex = null;
+}
 
-  async function pushSelectedRows() {
-    if (selectedIndices.size === 0) {
-      alert('Vui lòng tích chọn ít nhất 1 dòng để đăng ký');
-      return;
-    }
-    const rows = Array.from(selectedIndices).map(i => currentRows[i]).filter(Boolean);
-    await executeSyncBatch(rows, `Đăng ký ${rows.length} khách đã chọn`);
-  }
+function saveModal() {
+	if (modalIndex === null || !currentRows[modalIndex]) return;
+	const row = currentRows[modalIndex];
+	row.hoTen = modalForm.hoTen.trim();
+	row["Họ tên"] = row.hoTen;
+	row.gioiTinh = modalForm.gioiTinh;
+	row["Giới tính"] = row.gioiTinh;
+	row.ngaySinh = modalForm.ngaySinh.trim();
+	row["Ngày sinh"] = row.ngaySinh;
+	row["D.O.B"] = row.ngaySinh;
+	row.quocTich = modalForm.quocTich.trim().toUpperCase();
+	row["Quốc tịch"] = row.quocTich;
+	row.soPhong = modalForm.soPhong;
+	row["Số phòng"] = row.soPhong;
+	row.loaiGiayTo = modalForm.loaiGiayTo;
+	row["Loại giấy tờ"] = row.loaiGiayTo;
+	row.soGiayTo = modalForm.soGiayTo.trim();
+	row["Số giấy tờ"] = row.soGiayTo;
+	row["Số CCCD"] = row.soGiayTo;
+	row.soHoChieu = row.soGiayTo;
+	row.ngayDen = modalForm.ngayDen.trim();
+	row["Ngày đến"] = row.ngayDen;
+	row.ngayDi = modalForm.ngayDi.trim();
+	row["Ngày đi"] = row.ngayDi;
+	if (modalForm.thoiHanTamTru) {
+		row.thoiHanTamTru = modalForm.thoiHanTamTru.trim();
+		row["Thời hạn tạm trú"] = row.thoiHanTamTru;
+	}
+	parseAndApplyAddress(row, modalForm.diaChiFull);
 
-  async function pushSingleRow(idx: number) {
-    if (!currentRows[idx]) return;
-    await executeSyncBatch([currentRows[idx]], `Đăng ký khách: ${currentRows[idx].hoTen || currentRows[idx]['Họ tên']}`);
-  }
+	const savedIdx = modalIndex;
+	closeEditModal();
+	updatePayloadPreview();
+	syncRowToGoogleSheet(savedIdx);
+}
 
-  async function syncAllRows() {
-    if (currentRows.length === 0) {
-      alert('Bảng dữ liệu đang trống!');
-      return;
-    }
-    await executeSyncBatch(currentRows, `Đăng ký toàn bộ ${currentRows.length} khách`);
-  }
+async function syncRowToGoogleSheet(idx: number) {
+	showToast("LƯU", `Đang lưu dòng ${idx + 1} lên Google Sheet...`);
+	const selectedTab = availableTabs.find(
+		(t) => String(t.gid) === String(selectedGid),
+	);
+	const sheetName = selectedTab ? selectedTab.name : "";
 
-  async function checkToken() {
-    try {
-      const res = await fetch('/api/token');
-      const data = await res.json();
-      tokenStatus = {
-        hasToken: Boolean(data.hasToken),
-        expiresInSeconds: data.expiresInSeconds || 0,
-      };
-    } catch {}
-  }
+	try {
+		const res = await fetch("/api/sheets/update-row", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				rowIndex: idx,
+				row: currentRows[idx],
+				gid: selectedGid,
+				sheetName,
+			}),
+		});
+		const data = await res.json();
+		if (data.success) {
+			showToast("OK", `Đã cập nhật dòng ${idx + 1} lên Google Sheet!`);
+		} else if (data.notConfigured) {
+			showToast("LƯU", `Đã lưu dòng ${idx + 1} vào bộ nhớ.`);
+		} else {
+			showToast("CẢNH BÁO", `Lỗi cập nhật Sheet: ${data.message}`);
+		}
+	} catch (err) {
+		showToast("LỖI", `Lỗi mạng khi lưu Sheet: ${(err as Error).message}`);
+	}
+}
 
-  async function handleManualLogin() {
-    try {
-      const res = await fetch('/api/token', { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        showToast('OK', 'Đăng nhập lấy Token thành công!');
-      } else {
-        alert(`Đăng nhập thất bại: ${data.error}`);
-      }
-      await checkToken();
-    } catch (err) {
-      alert(`Lỗi kết nối: ${(err as Error).message}`);
-    }
-  }
+function removeRow(idx: number) {
+	currentRows = currentRows.filter((_, i) => i !== idx);
+	const nextSel = new Set<number>();
+	selectedIndices.forEach((i) => {
+		if (i < idx) nextSel.add(i);
+		else if (i > idx) nextSel.add(i - 1);
+	});
+	selectedIndices = nextSel;
+	updatePayloadPreview();
+}
 
-  async function loadCatalogs() {
-    try {
-      const res = await fetch('/api/catalogs');
-      const data = await res.json();
-      if (data.catalogs) {
-        catalogs = data.catalogs;
-      }
-    } catch (err) {
-      console.error('Lỗi nạp danh mục:', err);
-    }
-  }
+function addNewGuest() {
+	const now = new Date();
+	const pad = (n: number) => String(n).padStart(2, "0");
+	const todayStr = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} 14:00:00`;
+	const next2Days = new Date(now);
+	next2Days.setDate(next2Days.getDate() + 2);
+	const next2DaysStr = `${pad(next2Days.getDate())}/${pad(next2Days.getMonth() + 1)}/${next2Days.getFullYear()} 12:00:00`;
 
-  function copyCode(code: string | undefined, name: string | undefined) {
-    if (!code) return;
-    navigator.clipboard.writeText(code);
-    showToast(code, name || '');
-  }
+	const newRow: RowData = {
+		hoTen: "KHÁCH MỚI",
+		"Họ tên": "KHÁCH MỚI",
+		ngaySinh: "1995-01-01",
+		"Ngày sinh": "1995-01-01",
+		"D.O.B": "1995-01-01",
+		gioiTinh: "Nam",
+		"Giới tính": "Nam",
+		quocTich: "VNM",
+		"Quốc tịch": "VNM",
+		"Quốc gia": "VNM",
+		loaiGiayTo: "Thẻ CCCD",
+		"Loại giấy tờ": "Thẻ CCCD",
+		soGiayTo: "",
+		"Số giấy tờ": "",
+		"Số CCCD": "",
+		soPhong: "1",
+		"Số phòng": "1",
+		diaChi: "",
+		"Địa chỉ": "",
+		"Địa chỉ chi tiết": "",
+		ngayDen: todayStr,
+		"Ngày đến": todayStr,
+		"(từ ngày)": todayStr,
+		ngayDi: next2DaysStr,
+		"Ngày đi": next2DaysStr,
+		"(đến ngày)": next2DaysStr,
+	};
 
-  let filteredTinhList = $derived(
-    catalogs.tinhTp.filter(t => {
-      const q = normalizeStr(filterTinh);
-      if (!q) return true;
-      const ten = normalizeStr(t.tenTT);
-      const ma = String(t.maTT || '');
-      const maChu = normalizeStr(t.maTTChu || '');
-      return ten.includes(q) || ma.includes(q) || maChu.includes(q);
-    })
-  );
+	currentRows = [...currentRows, newRow];
+	const newIdx = currentRows.length - 1;
+	updatePayloadPreview();
+	syncRowToGoogleSheet(newIdx);
+	openEditModal(newIdx);
+}
 
-  let filteredQuocTichList = $derived(
-    catalogs.quocTich.filter(q => {
-      const query = normalizeStr(filterQuocTich);
-      if (!query) return true;
-      const ten = normalizeStr(q.tenQT);
-      const ma = normalizeStr(q.maQT);
-      const tenEn = normalizeStr(q.tenQTEn || '');
-      return ten.includes(query) || ma.includes(query) || tenEn.includes(query);
-    })
-  );
+async function executeSyncBatch(rows: RowData[], title: string) {
+	activeTab = "syncTab";
+	isSyncing = true;
+	syncActionTitle = title;
+	syncResults = [];
 
-  onMount(() => {
-    loadCatalogs();
-    checkToken();
-    fetchSheetTabsList();
-  });
+	try {
+		const res = await fetch("/api/sync", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ rows }),
+		});
+		const data = await res.json();
+		syncResults = data.results || [];
+		await checkToken();
+	} catch (err) {
+		syncResults = [
+			{
+				status: "Thất bại",
+				message: `Lỗi thực thi: ${(err as Error).message}`,
+			},
+		];
+	} finally {
+		isSyncing = false;
+	}
+}
+
+async function pushSelectedRows() {
+	if (currentRows.length === 0) {
+		alert("Bảng danh sách khách đang trống!");
+		return;
+	}
+	const rows =
+		selectedIndices.size > 0
+			? Array.from(selectedIndices)
+					.map((i) => currentRows[i])
+					.filter(Boolean)
+			: currentRows;
+	const title =
+		selectedIndices.size > 0
+			? `Đăng ký ${rows.length} khách đã chọn`
+			: `Đăng ký tất cả ${rows.length} khách`;
+	await executeSyncBatch(rows, title);
+}
+
+async function pushSingleRow(idx: number) {
+	if (!currentRows[idx]) return;
+	await executeSyncBatch(
+		[currentRows[idx]],
+		`Đăng ký khách: ${currentRows[idx].hoTen || currentRows[idx]["Họ tên"]}`,
+	);
+}
+
+async function checkToken() {
+	try {
+		const res = await fetch("/api/token");
+		const data = await res.json();
+		tokenStatus = {
+			hasToken: Boolean(data.hasToken),
+			expiresInSeconds: data.expiresInSeconds || 0,
+		};
+	} catch {}
+}
+
+async function handleManualLogin() {
+	try {
+		const res = await fetch("/api/token", { method: "POST" });
+		const data = await res.json();
+		if (data.success) {
+			showToast("OK", "Đăng nhập lấy Token thành công!");
+		} else {
+			alert(`Đăng nhập thất bại: ${data.error}`);
+		}
+		await checkToken();
+	} catch (err) {
+		alert(`Lỗi kết nối: ${(err as Error).message}`);
+	}
+}
+
+async function loadCatalogs() {
+	try {
+		const res = await fetch("/api/catalogs");
+		const data = await res.json();
+		if (data.catalogs) {
+			catalogs = data.catalogs;
+		}
+	} catch (err) {
+		console.error("Lỗi nạp danh mục:", err);
+	}
+}
+
+function copyCode(code: string | undefined, name: string | undefined) {
+	if (!code) return;
+	navigator.clipboard.writeText(code);
+	showToast(code, name || "");
+}
+
+let filteredTinhList = $derived(
+	catalogs.tinhTp.filter((t) => {
+		const q = normalizeStr(filterTinh);
+		if (!q) return true;
+		const ten = normalizeStr(t.tenTT);
+		const ma = String(t.maTT || "");
+		const maChu = normalizeStr(t.maTTChu || "");
+		return ten.includes(q) || ma.includes(q) || maChu.includes(q);
+	}),
+);
+
+let filteredQuocTichList = $derived(
+	catalogs.quocTich.filter((q) => {
+		const query = normalizeStr(filterQuocTich);
+		if (!query) return true;
+		const ten = normalizeStr(q.tenQT);
+		const ma = normalizeStr(q.maQT);
+		const tenEn = normalizeStr(q.tenQTEn || "");
+		return ten.includes(query) || ma.includes(query) || tenEn.includes(query);
+	}),
+);
+
+onMount(() => {
+	loadCatalogs();
+	checkToken();
+	fetchSheetTabsList();
+});
 </script>
 
 <svelte:head>
@@ -788,17 +995,11 @@
           <p class="text-xs text-slate-500">{currentSourceLabel}</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick={loadSampleData} class="px-3 py-1.5 text-xs bg-slate-200/90 hover:bg-slate-300 text-slate-700 rounded-lg border border-slate-300 font-medium transition flex items-center gap-1.5">
-            <i class="fa-solid fa-rotate-left"></i> Dữ liệu mẫu
+          <button onclick={addNewGuest} class="px-3.5 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm" title="Thêm khách mới vào danh sách và đồng bộ Google Sheets">
+            <i class="fa-solid fa-user-plus"></i> Thêm khách
           </button>
-          <button onclick={addNewRow} class="px-3 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-medium transition flex items-center gap-1.5 shadow-sm">
-            <i class="fa-solid fa-plus"></i> Thêm dòng
-          </button>
-          <button onclick={pushSelectedRows} class="px-3.5 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm">
-            <i class="fa-solid fa-paper-plane"></i> Push đăng ký đã chọn (<span class="font-mono">{selectedIndices.size > 0 ? selectedIndices.size : 'Tất cả'}</span>)
-          </button>
-          <button onclick={syncAllRows} class="px-4 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm">
-            <i class="fa-solid fa-bolt"></i> Push tất cả
+          <button onclick={pushSelectedRows} class="px-4 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm" title="Đăng ký các khách đã chọn hoặc tất cả lên hệ thống KBTT">
+            <i class="fa-solid fa-paper-plane"></i> Đăng ký ({selectedIndices.size > 0 ? `${selectedIndices.size}/${currentRows.length}` : 'Tất cả'})
           </button>
         </div>
       </div>
@@ -1116,9 +1317,18 @@
   <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl border border-slate-300 w-full max-w-3xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
       <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between border-b border-slate-700">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2.5">
           <i class="fa-solid fa-pen-to-square text-indigo-400 text-base"></i>
           <h3 class="font-bold text-sm tracking-wide">Chỉnh sửa thông tin khách lưu trú #{modalIndex !== null ? modalIndex + 1 : ''}</h3>
+          {#if liveVal.allValid}
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <i class="fa-solid fa-circle-check text-emerald-400"></i> Hợp lệ
+            </span>
+          {:else}
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              <i class="fa-solid fa-triangle-exclamation text-rose-400"></i> Cần sửa thông tin
+            </span>
+          {/if}
         </div>
         <button onclick={closeEditModal} aria-label="Đóng cửa sổ chỉnh sửa" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -1129,8 +1339,21 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Họ tên -->
           <div class="md:col-span-2">
-            <label for="modalHoTen" class="block font-semibold text-slate-700 mb-1">Họ và tên <span class="text-rose-500">*</span></label>
-            <input type="text" id="modalHoTen" bind:value={modalForm.hoTen} class="w-full px-3 py-2 text-sm uppercase font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="NGUYEN VAN A">
+            <label for="modalHoTen" class="block font-semibold text-slate-700 mb-1">
+              Họ và tên <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="modalHoTen"
+              bind:value={modalForm.hoTen}
+              class={`w-full px-3 py-2 text-sm uppercase font-bold rounded-lg outline-none transition ${!liveVal.hoTen.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+              placeholder="NGUYEN VAN A"
+            >
+            {#if !liveVal.hoTen.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.hoTen.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Giới tính -->
@@ -1144,24 +1367,61 @@
 
           <!-- Ngày sinh -->
           <div>
-            <label for="modalNgaySinh" class="block font-semibold text-slate-700 mb-1">Ngày sinh (YYYY-MM-DD) <span class="text-rose-500">*</span></label>
-            <input type="text" id="modalNgaySinh" bind:value={modalForm.ngaySinh} class="w-full px-3 py-2 text-sm font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="1995-10-15">
+            <label for="modalNgaySinh" class="block font-semibold text-slate-700 mb-1">
+              Ngày sinh (YYYY-MM-DD) <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="modalNgaySinh"
+              bind:value={modalForm.ngaySinh}
+              class={`w-full px-3 py-2 text-sm font-mono rounded-lg outline-none transition ${!liveVal.ngaySinh.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+              placeholder="1995-10-15"
+            >
+            {#if !liveVal.ngaySinh.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.ngaySinh.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Quốc tịch -->
           <div>
-            <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1">Quốc tịch (Mã 3 ký tự) <span class="text-rose-500">*</span></label>
-            <input type="text" id="modalQuocTich" bind:value={modalForm.quocTich} class="w-full px-3 py-2 text-sm uppercase font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="VNM, RUS, KOR...">
+            <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1">
+              Quốc tịch (Mã 3 ký tự) <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="modalQuocTich"
+              bind:value={modalForm.quocTich}
+              class={`w-full px-3 py-2 text-sm uppercase font-bold rounded-lg outline-none transition ${!liveVal.quocTich.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+              placeholder="VNM, RUS, KOR..."
+            >
+            {#if !liveVal.quocTich.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.quocTich.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Số phòng -->
           <div>
-            <label for="modalSoPhong" class="block font-semibold text-slate-700 mb-1">Số phòng <span class="text-rose-500">*</span></label>
-            <select id="modalSoPhong" bind:value={modalForm.soPhong} class="w-full px-3 py-2 text-sm font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition">
+            <label for="modalSoPhong" class="block font-semibold text-slate-700 mb-1">
+              Số phòng <span class="text-rose-500">*</span>
+            </label>
+            <select
+              id="modalSoPhong"
+              bind:value={modalForm.soPhong}
+              class={`w-full px-3 py-2 text-sm font-bold rounded-lg outline-none bg-white transition ${!liveVal.soPhong.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+            >
               {#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as num}
                 <option value={String(num)}>Phòng {num}</option>
               {/each}
             </select>
+            {#if !liveVal.soPhong.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.soPhong.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Loại giấy tờ -->
@@ -1178,20 +1438,46 @@
 
           <!-- Số giấy tờ -->
           <div class="md:col-span-2">
-            <label for="modalSoGiayTo" class="block font-semibold text-slate-700 mb-1">Số giấy tờ <span class="text-rose-500">*</span></label>
-            <input type="text" id="modalSoGiayTo" bind:value={modalForm.soGiayTo} class="w-full px-3 py-2 text-sm font-mono font-bold text-indigo-700 border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="Số CCCD / Hộ chiếu">
+            <label for="modalSoGiayTo" class="block font-semibold text-slate-700 mb-1">
+              Số giấy tờ <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="modalSoGiayTo"
+              bind:value={modalForm.soGiayTo}
+              class={`w-full px-3 py-2 text-sm font-mono font-bold text-indigo-700 rounded-lg outline-none transition ${!liveVal.soGiayTo.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+              placeholder="Số CCCD (12 số) / Hộ chiếu (6-12 ký tự)"
+            >
+            {#if !liveVal.soGiayTo.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.soGiayTo.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Ngày đến -->
           <div>
-            <label for="modalNgayDen" class="block font-semibold text-slate-700 mb-1">Ngày đến (YYYY-MM-DD HH:mm:ss)</label>
-            <input type="text" id="modalNgayDen" bind:value={modalForm.ngayDen} class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="2026-03-29 14:00:00">
+            <label for="modalNgayDen" class="block font-semibold text-slate-700 mb-1">
+              Ngày đến (DD/MM/YYYY hoặc YYYY-MM-DD) <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="modalNgayDen"
+              bind:value={modalForm.ngayDen}
+              class={`w-full px-3 py-2 text-xs font-mono rounded-lg outline-none transition ${!liveVal.ngayDen.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+              placeholder="16/09/2026 14:00:00"
+            >
+            {#if !liveVal.ngayDen.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.ngayDen.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Ngày đi -->
           <div>
-            <label for="modalNgayDi" class="block font-semibold text-slate-700 mb-1">Ngày đi (YYYY-MM-DD HH:mm:ss)</label>
-            <input type="text" id="modalNgayDi" bind:value={modalForm.ngayDi} class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="2026-03-31 12:00:00">
+            <label for="modalNgayDi" class="block font-semibold text-slate-700 mb-1">Ngày đi (DD/MM/YYYY hoặc YYYY-MM-DD)</label>
+            <input type="text" id="modalNgayDi" bind:value={modalForm.ngayDi} class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="18/09/2026 12:00:00">
           </div>
 
           <!-- Thời hạn tạm trú -->
@@ -1211,13 +1497,22 @@
         </div>
       </div>
 
-      <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-end gap-3">
-        <button onclick={closeEditModal} class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition shadow-xs">
-          Hủy bỏ
-        </button>
-        <button onclick={saveModal} class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shadow flex items-center gap-1.5">
-          <i class="fa-solid fa-floppy-disk"></i> Lưu & Cập nhật Sheet
-        </button>
+      <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between gap-3">
+        <div class="text-[11px] text-slate-500">
+          {#if !liveVal.allValid}
+            <span class="text-rose-600 font-medium"><i class="fa-solid fa-triangle-exclamation"></i> Vui lòng sửa các trường báo đỏ trước khi lưu.</span>
+          {:else}
+            <span class="text-emerald-600 font-medium"><i class="fa-solid fa-check"></i> Thông tin đã hợp lệ, có thể lưu ngay.</span>
+          {/if}
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick={closeEditModal} class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition shadow-xs">
+            Hủy bỏ
+          </button>
+          <button onclick={saveModal} class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shadow flex items-center gap-1.5">
+            <i class="fa-solid fa-floppy-disk"></i> Lưu & Cập nhật Sheet
+          </button>
+        </div>
       </div>
     </div>
   </div>
