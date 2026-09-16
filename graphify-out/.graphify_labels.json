@@ -1,1 +1,1 @@
-{"0": "package.json", "1": "CatalogManager", "2": "server.js", "3": "app.js", "4": "syncPipeline.js", "5": "runTests", "6": "GoogleSheetService", "7": "project", "8": "renderTable", "9": "executeSyncBatch", "10": "TokenManager", "11": "pullDataFromGoogleSheet", "12": "copyCountryCode"}
+{"0": "package.json", "1": "CatalogManager", "2": "app.js", "3": "syncPipeline.js", "4": "server.js", "5": "runTests", "6": "GoogleSheetService", "7": "project", "8": "renderTable", "9": "updatePayloadPreview", "10": "saveModalEdit", "11": "TokenManager"}

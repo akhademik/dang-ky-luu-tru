@@ -263,6 +263,7 @@ function renderTable() {
 
     const tr = document.createElement('tr');
     tr.className = `hover:bg-slate-100/80 transition ${!isComplete ? 'bg-rose-50/30' : ''} ${isChecked ? 'bg-indigo-50/30' : ''}`;
+    tr.ondblclick = () => openEditModal(idx);
     tr.innerHTML = `
       <!-- Checkbox -->
       <td class="p-3 text-center">
@@ -274,10 +275,10 @@ function renderTable() {
       <!-- Họ tên (Required) -->
       <td class="p-3 font-medium text-slate-900">
         ${isEditing 
-          ? `<input type="text" value="${row.hoTen || row['Họ tên'] || ''}" onchange="updateCell(${idx}, 'hoTen', this.value)" class="w-full rounded px-2 py-1 outline-none uppercase font-bold text-xs transition ${isHoTenValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800 focus:ring-1 focus:ring-emerald-400' : 'bg-rose-50 border-2 border-rose-400 text-rose-900 focus:ring-1 focus:ring-rose-400'}">`
+          ? `<input type="text" value="${row.hoTen || row['Họ tên'] || ''}" onchange="updateCell(${idx}, 'hoTen', this.value)" class="w-full rounded px-2 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:z-20 ${isHoTenValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">`
           : (isHoTenValid 
-              ? `<span class="uppercase font-bold text-slate-800">${row.hoTen || row['Họ tên']}</span>`
-              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-semibold px-2 py-0.5 rounded text-xs">Thiếu họ tên *</span>`
+              ? `<span class="uppercase font-bold text-slate-800 cursor-pointer hover:text-indigo-600 transition" onclick="openEditModal(${idx})" title="Bấm để chỉnh sửa">${row.hoTen || row['Họ tên']}</span>`
+              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-semibold px-2 py-0.5 rounded text-xs cursor-pointer" onclick="openEditModal(${idx})">Thiếu họ tên *</span>`
             )
         }
       </td>
@@ -285,10 +286,10 @@ function renderTable() {
       <!-- Ngày sinh (Required) -->
       <td class="p-3 font-mono">
         ${isEditing
-          ? `<input type="text" value="${row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''}" onchange="updateCell(${idx}, 'ngaySinh', this.value)" placeholder="YYYY-MM-DD" class="w-24 rounded px-2 py-1 outline-none text-xs font-mono transition ${isDobValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800 focus:ring-1 focus:ring-emerald-400' : 'bg-rose-50 border-2 border-rose-400 text-rose-900 focus:ring-1 focus:ring-rose-400'}">`
+          ? `<input type="text" value="${row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''}" onchange="updateCell(${idx}, 'ngaySinh', this.value)" placeholder="YYYY-MM-DD" class="w-24 rounded px-2 py-1 outline-none text-xs font-mono transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:z-20 ${isDobValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">`
           : (isDobValid 
-              ? `<span>${row.ngaySinh || row['D.O.B'] || row['Ngày sinh']}</span>`
-              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-2 py-0.5 rounded text-xs">Thiếu ngày sinh *</span>`
+              ? `<span class="cursor-pointer hover:text-indigo-600 transition" onclick="openEditModal(${idx})">${row.ngaySinh || row['D.O.B'] || row['Ngày sinh']}</span>`
+              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-2 py-0.5 rounded text-xs cursor-pointer" onclick="openEditModal(${idx})">Thiếu ngày sinh *</span>`
             )
         }
       </td>
@@ -296,7 +297,7 @@ function renderTable() {
       <!-- Giới tính -->
       <td class="p-3">
         ${isEditing
-          ? `<select onchange="updateCell(${idx}, 'gioiTinh', this.value)" class="bg-emerald-50/50 border border-emerald-400 rounded px-2 py-1 outline-none text-xs font-medium">
+          ? `<select onchange="updateCell(${idx}, 'gioiTinh', this.value)" class="bg-emerald-50/50 border border-emerald-400 rounded px-2 py-1 outline-none text-xs font-medium transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500">
               <option value="Nam" ${(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M' ? 'selected' : ''}>Nam</option>
               <option value="Nữ" ${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'selected' : ''}>Nữ</option>
             </select>`
@@ -307,7 +308,7 @@ function renderTable() {
       <!-- Quốc tịch -->
       <td class="p-3">
         ${isEditing
-          ? `<input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-20 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs transition ${isQuocTichValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}" title="${isQuocTichValid ? 'Hợp lệ' : quocTichError}">`
+          ? `<input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-20 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:z-20 ${isQuocTichValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}" title="${isQuocTichValid ? 'Hợp lệ' : quocTichError}">`
           : (isQuocTichValid
               ? `<span class="font-bold text-slate-700 text-xs">${(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>`
               : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-bold px-1.5 py-0.5 rounded text-xs cursor-help" title="${quocTichError || 'Sai mã quốc tịch'}">${(row.quocTich || row['Quốc tịch'] || 'LỖI').toUpperCase()} <i class="fa-solid fa-circle-exclamation"></i></span>`
@@ -318,7 +319,7 @@ function renderTable() {
       <!-- Loại giấy tờ -->
       <td class="p-3">
         ${isEditing
-          ? `<select onchange="updateCell(${idx}, 'loaiGiayTo', this.value)" class="bg-emerald-50/50 border border-emerald-400 rounded px-1.5 py-1 outline-none text-xs max-w-[130px]">
+          ? `<select onchange="updateCell(${idx}, 'loaiGiayTo', this.value)" class="bg-emerald-50/50 border border-emerald-400 rounded px-1.5 py-1 outline-none text-xs max-w-[130px] transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500">
               <option value="Thẻ CCCD" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Thẻ CCCD' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'CCCD' ? 'selected' : ''}>Thẻ CCCD (1)</option>
               <option value="Thẻ CMND" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Thẻ CMND' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'CMND' ? 'selected' : ''}>Thẻ CMND (2)</option>
               <option value="Giấy phép lái xe" ${(row.loaiGiayTo || row['Loại giấy tờ']) === 'Giấy phép lái xe' || (row.loaiGiayTo || row['Loại giấy tờ']) === 'GPLX' ? 'selected' : ''}>GPLX (3)</option>
@@ -332,10 +333,10 @@ function renderTable() {
       <!-- Số giấy tờ -->
       <td class="p-3 font-mono font-bold text-indigo-700">
         ${isEditing
-          ? `<input type="text" value="${row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || ''}" onchange="updateCell(${idx}, 'soGiayTo', this.value)" placeholder="Số giấy tờ" class="w-28 rounded px-2 py-1 outline-none font-bold font-mono text-xs transition ${isDocValid ? 'bg-emerald-50/50 border border-emerald-400 text-indigo-700 focus:ring-1 focus:ring-emerald-400' : 'bg-rose-50 border-2 border-rose-400 text-rose-900 focus:ring-1 focus:ring-rose-400'}" title="${isDocValid ? 'Hợp lệ' : docError}">`
+          ? `<input type="text" value="${row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || ''}" onchange="updateCell(${idx}, 'soGiayTo', this.value)" placeholder="Số giấy tờ" class="w-28 rounded px-2 py-1 outline-none font-bold font-mono text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:z-20 ${isDocValid ? 'bg-emerald-50/50 border border-emerald-400 text-indigo-700' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}" title="${isDocValid ? 'Hợp lệ' : docError}">`
           : (isDocValid 
-              ? `<span>${row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu']}</span>`
-              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-mono font-bold px-2 py-0.5 rounded text-xs cursor-help" title="${docError || 'Sai số giấy tờ'}">${row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || 'Thiếu số *'}</span>`
+              ? `<span class="cursor-pointer hover:underline" onclick="openEditModal(${idx})">${row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu']}</span>`
+              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-mono font-bold px-2 py-0.5 rounded text-xs cursor-pointer" onclick="openEditModal(${idx})" title="${docError || 'Sai số giấy tờ'}">${row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || 'Thiếu số *'}</span>`
             )
         }
       </td>
@@ -343,7 +344,7 @@ function renderTable() {
       <!-- Phòng -->
       <td class="p-3 text-center">
         ${isEditing
-          ? `<select onchange="updateCell(${idx}, 'soPhong', this.value)" class="rounded px-2 py-1 outline-none text-xs font-semibold transition text-center ${isRoomValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">
+          ? `<select onchange="updateCell(${idx}, 'soPhong', this.value)" class="rounded px-2 py-1 outline-none text-xs font-semibold transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 text-center ${isRoomValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">
               <option value="">--</option>
               ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => `
                 <option value="${num}" ${cleanRoomNumber(row.soPhong || row['Số phòng']) === String(num) ? 'selected' : ''}>${num}</option>
@@ -360,10 +361,10 @@ function renderTable() {
       <td class="p-3 text-[11px] text-slate-500">
         ${isEditing
           ? `<div class="space-y-1">
-              <input type="text" value="${row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || ''}" onchange="updateCell(${idx}, 'ngayDen', this.value)" placeholder="Đến (hôm nay/qua)" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] transition ${isNgayDenValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800 focus:ring-1 focus:ring-emerald-400' : 'bg-rose-50 border-2 border-rose-400 text-rose-900 focus:ring-1 focus:ring-rose-400'}" title="${isNgayDenValid ? 'Hợp lệ' : ngayDenError}">
-              <input type="text" value="${row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || ''}" onchange="updateCell(${idx}, 'ngayDi', this.value)" placeholder="Đi" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] transition ${isNgayDiValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800 focus:ring-1 focus:ring-emerald-400' : 'bg-rose-50 border-2 border-rose-400 text-rose-900 focus:ring-1 focus:ring-rose-400'}">
+              <input type="text" value="${row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || ''}" onchange="updateCell(${idx}, 'ngayDen', this.value)" placeholder="Đến (hôm nay/qua)" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:z-20 ${isNgayDenValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}" title="${isNgayDenValid ? 'Hợp lệ' : ngayDenError}">
+              <input type="text" value="${row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || ''}" onchange="updateCell(${idx}, 'ngayDi', this.value)" placeholder="Đi" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:z-20 ${isNgayDiValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">
             </div>`
-          : `<div class="space-y-0.5">
+          : `<div class="space-y-0.5 cursor-pointer" onclick="openEditModal(${idx})" title="Bấm để chỉnh sửa ngày đến / đi">
               ${isNgayDenValid 
                 ? `<div>Đến: <strong>${row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || 'N/A'}</strong></div>`
                 : `<div class="bg-rose-100 border border-rose-300 text-rose-800 px-1.5 py-0.5 rounded cursor-help font-semibold text-[10px]" title="${ngayDenError}">Đến: ${row.ngayDen || 'Thiếu'} <i class="fa-solid fa-triangle-exclamation"></i></div>`
@@ -373,25 +374,28 @@ function renderTable() {
         }
       </td>
 
-      <!-- Địa chỉ (Hiển thị Tỉnh gọn gàng, Hover hiển thị đầy đủ tooltip; Khi Edit hiển thị ô nhập) -->
+      <!-- Địa chỉ (Hiển thị Tỉnh gọn gàng, Bấm vào xem và chỉnh sửa full địa chỉ có dấu phẩy) -->
       <td class="p-3 text-slate-700 text-[11px] max-w-[150px]">
         ${isEditing
-          ? `<input type="text" value="${row.diaChi || row['Địa chỉ'] || row['Địa chỉ chi tiết'] || ''}" onchange="updateCell(${idx}, 'diaChi', this.value)" placeholder="Địa chỉ / Tỉnh" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] bg-emerald-50/50 border border-emerald-400 text-slate-800 focus:ring-1 focus:ring-emerald-400">`
-          : `<span class="cursor-help hover:text-indigo-600 transition underline decoration-dotted decoration-slate-400 font-medium truncate inline-block max-w-[130px]" title="${addrInfo.fullText}">
+          ? `<input type="text" value="${getCombinedAddress(row) || row.diaChi || row['Địa chỉ'] || ''}" onchange="updateAddressCell(${idx}, this.value)" placeholder="Chi tiết, Xã, Huyện, Tỉnh" class="w-32 rounded px-1.5 py-0.5 outline-none text-[11px] bg-emerald-50/50 border border-emerald-400 text-slate-800 transition-all duration-150 focus:scale-110 focus:shadow-xl focus:ring-2 focus:ring-indigo-500 focus:z-30" title="Nhập chuỗi địa chỉ cách nhau bởi dấu phẩy">`
+          : `<span onclick="openEditModal(${idx})" class="cursor-pointer hover:text-indigo-600 transition underline decoration-dotted decoration-slate-400 font-medium truncate inline-block max-w-[130px]" title="Bấm để chỉnh sửa toàn bộ địa chỉ: ${addrInfo.fullText}">
               ${addrInfo.shortText}
             </span>`
         }
       </td>
 
-      <!-- Thao tác: Edit/Save + Push + Delete -->
+      <!-- Thao tác: Modal / Inline Edit + Push + Delete -->
       <td class="p-3 text-center whitespace-nowrap">
         <div class="inline-flex items-center gap-1">
+          <button onclick="openEditModal(${idx})" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition" title="Bung màn hình chỉnh sửa chi tiết (Modal)">
+            <i class="fa-solid fa-up-right-from-square"></i>
+          </button>
           ${isEditing 
-            ? `<button onclick="toggleEditRow(${idx})" class="text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-50 transition" title="Lưu chỉnh sửa & cập nhật Sheet">
+            ? `<button onclick="toggleEditRow(${idx})" class="text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-50 transition" title="Lưu chỉnh sửa inline">
                 <i class="fa-solid fa-floppy-disk"></i>
                </button>`
-            : `<button onclick="toggleEditRow(${idx})" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50 transition" title="Chỉnh sửa dòng">
-                <i class="fa-solid fa-pen-to-square"></i>
+            : `<button onclick="toggleEditRow(${idx})" class="text-slate-600 hover:text-slate-800 p-1.5 rounded hover:bg-slate-100 transition" title="Sửa nhanh trên dòng">
+                <i class="fa-solid fa-pen"></i>
                </button>`
           }
           <button onclick="pushSingleRow(${idx})" class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition" title="Đăng ký riêng dòng này">
@@ -405,6 +409,171 @@ function renderTable() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+function openEditModal(idx) {
+  const row = currentRows[idx];
+  if (!row) return;
+
+  document.getElementById('modalRowIndex').value = idx;
+  document.getElementById('modalEditTitle').textContent = `Chỉnh sửa dòng #${idx + 1}: ${row.hoTen || row['Họ tên'] || 'Khách mới'}`;
+  
+  document.getElementById('modalHoTen').value = row.hoTen || row['Họ tên'] || '';
+  document.getElementById('modalGioiTinh').value = ((row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F') ? 'Nữ' : 'Nam';
+  document.getElementById('modalNgaySinh').value = row.ngaySinh || row['Ngày sinh'] || row['D.O.B'] || '';
+  document.getElementById('modalQuocTich').value = (row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase();
+  document.getElementById('modalSoPhong').value = cleanRoomNumber(row.soPhong || row['Số phòng']) || '1';
+  document.getElementById('modalLoaiGiayTo').value = row.loaiGiayTo || row['Loại giấy tờ'] || 'Thẻ CCCD';
+  document.getElementById('modalSoGiayTo').value = row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || '';
+  document.getElementById('modalNgayDen').value = row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || '';
+  document.getElementById('modalNgayDi').value = row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || '';
+  document.getElementById('modalThoiHanTamTru').value = row.thoiHanTamTru || row.thoiHanTamTruStr || row['Thời hạn tạm trú'] || '';
+
+  // Hiển thị toàn bộ full địa chỉ cách nhau bởi dấu phẩy
+  document.getElementById('modalDiaChiFull').value = getCombinedAddress(row);
+
+  const modal = document.getElementById('rowEditModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.getElementById('modalHoTen').focus();
+  }
+}
+
+function closeEditModal() {
+  const modal = document.getElementById('rowEditModal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
+function updateAddressCell(idx, fullAddress) {
+  if (!currentRows[idx]) return;
+  parseAndApplyAddress(currentRows[idx], fullAddress);
+  updatePayloadPreview();
+}
+
+function parseAndApplyAddress(row, fullAddress) {
+  const cleanAddr = (fullAddress || '').trim();
+  row.diaChi = cleanAddr;
+  row['Địa chỉ'] = cleanAddr;
+  row['Địa chỉ chi tiết'] = cleanAddr;
+
+  if (cleanAddr.includes(',')) {
+    const parts = cleanAddr.split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length >= 4) {
+      row['Địa chỉ chi tiết'] = parts.slice(0, parts.length - 3).join(', ');
+      row.diaChi = row['Địa chỉ chi tiết'];
+      row['Phường/Xã'] = parts[parts.length - 3];
+      row.phuongXa = parts[parts.length - 3];
+      row['Quận/Huyện'] = parts[parts.length - 2];
+      row.quanHuyen = parts[parts.length - 2];
+      row['Tỉnh/TP'] = parts[parts.length - 1];
+      row.tinhTp = parts[parts.length - 1];
+      row['Tỉnh'] = parts[parts.length - 1];
+    } else if (parts.length === 3) {
+      row['Địa chỉ chi tiết'] = parts[0];
+      row.diaChi = parts[0];
+      row['Quận/Huyện'] = parts[1];
+      row.quanHuyen = parts[1];
+      row['Tỉnh/TP'] = parts[2];
+      row.tinhTp = parts[2];
+      row['Tỉnh'] = parts[2];
+    } else if (parts.length === 2) {
+      row['Địa chỉ chi tiết'] = parts[0];
+      row.diaChi = parts[0];
+      row['Tỉnh/TP'] = parts[1];
+      row.tinhTp = parts[1];
+      row['Tỉnh'] = parts[1];
+    }
+  }
+}
+
+function saveModalEdit() {
+  const idxStr = document.getElementById('modalRowIndex').value;
+  if (idxStr === '') return;
+  const idx = parseInt(idxStr, 10);
+  const row = currentRows[idx];
+  if (!row) return;
+
+  // Cập nhật các trường từ Modal vào row
+  row.hoTen = document.getElementById('modalHoTen').value.trim();
+  row['Họ tên'] = row.hoTen;
+
+  row.gioiTinh = document.getElementById('modalGioiTinh').value;
+  row['Giới tính'] = row.gioiTinh;
+
+  row.ngaySinh = document.getElementById('modalNgaySinh').value.trim();
+  row['Ngày sinh'] = row.ngaySinh;
+  row['D.O.B'] = row.ngaySinh;
+
+  row.quocTich = document.getElementById('modalQuocTich').value.trim().toUpperCase();
+  row['Quốc tịch'] = row.quocTich;
+  row['Quốc gia'] = row.quocTich;
+
+  row.soPhong = document.getElementById('modalSoPhong').value;
+  row['Số phòng'] = row.soPhong;
+
+  row.loaiGiayTo = document.getElementById('modalLoaiGiayTo').value;
+  row['Loại giấy tờ'] = row.loaiGiayTo;
+
+  row.soGiayTo = document.getElementById('modalSoGiayTo').value.trim();
+  row['Số giấy tờ'] = row.soGiayTo;
+  row['Số CCCD'] = row.soGiayTo;
+  row['Số hộ chiếu'] = row.soGiayTo;
+  row.soHoChieu = row.soGiayTo;
+
+  row.ngayDen = document.getElementById('modalNgayDen').value.trim();
+  row['Ngày đến'] = row.ngayDen;
+  row['(từ ngày)'] = row.ngayDen;
+
+  row.ngayDi = document.getElementById('modalNgayDi').value.trim();
+  row['Ngày đi'] = row.ngayDi;
+  row['(đến ngày)'] = row.ngayDi;
+
+  const thoiHan = document.getElementById('modalThoiHanTamTru').value.trim();
+  if (thoiHan) {
+    row.thoiHanTamTru = thoiHan;
+    row.thoiHanTamTruStr = thoiHan;
+    row['Thời hạn tạm trú'] = thoiHan;
+  }
+
+  const fullAddr = document.getElementById('modalDiaChiFull').value;
+  parseAndApplyAddress(row, fullAddr);
+
+  closeEditModal();
+  renderTable();
+  updatePayloadPreview();
+
+  // Hiển thị toast và cập nhật Google Sheet trong nền
+  showCopyToast('LƯU', `Đang lưu dòng ${idx + 1} lên Google Sheet...`);
+
+  const sheetId = (document.getElementById('sheetIdInput') ? document.getElementById('sheetIdInput').value : '16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q').trim();
+  const select = document.getElementById('sheetTabSelect');
+  const gid = select ? select.value : '0';
+  const selectedTab = availableTabs.find(t => String(t.gid) === String(gid));
+  const sheetName = selectedTab ? selectedTab.name : '';
+
+  fetch('/api/sheets/update-row', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rowIndex: idx, row: currentRows[idx], sheetId, gid, sheetName }),
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        showCopyToast('OK', `Đã cập nhật dòng ${idx + 1} lên Google Sheet!`);
+      } else if (data.notConfigured) {
+        console.info('[GoogleSheetService]', data.message);
+        showCopyToast('LƯU', `Đã lưu dòng ${idx + 1} vào hệ thống.`);
+      } else {
+        console.warn('[GoogleSheetService]', data.message);
+        showCopyToast('CẢNH BÁO', `Lỗi cập nhật Sheet: ${data.message}`);
+      }
+    })
+    .catch(err => {
+      console.warn('Lỗi ghi nhận dòng:', err);
+      showCopyToast('LỖI', `Lỗi mạng khi cập nhật Sheet: ${err.message}`);
+    });
 }
 
 function toggleSelectAll(checked) {

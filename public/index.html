@@ -239,6 +239,125 @@
 
   </main>
 
+  <!-- Modal Quick-Edit phóng to giữa màn hình -->
+  <div id="rowEditModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-300 w-full max-w-3xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
+      <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between border-b border-slate-700">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-indigo-400 text-base"></i>
+          <h3 id="modalEditTitle" class="font-bold text-sm tracking-wide">Chỉnh sửa thông tin khách lưu trú</h3>
+        </div>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+        <input type="hidden" id="modalRowIndex" value="">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Họ tên -->
+          <div class="md:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">Họ và tên <span class="text-rose-500">*</span></label>
+            <input type="text" id="modalHoTen" class="w-full px-3 py-2 text-sm uppercase font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="NGUYEN VAN A">
+          </div>
+
+          <!-- Giới tính -->
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Giới tính</label>
+            <select id="modalGioiTinh" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition">
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+
+          <!-- Ngày sinh -->
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Ngày sinh (YYYY-MM-DD) <span class="text-rose-500">*</span></label>
+            <input type="text" id="modalNgaySinh" class="w-full px-3 py-2 text-sm font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="1995-10-15">
+          </div>
+
+          <!-- Quốc tịch -->
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Quốc tịch (Mã 3 ký tự) <span class="text-rose-500">*</span></label>
+            <input type="text" id="modalQuocTich" class="w-full px-3 py-2 text-sm uppercase font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="VNM, RUS, KOR...">
+          </div>
+
+          <!-- Số phòng -->
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Số phòng <span class="text-rose-500">*</span></label>
+            <select id="modalSoPhong" class="w-full px-3 py-2 text-sm font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition">
+              <option value="1">Phòng 1</option>
+              <option value="2">Phòng 2</option>
+              <option value="3">Phòng 3</option>
+              <option value="4">Phòng 4</option>
+              <option value="5">Phòng 5</option>
+              <option value="6">Phòng 6</option>
+              <option value="7">Phòng 7</option>
+              <option value="8">Phòng 8</option>
+              <option value="9">Phòng 9</option>
+            </select>
+          </div>
+
+          <!-- Loại giấy tờ -->
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Loại giấy tờ</label>
+            <select id="modalLoaiGiayTo" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition">
+              <option value="Thẻ CCCD">Thẻ CCCD (1)</option>
+              <option value="Thẻ CMND">Thẻ CMND (2)</option>
+              <option value="Giấy phép lái xe">GPLX (3)</option>
+              <option value="Hộ chiếu">Hộ chiếu (4)</option>
+              <option value="Thẻ Căn Cước">Thẻ Căn Cước (8)</option>
+            </select>
+          </div>
+
+          <!-- Số giấy tờ -->
+          <div class="md:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">Số giấy tờ <span class="text-rose-500">*</span></label>
+            <input type="text" id="modalSoGiayTo" class="w-full px-3 py-2 text-sm font-mono font-bold text-indigo-700 border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="Số CCCD / Hộ chiếu">
+          </div>
+
+          <!-- Ngày đến -->
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Ngày đến (YYYY-MM-DD HH:mm:ss)</label>
+            <input type="text" id="modalNgayDen" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="2026-03-29 14:00:00">
+          </div>
+
+          <!-- Ngày đi -->
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Ngày đi (YYYY-MM-DD HH:mm:ss)</label>
+            <input type="text" id="modalNgayDi" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="2026-03-31 12:00:00">
+          </div>
+
+          <!-- Thời hạn tạm trú (Khách NN) -->
+          <div id="modalThoiHanContainer">
+            <label class="block font-semibold text-slate-700 mb-1">Thời hạn tạm trú (Khách NN)</label>
+            <input type="text" id="modalThoiHanTamTru" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="2026-12-31 23:59:59">
+          </div>
+
+          <!-- Toàn bộ Địa chỉ đầy đủ cách nhau bởi dấu phẩy -->
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1 flex items-center justify-between">
+              <span>Địa chỉ đầy đủ (Cách nhau bởi dấu phẩy: [Địa chỉ chi tiết], [Phường/Xã], [Quận/Huyện], [Tỉnh/TP])</span>
+              <span class="text-indigo-600 text-[11px] font-normal">Tự động phân tách và đồng bộ vào Sheet</span>
+            </label>
+            <textarea id="modalDiaChiFull" rows="2" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="Ví dụ: Tổ Dân Phố 5, Krông Năng, Krông Năng, Đắk Lắk"></textarea>
+            <p class="text-[11px] text-slate-500 mt-1">Hệ thống sẽ lưu trọn vẹn chuỗi địa chỉ này, đồng thời tự động bóc tách các trường Tỉnh/TP, Quận/Huyện, Phường/Xã nếu có dấu phẩy.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-end gap-3">
+        <button onclick="closeEditModal()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition shadow-xs">
+          Hủy bỏ
+        </button>
+        <button onclick="saveModalEdit()" class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shadow flex items-center gap-1.5">
+          <i class="fa-solid fa-floppy-disk"></i> Lưu & Cập nhật Sheet
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="bg-slate-800 text-slate-300 border-t border-slate-700 py-3 text-center text-xs">
     Module kiểm thử tích hợp KBTT API v1.4 &copy; 2026. Chuẩn hóa theo kiến trúc Node.js & Vanilla JS.
