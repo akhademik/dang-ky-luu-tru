@@ -443,11 +443,18 @@ async function toggleEditRow(idx) {
     const select = document.getElementById('sheetTabSelect');
     const gid = select ? select.value : '0';
     try {
-      await fetch('/api/sheets/update-row', {
+      const res = await fetch('/api/sheets/update-row', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rowIndex: idx, row: currentRows[idx], sheetId, gid }),
       });
+      const data = await res.json();
+      if (data.success) {
+        showCopyToast('OK', `Đã cập nhật dòng ${idx + 1} lên Google Sheet!`);
+      } else if (data.notConfigured) {
+        console.info('[GoogleSheetService]', data.message, data.guide);
+        showCopyToast('LƯU', `Đã lưu dòng ${idx + 1} vào hệ thống. (Để ghi trực tiếp lên Sheet cần Google Apps Script Webhook)`);
+      }
     } catch (err) {
       console.warn('Lỗi ghi nhận dòng:', err);
     }

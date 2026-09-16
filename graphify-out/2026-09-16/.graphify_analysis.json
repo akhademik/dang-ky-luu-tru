@@ -1,33 +1,6 @@
 {
   "communities": {
     "0": [
-      "src_catalogmanager",
-      "src_config",
-      "src_config_config",
-      "src_datatransformer",
-      "src_googlesheetservice",
-      "src_index",
-      "src_index_rundemo",
-      "src_kbttclient",
-      "src_server",
-      "src_server_broadcastreload",
-      "src_server_mime_types",
-      "src_server_pipeline",
-      "src_server_readbody",
-      "src_server_sendjson",
-      "src_server_server",
-      "src_server_sseclients",
-      "src_server_watchdirs",
-      "src_syncpipeline",
-      "src_syncpipeline_syncpipeline",
-      "src_syncpipeline_syncpipeline_closesession",
-      "src_syncpipeline_syncpipeline_initialize",
-      "src_syncpipeline_syncpipeline_processrows",
-      "src_syncpipeline_syncpipeline_pullandprocessgooglesheet",
-      "src_tokenmanager",
-      "test_test_pipeline"
-    ],
-    "1": [
       "package",
       "package_author",
       "package_description",
@@ -51,7 +24,7 @@
       "ref_pnpm",
       "ref_tam_tru"
     ],
-    "2": [
+    "1": [
       "src_catalogmanager_catalogmanager",
       "src_catalogmanager_catalogmanager_constructor",
       "src_catalogmanager_catalogmanager_fetchpublic",
@@ -75,25 +48,59 @@
       "src_catalogmanager_catalogmanager_searchtinhtp",
       "src_catalogmanager_catalogmanager_validatequoctich"
     ],
+    "2": [
+      "src_index_rundemo",
+      "src_server",
+      "src_server_broadcastreload",
+      "src_server_mime_types",
+      "src_server_pipeline",
+      "src_server_readbody",
+      "src_server_sendjson",
+      "src_server_server",
+      "src_server_sseclients",
+      "src_server_watchdirs",
+      "src_syncpipeline_syncpipeline",
+      "src_syncpipeline_syncpipeline_closesession",
+      "src_syncpipeline_syncpipeline_constructor",
+      "src_syncpipeline_syncpipeline_initialize",
+      "src_syncpipeline_syncpipeline_processrows",
+      "src_syncpipeline_syncpipeline_pullandprocessgooglesheet"
+    ],
     "3": [
       "public_app",
       "public_app_availabletabs",
       "public_app_catalogdata",
-      "public_app_checktokenstatus",
       "public_app_currentrows",
       "public_app_editingrowindices",
-      "public_app_executesyncbatch",
-      "public_app_handlemanuallogin",
-      "public_app_handleregisterclick",
-      "public_app_processandsyncnow",
-      "public_app_pushselectedrows",
-      "public_app_pushsinglerow",
+      "public_app_filtercatalog",
+      "public_app_getcombinedaddress",
+      "public_app_getdisplayaddress",
+      "public_app_isguestvn",
+      "public_app_loadcatalogs",
+      "public_app_normalizestr",
+      "public_app_rendercataloglist",
       "public_app_rowvalidationstates",
       "public_app_selectedrowindices",
-      "public_app_setuphotreload",
-      "public_app_switchtab"
+      "public_app_updatecell"
     ],
     "4": [
+      "src_catalogmanager",
+      "src_config",
+      "src_config_config",
+      "src_datatransformer",
+      "src_googlesheetservice",
+      "src_index",
+      "src_kbttclient",
+      "src_kbttclient_kbttclient",
+      "src_kbttclient_kbttclient_constructor",
+      "src_kbttclient_kbttclient_postpayload",
+      "src_kbttclient_kbttclient_submitforeignguests",
+      "src_kbttclient_kbttclient_submitvietnameseguests",
+      "src_syncpipeline",
+      "src_tokenmanager",
+      "test_test_pipeline"
+    ],
+    "5": [
       "src_datatransformer_datatransformer",
       "src_datatransformer_datatransformer_checkrowcompleteness",
       "src_datatransformer_datatransformer_cleandocnumber",
@@ -109,19 +116,19 @@
       "src_datatransformer_datatransformer_validatedocnumber",
       "test_test_pipeline_runtests"
     ],
-    "5": [
-      "public_app_addnewrow",
-      "public_app_loadsampledata",
-      "public_app_removerow",
-      "public_app_rendertable",
-      "public_app_toggleeditrow",
-      "public_app_togglerowselect",
-      "public_app_toggleselectall",
-      "public_app_updatecell",
-      "public_app_updatepayloadpreview",
-      "public_app_updateselectedcountbadge"
-    ],
     "6": [
+      "src_googlesheetservice_googlesheetservice",
+      "src_googlesheetservice_googlesheetservice_constructor",
+      "src_googlesheetservice_googlesheetservice_fetchsheetdata",
+      "src_googlesheetservice_googlesheetservice_fetchsheettabs",
+      "src_googlesheetservice_googlesheetservice_mapheadertokey",
+      "src_googlesheetservice_googlesheetservice_parsecsv",
+      "src_googlesheetservice_googlesheetservice_parsedatefromtabname",
+      "src_googlesheetservice_googlesheetservice_parsematrixtoobjects",
+      "src_googlesheetservice_googlesheetservice_parsesheetidentifier",
+      "src_googlesheetservice_googlesheetservice_updatesheetrow"
+    ],
+    "7": [
       "knip",
       "knip_entry",
       "knip_project",
@@ -132,18 +139,29 @@
       "ref_src_js",
       "ref_test_js"
     ],
-    "7": [
-      "src_googlesheetservice_googlesheetservice",
-      "src_googlesheetservice_googlesheetservice_constructor",
-      "src_googlesheetservice_googlesheetservice_fetchsheetdata",
-      "src_googlesheetservice_googlesheetservice_fetchsheettabs",
-      "src_googlesheetservice_googlesheetservice_mapheadertokey",
-      "src_googlesheetservice_googlesheetservice_parsecsv",
-      "src_googlesheetservice_googlesheetservice_parsedatefromtabname",
-      "src_googlesheetservice_googlesheetservice_parsematrixtoobjects",
-      "src_googlesheetservice_googlesheetservice_parsesheetidentifier"
-    ],
     "8": [
+      "public_app_addnewrow",
+      "public_app_loadsampledata",
+      "public_app_removerow",
+      "public_app_rendertable",
+      "public_app_toggleeditrow",
+      "public_app_togglerowselect",
+      "public_app_toggleselectall",
+      "public_app_updatepayloadpreview",
+      "public_app_updateselectedcountbadge"
+    ],
+    "9": [
+      "public_app_checktokenstatus",
+      "public_app_executesyncbatch",
+      "public_app_handlemanuallogin",
+      "public_app_handleregisterclick",
+      "public_app_processandsyncnow",
+      "public_app_pushselectedrows",
+      "public_app_pushsinglerow",
+      "public_app_setuphotreload",
+      "public_app_switchtab"
+    ],
+    "10": [
       "src_tokenmanager_tokenmanager",
       "src_tokenmanager_tokenmanager_constructor",
       "src_tokenmanager_tokenmanager_getvalidtoken",
@@ -152,52 +170,32 @@
       "src_tokenmanager_tokenmanager_revoke",
       "src_tokenmanager_tokenmanager_savetokendata"
     ],
-    "9": [
-      "src_kbttclient_kbttclient",
-      "src_kbttclient_kbttclient_constructor",
-      "src_kbttclient_kbttclient_postpayload",
-      "src_kbttclient_kbttclient_submitforeignguests",
-      "src_kbttclient_kbttclient_submitvietnameseguests",
-      "src_syncpipeline_syncpipeline_constructor"
-    ],
-    "10": [
+    "11": [
       "public_app_cleanroomnumber",
       "public_app_fetchsheettabslist",
       "public_app_handletabchange",
       "public_app_pulldatafromgooglesheet"
     ],
-    "11": [
-      "public_app_filtercatalog",
-      "public_app_loadcatalogs",
-      "public_app_normalizestr",
-      "public_app_rendercataloglist"
-    ],
     "12": [
       "public_app_copycountrycode",
       "public_app_fallbackcopytext",
       "public_app_showcopytoast"
-    ],
-    "13": [
-      "public_app_getcombinedaddress",
-      "public_app_getdisplayaddress",
-      "public_app_isguestvn"
     ]
   },
   "cohesion": {
-    "0": 0.20333333333333334,
-    "1": 0.09090909090909091,
-    "2": 0.19480519480519481,
-    "3": 0.19166666666666668,
-    "4": 0.4175824175824176,
-    "5": 0.35555555555555557,
-    "6": 0.2222222222222222,
-    "7": 0.3888888888888889,
-    "8": 0.5238095238095238,
-    "9": 0.4666666666666667,
-    "10": 0.5,
+    "0": 0.09090909090909091,
+    "1": 0.19480519480519481,
+    "2": 0.2,
+    "3": 0.18095238095238095,
+    "4": 0.4,
+    "5": 0.4175824175824176,
+    "6": 0.3333333333333333,
+    "7": 0.2222222222222222,
+    "8": 0.4166666666666667,
+    "9": 0.2222222222222222,
+    "10": 0.5238095238095238,
     "11": 0.5,
-    "12": 1.0,
-    "13": 0.6666666666666666
+    "12": 1.0
   },
   "gods": [
     {
@@ -218,7 +216,7 @@
     {
       "id": "src_googlesheetservice_googlesheetservice",
       "label": "GoogleSheetService",
-      "degree": 13
+      "degree": 14
     },
     {
       "id": "src_tokenmanager_tokenmanager",
@@ -265,6 +263,17 @@
     },
     {
       "source": "runTests()",
+      "target": "TokenManager",
+      "source_files": [
+        "test/test-pipeline.js",
+        "src/tokenManager.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "runTests()",
       "target": "KbttClient",
       "source_files": [
         "test/test-pipeline.js",
@@ -280,17 +289,6 @@
       "source_files": [
         "test/test-pipeline.js",
         "src/googleSheetService.js"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "calls",
-      "why": "connects across different repos/directories; bridges separate communities"
-    },
-    {
-      "source": "runTests()",
-      "target": "TokenManager",
-      "source_files": [
-        "test/test-pipeline.js",
-        "src/tokenManager.js"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",

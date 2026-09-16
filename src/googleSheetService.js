@@ -187,6 +187,51 @@ export class GoogleSheetService {
   }
 
   /**
+   * Cập nhật một dòng dữ liệu ngược lại Google Sheet
+   * Hỗ trợ Google Apps Script Webhook hoặc Google Sheets API
+   * @param {{ sheetId?: string, gid?: string, rowIndex: number, rowData: Object, appsScriptUrl?: string }} params
+   */
+  async updateSheetRow({ sheetId = this.sheetId, gid = '0', rowIndex, rowData, appsScriptUrl = CONFIG.GOOGLE_APPS_SCRIPT_URL }) {
+    const url = (appsScriptUrl || process.env.GOOGLE_APPS_SCRIPT_URL || CONFIG.GOOGLE_APPS_SCRIPT_URL || '').trim();
+
+    if (url) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'updateRow',
+            sheetId: sheetId || this.sheetId,
+            gid: gid || '0',
+            rowIndex: Number(rowIndex) + 2, // 1-indexed including header
+            row: rowData,
+          }),
+        });
+        const result = await response.json();
+        return {
+          success: true,
+          message: result.message || `Đã cập nhật dòng ${Number(rowIndex) + 1} lên Google Sheet thành công`,
+          source: 'Google Apps Script Webhook',
+          result,
+        };
+      } catch (err) {
+        return {
+          success: false,
+          message: `Lỗi khi gọi Google Apps Script Webhook: ${err.message}`,
+          error: err.message,
+        };
+      }
+    }
+
+    return {
+      success: false,
+      notConfigured: true,
+      message: 'Chưa cấu hình Webhook Google Apps Script để cập nhật trực tiếp lên Google Sheet.',
+      guide: 'Thêm biến môi trường GOOGLE_APPS_SCRIPT_URL hoặc cập nhật CONFIG.GOOGLE_APPS_SCRIPT_URL để kích hoạt ghi ngược lại Google Sheet.',
+    };
+  }
+
+  /**
    * Parser CSV an toàn hỗ trợ dấu ngoặc kép và ngắt dòng bên trong ô
    * @param {string} csvText
    * @returns {Array<Object>}

@@ -4,6 +4,7 @@
 export const CONFIG = {
   BASE_URL: 'https://api-kbtt.ai-vlab.com',
   GOOGLE_SHEET_ID: '16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q',
+  GOOGLE_APPS_SCRIPT_URL: process.env.GOOGLE_APPS_SCRIPT_URL || '',
   AUTH: {
     USERNAME: 'demo_tich_hop',
     PASSWORD: 'Demo@#$12345',

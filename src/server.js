@@ -191,10 +191,14 @@ const server = http.createServer(async (req, res) => {
 
       if (pathname === '/api/sheets/update-row' && req.method === 'POST') {
         const { rowIndex, row, sheetId, gid } = await readBody(req);
-        console.log(`[GoogleSheetService] Đã lưu cập nhật cho dòng ${Number(rowIndex) + 1} (Khách: ${row ? (row.hoTen || row['Họ tên']) : 'N/A'})`);
+        const result = await pipeline.googleSheetService.updateSheetRow({
+          sheetId: sheetId || CONFIG.GOOGLE_SHEET_ID,
+          gid: gid || '0',
+          rowIndex,
+          rowData: row,
+        });
         return sendJson(res, 200, {
-          success: true,
-          message: `Đã lưu cập nhật dòng ${Number(rowIndex) + 1} thành công`,
+          ...result,
           rowIndex,
           row,
           sheetId: sheetId || CONFIG.GOOGLE_SHEET_ID,
