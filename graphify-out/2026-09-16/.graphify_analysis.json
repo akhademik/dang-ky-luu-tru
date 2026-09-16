@@ -244,8 +244,8 @@
       "degree": 9
     },
     {
-      "id": "package_keywords",
-      "label": "keywords",
+      "id": "public_app_updatepayloadpreview",
+      "label": "updatePayloadPreview()",
       "degree": 8
     }
   ],
