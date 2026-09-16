@@ -30,16 +30,16 @@
     "semantic_hash": "6b2fe1b52de8f7aa75de51999dfb286e"
   },
   "knip.json": {
-    "mtime": 1789541793.7589433,
-    "seen": 1789541817.0690122,
-    "ast_hash": "21336c9429defc7ce8c8022238ad80d7",
-    "semantic_hash": "21336c9429defc7ce8c8022238ad80d7"
+    "mtime": 1789547832.7801275,
+    "seen": 1789547884.708808,
+    "ast_hash": "37b9439e9455d0e559076801c5a84985",
+    "semantic_hash": "37b9439e9455d0e559076801c5a84985"
   },
   "package.json": {
-    "mtime": 1789541801.6363144,
-    "seen": 1789541817.0690134,
-    "ast_hash": "1932a3005365bbefee753d2bb89ff6aa",
-    "semantic_hash": "1932a3005365bbefee753d2bb89ff6aa"
+    "mtime": 1789547835.5459993,
+    "seen": 1789547884.7088187,
+    "ast_hash": "43f2e5e1bfb76da6f54385a964cb29de",
+    "semantic_hash": "43f2e5e1bfb76da6f54385a964cb29de"
   },
   "public/app.js": {
     "mtime": 1789547210.7919786,
@@ -47,64 +47,172 @@
     "ast_hash": "5a1da65864e5558d523fda8856857867",
     "semantic_hash": "5a1da65864e5558d523fda8856857867"
   },
-  "src/catalogManager.js": {
+  "legacy_src/catalogManager.js": {
     "mtime": 1789542970.4568174,
-    "seen": 1789543005.9835005,
+    "seen": 1789547884.7088096,
     "ast_hash": "78c8053235b7eabb94c091b1e4d41278",
     "semantic_hash": "78c8053235b7eabb94c091b1e4d41278"
   },
-  "src/config.js": {
+  "legacy_src/config.js": {
     "mtime": 1789547159.0492156,
-    "seen": 1789547221.8933225,
+    "seen": 1789547884.708811,
     "ast_hash": "978631e2244fa53b1138d295a0b80756",
     "semantic_hash": "978631e2244fa53b1138d295a0b80756"
   },
-  "src/dataTransformer.js": {
+  "legacy_src/dataTransformer.js": {
     "mtime": 1789545526.4125547,
-    "seen": 1789545601.1377058,
+    "seen": 1789547884.708812,
     "ast_hash": "3cf2ab96660a2e8a82fbc7616379e0a9",
     "semantic_hash": "3cf2ab96660a2e8a82fbc7616379e0a9"
   },
-  "src/googleSheetService.js": {
+  "legacy_src/googleSheetService.js": {
     "mtime": 1789546902.5456743,
-    "seen": 1789546926.449313,
+    "seen": 1789547884.7088134,
     "ast_hash": "5a579cc06e4536a357d2842bb784dbcc",
     "semantic_hash": "5a579cc06e4536a357d2842bb784dbcc"
   },
-  "src/index.js": {
-    "mtime": 1789527945.297741,
-    "seen": 1789541817.069019,
-    "ast_hash": "4ebe9d1a9414cb8d9e66c6f24cea9d76",
-    "semantic_hash": "4ebe9d1a9414cb8d9e66c6f24cea9d76"
-  },
-  "src/kbttClient.js": {
+  "legacy_src/kbttClient.js": {
     "mtime": 1789536689.8140528,
-    "seen": 1789541817.0690203,
+    "seen": 1789547884.7088141,
     "ast_hash": "af30b61f3f0615e9580399ec7b51cbb4",
     "semantic_hash": "af30b61f3f0615e9580399ec7b51cbb4"
   },
-  "src/server.js": {
+  "legacy_src/server.js": {
     "mtime": 1789545842.641203,
-    "seen": 1789545864.8340893,
+    "seen": 1789547884.708815,
     "ast_hash": "728ae011005faed369a6b8692a797b1a",
     "semantic_hash": "728ae011005faed369a6b8692a797b1a"
   },
-  "src/syncPipeline.js": {
+  "legacy_src/syncPipeline.js": {
     "mtime": 1789533097.4973319,
-    "seen": 1789541817.069022,
+    "seen": 1789547884.708816,
     "ast_hash": "93d75d1a5f1d57dcccfa6a6ff32a641c",
     "semantic_hash": "93d75d1a5f1d57dcccfa6a6ff32a641c"
   },
-  "src/tokenManager.js": {
+  "legacy_src/tokenManager.js": {
     "mtime": 1789534325.697452,
-    "seen": 1789541817.069023,
+    "seen": 1789547884.7088172,
     "ast_hash": "2e6ec2eb1e6d98e274d58cc50a81e9e9",
     "semantic_hash": "2e6ec2eb1e6d98e274d58cc50a81e9e9"
   },
-  "test/test-pipeline.js": {
-    "mtime": 1789545582.1125345,
-    "seen": 1789545601.137966,
-    "ast_hash": "24438cc1b4e4fe0010a16070b2a21bf3",
-    "semantic_hash": "24438cc1b4e4fe0010a16070b2a21bf3"
+  "src/index.ts": {
+    "mtime": 1789547783.8835664,
+    "seen": 1789547884.7088633,
+    "ast_hash": "9b9691deb4f7e8e15c6aaf5b07e119ed",
+    "semantic_hash": "9b9691deb4f7e8e15c6aaf5b07e119ed"
+  },
+  "src/lib/server/catalogManager.ts": {
+    "mtime": 1789547527.7082717,
+    "seen": 1789547884.7088645,
+    "ast_hash": "4f0b8fc7c4cbb9eb0db9d78943d6370b",
+    "semantic_hash": "4f0b8fc7c4cbb9eb0db9d78943d6370b"
+  },
+  "src/lib/server/config.ts": {
+    "mtime": 1789547519.5522163,
+    "seen": 1789547884.7088656,
+    "ast_hash": "4abeddc4a30d46372308200da9347e3d",
+    "semantic_hash": "4abeddc4a30d46372308200da9347e3d"
+  },
+  "src/lib/server/dataTransformer.ts": {
+    "mtime": 1789547854.469664,
+    "seen": 1789547884.7088666,
+    "ast_hash": "1e79f8d104878f393931aad1e7a33576",
+    "semantic_hash": "1e79f8d104878f393931aad1e7a33576"
+  },
+  "src/lib/server/googleSheetService.ts": {
+    "mtime": 1789547554.1739748,
+    "seen": 1789547884.7088673,
+    "ast_hash": "0f05a8d88544e07afeeeb1097a3528e8",
+    "semantic_hash": "0f05a8d88544e07afeeeb1097a3528e8"
+  },
+  "src/lib/server/kbttClient.ts": {
+    "mtime": 1789547557.3263779,
+    "seen": 1789547884.7088683,
+    "ast_hash": "b22311b34cb8f4be6a4b232079db3698",
+    "semantic_hash": "b22311b34cb8f4be6a4b232079db3698"
+  },
+  "src/lib/server/syncPipeline.ts": {
+    "mtime": 1789547562.9638054,
+    "seen": 1789547884.7088697,
+    "ast_hash": "3efdd2458990837f47433b12498759e9",
+    "semantic_hash": "3efdd2458990837f47433b12498759e9"
+  },
+  "src/lib/server/tokenManager.ts": {
+    "mtime": 1789547533.2379193,
+    "seen": 1789547884.7088704,
+    "ast_hash": "aab3418ac3c5e4f23afe57988110430c",
+    "semantic_hash": "aab3418ac3c5e4f23afe57988110430c"
+  },
+  "src/routes/+layout.svelte": {
+    "mtime": 1789547583.584577,
+    "seen": 1789547884.7088714,
+    "ast_hash": "110d40b8e7a95c90fa2051e3d18a90ba",
+    "semantic_hash": "110d40b8e7a95c90fa2051e3d18a90ba"
+  },
+  "src/routes/+page.svelte": {
+    "mtime": 1789547732.0189693,
+    "seen": 1789547884.708872,
+    "ast_hash": "b09fb094198c62f88f65a270eed74e00",
+    "semantic_hash": "b09fb094198c62f88f65a270eed74e00"
+  },
+  "src/routes/api/catalogs/+server.ts": {
+    "mtime": 1789547565.905172,
+    "seen": 1789547884.7088733,
+    "ast_hash": "314a54328b391ece9333a74c9e288afd",
+    "semantic_hash": "314a54328b391ece9333a74c9e288afd"
+  },
+  "src/routes/api/sheets/+server.ts": {
+    "mtime": 1789547708.3229947,
+    "seen": 1789547884.7088742,
+    "ast_hash": "a24989e1abad859db33f6f3e131381c2",
+    "semantic_hash": "a24989e1abad859db33f6f3e131381c2"
+  },
+  "src/routes/api/sheets/update-row/+server.ts": {
+    "mtime": 1789547575.4364793,
+    "seen": 1789547884.708875,
+    "ast_hash": "ec754b92e3841b124187442194e46a0b",
+    "semantic_hash": "ec754b92e3841b124187442194e46a0b"
+  },
+  "src/routes/api/sync/+server.ts": {
+    "mtime": 1789547581.7069209,
+    "seen": 1789547884.7088761,
+    "ast_hash": "d3fb070c62b49af225b7c9f0d8fa9c4e",
+    "semantic_hash": "d3fb070c62b49af225b7c9f0d8fa9c4e"
+  },
+  "src/routes/api/token/+server.ts": {
+    "mtime": 1789547570.1373322,
+    "seen": 1789547884.708877,
+    "ast_hash": "58bb03f85daebd873b7a574319cb5c4a",
+    "semantic_hash": "58bb03f85daebd873b7a574319cb5c4a"
+  },
+  "src/routes/api/transform/+server.ts": {
+    "mtime": 1789547578.8983264,
+    "seen": 1789547884.708878,
+    "ast_hash": "56a37caa89114b2c8a0f8a08f8858d4b",
+    "semantic_hash": "56a37caa89114b2c8a0f8a08f8858d4b"
+  },
+  "svelte.config.js": {
+    "mtime": 1789547485.622127,
+    "seen": 1789547884.708879,
+    "ast_hash": "61bec2c96e47c8e4daa0d0ff8c44ffa2",
+    "semantic_hash": "61bec2c96e47c8e4daa0d0ff8c44ffa2"
+  },
+  "test/test-pipeline.ts": {
+    "mtime": 1789547861.4003637,
+    "seen": 1789547884.70888,
+    "ast_hash": "783db50b188b8f62c05e128adb73843c",
+    "semantic_hash": "783db50b188b8f62c05e128adb73843c"
+  },
+  "tsconfig.json": {
+    "mtime": 1789547812.022729,
+    "seen": 1789547884.708881,
+    "ast_hash": "a678a278a7d1fd9b06eb29d329bb3d7f",
+    "semantic_hash": "a678a278a7d1fd9b06eb29d329bb3d7f"
+  },
+  "vite.config.ts": {
+    "mtime": 1789547488.065095,
+    "seen": 1789547884.7088816,
+    "ast_hash": "cdde8309c24dbbfd2ccfbde3feeb2a2e",
+    "semantic_hash": "cdde8309c24dbbfd2ccfbde3feeb2a2e"
   }
 }

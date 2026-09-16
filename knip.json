@@ -1,5 +1,16 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["src/index.js", "public/app.js"],
-  "project": ["src/**/*.js", "test/**/*.js", "public/**/*.js"]
+  "entry": [
+    "src/routes/**/+*.{js,ts,svelte}",
+    "src/lib/**/*.{js,ts}",
+    "src/index.ts",
+    "test/**/*.ts"
+  ],
+  "project": [
+    "src/**/*.{js,ts,svelte}",
+    "test/**/*.ts"
+  ],
+  "ignoreDependencies": [
+    "tailwindcss"
+  ]
 }

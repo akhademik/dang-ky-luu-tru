@@ -1,0 +1,21 @@
+{
+	"/": [],
+	"/api/catalogs": [
+		"src/routes/api/catalogs/+server.ts"
+	],
+	"/api/sheets": [
+		"src/routes/api/sheets/+server.ts"
+	],
+	"/api/sheets/update-row": [
+		"src/routes/api/sheets/update-row/+server.ts"
+	],
+	"/api/sync": [
+		"src/routes/api/sync/+server.ts"
+	],
+	"/api/token": [
+		"src/routes/api/token/+server.ts"
+	],
+	"/api/transform": [
+		"src/routes/api/transform/+server.ts"
+	]
+}

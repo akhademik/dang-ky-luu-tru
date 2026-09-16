@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "Module tích hợp đồng bộ tự động OCR từ Google Sheets lên Hệ thống KBTT (API v1.4)",
   "type": "module",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "test": "node test/test-pipeline.js",
-    "lint": "node --check src/config.js src/catalogManager.js src/tokenManager.js src/dataTransformer.js src/googleSheetService.js src/kbttClient.js src/syncPipeline.js src/server.js src/index.js test/test-pipeline.js",
+    "dev": "vite dev --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check:svelte": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "node --import jiti/register test/test-pipeline.ts",
+    "lint": "pnpm run check:svelte",
     "knip": "pnpm dlx knip",
-    "check": "pnpm run lint && pnpm run knip && pnpm test"
+    "check": "pnpm run check:svelte && pnpm run knip && pnpm test"
   },
   "keywords": [
     "kbtt",
@@ -21,5 +24,18 @@
     "pnpm"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.5.7",
+    "@sveltejs/kit": "^2.70.3",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^22.20.2",
+    "jiti": "^2.7.0",
+    "svelte": "^5.57.0",
+    "svelte-check": "^4.7.6",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.0"
+  }
 }
