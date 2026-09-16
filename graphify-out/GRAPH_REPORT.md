@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 255 nodes · 474 edges · 16 communities (6 shown, 6 thin omitted)
+- 254 nodes · 475 edges · 16 communities (6 shown, 6 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `536f8682`
+- Built from commit: `56021ee4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -30,7 +30,7 @@
 ## God Nodes (most connected - your core abstractions)
 1. `DataTransformer` - 26 edges
 2. `CatalogManager` - 22 edges
-3. `Logger` - 19 edges
+3. `Logger` - 20 edges
 4. `SyncPipeline` - 18 edges
 5. `GoogleSheetService` - 18 edges
 6. `TokenManager` - 17 edges
@@ -99,6 +99,6 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `app.js` be split into smaller, more focused modules?**
   _Cohesion score 0.09797979797979799 - nodes in this community are weakly interconnected._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.11707317073170732 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11829268292682926 - nodes in this community are weakly interconnected._
 - **Should `scripts` be split into smaller, more focused modules?**
   _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._

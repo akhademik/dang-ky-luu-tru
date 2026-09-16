@@ -140,11 +140,10 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
-      "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "tokenstate",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L3"
+      "source_location": "L4"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice",
@@ -205,11 +204,10 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": "tokenmanager",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L10"
+      "source_location": "L11"
     },
     {
       "id": "src_lib_server_logger_logger",
@@ -945,27 +943,28 @@
       "source_location": "L771"
     },
     {
-      "id": "src_routes_page_has",
-      "label": "has()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "file_type": "code",
-      "norm_label": "has()",
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L1471"
-    },
-    {
       "id": "src_routes_api_events_server_get",
       "label": "GET()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "events/+server.ts",
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "src/routes/api/events/+server.ts",
       "source_location": "L3"
+    },
+    {
+      "id": "src_routes_page_has",
+      "label": "has()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "+page.svelte",
+      "file_type": "code",
+      "norm_label": "has()",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1471"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
@@ -1441,11 +1440,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".clear()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L131"
+      "source_location": "L175"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_constructor",
@@ -1453,11 +1451,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getinstance",
@@ -1465,11 +1462,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".getinstance()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getstatus",
@@ -1477,11 +1473,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".getstatus()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L137"
+      "source_location": "L181"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
@@ -1489,11 +1484,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".getvalidtoken()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_login",
@@ -1501,11 +1495,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".login()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L45"
+      "source_location": "L49"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_refresh",
@@ -1513,11 +1506,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".refresh()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L72"
+      "source_location": "L94"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_revoke",
@@ -1525,11 +1517,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".revoke()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L98"
+      "source_location": "L116"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_savetoken",
@@ -1537,11 +1528,10 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
-      "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".savetoken()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L120"
+      "source_location": "L135"
     },
     {
       "id": "src_lib_server_logger_logger_clear",
@@ -1852,17 +1842,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_server_tokenmanager",
-      "label": "tokenManager.ts",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "tokenmanager.ts",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "src_routes_api_catalogs_server",
       "label": "catalogs/+server.ts",
       "_origin": "ast",
@@ -1962,34 +1941,35 @@
       "source_location": "L1"
     },
     {
-      "id": "svelte",
-      "label": "svelte",
+      "id": "src_lib_server_tokenmanager",
+      "label": "tokenManager.ts",
       "_origin": "ast",
-      "community": 11,
-      "confidence": "EXTRACTED",
+      "community": 1,
       "file_type": "code",
-      "norm_label": "svelte",
-      "source_file": "svelte"
-    },
-    {
-      "id": "src_routes_page",
-      "label": "+page.svelte",
-      "_origin": "ast",
-      "community": 11,
-      "file_type": "code",
-      "norm_label": "+page.svelte",
-      "source_file": "src/routes/+page.svelte",
+      "norm_label": "tokenmanager.ts",
+      "source_file": "src/lib/server/tokenManager.ts",
       "source_location": "L1"
     },
     {
       "id": "src_routes_api_events_server",
       "label": "events/+server.ts",
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "events/+server.ts",
       "file_type": "code",
       "norm_label": "events/+server.ts",
       "source_file": "src/routes/api/events/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_page",
+      "label": "+page.svelte",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "+page.svelte",
+      "file_type": "code",
+      "norm_label": "+page.svelte",
+      "source_file": "src/routes/+page.svelte",
       "source_location": "L1"
     },
     {
@@ -4363,7 +4343,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -4375,7 +4355,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -4387,7 +4367,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L38",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -4399,7 +4379,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L68",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -4411,7 +4391,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L90",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -4423,7 +4403,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L94",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -4435,7 +4415,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L112",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -5315,6 +5295,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_tokenmanager",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_catalogs_server",
       "target": "src_lib_server_syncpipeline_syncpipeline",
       "relation": "imports",
@@ -5828,6 +5820,18 @@
       "context": "import",
       "source_file": "src/lib/server/tokenManager.ts",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_tokenmanager",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -7363,7 +7367,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L152",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -7374,7 +7378,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -7684,15 +7688,6 @@
       "source_file": "tsconfig.json",
       "source_location": "L9",
       "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "svelte",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte"
     },
     {
       "source": "src_lib_server_catalogmanager_catalogmanager",
@@ -8323,13 +8318,24 @@
     },
     {
       "source": "src_lib_server_tokenmanager_tokenmanager",
+      "target": "src_lib_server_tokenmanager_tokenmanager_revoke",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L116",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_tokenmanager_tokenmanager",
       "target": "src_lib_server_tokenmanager_tokenmanager_savetoken",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L120",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -8340,18 +8346,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L131",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_tokenmanager_tokenmanager",
-      "target": "src_lib_server_tokenmanager_tokenmanager_getstatus",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L137",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -8362,7 +8357,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L17",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_tokenmanager_tokenmanager",
+      "target": "src_lib_server_tokenmanager_tokenmanager_getstatus",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -8373,7 +8379,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -8384,7 +8390,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L45",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -8395,18 +8401,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L72",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_tokenmanager_tokenmanager",
-      "target": "src_lib_server_tokenmanager_tokenmanager_revoke",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L98",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -8459,5 +8454,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "536f86827e3cba8ea8c474b8ef754ae7553f68b9"
+  "built_at_commit": "56021ee490974c534f0996c5c5660e56c524df60"
 }

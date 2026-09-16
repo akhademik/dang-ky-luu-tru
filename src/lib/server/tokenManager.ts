@@ -1,4 +1,5 @@
 import { CONFIG } from "./config.js";
+import { logger } from "./logger.js";
 
 export interface TokenState {
 	accessToken: string | null;
@@ -11,7 +12,7 @@ export class TokenManager {
 	private static instance: TokenManager;
 	public accessToken: string | null = null;
 	public refreshToken: string | null = null;
-	public expiresAt: number = 0;
+	public expiresAt: number = 0; // Milliseconds Unix timestamp
 	public tokenType: string = "Bearer";
 
 	public constructor() {}
@@ -23,32 +24,42 @@ export class TokenManager {
 		return TokenManager.instance;
 	}
 
-	public async getValidToken(): Promise<string | null> {
+	public async getValidToken(): Promise<string> {
 		const now = Date.now();
 		const bufferMs = CONFIG.TOKEN_REFRESH_BUFFER_SECONDS * 1000;
 		if (this.accessToken && this.expiresAt - now > bufferMs) {
 			return this.accessToken;
 		}
 
-		try {
-			if (this.refreshToken) {
+		if (this.refreshToken) {
+			try {
 				const ok = await this.refresh();
-				if (ok) return this.accessToken;
+				if (ok) return this.accessToken as string;
+			} catch (err) {
+				logger.warn(
+					"TokenManager",
+					`Làm mới token thất bại, chuyển sang đăng nhập lại: ${(err as Error).message}`,
+				);
 			}
-			await this.login();
-			return this.accessToken;
-		} catch {
-			return null;
 		}
+
+		return await this.login();
 	}
 
 	public async login(): Promise<string> {
 		const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.TOKEN}`;
+		const grantType = CONFIG.AUTH.GRANT_TYPE || "api_cslt";
 		const params = new URLSearchParams({
-			grant_type: CONFIG.AUTH.GRANT_TYPE,
 			username: CONFIG.AUTH.USERNAME,
 			password: CONFIG.AUTH.PASSWORD,
+			"grant-type": grantType,
+			grant_type: grantType,
 		});
+
+		logger.info(
+			"TokenManager",
+			`Gửi yêu cầu đăng nhập OAuth tới: ${url} (username=${CONFIG.AUTH.USERNAME})`,
+		);
 
 		const res = await fetch(url, {
 			method: "POST",
@@ -61,53 +72,57 @@ export class TokenManager {
 
 		if (!res.ok) {
 			const err = await res.text();
-			throw new Error(`Đăng nhập thất bại (${res.status}): ${err}`);
+			const errMsg = `Đăng nhập OAuth thất bại (HTTP ${res.status}): ${err}`;
+			logger.error("TokenManager", errMsg);
+			throw new Error(errMsg);
 		}
 
-		const data = await res.json();
+		const data = (await res.json()) as Record<string, unknown>;
 		this.saveToken(data);
-		return this.accessToken as string;
+		if (!this.accessToken) {
+			const errMsg = `Phản hồi OAuth không chứa AccessToken: ${JSON.stringify(data)}`;
+			logger.error("TokenManager", errMsg);
+			throw new Error(errMsg);
+		}
+		logger.info(
+			"TokenManager",
+			`Đăng nhập OAuth thành công! Token có hiệu lực đến ${new Date(this.expiresAt).toISOString()}`,
+		);
+		return this.accessToken;
 	}
 
 	public async refresh(): Promise<string> {
 		if (!this.refreshToken) throw new Error("Không có refresh token");
-		const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.REFRESH_TOKEN}`;
-		const params = new URLSearchParams({
-			grant_type: "refresh_token",
-			refresh_token: this.refreshToken,
-		});
-
+		const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.REFRESH_TOKEN}?refresh_token=${encodeURIComponent(this.refreshToken)}`;
 		const res = await fetch(url, {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-				Authorization: CONFIG.AUTH.BASIC_AUTH,
+				Authorization: "Basic QVBJX0MwNjp4aGhtUWE2eVZJbGZDRHA=",
 			},
-			body: params.toString(),
 		});
 
 		if (!res.ok) {
 			return this.login();
 		}
 
-		const data = await res.json();
+		const data = (await res.json()) as Record<string, unknown>;
 		this.saveToken(data);
-		return this.accessToken as string;
+		if (!this.accessToken) {
+			return this.login();
+		}
+		return this.accessToken;
 	}
 
 	public async revoke(): Promise<boolean> {
 		if (!this.accessToken) return true;
-		const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.REVOKE}`;
-		const params = new URLSearchParams({ token: this.accessToken });
+		const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.REVOKE}?access_token=${encodeURIComponent(this.accessToken)}`;
 
 		try {
 			const res = await fetch(url, {
-				method: "POST",
+				method: "DELETE",
 				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-					Authorization: CONFIG.AUTH.BASIC_AUTH,
+					Authorization: "Basic QVBJX0MwNjp4aGhtUWE2eVZJbGZDRHA=",
 				},
-				body: params.toString(),
 			});
 			this.clear();
 			return res.ok;
@@ -117,15 +132,44 @@ export class TokenManager {
 		}
 	}
 
-	private saveToken(data: Record<string, unknown>): void {
-		const token = (data.access_token || data.accessToken) as string;
-		const refresh = (data.refresh_token || data.refreshToken || null) as
-			| string
-			| null;
-		const expiresIn = Number(data.expires_in || data.expiresIn || 3600);
-		this.accessToken = token;
+	private saveToken(resData: Record<string, unknown>): void {
+		const payload = (resData.data || resData) as Record<string, unknown>;
+		const token = (payload.AccessToken ||
+			payload.access_token ||
+			payload.accessToken ||
+			resData.AccessToken ||
+			resData.access_token ||
+			resData.accessToken) as string;
+		const refresh = (payload.RefreshToken ||
+			payload.refresh_token ||
+			payload.refreshToken ||
+			resData.RefreshToken ||
+			resData.refresh_token ||
+			resData.refreshToken ||
+			null) as string | null;
+
+		let expMs: number;
+		if (payload.Exp || resData.Exp) {
+			const expSec = Number(payload.Exp || resData.Exp);
+			expMs = expSec * 1000;
+		} else {
+			const expiresIn = Number(
+				payload.expires_in ||
+					payload.expiresIn ||
+					resData.expires_in ||
+					resData.expiresIn ||
+					3600,
+			);
+			expMs = Date.now() + expiresIn * 1000;
+		}
+
+		this.accessToken = token || null;
 		this.refreshToken = refresh;
-		this.expiresAt = Math.floor(Date.now() / 1000) + expiresIn;
+		this.expiresAt = expMs;
+		this.tokenType =
+			(payload.TokenType as string) ||
+			(payload.token_type as string) ||
+			"Bearer";
 	}
 
 	private clear(): void {
@@ -135,15 +179,15 @@ export class TokenManager {
 	}
 
 	public getStatus() {
-		const nowSec = Math.floor(Date.now() / 1000);
+		const now = Date.now();
 		return {
 			hasToken: Boolean(this.accessToken),
 			accessToken: this.accessToken
 				? `${this.accessToken.substring(0, 15)}...`
 				: null,
-			expiresAt: this.expiresAt,
+			expiresAt: Math.floor(this.expiresAt / 1000),
 			expiresInSeconds: this.expiresAt
-				? Math.max(0, this.expiresAt - nowSec)
+				? Math.max(0, Math.floor((this.expiresAt - now) / 1000))
 				: 0,
 		};
 	}
