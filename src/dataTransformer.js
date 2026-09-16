@@ -255,37 +255,40 @@ export class DataTransformer {
         return { validationError: docVal.error };
       }
 
-      // Tra cứu địa giới hành chính
+      // Tra cứu địa giới hành chính (Nếu khách dùng Hộ chiếu / Passport thì địa chỉ để rỗng theo quy định)
       let maTT = '';
       let maPX = '';
-      let diaChi = rawAddress;
+      let diaChi = '';
 
-      const tinhRaw = rawRow.tinhTp || rawRow['Tỉnh'] || rawRow['Tỉnh/TP'] || rawRow.province || '';
-      const phuongXaRaw = rawRow.phuongXa || rawRow['Phường/Xã'] || rawRow.ward || '';
-      const quanHuyenRaw = rawRow.quanHuyen || rawRow['Quận/Huyện'] || rawRow.district || '';
+      if (loaiGiayToId !== 4) {
+        diaChi = rawAddress;
+        const tinhRaw = rawRow.tinhTp || rawRow['Tỉnh'] || rawRow['Tỉnh/TP'] || rawRow.province || '';
+        const phuongXaRaw = rawRow.phuongXa || rawRow['Phường/Xã'] || rawRow.ward || '';
+        const quanHuyenRaw = rawRow.quanHuyen || rawRow['Quận/Huyện'] || rawRow.district || '';
 
-      if (tinhRaw) {
-        const foundMaTT = this.catalog.findTinhTp(tinhRaw);
-        if (foundMaTT) {
-          maTT = foundMaTT;
-          if (phuongXaRaw) {
-            const foundMaPX = await this.catalog.findPhuongXa(maTT, phuongXaRaw);
-            if (foundMaPX) {
-              maPX = foundMaPX;
+        if (tinhRaw) {
+          const foundMaTT = this.catalog.findTinhTp(tinhRaw);
+          if (foundMaTT) {
+            maTT = foundMaTT;
+            if (phuongXaRaw) {
+              const foundMaPX = await this.catalog.findPhuongXa(maTT, phuongXaRaw);
+              if (foundMaPX) {
+                maPX = foundMaPX;
+              }
             }
           }
         }
-      }
 
-      // Nếu không tra cứu được mã thì để "", dồn địa chỉ đầy đủ vào trường diaChi
-      if (!maTT || !maPX) {
-        maTT = '';
-        maPX = '';
-        const addressParts = [rawAddress, phuongXaRaw, quanHuyenRaw, tinhRaw].filter(Boolean);
-        diaChi = addressParts.join(', ');
-      } else {
-        if (quanHuyenRaw && !diaChi.includes(quanHuyenRaw)) {
-          diaChi = [diaChi, quanHuyenRaw].filter(Boolean).join(', ');
+        // Nếu không tra cứu được mã thì để "", dồn địa chỉ đầy đủ vào trường diaChi
+        if (!maTT || !maPX) {
+          maTT = '';
+          maPX = '';
+          const addressParts = [rawAddress, phuongXaRaw, quanHuyenRaw, tinhRaw].filter(Boolean);
+          diaChi = addressParts.join(', ');
+        } else {
+          if (quanHuyenRaw && !diaChi.includes(quanHuyenRaw)) {
+            diaChi = [diaChi, quanHuyenRaw].filter(Boolean).join(', ');
+          }
         }
       }
 
