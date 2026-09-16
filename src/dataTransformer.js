@@ -284,20 +284,32 @@ export class DataTransformer {
       return { validationError: checkInVal.error };
     }
 
+    // Validate Số giấy tờ dựa trên Loại giấy tờ
+    const rawLoaiGiayTo = rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow['Tên giấy tờ'] || rawRow.idType;
+    const loaiGiayToId = this.catalog.findLoaiGiayTo(rawLoaiGiayTo);
+    const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số CCCD'] || rawRow.soHoChieu || rawRow['Số hộ chiếu'] || rawRow.idNumber || rawRow.passportNumber || '';
+    const docVal = this.validateDocNumber(rawDocNum, loaiGiayToId);
+    if (!docVal.valid) {
+      return { validationError: docVal.error };
+    }
+
+    // Validate Quốc tịch đối chiếu với quoc_tich.json
+    const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
+    let validatedQuocTich = 'VNM';
+    if (rawQuocTich && String(rawQuocTich).trim()) {
+      const qtVal = this.catalog.validateQuocTich(rawQuocTich);
+      if (!qtVal.valid) {
+        return { validationError: qtVal.error };
+      }
+      validatedQuocTich = qtVal.maQT;
+    }
+
     const isVN = this.isVietnamese(rawRow);
 
     if (isVN) {
       // ----------------------------------------------------
       // NHÁNH A: KHÁCH VIỆT NAM (API 5)
       // ----------------------------------------------------
-      const rawLoaiGiayTo = rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow['Tên giấy tờ'] || rawRow.idType;
-      const loaiGiayToId = this.catalog.findLoaiGiayTo(rawLoaiGiayTo);
-      const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số CCCD'] || rawRow.idNumber || '';
-      const docVal = this.validateDocNumber(rawDocNum, loaiGiayToId);
-      if (!docVal.valid) {
-        return { validationError: docVal.error };
-      }
-
       // Tra cứu địa giới hành chính (Nếu khách dùng Hộ chiếu / Passport thì địa chỉ để rỗng theo quy định)
       let maTT = '';
       let maPX = '';
@@ -373,18 +385,6 @@ export class DataTransformer {
       // ----------------------------------------------------
       // NHÁNH B: KHÁCH NƯỚC NGOÀI (API 4)
       // ----------------------------------------------------
-      const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
-      const qtVal = this.catalog.validateQuocTich(rawQuocTich);
-      if (!qtVal.valid) {
-        return { validationError: qtVal.error };
-      }
-      const quocTich = qtVal.maQT;
-      const rawPassport = rawRow.soHoChieu || rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số hộ chiếu'] || rawRow.passportNumber || '';
-      const docVal = this.validateDocNumber(rawPassport, 4);
-      if (!docVal.valid) {
-        return { validationError: docVal.error };
-      }
-
       // loaiNgayThangNamSinh: "D" nếu có đầy đủ YYYY-MM-DD, "Y" nếu chỉ có năm
       const isYearOnly = /^\d{4}$/.test(ngaySinhStr);
       const loaiNgayThangNamSinh = isYearOnly ? 'Y' : 'D';
@@ -397,7 +397,7 @@ export class DataTransformer {
 
       const payloadForeign = {
         hoTen: hoTen.toUpperCase(),
-        quocTich,
+        quocTich: validatedQuocTich,
         soHoChieu: docVal.cleanNumber,
         gioiTinh,
         loaiNgayThangNamSinh,
@@ -458,41 +458,21 @@ export class DataTransformer {
     if (!ngayDi) missingFields.push('Ngày đi (ngayDiDuKienStr)');
     fieldStatus.ngayDi = { label: 'Ngày đi', value: ngayDi, required: true, valid: !!ngayDi };
 
-    if (isVN) {
-      const rawLoaiGiayTo = rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow['Tên giấy tờ'] || rawRow.idType;
-      const loaiGiayToId = this.catalog.findLoaiGiayTo(rawLoaiGiayTo);
-      const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số CCCD'] || rawRow.idNumber || '';
-      const docVal = this.validateDocNumber(rawDocNum, loaiGiayToId);
+    // 1. Kiểm tra Số giấy tờ dựa hoàn toàn trên Loại giấy tờ
+    const rawLoaiGiayTo = rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow['Tên giấy tờ'] || rawRow.idType;
+    const loaiGiayToId = this.catalog.findLoaiGiayTo(rawLoaiGiayTo);
+    const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số CCCD'] || rawRow.soHoChieu || rawRow['Số hộ chiếu'] || rawRow.idNumber || rawRow.passportNumber || '';
+    const docVal = this.validateDocNumber(rawDocNum, loaiGiayToId);
 
-      if (!docVal.valid) {
-        missingFields.push(`Số giấy tờ hợp lệ (${docVal.error})`);
-      }
-      fieldStatus.soGiayTo = { label: 'Số giấy tờ (CCCD/CMND)', value: docVal.cleanNumber || rawDocNum, required: true, valid: docVal.valid, error: docVal.error };
-      fieldStatus.loaiGiayTo = { label: 'Loại giấy tờ', value: loaiGiayToId, required: true, valid: true };
+    if (!docVal.valid) {
+      missingFields.push(`Số giấy tờ hợp lệ (${docVal.error})`);
+    }
+    fieldStatus.soGiayTo = { label: 'Số giấy tờ', value: docVal.cleanNumber || rawDocNum, required: true, valid: docVal.valid, error: docVal.error };
+    fieldStatus.loaiGiayTo = { label: 'Loại giấy tờ', value: loaiGiayToId, required: true, valid: true };
 
-      const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
-      if (rawQuocTich) {
-        const qtVal = this.catalog.validateQuocTich(rawQuocTich);
-        if (!qtVal.valid) {
-          missingFields.push(`Quốc tịch hợp lệ (${qtVal.error})`);
-        }
-        fieldStatus.quocTich = {
-          label: 'Quốc tịch',
-          value: qtVal.maQT || rawQuocTich,
-          required: false,
-          valid: qtVal.valid,
-          error: qtVal.error,
-        };
-      } else {
-        fieldStatus.quocTich = {
-          label: 'Quốc tịch',
-          value: 'VNM',
-          required: false,
-          valid: true,
-        };
-      }
-    } else {
-      const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
+    // 2. Kiểm tra Quốc tịch dựa trên quoc_tich.json
+    const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
+    if (rawQuocTich && String(rawQuocTich).trim()) {
       const qtVal = this.catalog.validateQuocTich(rawQuocTich);
       if (!qtVal.valid) {
         missingFields.push(`Quốc tịch hợp lệ (${qtVal.error})`);
@@ -502,16 +482,29 @@ export class DataTransformer {
         value: qtVal.maQT || rawQuocTich,
         required: true,
         valid: qtVal.valid,
-        error: qtVal.error
+        error: qtVal.error,
       };
-
-      const rawPassport = rawRow.soHoChieu || rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số hộ chiếu'] || rawRow.passportNumber || '';
-      const docVal = this.validateDocNumber(rawPassport, 4);
-      if (!docVal.valid) {
-        missingFields.push(`Số Hộ chiếu hợp lệ (${docVal.error})`);
+    } else {
+      if ([1, 2, 8].includes(loaiGiayToId)) {
+        fieldStatus.quocTich = {
+          label: 'Quốc tịch',
+          value: 'VNM',
+          required: false,
+          valid: true,
+        };
+      } else {
+        missingFields.push('Quốc tịch không được để trống');
+        fieldStatus.quocTich = {
+          label: 'Quốc tịch',
+          value: '',
+          required: true,
+          valid: false,
+          error: 'Quốc tịch không được để trống',
+        };
       }
-      fieldStatus.soHoChieu = { label: 'Số Hộ chiếu', value: docVal.cleanNumber || rawPassport, required: true, valid: docVal.valid, error: docVal.error };
+    }
 
+    if (!isVN) {
       const thoiHanTamTru = this.formatDateTime(
         rawRow.thoiHanTamTru || rawRow.thoiHanTamTruStr || rawRow['Thời hạn tạm trú'] || ngayDi,
         '23:59:59'

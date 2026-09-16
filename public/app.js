@@ -765,15 +765,65 @@ function renderCatalogList(type, list) {
     const ul = document.getElementById('quocTichList');
     if (!ul) return;
     ul.innerHTML = list.map(q => `
-      <li class="py-1.5 flex items-center justify-between border-b border-slate-100 last:border-0">
-        <div>
-          <span class="font-semibold text-slate-800">${q.tenQT}</span>
-          ${q.tenQTEn ? `<span class="text-slate-400 font-normal text-[11px] ml-1">(${q.tenQTEn})</span>` : ''}
+      <li onclick="copyCountryCode('${q.maQT}', '${q.tenQT}')" class="py-1.5 px-2 flex items-center justify-between border-b border-slate-100 last:border-0 hover:bg-indigo-50/80 cursor-pointer rounded transition group" title="Bấm để copy mã: ${q.maQT}">
+        <div class="flex items-center gap-1.5">
+          <span class="font-semibold text-slate-800 group-hover:text-indigo-700 transition">${q.tenQT}</span>
+          ${q.tenQTEn ? `<span class="text-slate-400 font-normal text-[11px]">(${q.tenQTEn})</span>` : ''}
         </div>
-        <span class="font-mono text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded text-[11px]">${q.maQT}</span>
+        <span class="font-mono text-indigo-600 font-bold bg-indigo-50 group-hover:bg-indigo-600 group-hover:text-white px-2 py-0.5 rounded text-[11px] transition shadow-xs flex items-center gap-1">
+          <i class="fa-regular fa-copy text-[10px] opacity-70"></i> ${q.maQT}
+        </span>
       </li>
     `).join('');
   }
+}
+
+function copyCountryCode(code, countryName) {
+  if (!code) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(() => {
+      showCopyToast(code, countryName);
+    }).catch(() => {
+      fallbackCopyText(code, countryName);
+    });
+  } else {
+    fallbackCopyText(code, countryName);
+  }
+}
+
+function fallbackCopyText(text, countryName) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    showCopyToast(text, countryName);
+  } catch (err) {
+    console.warn('Không thể copy:', err);
+  }
+  document.body.removeChild(textArea);
+}
+
+let toastTimeout = null;
+function showCopyToast(code, countryName) {
+  let toast = document.getElementById('copyToastNotification');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'copyToastNotification';
+    toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl border border-slate-700 flex items-center gap-2 z-50 transition-all duration-300 transform translate-y-0 opacity-100';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> <span>Đã copy mã <strong>${code}</strong> (${countryName}) vào clipboard!</span>`;
+  toast.classList.remove('hidden', 'opacity-0', 'translate-y-4');
+  toast.classList.add('opacity-100', 'translate-y-0');
+
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.add('opacity-0', 'translate-y-4');
+    setTimeout(() => toast.classList.add('hidden'), 300);
+  }, 2200);
 }
 
 function filterCatalog(type) {

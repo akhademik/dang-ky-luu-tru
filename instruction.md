@@ -1,12 +1,9 @@
-- BAN DA XOA MAT CAI LOGIC CHECK CHO MA QUOC TICH NHU O BAN TRUOC HIEN GIO 'VAA' NO VAN KO FLAG DUNG DO LA QUOC TICH SAI
+wrong logic:
 
-- Behavior mac dinh hien gio dang la 'select all' toi muon no la 'select nono' chi khi nao toi click vao tickbok moi select all
+- when pull data from gooogle sheet, the restrain of number from 'Số giấy tờ' will be base on 'Loại giấy tờ' it not go with country code
 
-- Push đăng ký đã chọn (0)
-  Push tất cả 2 cai nay combine lai thanh 'Dang Ky' vi hien gio toi da co the tu select va lua chon cai can push de di dang ky roi
+- country code will be base on the json list of the valid country code, just flag that
 
-- bay gio xu ly logic cho toi, " Kéo Dữ Liệu Tab " se doi thanh "Lay thong tin tu sheet', cai nay " Kéo & Đẩy Ngay " remove di.
+- the logic for after editing the entry in frontend, hit save, those 'edited' field should be uploaded/updated back to the entry in the google sheet
 
-- neu toi co edit gi o entry (sau khi duoc pull ve), no sau khi bam save no se mac dinh duoc day nguoc ve lai sheet tren google sheet luon cho toi
-
-- cai dia chi hien gio cung da bi mat, cai logic chi hien thi tinh thanh va hover tooltip full dia chi cung da mat di chinh lai cho toi
+- when lookup in 'Quốc Tịch (API 6) 252 quốc gia" press on the country name will then copy the country code in clipboard

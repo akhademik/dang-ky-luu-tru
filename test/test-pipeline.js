@@ -175,16 +175,21 @@ async function runTests() {
     const liveRow = liveRes.rows[0];
     console.log(`✅ Kéo thành công ${liveRes.rows.length} dòng từ Google Sheet! Khách: ${liveRow.hoTen}, Phòng trên Sheet: "${liveRow.soPhong}"`);
     
-    // Kiểm tra tính hoàn thiện (Nếu phòng là P.0 thì phải phát hiện thiếu/sai số phòng)
+    // Kiểm tra tính hoàn thiện (Nếu phòng là P.0 hoặc quốc tịch là VAA thì phải phát hiện đúng)
     const comp = await transformer.checkRowCompleteness(liveRow);
     if (liveRow.soPhong === 'P.0') {
       assert.ok(!comp.isComplete, 'Phải đánh dấu chưa hoàn thiện khi phòng là P.0');
       assert.ok(comp.missingFields.some(f => f.includes('Số phòng')), 'Phải cảnh báo thiếu số phòng hợp lệ');
       console.log('✅ Đã phát hiện và flag thành công ô số phòng không hợp lệ (P.0) từ Google Sheet!');
     }
+    if (liveRow.quocTich === 'VAA' || liveRow['Quốc tịch'] === 'VAA') {
+      assert.ok(!comp.isComplete, 'Phải đánh dấu chưa hoàn thiện khi quốc tịch là VAA');
+      assert.equal(comp.fieldStatus.quocTich.valid, false, 'Field status quốc tịch VAA phải invalid');
+      console.log('✅ Đã phát hiện và flag thành công mã quốc tịch không hợp lệ (VAA) từ Google Sheet!');
+    }
 
-    // Kiểm tra chuẩn hóa khi bổ sung số phòng hợp lệ và ngày đến hợp lệ
-    const validLiveRow = { ...liveRow, soPhong: 'P.07', 'Số phòng': 'P.07', ngayDen: `${todayStr} 14:00:00`, '(từ ngày)': `${todayStr} 14:00:00`, ngayDi: `${next2DaysStr} 12:00:00`, '(đến ngày)': `${next2DaysStr} 12:00:00` };
+    // Kiểm tra chuẩn hóa khi bổ sung số phòng hợp lệ, quốc tịch hợp lệ và ngày đến hợp lệ
+    const validLiveRow = { ...liveRow, quocTich: 'VNM', 'Quốc tịch': 'VNM', soPhong: 'P.07', 'Số phòng': 'P.07', ngayDen: `${todayStr} 14:00:00`, '(từ ngày)': `${todayStr} 14:00:00`, ngayDi: `${next2DaysStr} 12:00:00`, '(đến ngày)': `${next2DaysStr} 12:00:00` };
     const transformed = await transformer.transformRow(validLiveRow);
     assert.equal(transformed.branch, 'VN');
     assert.equal(transformed.payload.hoTen, 'TRỊNH NGỌC LINH');
