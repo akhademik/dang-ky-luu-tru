@@ -50,9 +50,7 @@ export class DataTransformer {
 		return DataTransformer.formatDateOnly(dateRaw);
 	}
 
-	public static parseDateTime(
-		dateRaw: unknown,
-	): {
+	public static parseDateTime(dateRaw: unknown): {
 		year: number;
 		month: number;
 		day: number;

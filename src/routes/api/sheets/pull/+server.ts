@@ -1,6 +1,7 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 import { syncPipeline } from "$lib/server/syncPipeline.js";
 import { CONFIG } from "$lib/server/config.js";
+import { logger } from "$lib/server/logger.js";
 
 export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json().catch(() => ({}));
@@ -8,10 +9,21 @@ export const POST: RequestHandler = async ({ request }) => {
 	const gid = body.gid;
 	const apiKey = body.apiKey;
 
+	logger.info(
+		"API:sheets:pull",
+		`Yêu cầu kéo dữ liệu tab GID: ${gid}, Sheet: ${sheetId}`,
+	);
+
 	const resData = await syncPipeline.googleSheetService.fetchSheetData(
 		sheetId,
 		gid,
 		apiKey,
 	);
-	return json(resData, { status: resData.success ? 200 : 400 });
+
+	logger.info(
+		"API:sheets:pull",
+		`Kết quả kéo dữ liệu: success=${resData.success}, rows=${resData.rows?.length || 0}`,
+	);
+
+	return json(resData);
 };

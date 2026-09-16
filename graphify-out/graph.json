@@ -9,7 +9,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "catalogitem",
@@ -22,7 +22,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "completenessresult",
@@ -35,7 +35,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "rawocrrow",
@@ -48,7 +48,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "transformedrowresult",
@@ -56,30 +56,17 @@
       "source_location": "L16"
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "googlesheetservice",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L11"
-    },
-    {
       "id": "src_lib_server_googlesheetservice_tabinfo",
       "label": "TabInfo",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "tabinfo",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L3"
+      "source_location": "L4"
     },
     {
       "id": "src_lib_server_kbttclient_apiresponse",
@@ -87,7 +74,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "apiresponse",
@@ -95,17 +82,30 @@
       "source_location": "L5"
     },
     {
-      "id": "src_lib_server_kbttclient_kbttclient",
-      "label": "KbttClient",
+      "id": "src_lib_server_logger_logentry",
+      "label": "LogEntry",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
-      "norm_label": "kbttclient",
-      "source_file": "src/lib/server/kbttClient.ts",
-      "source_location": "L12"
+      "norm_label": "logentry",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_lib_server_logger_loglevel",
+      "label": "LogLevel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "loglevel",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L1"
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline",
@@ -113,7 +113,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "syncpipeline",
@@ -126,7 +126,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "syncresult",
@@ -134,30 +134,30 @@
       "source_location": "L8"
     },
     {
-      "id": "src_lib_server_tokenmanager_tokenmanager",
-      "label": "TokenManager",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "tokenmanager",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L10"
-    },
-    {
       "id": "src_lib_server_tokenmanager_tokenstate",
       "label": "TokenState",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
+      "community": 1,
       "community_name": "syncPipeline.ts",
       "file_type": "code",
       "norm_label": "tokenstate",
       "source_file": "src/lib/server/tokenManager.ts",
       "source_location": "L3"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice",
+      "label": "GoogleSheetService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "googlesheetservice",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L12"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer",
@@ -173,12 +173,38 @@
       "source_location": "L24"
     },
     {
+      "id": "src_lib_server_kbttclient_kbttclient",
+      "label": "KbttClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": "kbttclient",
+      "source_file": "src/lib/server/kbttClient.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager",
+      "label": "TokenManager",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": "tokenmanager",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L10"
+    },
+    {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "CatalogManager",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": "catalogmanager",
@@ -186,323 +212,24 @@
       "source_location": "L18"
     },
     {
-      "id": "src_lib_server_config_loadenv",
-      "label": "loadEnv()",
+      "id": "src_lib_server_logger_logger",
+      "label": "Logger",
       "_callable": true,
+      "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "loadenv()",
-      "source_file": "src/lib/server/config.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L21"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
-      "label": ".updateSheetRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".updatesheetrow()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L449"
-    },
-    {
-      "id": "src_lib_server_kbttclient_kbttclient_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/kbttClient.ts",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_lib_server_kbttclient_kbttclient_postpayload",
-      "label": "._postPayload()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "._postpayload()",
-      "source_file": "src/lib/server/kbttClient.ts",
-      "source_location": "L39"
-    },
-    {
-      "id": "src_lib_server_kbttclient_kbttclient_submitforeignguests",
-      "label": ".submitForeignGuests()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".submitforeignguests()",
-      "source_file": "src/lib/server/kbttClient.ts",
-      "source_location": "L29"
-    },
-    {
-      "id": "src_lib_server_kbttclient_kbttclient_submitvietnameseguests",
-      "label": ".submitVietnameseGuests()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".submitvietnameseguests()",
-      "source_file": "src/lib/server/kbttClient.ts",
-      "source_location": "L19"
-    },
-    {
-      "id": "src_lib_server_syncpipeline_syncpipeline_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/syncPipeline.ts",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_lib_server_syncpipeline_syncpipeline_initialize",
-      "label": ".initialize()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".initialize()",
-      "source_file": "src/lib/server/syncPipeline.ts",
-      "source_location": "L34"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_clear",
-      "label": ".clear()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".clear()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L131"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_getinstance",
-      "label": ".getInstance()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".getinstance()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L19"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L137"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
-      "label": ".getValidToken()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".getvalidtoken()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_login",
-      "label": ".login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".login()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L45"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_refresh",
-      "label": ".refresh()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".refresh()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L72"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_revoke",
-      "label": ".revoke()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".revoke()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L98"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_savetoken",
-      "label": ".saveToken()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": ".savetoken()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L120"
-    },
-    {
-      "id": "src_routes_api_catalogs_server_get",
-      "label": "GET()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "src/routes/api/catalogs/+server.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_routes_api_sheets_pull_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/sheets/pull/+server.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_routes_api_sheets_tabs_server_get",
-      "label": "GET()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "src/routes/api/sheets/tabs/+server.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_routes_api_sheets_update_row_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/sheets/update-row/+server.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_routes_api_sync_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/sync/+server.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_routes_api_token_server_get",
-      "label": "GET()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "src/routes/api/token/+server.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_routes_api_token_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/token/+server.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_routes_api_transform_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/transform/+server.ts",
-      "source_location": "L5"
+      "norm_label": "logger",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L12"
     },
     {
       "id": "public_app_addnewrow",
       "label": "addNewRow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "addnewrow()",
@@ -514,7 +241,7 @@
       "label": "checkTokenStatus()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "checktokenstatus()",
@@ -526,7 +253,7 @@
       "label": "cleanRoomNumber()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "cleanroomnumber()",
@@ -538,7 +265,7 @@
       "label": "closeEditModal()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "closeeditmodal()",
@@ -550,7 +277,7 @@
       "label": "copyCountryCode()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "copycountrycode()",
@@ -562,7 +289,7 @@
       "label": "executeSyncBatch()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "executesyncbatch()",
@@ -574,7 +301,7 @@
       "label": "fallbackCopyText()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "fallbackcopytext()",
@@ -586,7 +313,7 @@
       "label": "fetchSheetTabsList()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "fetchsheettabslist()",
@@ -598,7 +325,7 @@
       "label": "filterCatalog()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "filtercatalog()",
@@ -610,7 +337,7 @@
       "label": "getCombinedAddress()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "getcombinedaddress()",
@@ -622,7 +349,7 @@
       "label": "getDisplayAddress()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "getdisplayaddress()",
@@ -634,7 +361,7 @@
       "label": "handleManualLogin()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "handlemanuallogin()",
@@ -646,7 +373,7 @@
       "label": "handleRegisterClick()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "handleregisterclick()",
@@ -658,7 +385,7 @@
       "label": "handleTabChange()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "handletabchange()",
@@ -670,7 +397,7 @@
       "label": "isGuestVN()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "isguestvn()",
@@ -682,7 +409,7 @@
       "label": "loadCatalogs()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "loadcatalogs()",
@@ -694,7 +421,7 @@
       "label": "loadSampleData()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "loadsampledata()",
@@ -706,7 +433,7 @@
       "label": "normalizeStr()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "normalizestr()",
@@ -718,7 +445,7 @@
       "label": "openEditModal()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "openeditmodal()",
@@ -730,7 +457,7 @@
       "label": "parseAndApplyAddress()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "parseandapplyaddress()",
@@ -742,7 +469,7 @@
       "label": "processAndSyncNow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "processandsyncnow()",
@@ -754,7 +481,7 @@
       "label": "pullDataFromGoogleSheet()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "pulldatafromgooglesheet()",
@@ -766,7 +493,7 @@
       "label": "pushSelectedRows()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "pushselectedrows()",
@@ -778,7 +505,7 @@
       "label": "pushSingleRow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "pushsinglerow()",
@@ -790,7 +517,7 @@
       "label": "removeRow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "removerow()",
@@ -802,7 +529,7 @@
       "label": "renderCatalogList()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "rendercataloglist()",
@@ -814,7 +541,7 @@
       "label": "renderTable()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "rendertable()",
@@ -826,7 +553,7 @@
       "label": "saveModalEdit()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "savemodaledit()",
@@ -838,7 +565,7 @@
       "label": "setupHotReload()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "setuphotreload()",
@@ -850,7 +577,7 @@
       "label": "showCopyToast()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "showcopytoast()",
@@ -862,7 +589,7 @@
       "label": "switchTab()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "switchtab()",
@@ -874,7 +601,7 @@
       "label": "toggleEditRow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "toggleeditrow()",
@@ -886,7 +613,7 @@
       "label": "toggleRowSelect()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "togglerowselect()",
@@ -898,7 +625,7 @@
       "label": "toggleSelectAll()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "toggleselectall()",
@@ -910,7 +637,7 @@
       "label": "updateAddressCell()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "updateaddresscell()",
@@ -922,7 +649,7 @@
       "label": "updateCell()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "updatecell()",
@@ -934,7 +661,7 @@
       "label": "updatePayloadPreview()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "updatepayloadpreview()",
@@ -946,7 +673,7 @@
       "label": "updateSelectedCountBadge()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "updateselectedcountbadge()",
@@ -954,11 +681,239 @@
       "source_location": "L599"
     },
     {
+      "id": "src_lib_server_config_loadenv",
+      "label": "loadEnv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "loadenv()",
+      "source_file": "src/lib/server/config.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_server_syncpipeline_syncpipeline_initialize",
+      "label": ".initialize()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": ".initialize()",
+      "source_file": "src/lib/server/syncPipeline.ts",
+      "source_location": "L34"
+    },
+    {
+      "id": "src_routes_api_catalogs_server_get",
+      "label": "GET()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "src/routes/api/catalogs/+server.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_routes_api_sheets_pull_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/sheets/pull/+server.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_routes_api_sheets_tabs_server_get",
+      "label": "GET()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "src/routes/api/sheets/tabs/+server.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_routes_api_sheets_update_row_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_routes_api_sync_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/sync/+server.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_routes_api_token_server_get",
+      "label": "GET()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "src/routes/api/token/+server.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_routes_api_token_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/token/+server.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_routes_api_transform_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/transform/+server.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
+      "label": ".fetchSheetData()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheetdata()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L200"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
+      "label": ".fetchSheetTabs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheettabs()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L46"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
+      "label": "._mapHeaderToKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._mapheadertokey()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L506"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
+      "label": "._parseApiValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parseapivalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L485"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
+      "label": ".parseCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsecsv()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L314"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
+      "label": "._parseDateFromTabName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parsedatefromtabname()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L182"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
+      "label": ".parseSheetIdentifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsesheetidentifier()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "label": ".updateSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".updatesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L588"
+    },
+    {
       "id": "src_routes_api_events_server_get",
       "label": "GET()",
       "_callable": true,
       "_origin": "ast",
-      "community": 10,
+      "community": 12,
       "community_name": "events/+server.ts",
       "file_type": "code",
       "norm_label": "get()",
@@ -1227,7 +1182,7 @@
       "file_type": "code",
       "norm_label": ".checkcompleteness()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L238"
+      "source_location": "L236"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
@@ -1239,7 +1194,7 @@
       "file_type": "code",
       "norm_label": ".checkrowcompleteness()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L232"
+      "source_location": "L230"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
@@ -1251,7 +1206,7 @@
       "file_type": "code",
       "norm_label": ".cleandocnumber()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L152"
+      "source_location": "L150"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
@@ -1264,6 +1219,18 @@
       "norm_label": ".cleanroomnumber()",
       "source_file": "src/lib/server/dataTransformer.ts",
       "source_location": "L31"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L27"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_formatdateonly",
@@ -1287,7 +1254,7 @@
       "file_type": "code",
       "norm_label": ".formatdatetime()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L525"
+      "source_location": "L523"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
@@ -1299,7 +1266,7 @@
       "file_type": "code",
       "norm_label": ".isarrivaldatevalid()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L163"
+      "source_location": "L161"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_isguestvn",
@@ -1311,7 +1278,7 @@
       "file_type": "code",
       "norm_label": ".isguestvn()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L198"
+      "source_location": "L196"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_mapgender",
@@ -1323,7 +1290,7 @@
       "file_type": "code",
       "norm_label": ".mapgender()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L145"
+      "source_location": "L143"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
@@ -1335,7 +1302,7 @@
       "file_type": "code",
       "norm_label": ".maploaigiayto()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L550"
+      "source_location": "L548"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_mapquoctich",
@@ -1347,7 +1314,7 @@
       "file_type": "code",
       "norm_label": ".mapquoctich()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L554"
+      "source_location": "L552"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_normalizegender",
@@ -1359,7 +1326,7 @@
       "file_type": "code",
       "norm_label": ".normalizegender()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L141"
+      "source_location": "L139"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_parsedatetime",
@@ -1383,7 +1350,7 @@
       "file_type": "code",
       "norm_label": ".transformbatch()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L370"
+      "source_location": "L368"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_transformrow",
@@ -1395,7 +1362,7 @@
       "file_type": "code",
       "norm_label": ".transformrow()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L347"
+      "source_location": "L345"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
@@ -1407,7 +1374,7 @@
       "file_type": "code",
       "norm_label": ".transformtopayloadforeign()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L476"
+      "source_location": "L474"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
@@ -1419,7 +1386,7 @@
       "file_type": "code",
       "norm_label": ".transformtopayloadvn()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L405"
+      "source_location": "L403"
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline_processrows",
@@ -1446,11 +1413,179 @@
       "source_location": "L12"
     },
     {
-      "id": "src_lib_server_catalogmanager_catalogmanager_constructor",
+      "id": "src_lib_server_kbttclient_kbttclient_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/kbttClient.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_lib_server_kbttclient_kbttclient_postpayload",
+      "label": "._postPayload()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": "._postpayload()",
+      "source_file": "src/lib/server/kbttClient.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "src_lib_server_kbttclient_kbttclient_submitforeignguests",
+      "label": ".submitForeignGuests()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".submitforeignguests()",
+      "source_file": "src/lib/server/kbttClient.ts",
+      "source_location": "L29"
+    },
+    {
+      "id": "src_lib_server_kbttclient_kbttclient_submitvietnameseguests",
+      "label": ".submitVietnameseGuests()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".submitvietnameseguests()",
+      "source_file": "src/lib/server/kbttClient.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_lib_server_syncpipeline_syncpipeline_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/syncPipeline.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_clear",
+      "label": ".clear()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".clear()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L131"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_getinstance",
+      "label": ".getInstance()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".getinstance()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L137"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
+      "label": ".getValidToken()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".getvalidtoken()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_login",
+      "label": ".login()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".login()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L45"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_refresh",
+      "label": ".refresh()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".refresh()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L72"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_revoke",
+      "label": ".revoke()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".revoke()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L98"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_savetoken",
+      "label": ".saveToken()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".savetoken()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L120"
+    },
+    {
+      "id": "src_lib_server_catalogmanager_catalogmanager_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".constructor()",
@@ -1462,7 +1597,7 @@
       "label": ".fetchPublicCatalog()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".fetchpubliccatalog()",
@@ -1474,7 +1609,7 @@
       "label": ".findLoaiGiayTo()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".findloaigiayto()",
@@ -1486,7 +1621,7 @@
       "label": ".findQuocTich()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".findquoctich()",
@@ -1498,7 +1633,7 @@
       "label": ".getFallbackLoaiGiayTo()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbackloaigiayto()",
@@ -1510,7 +1645,7 @@
       "label": ".getFallbackLyDoCuTru()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacklydocutru()",
@@ -1522,7 +1657,7 @@
       "label": ".getFallbackNoiCuTru()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacknoicutru()",
@@ -1534,7 +1669,7 @@
       "label": ".getFallbackQuocTich()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbackquoctich()",
@@ -1546,7 +1681,7 @@
       "label": ".getFallbackTinhTp()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacktinhtp()",
@@ -1558,7 +1693,7 @@
       "label": ".getInstance()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getinstance()",
@@ -1570,7 +1705,7 @@
       "label": ".initAliases()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".initaliases()",
@@ -1582,7 +1717,7 @@
       "label": ".initialize()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".initialize()",
@@ -1594,7 +1729,7 @@
       "label": ".isValidQuocTichCode()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".isvalidquoctichcode()",
@@ -1606,7 +1741,7 @@
       "label": ".loadStandardQuocTich()",
       "_callable": true,
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".loadstandardquoctich()",
@@ -1614,293 +1749,142 @@
       "source_location": "L126"
     },
     {
-      "id": "src_lib_server_datatransformer_datatransformer_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "CatalogManager",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L27"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
-      "label": ".fetchSheetData()",
+      "id": "src_lib_server_logger_logger_clear",
+      "label": ".clear()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": ".fetchSheetData",
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": ".fetchsheetdata()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L185"
+      "norm_label": ".clear()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L97"
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
-      "label": ".fetchSheetTabs()",
+      "id": "src_lib_server_logger_logger_debug",
+      "label": ".debug()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": ".fetchSheetData",
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": ".fetchsheettabs()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L45"
+      "norm_label": ".debug()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L75"
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
-      "label": "._mapHeaderToKey()",
+      "id": "src_lib_server_logger_logger_error",
+      "label": ".error()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": ".fetchSheetData",
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "._mapheadertokey()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L367"
+      "norm_label": ".error()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L89"
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
-      "label": "._parseApiValues()",
+      "id": "src_lib_server_logger_logger_formattime",
+      "label": ".formatTime()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": ".fetchSheetData",
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "._parseapivalues()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L346"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
-      "label": ".parseCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": ".fetchSheetData",
-      "file_type": "code",
-      "norm_label": ".parsecsv()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L269"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
-      "label": "._parseDateFromTabName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": ".fetchSheetData",
-      "file_type": "code",
-      "norm_label": "._parsedatefromtabname()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L167"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
-      "label": ".parseSheetIdentifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": ".fetchSheetData",
-      "file_type": "code",
-      "norm_label": ".parsesheetidentifier()",
-      "source_file": "src/lib/server/googleSheetService.ts",
+      "norm_label": ".formattime()",
+      "source_file": "src/lib/server/logger.ts",
       "source_location": "L25"
     },
     {
-      "id": "src_index",
-      "label": "index.ts",
+      "id": "src_lib_server_logger_logger_getinstance",
+      "label": ".getInstance()",
+      "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "index.ts",
-      "source_file": "src/index.ts",
-      "source_location": "L1"
+      "norm_label": ".getinstance()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L18"
     },
     {
-      "id": "src_lib_server_catalogmanager",
-      "label": "catalogManager.ts",
+      "id": "src_lib_server_logger_logger_getrecentlogs",
+      "label": ".getRecentLogs()",
+      "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "catalogmanager.ts",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L1"
+      "norm_label": ".getrecentlogs()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L93"
     },
     {
-      "id": "src_lib_server_config",
-      "label": "config.ts",
+      "id": "src_lib_server_logger_logger_info",
+      "label": ".info()",
+      "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "config.ts",
-      "source_file": "src/lib/server/config.ts",
-      "source_location": "L1"
+      "norm_label": ".info()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L81"
     },
     {
-      "id": "src_lib_server_config_config",
-      "label": "CONFIG",
+      "id": "src_lib_server_logger_logger_log",
+      "label": ".log()",
+      "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "config",
-      "source_file": "src/lib/server/config.ts",
-      "source_location": "L29"
+      "norm_label": ".log()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L31"
     },
     {
-      "id": "src_lib_server_datatransformer",
-      "label": "dataTransformer.ts",
+      "id": "src_lib_server_logger_logger_warn",
+      "label": ".warn()",
+      "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "datatransformer.ts",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L1"
+      "norm_label": ".warn()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L85"
     },
     {
-      "id": "src_lib_server_googlesheetservice",
-      "label": "googleSheetService.ts",
+      "id": "src_routes_api_logs_server_delete",
+      "label": "DELETE()",
+      "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "googlesheetservice.ts",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L1"
+      "norm_label": "delete()",
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L14"
     },
     {
-      "id": "src_lib_server_kbttclient",
-      "label": "kbttClient.ts",
+      "id": "src_routes_api_logs_server_get",
+      "label": "GET()",
+      "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "kbttclient.ts",
-      "source_file": "src/lib/server/kbttClient.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_server_syncpipeline",
-      "label": "syncPipeline.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "syncpipeline.ts",
-      "source_file": "src/lib/server/syncPipeline.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_server_tokenmanager",
-      "label": "tokenManager.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "tokenmanager.ts",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_catalogs_server",
-      "label": "catalogs/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "catalogs/+server.ts",
-      "source_file": "src/routes/api/catalogs/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_sheets_pull_server",
-      "label": "pull/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "pull/+server.ts",
-      "source_file": "src/routes/api/sheets/pull/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_sheets_tabs_server",
-      "label": "tabs/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "tabs/+server.ts",
-      "source_file": "src/routes/api/sheets/tabs/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_sheets_update_row_server",
-      "label": "update-row/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "update-row/+server.ts",
-      "source_file": "src/routes/api/sheets/update-row/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_sync_server",
-      "label": "sync/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "sync/+server.ts",
-      "source_file": "src/routes/api/sync/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_token_server",
-      "label": "token/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "token/+server.ts",
-      "source_file": "src/routes/api/token/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_transform_server",
-      "label": "transform/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "transform/+server.ts",
-      "source_file": "src/routes/api/transform/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_test_pipeline",
-      "label": "test-pipeline.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "syncPipeline.ts",
-      "file_type": "code",
-      "norm_label": "test-pipeline.ts",
-      "source_file": "test/test-pipeline.ts",
-      "source_location": "L1"
+      "norm_label": "get()",
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L4"
     },
     {
       "id": "public_app",
       "label": "app.js",
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "app.js",
@@ -1911,7 +1895,7 @@
       "id": "public_app_availabletabs",
       "label": "availableTabs",
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "availabletabs",
@@ -1922,7 +1906,7 @@
       "id": "public_app_catalogdata",
       "label": "catalogData",
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "catalogdata",
@@ -1933,7 +1917,7 @@
       "id": "public_app_currentrows",
       "label": "currentRows",
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "currentrows",
@@ -1944,7 +1928,7 @@
       "id": "public_app_editingrowindices",
       "label": "editingRowIndices",
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "editingrowindices",
@@ -1955,7 +1939,7 @@
       "id": "public_app_rowvalidationstates",
       "label": "rowValidationStates",
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "rowvalidationstates",
@@ -1966,7 +1950,7 @@
       "id": "public_app_selectedrowindices",
       "label": "selectedRowIndices",
       "_origin": "ast",
-      "community": 1,
+      "community": 0,
       "community_name": "app.js",
       "file_type": "code",
       "norm_label": "selectedrowindices",
@@ -1974,10 +1958,340 @@
       "source_location": "L5"
     },
     {
+      "id": "src_index",
+      "label": "index.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "index.ts",
+      "source_file": "src/index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_catalogmanager",
+      "label": "catalogManager.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "catalogmanager.ts",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_config",
+      "label": "config.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "config.ts",
+      "source_file": "src/lib/server/config.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_config_config",
+      "label": "CONFIG",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "config",
+      "source_file": "src/lib/server/config.ts",
+      "source_location": "L29"
+    },
+    {
+      "id": "src_lib_server_datatransformer",
+      "label": "dataTransformer.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "datatransformer.ts",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice",
+      "label": "googleSheetService.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "googlesheetservice.ts",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_kbttclient",
+      "label": "kbttClient.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "kbttclient.ts",
+      "source_file": "src/lib/server/kbttClient.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_logger",
+      "label": "logger.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "logger.ts",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_syncpipeline",
+      "label": "syncPipeline.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "syncpipeline.ts",
+      "source_file": "src/lib/server/syncPipeline.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_tokenmanager",
+      "label": "tokenManager.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "tokenmanager.ts",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_catalogs_server",
+      "label": "catalogs/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "catalogs/+server.ts",
+      "source_file": "src/routes/api/catalogs/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_sheets_pull_server",
+      "label": "pull/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "pull/+server.ts",
+      "source_file": "src/routes/api/sheets/pull/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_sheets_tabs_server",
+      "label": "tabs/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "tabs/+server.ts",
+      "source_file": "src/routes/api/sheets/tabs/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_sheets_update_row_server",
+      "label": "update-row/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "update-row/+server.ts",
+      "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_sync_server",
+      "label": "sync/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "sync/+server.ts",
+      "source_file": "src/routes/api/sync/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_token_server",
+      "label": "token/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "token/+server.ts",
+      "source_file": "src/routes/api/token/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_transform_server",
+      "label": "transform/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "transform/+server.ts",
+      "source_file": "src/routes/api/transform/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_test_pipeline",
+      "label": "test-pipeline.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "test-pipeline.ts",
+      "source_file": "test/test-pipeline.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "knip",
+      "label": "knip.json",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "code",
+      "norm_label": "knip.json",
+      "source_file": "knip.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "knip_entry",
+      "label": "entry",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "code",
+      "norm_label": "entry",
+      "source_file": "knip.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "knip_ignoredependencies",
+      "label": "ignoreDependencies",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "code",
+      "norm_label": "ignoredependencies",
+      "source_file": "knip.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "knip_project",
+      "label": "project",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "code",
+      "norm_label": "project",
+      "source_file": "knip.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "knip_schema",
+      "label": "$schema",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "code",
+      "norm_label": "$schema",
+      "source_file": "knip.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "package_devdependencies_tailwindcss",
+      "label": "tailwindcss",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "code",
+      "norm_label": "tailwindcss",
+      "source_file": "package.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "knip_json_ref_test_ts",
+      "label": "test/**/*.ts",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "concept",
+      "norm_label": "test/**/*.ts",
+      "source_file": "knip.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "ref_src_index_ts",
+      "label": "src/index.ts",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "concept",
+      "norm_label": "src/index.ts",
+      "source_file": "knip.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "ref_src_js_ts_svelte",
+      "label": "src/**/*.{js,ts,svelte}",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "concept",
+      "norm_label": "src/**/*.{js,ts,svelte}",
+      "source_file": "knip.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "ref_src_lib_js_ts",
+      "label": "src/lib/**/*.{js,ts}",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "concept",
+      "norm_label": "src/lib/**/*.{js,ts}",
+      "source_file": "knip.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "ref_src_routes_js_ts_svelte",
+      "label": "src/routes/**/+*.{js,ts,svelte}",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "concept",
+      "norm_label": "src/routes/**/+*.{js,ts,svelte}",
+      "source_file": "knip.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "tailwindcss",
+      "label": "tailwindcss",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "entry",
+      "file_type": "concept",
+      "norm_label": "tailwindcss",
+      "source_file": "package.json",
+      "source_location": "L40"
+    },
+    {
       "id": "src_routes_api_events_server",
       "label": "events/+server.ts",
       "_origin": "ast",
-      "community": 10,
+      "community": 12,
       "community_name": "events/+server.ts",
       "file_type": "code",
       "norm_label": "events/+server.ts",
@@ -1988,7 +2302,7 @@
       "id": "svelte_config",
       "label": "svelte.config.js",
       "_origin": "ast",
-      "community": 11,
+      "community": 13,
       "community_name": "svelte.config.js",
       "file_type": "code",
       "norm_label": "svelte.config.js",
@@ -1999,7 +2313,7 @@
       "id": "svelte_config_config",
       "label": "config",
       "_origin": "ast",
-      "community": 11,
+      "community": 13,
       "community_name": "svelte.config.js",
       "file_type": "code",
       "norm_label": "config",
@@ -2010,7 +2324,7 @@
       "id": "src_routes_layout",
       "label": "+layout.svelte",
       "_origin": "ast",
-      "community": 12,
+      "community": 14,
       "community_name": "+layout.svelte",
       "file_type": "code",
       "norm_label": "+layout.svelte",
@@ -2018,21 +2332,10 @@
       "source_location": "L1"
     },
     {
-      "id": "svelte_svelte",
-      "label": "svelte",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "svelte",
-      "confidence": "EXTRACTED",
-      "file_type": "code",
-      "norm_label": "svelte",
-      "source_file": "svelte"
-    },
-    {
       "id": "vite_config",
       "label": "vite.config.ts",
       "_origin": "ast",
-      "community": 14,
+      "community": 15,
       "community_name": "vite.config.ts",
       "file_type": "code",
       "norm_label": "vite.config.ts",
@@ -2832,136 +3135,15 @@
       "source_location": "L14"
     },
     {
-      "id": "knip",
-      "label": "knip.json",
+      "id": "src_routes_api_logs_server",
+      "label": "logs/+server.ts",
       "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
+      "community": 9,
+      "community_name": "Logger",
       "file_type": "code",
-      "norm_label": "knip.json",
-      "source_file": "knip.json",
+      "norm_label": "logs/+server.ts",
+      "source_file": "src/routes/api/logs/+server.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "knip_entry",
-      "label": "entry",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "code",
-      "norm_label": "entry",
-      "source_file": "knip.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "knip_ignoredependencies",
-      "label": "ignoreDependencies",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "code",
-      "norm_label": "ignoredependencies",
-      "source_file": "knip.json",
-      "source_location": "L13"
-    },
-    {
-      "id": "knip_project",
-      "label": "project",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "code",
-      "norm_label": "project",
-      "source_file": "knip.json",
-      "source_location": "L9"
-    },
-    {
-      "id": "knip_schema",
-      "label": "$schema",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "code",
-      "norm_label": "$schema",
-      "source_file": "knip.json",
-      "source_location": "L2"
-    },
-    {
-      "id": "package_devdependencies_tailwindcss",
-      "label": "tailwindcss",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "code",
-      "norm_label": "tailwindcss",
-      "source_file": "package.json",
-      "source_location": "L40"
-    },
-    {
-      "id": "knip_json_ref_test_ts",
-      "label": "test/**/*.ts",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "concept",
-      "norm_label": "test/**/*.ts",
-      "source_file": "knip.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "ref_src_index_ts",
-      "label": "src/index.ts",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "concept",
-      "norm_label": "src/index.ts",
-      "source_file": "knip.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "ref_src_js_ts_svelte",
-      "label": "src/**/*.{js,ts,svelte}",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "concept",
-      "norm_label": "src/**/*.{js,ts,svelte}",
-      "source_file": "knip.json",
-      "source_location": "L9"
-    },
-    {
-      "id": "ref_src_lib_js_ts",
-      "label": "src/lib/**/*.{js,ts}",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "concept",
-      "norm_label": "src/lib/**/*.{js,ts}",
-      "source_file": "knip.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "ref_src_routes_js_ts_svelte",
-      "label": "src/routes/**/+*.{js,ts,svelte}",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "concept",
-      "norm_label": "src/routes/**/+*.{js,ts,svelte}",
-      "source_file": "knip.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "tailwindcss",
-      "label": "tailwindcss",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "entry",
-      "file_type": "concept",
-      "norm_label": "tailwindcss",
-      "source_file": "package.json",
-      "source_location": "L40"
     }
   ],
   "links": [
@@ -3718,7 +3900,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L239",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -3730,7 +3912,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L253",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -3742,7 +3924,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L257",
+      "source_location": "L255",
       "weight": 1.0
     },
     {
@@ -3754,7 +3936,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L267",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -3766,7 +3948,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L319",
+      "source_location": "L317",
       "weight": 1.0
     },
     {
@@ -3778,7 +3960,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L330",
+      "source_location": "L328",
       "weight": 1.0
     },
     {
@@ -3790,7 +3972,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L235",
+      "source_location": "L233",
       "weight": 1.0
     },
     {
@@ -3802,7 +3984,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L131",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -3814,7 +3996,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L533",
+      "source_location": "L531",
       "weight": 1.0
     },
     {
@@ -3826,7 +4008,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L168",
+      "source_location": "L166",
       "weight": 1.0
     },
     {
@@ -3838,7 +4020,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L142",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -3850,7 +4032,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L380",
+      "source_location": "L378",
       "weight": 1.0
     },
     {
@@ -3862,7 +4044,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L383",
+      "source_location": "L381",
       "weight": 1.0
     },
     {
@@ -3874,7 +4056,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L386",
+      "source_location": "L384",
       "weight": 1.0
     },
     {
@@ -3886,7 +4068,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L391",
+      "source_location": "L389",
       "weight": 1.0
     },
     {
@@ -3898,7 +4080,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L348",
+      "source_location": "L346",
       "weight": 1.0
     },
     {
@@ -3910,7 +4092,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L349",
+      "source_location": "L347",
       "weight": 1.0
     },
     {
@@ -3922,7 +4104,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L358",
+      "source_location": "L356",
       "weight": 1.0
     },
     {
@@ -3934,7 +4116,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L359",
+      "source_location": "L357",
       "weight": 1.0
     },
     {
@@ -3946,7 +4128,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L479",
+      "source_location": "L477",
       "weight": 1.0
     },
     {
@@ -3958,7 +4140,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L486",
+      "source_location": "L484",
       "weight": 1.0
     },
     {
@@ -3970,7 +4152,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L490",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -3982,7 +4164,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L494",
+      "source_location": "L492",
       "weight": 1.0
     },
     {
@@ -3994,7 +4176,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L500",
+      "source_location": "L498",
       "weight": 1.0
     },
     {
@@ -4006,7 +4188,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L514",
+      "source_location": "L512",
       "weight": 1.0
     },
     {
@@ -4018,7 +4200,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L435",
+      "source_location": "L433",
       "weight": 1.0
     },
     {
@@ -4030,7 +4212,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L442",
+      "source_location": "L440",
       "weight": 1.0
     },
     {
@@ -4042,7 +4224,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L446",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -4054,7 +4236,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L453",
+      "source_location": "L451",
       "weight": 1.0
     },
     {
@@ -4066,7 +4248,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L464",
+      "source_location": "L462",
       "weight": 1.0
     },
     {
@@ -4078,7 +4260,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L467",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -4090,7 +4272,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L190",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -4102,7 +4284,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L218",
+      "source_location": "L249",
       "weight": 1.0
     },
     {
@@ -4114,7 +4296,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L243",
+      "source_location": "L284",
       "weight": 1.0
     },
     {
@@ -4126,7 +4308,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -4138,7 +4320,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L81",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -4150,7 +4332,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L359",
+      "source_location": "L498",
       "weight": 1.0
     },
     {
@@ -4162,7 +4344,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L325",
+      "source_location": "L438",
       "weight": 1.0
     },
     {
@@ -4187,6 +4369,78 @@
       "context": "call",
       "source_file": "src/lib/server/kbttClient.ts",
       "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger_debug",
+      "target": "src_lib_server_logger_logger_log",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger_error",
+      "target": "src_lib_server_logger_logger_log",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger_getinstance",
+      "target": "src_lib_server_logger_logger",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger_info",
+      "target": "src_lib_server_logger_logger_log",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger_log",
+      "target": "src_lib_server_logger_logger_formattime",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger_warn",
+      "target": "src_lib_server_logger_logger_log",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -4570,7 +4824,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/test-pipeline.ts",
-      "source_location": "L238",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -4739,18 +4993,6 @@
       "context": "export",
       "source_file": "src/index.ts",
       "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_catalogmanager_catalogmanager",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -5270,6 +5512,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_googlesheetservice",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_kbttclient",
       "target": "src_lib_server_config_config",
       "relation": "imports",
@@ -5414,6 +5668,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_logs_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_pull_server",
       "target": "src_lib_server_syncpipeline_syncpipeline",
       "relation": "imports",
@@ -5435,6 +5701,18 @@
       "context": "import",
       "source_file": "src/routes/api/sheets/pull/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_pull_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/pull/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -5462,6 +5740,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_sheets_tabs_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/tabs/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_update_row_server",
       "target": "src_lib_server_syncpipeline_syncpipeline",
       "relation": "imports",
@@ -5483,6 +5773,18 @@
       "context": "import",
       "source_file": "src/routes/api/sheets/update-row/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_update_row_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -5507,6 +5809,18 @@
       "context": "import",
       "source_file": "src/routes/api/sync/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sync_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sync/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -5522,6 +5836,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_token_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/token/+server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_transform_server",
       "target": "src_lib_server_syncpipeline_syncpipeline",
       "relation": "imports",
@@ -5543,6 +5869,18 @@
       "context": "import",
       "source_file": "src/routes/api/transform/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_transform_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/transform/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -5666,6 +6004,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_googlesheetservice",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_kbttclient",
       "target": "src_lib_server_config",
       "relation": "imports_from",
@@ -5798,6 +6148,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_logs_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_pull_server",
       "target": "src_lib_server_syncpipeline",
       "relation": "imports_from",
@@ -5819,6 +6181,18 @@
       "context": "import",
       "source_file": "src/routes/api/sheets/pull/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_pull_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/pull/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -5846,6 +6220,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_sheets_tabs_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/tabs/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_update_row_server",
       "target": "src_lib_server_syncpipeline",
       "relation": "imports_from",
@@ -5867,6 +6253,18 @@
       "context": "import",
       "source_file": "src/routes/api/sheets/update-row/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_update_row_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -5892,6 +6290,18 @@
       "source_file": "src/routes/api/sync/+server.ts",
       "source_location": "L3",
       "type_only": true,
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sync_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sync/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -5907,6 +6317,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_token_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/token/+server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_transform_server",
       "target": "src_lib_server_syncpipeline",
       "relation": "imports_from",
@@ -5929,6 +6351,18 @@
       "source_file": "src/routes/api/transform/+server.ts",
       "source_location": "L3",
       "type_only": true,
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_transform_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/transform/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -6001,18 +6435,6 @@
       "context": "import",
       "source_file": "test/test-pipeline.ts",
       "source_location": "L9",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_constructor",
-      "target": "src_lib_server_catalogmanager_catalogmanager",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "parameter_type",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -7099,7 +7521,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -7110,7 +7532,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -7133,6 +7555,39 @@
       "confidence_score": 1.0,
       "source_file": "src/lib/server/kbttClient.ts",
       "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger",
+      "target": "src_lib_server_logger_loglevel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger",
+      "target": "src_lib_server_logger_logger",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger",
+      "target": "src_lib_server_logger_logentry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -7202,6 +7657,28 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_logs_server",
+      "target": "src_routes_api_logs_server_delete",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_logs_server",
+      "target": "src_routes_api_logs_server_get",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_pull_server",
       "target": "src_routes_api_sheets_pull_server_post",
       "relation": "contains",
@@ -7209,7 +7686,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/sheets/pull/+server.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -7220,7 +7697,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/sheets/tabs/+server.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -7231,7 +7708,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/sheets/update-row/+server.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -7242,7 +7719,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/sync/+server.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -7253,7 +7730,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/token/+server.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -7264,7 +7741,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/token/+server.ts",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -7275,7 +7752,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/transform/+server.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -7825,7 +8302,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L129",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -7836,7 +8313,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L141",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -7847,7 +8324,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L145",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -7858,7 +8335,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L156",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -7869,7 +8346,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L163",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -7880,7 +8357,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L198",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -7891,7 +8368,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L232",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -7902,7 +8379,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L238",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -7924,7 +8401,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L347",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
@@ -7946,7 +8423,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L370",
+      "source_location": "L368",
       "weight": 1.0
     },
     {
@@ -7957,7 +8434,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L405",
+      "source_location": "L403",
       "weight": 1.0
     },
     {
@@ -7968,7 +8445,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L476",
+      "source_location": "L474",
       "weight": 1.0
     },
     {
@@ -7979,7 +8456,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L525",
+      "source_location": "L523",
       "weight": 1.0
     },
     {
@@ -8001,7 +8478,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L550",
+      "source_location": "L548",
       "weight": 1.0
     },
     {
@@ -8012,7 +8489,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L554",
+      "source_location": "L552",
       "weight": 1.0
     },
     {
@@ -8023,7 +8500,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L167",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
@@ -8034,7 +8511,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L185",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -8045,7 +8522,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -8056,7 +8533,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -8067,40 +8544,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L269",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_googlesheetservice_googlesheetservice",
-      "target": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L346",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_googlesheetservice_googlesheetservice",
-      "target": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L367",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_googlesheetservice_googlesheetservice",
-      "target": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L449",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -8111,7 +8555,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L45",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_googlesheetservice_googlesheetservice",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L485",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_googlesheetservice_googlesheetservice",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L506",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_googlesheetservice_googlesheetservice",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L588",
       "weight": 1.0
     },
     {
@@ -8156,6 +8633,94 @@
       "confidence_score": 1.0,
       "source_file": "src/lib/server/kbttClient.ts",
       "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_formattime",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_log",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_debug",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_info",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_warn",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_error",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_getrecentlogs",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_logger_logger",
+      "target": "src_lib_server_logger_logger_clear",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -8324,10 +8889,10 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "test/test-pipeline.ts",
-      "source_location": "L239",
+      "source_location": "L238",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f9f00b785a134ee139f5f974fbdd4ba5ff817c76"
+  "built_at_commit": "8d7f5f4d389d9f8e2ee7430a7e5a61aa0b8bed2c"
 }

@@ -1,4 +1,5 @@
 import { CONFIG } from "./config.js";
+import { logger } from "./logger.js";
 
 export interface TabInfo {
 	name: string;
@@ -47,18 +48,28 @@ export class GoogleSheetService {
 		forceRefresh = false,
 	): Promise<{ success: boolean; tabs: TabInfo[]; defaultGid: string }> {
 		const { sheetId } = this.parseSheetIdentifier(input);
-		if (!sheetId) return { success: false, tabs: [], defaultGid: "0" };
+		if (!sheetId) {
+			logger.error("GoogleSheetService", "Không xác định được Sheet ID");
+			return { success: false, tabs: [], defaultGid: "0" };
+		}
 
 		const cacheKey = sheetId;
 		const now = Date.now();
 		if (!forceRefresh && this.tabsCache.has(cacheKey)) {
 			const cached = this.tabsCache.get(cacheKey);
 			if (cached && now - cached.time < 60000) {
+				logger.debug("GoogleSheetService", "Sử dụng cache danh sách tab", {
+					count: cached.data.tabs.length,
+				});
 				return cached.data;
 			}
 		}
 
 		const htmlViewUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlview`;
+		logger.info(
+			"GoogleSheetService",
+			`Đang quét danh sách Tabs từ: ${htmlViewUrl}`,
+		);
 		try {
 			const res = await fetch(htmlViewUrl, {
 				redirect: "follow",
@@ -147,12 +158,16 @@ export class GoogleSheetService {
 				tabs: cleanTabs,
 				defaultGid: bestTab ? bestTab.gid : tabs[0].gid,
 			};
+			logger.info(
+				"GoogleSheetService",
+				`Quét thành công ${cleanTabs.length} tabs. Tab mặc định: GID ${result.defaultGid}`,
+			);
 			this.tabsCache.set(cacheKey, { time: Date.now(), data: result });
 			return result;
 		} catch (err) {
-			console.warn(
-				"[GoogleSheetService] Lỗi khi lấy tabs:",
-				(err as Error).message,
+			logger.error(
+				"GoogleSheetService",
+				`Lỗi khi lấy tabs: ${(err as Error).message}`,
 			);
 			return {
 				success: false,
@@ -194,7 +209,13 @@ export class GoogleSheetService {
 				? specificGid
 				: parsed.gid;
 
+		logger.info(
+			"GoogleSheetService",
+			`Bắt đầu kéo dữ liệu từ Sheet ID: ${sheetId}, GID: ${gid}`,
+		);
+
 		if (!sheetId) {
+			logger.error("GoogleSheetService", "Thiếu Google Sheet ID");
 			return {
 				success: false,
 				rows: [],
@@ -206,6 +227,7 @@ export class GoogleSheetService {
 		// 1. Thử export CSV công khai
 		try {
 			const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+			logger.debug("GoogleSheetService", `Gửi yêu cầu tải CSV: ${csvUrl}`);
 			const res = await fetch(csvUrl, {
 				headers: {
 					"User-Agent":
@@ -213,10 +235,23 @@ export class GoogleSheetService {
 				},
 			});
 
+			logger.debug(
+				"GoogleSheetService",
+				`Phản hồi tải CSV HTTP status: ${res.status}`,
+			);
+
 			if (res.ok) {
 				const text = await res.text();
+				logger.debug(
+					"GoogleSheetService",
+					`Nhận được nội dung CSV độ dài ${text.length} ký tự`,
+				);
 				const rows = this.parseCsv(text);
 				if (rows.length > 0) {
+					logger.info(
+						"GoogleSheetService",
+						`Kéo thành công ${rows.length} dòng từ CSV export (GID: ${gid})`,
+					);
 					return {
 						success: true,
 						rows,
@@ -224,12 +259,17 @@ export class GoogleSheetService {
 						sheetId,
 						gid,
 					};
+				} else {
+					logger.warn(
+						"GoogleSheetService",
+						`CSV export tải về rỗng hoặc không trích xuất được dòng dữ liệu (GID: ${gid})`,
+					);
 				}
 			}
 		} catch (csvErr) {
-			console.warn(
-				"[GoogleSheetService] Không thể kéo CSV:",
-				(csvErr as Error).message,
+			logger.error(
+				"GoogleSheetService",
+				`Không thể kéo CSV: ${(csvErr as Error).message}`,
 			);
 		}
 
@@ -237,10 +277,15 @@ export class GoogleSheetService {
 		if (apiKey) {
 			try {
 				const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A1:Z100?key=${apiKey}`;
+				logger.debug("GoogleSheetService", "Thử gọi Google Sheets API v4");
 				const res = await fetch(apiUrl);
 				if (res.ok) {
 					const data = await res.json();
 					const rows = this._parseApiValues(data.values || []);
+					logger.info(
+						"GoogleSheetService",
+						`Kéo thành công ${rows.length} dòng qua API v4`,
+					);
 					return {
 						success: true,
 						rows,
@@ -250,9 +295,9 @@ export class GoogleSheetService {
 					};
 				}
 			} catch (apiErr) {
-				console.warn(
-					"[GoogleSheetService] Không thể gọi API v4:",
-					(apiErr as Error).message,
+				logger.error(
+					"GoogleSheetService",
+					`Lỗi gọi API v4: ${(apiErr as Error).message}`,
 				);
 			}
 		}
@@ -261,13 +306,16 @@ export class GoogleSheetService {
 			success: false,
 			rows: [],
 			message:
-				"Không thể kéo dữ liệu từ Google Sheet. Vui lòng đảm bảo Sheet được chia sẻ công khai.",
+				"Không thể kéo dữ liệu từ Google Sheet. Vui lòng kiểm tra quyền chia sẻ công khai.",
 			source: "failed",
 		};
 	}
 
 	public parseCsv(csvText: string): Record<string, string>[] {
-		if (!csvText || !csvText.trim()) return [];
+		if (!csvText || !csvText.trim()) {
+			logger.warn("GoogleSheetService", "Nội dung CSV rỗng");
+			return [];
+		}
 
 		const lines: string[][] = [];
 		let currentLine: string[] = [];
@@ -308,38 +356,129 @@ export class GoogleSheetService {
 			}
 		}
 
-		if (lines.length < 2) return [];
+		if (lines.length === 0) return [];
 
-		const rawHeaders = lines[0].map((h) => h.trim());
+		logger.debug(
+			"GoogleSheetService",
+			`Đã phân tách CSV thành ${lines.length} dòng`,
+			{
+				firstLine: lines[0],
+			},
+		);
+
+		// Standard positional column mapping fallback
+		const standardCols = [
+			"stt",
+			"hoTen",
+			"ngaySinh",
+			"gioiTinh",
+			"quocGia",
+			"quocTich",
+			"loaiGiayTo",
+			"tenGiayTo",
+			"soGiayTo",
+			"soDienThoai",
+			"loaiCuTru",
+			"tinhTp",
+			"quanHuyen",
+			"phuongXa",
+			"diaChi",
+			"ngayDen",
+			"ngayDi",
+			"lyDo",
+			"soPhong",
+		];
+
+		// Check if line 0 looks like a header
+		const firstLineStr = lines[0].join(" ").toLowerCase();
+		const isFirstLineHeader =
+			firstLineStr.includes("họ tên") ||
+			firstLineStr.includes("họ và tên") ||
+			firstLineStr.includes("d.o.b") ||
+			firstLineStr.includes("ngày sinh") ||
+			firstLineStr.includes("số giấy tờ") ||
+			firstLineStr.includes("loại giấy tờ") ||
+			firstLineStr.includes("số cccd");
+
+		let rawHeaders: string[];
+		let startRowIndex = 1;
+
+		if (isFirstLineHeader) {
+			rawHeaders = lines[0].map((h) => h.trim());
+			startRowIndex = 1;
+			logger.debug(
+				"GoogleSheetService",
+				"Nhận diện dòng 1 là tiêu đề cột chuẩn",
+				{ rawHeaders },
+			);
+		} else {
+			// Line 0 is a data row or headers are corrupted!
+			rawHeaders = standardCols;
+			startRowIndex = 0;
+			logger.warn(
+				"GoogleSheetService",
+				"Dòng 1 không chứa tiêu đề chuẩn, áp dụng fallback mapping theo vị trí cột",
+				{ firstLine: lines[0] },
+			);
+		}
+
 		const dataObjects: Record<string, string>[] = [];
 
-		for (let i = 1; i < lines.length; i++) {
+		for (let i = startRowIndex; i < lines.length; i++) {
 			const row = lines[i];
 			const obj: Record<string, string> = {};
 			let hasData = false;
 
-			rawHeaders.forEach((header, colIdx) => {
-				const val = (row[colIdx] || "").trim();
+			row.forEach((valRaw, colIdx) => {
+				const val = (valRaw || "").trim();
 				if (val) hasData = true;
+
+				const header = rawHeaders[colIdx] || `Col_${colIdx}`;
 				obj[header] = val;
 				const normalizedKey = this._mapHeaderToKey(header);
 				if (normalizedKey && !obj[normalizedKey]) {
 					obj[normalizedKey] = val;
 				}
+
+				// Positional backup
+				const positionalKey = standardCols[colIdx];
+				if (positionalKey && !obj[positionalKey]) {
+					obj[positionalKey] = val;
+				}
 			});
 
-			if (
-				hasData &&
-				(obj.hoTen ||
-					obj["Họ tên"] ||
+			if (!obj.soPhong) {
+				const possibleRoom =
+					obj["Số phòng"] ||
+					obj["Phòng"] ||
+					row[18] ||
+					row[14] ||
+					row[15] ||
+					"";
+				if (possibleRoom) obj.soPhong = possibleRoom;
+			}
+
+			if (hasData) {
+				const hoTen = obj.hoTen || obj["Họ tên"] || row[1] || "";
+				const soGiayTo =
 					obj.soGiayTo ||
+					obj["Số giấy tờ"] ||
 					obj["Số CCCD"] ||
-					obj["Số giấy tờ"])
-			) {
-				dataObjects.push(obj);
+					row[8] ||
+					row[7] ||
+					"";
+				if (hoTen || soGiayTo || obj.ngayDen || row.length >= 3) {
+					if (!obj.hoTen && hoTen) obj.hoTen = hoTen;
+					if (!obj.soGiayTo && soGiayTo) obj.soGiayTo = soGiayTo;
+					dataObjects.push(obj);
+				}
 			}
 		}
 
+		logger.info(
+			"GoogleSheetService",
+			`Đã trích xuất ${dataObjects.length} bản ghi hợp lệ từ CSV`,
+		);
 		return dataObjects;
 	}
 
