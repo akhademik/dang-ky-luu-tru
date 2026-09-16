@@ -565,10 +565,20 @@ async function loadCatalogs() {
     renderCatalogList('quocTich', catalogData.quocTich || []);
 
     const lgUl = document.getElementById('loaiGiayToList');
-    lgUl.innerHTML = (catalogData.loaiGiayTo || []).map(lg => `<li class="py-1"><span class="font-mono text-indigo-600 font-bold">${lg.name}</span></li>`).join('');
+    lgUl.innerHTML = (catalogData.loaiGiayTo || []).map(lg => `
+      <li class="py-1.5 flex items-center justify-between border-b border-slate-100 last:border-0">
+        <span class="font-medium text-slate-800">${lg.name}</span>
+        <span class="font-mono text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded text-[11px]">Mã API: ${lg.id}</span>
+      </li>
+    `).join('');
 
     const ldUl = document.getElementById('lyDoCuTruList');
-    ldUl.innerHTML = (catalogData.lyDoCuTru || []).map(ld => `<li class="py-1"><span class="font-mono text-indigo-600 font-bold">${ld.name}</span></li>`).join('');
+    ldUl.innerHTML = (catalogData.lyDoCuTru || []).map(ld => `
+      <li class="py-1.5 flex items-center justify-between border-b border-slate-100 last:border-0">
+        <span class="font-medium text-slate-800">${ld.name}</span>
+        <span class="font-mono text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded text-[11px]">Mã API: ${ld.id}</span>
+      </li>
+    `).join('');
   } catch (err) {
     document.getElementById('catDot').className = 'w-2 h-2 rounded-full bg-rose-400';
     document.getElementById('catCountText').textContent = 'Lỗi nạp';
@@ -579,11 +589,24 @@ function renderCatalogList(type, list) {
   if (type === 'tinh') {
     const ul = document.getElementById('tinhList');
     if (!ul) return;
-    ul.innerHTML = list.map(t => `<li class="py-1 flex items-center justify-between"><span class="font-semibold text-slate-800">${t.tenTT}</span><span class="font-mono text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded text-[11px]">${t.maTT} (${t.maTTChu || ''})</span></li>`).join('');
+    ul.innerHTML = list.map(t => `
+      <li class="py-1.5 flex items-center justify-between border-b border-slate-100 last:border-0">
+        <span class="font-semibold text-slate-800">${t.tenTT}</span>
+        <span class="font-mono text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded text-[11px]">${t.maTT} (${t.maTTChu || ''})</span>
+      </li>
+    `).join('');
   } else if (type === 'quocTich') {
     const ul = document.getElementById('quocTichList');
     if (!ul) return;
-    ul.innerHTML = list.map(q => `<li class="py-1 flex items-center justify-between"><span class="font-semibold text-slate-800">${q.tenQT}</span><span class="font-mono text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded text-[11px]">${q.maQT}</span></li>`).join('');
+    ul.innerHTML = list.map(q => `
+      <li class="py-1.5 flex items-center justify-between border-b border-slate-100 last:border-0">
+        <div>
+          <span class="font-semibold text-slate-800">${q.tenQT}</span>
+          ${q.tenQTEn ? `<span class="text-slate-400 font-normal text-[11px] ml-1">(${q.tenQTEn})</span>` : ''}
+        </div>
+        <span class="font-mono text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded text-[11px]">${q.maQT}</span>
+      </li>
+    `).join('');
   }
 }
 

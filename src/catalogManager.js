@@ -80,22 +80,21 @@ export class CatalogManager {
   }
 
   async loadLyDoCuTru() {
-    const raw = this._readLocalFallback('ly_do_cu_tru.json');
-    // Chỉ giữ Du lịch (1) và Mục đích khác (20) theo instruction.md
+    // Chỉ giữ Du lịch (1) và Mục đích khác (20) theo quy định
     this.lyDoCuTruList = [
-      { id: 1, name: 'Du lịch (1)' },
-      { id: 20, name: 'Mục đích khác (20)' }
+      { id: 1, name: 'Du lịch' },
+      { id: 20, name: 'Mục đích khác' }
     ];
   }
 
   async loadLoaiGiayTo() {
-    // Chỉ giữ CCCD (1), CMND (2), GPLX (3), Hộ chiếu (4), Thẻ Căn Cước (8) theo instruction.md
+    // Chỉ giữ 5 loại giấy tờ: CCCD (1), CMND (2), GPLX (3), Hộ chiếu (4), Thẻ Căn Cước (8)
     this.loaiGiayToList = [
-      { id: 1, name: 'Thẻ CCCD (1)', for: 'VN' },
-      { id: 2, name: 'Thẻ CMND (2)', for: 'VN' },
-      { id: 3, name: 'Giấy phép lái xe (3)', for: 'VN' },
-      { id: 4, name: 'Hộ chiếu / Passport (4)', for: 'VN,FOREIGN' },
-      { id: 8, name: 'Thẻ Căn Cước (8)', for: 'VN' }
+      { id: 1, name: 'Thẻ CCCD', for: 'VN' },
+      { id: 2, name: 'Thẻ CMND', for: 'VN' },
+      { id: 3, name: 'Giấy phép lái xe', for: 'VN' },
+      { id: 4, name: 'Hộ chiếu', for: 'VN,FOREIGN' },
+      { id: 8, name: 'Thẻ Căn Cước', for: 'VN' }
     ];
   }
 

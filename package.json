@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "dev": "node src/server.js",
+    "dev": "node --watch src/server.js",
     "start": "node src/index.js",
     "test": "node test/test-pipeline.js",
     "lint": "node --check src/config.js src/catalogManager.js src/tokenManager.js src/dataTransformer.js src/googleSheetService.js src/kbttClient.js src/syncPipeline.js src/server.js src/index.js test/test-pipeline.js",
