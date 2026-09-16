@@ -123,8 +123,10 @@
       "src_routes_page",
       "src_routes_page_addnewguest",
       "src_routes_page_buildorderedrowvalues",
+      "src_routes_page_canceldeleterow",
       "src_routes_page_checktoken",
       "src_routes_page_closeeditmodal",
+      "src_routes_page_confirmdeleterow",
       "src_routes_page_copycode",
       "src_routes_page_executesyncbatch",
       "src_routes_page_fetchsheettabslist",
@@ -133,9 +135,9 @@
       "src_routes_page_loadcatalogs",
       "src_routes_page_openeditmodal",
       "src_routes_page_parseandapplyaddress",
+      "src_routes_page_promptdeleterow",
       "src_routes_page_pushselectedrows",
       "src_routes_page_pushsinglerow",
-      "src_routes_page_removerow",
       "src_routes_page_savemodal",
       "src_routes_page_syncrowtogooglesheet",
       "src_routes_page_toggleeditinline",
@@ -313,7 +315,7 @@
     "0": 0.09797979797979799,
     "1": 0.11707317073170732,
     "2": 0.07407407407407407,
-    "3": 0.14130434782608695,
+    "3": 0.12615384615384614,
     "4": 0.08695652173913043,
     "5": 0.09523809523809523,
     "6": 0.3157894736842105,
@@ -440,7 +442,7 @@
     {
       "type": "bridge_node",
       "question": "Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`, `DataTransformer`?",
-      "why": "High betweenness centrality (0.042) - this node is a cross-community bridge."
+      "why": "High betweenness centrality (0.041) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",

@@ -107,13 +107,18 @@ function doPost(e) {
       
       var lastRow = targetSheet.getLastRow();
       if (rowToDelete <= lastRow) {
+        // Xóa sạch toàn bộ nội dung cả 16 cột trước khi xóa vật lý dòng
+        try {
+          var numCols = Math.max(16, targetSheet.getLastColumn());
+          targetSheet.getRange(rowToDelete, 1, 1, numCols).clearContent();
+        } catch(errClear) {}
         targetSheet.deleteRow(rowToDelete);
         SpreadsheetApp.flush();
       }
       
       return ContentService.createTextOutput(JSON.stringify({
         success: true,
-        message: "Đã xóa dòng " + rowToDelete + " trên sheet [" + targetSheet.getName() + "]",
+        message: "Đã xóa hoàn toàn dòng " + rowToDelete + " trên sheet [" + targetSheet.getName() + "]",
         sheetName: targetSheet.getName(),
         deletedRow: rowToDelete
       })).setMimeType(ContentService.MimeType.JSON);

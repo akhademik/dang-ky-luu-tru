@@ -121,13 +121,20 @@ let modalForm = $state({
 	ngaySinh: "",
 	quocTich: "VNM",
 	soPhong: "1",
-	loaiGiayTo: "Thẻ CCCD",
+	loaiGiayTo: "CCCD",
 	soGiayTo: "",
 	ngayDen: "",
 	ngayDi: "",
 	thoiHanTamTru: "",
 	diaChiFull: "",
 });
+
+// Custom Delete Confirmation Modal State
+let deleteModalOpen = $state(false);
+let deleteTargetIdx = $state<number | null>(null);
+let deleteTargetName = $state("");
+let deleteTargetSheetRow = $state<number | null>(null);
+let deletingIndices = $state<Set<number>>(new Set());
 
 function validateDateString(val: string): boolean {
 	if (!val) return false;
@@ -983,23 +990,38 @@ async function syncRowToGoogleSheet(idx: number) {
 	}
 }
 
-async function removeRow(idx: number) {
+function promptDeleteRow(idx: number) {
 	const row = currentRows[idx];
 	if (!row) return;
-
-	const targetSheetRow = Math.max(
+	deleteTargetIdx = idx;
+	deleteTargetName = String(row.hoTen || row["Họ tên"] || `Dòng ${idx + 1}`);
+	deleteTargetSheetRow = Math.max(
 		2,
 		Number(row._sheetRow || row.sheetRowIndex || idx + 2),
 	);
-	const guestName = String(row.hoTen || row["Họ tên"] || `Dòng ${idx + 1}`);
+	deleteModalOpen = true;
+}
 
-	if (
-		!confirm(
-			`Bạn có chắc chắn muốn xóa khách "${guestName}" (dòng ${targetSheetRow} trên Google Sheet) không?`,
-		)
-	) {
-		return;
-	}
+function cancelDeleteRow() {
+	deleteModalOpen = false;
+	deleteTargetIdx = null;
+	deleteTargetName = "";
+	deleteTargetSheetRow = null;
+}
+
+async function confirmDeleteRow() {
+	if (deleteTargetIdx === null) return;
+	const idx = deleteTargetIdx;
+	const row = currentRows[idx];
+	const targetSheetRow =
+		deleteTargetSheetRow ||
+		Math.max(2, Number(row?._sheetRow || row?.sheetRowIndex || idx + 2));
+
+	// Đóng modal và kích hoạt hiệu ứng strikethrough ngay lập tức
+	deleteModalOpen = false;
+	const nextDeleting = new Set(deletingIndices);
+	nextDeleting.add(idx);
+	deletingIndices = nextDeleting;
 
 	showToast("XÓA", `Đang xóa dòng ${targetSheetRow} trên Google Sheet...`);
 	const selectedTab = availableTabs.find(
@@ -1028,28 +1050,32 @@ async function removeRow(idx: number) {
 		}
 	} catch (err) {
 		showToast("LỖI", `Lỗi mạng khi xóa Sheet: ${(err as Error).message}`);
-	}
+	} finally {
+		// Dọn dẹp trạng thái deleting và xóa bản ghi khỏi mảng dữ liệu
+		const cleanDeleting = new Set(deletingIndices);
+		cleanDeleting.delete(idx);
+		deletingIndices = cleanDeleting;
 
-	// Cập nhật lại UI và điều chỉnh chỉ số sheetRow của các dòng phía sau
-	currentRows = currentRows
-		.filter((_, i) => i !== idx)
-		.map((r, i) => {
-			const oldRow = Number(r._sheetRow || r.sheetRowIndex || i + 2);
-			if (i >= idx && oldRow > targetSheetRow) {
-				const newSheetRow = oldRow - 1;
-				r._sheetRow = newSheetRow;
-				r.sheetRowIndex = newSheetRow;
-			}
-			return r;
+		currentRows = currentRows
+			.filter((_, i) => i !== idx)
+			.map((r, i) => {
+				const oldRow = Number(r._sheetRow || r.sheetRowIndex || i + 2);
+				if (i >= idx && oldRow > targetSheetRow) {
+					const newSheetRow = oldRow - 1;
+					r._sheetRow = newSheetRow;
+					r.sheetRowIndex = newSheetRow;
+				}
+				return r;
+			});
+
+		const nextSel = new Set<number>();
+		selectedIndices.forEach((i) => {
+			if (i < idx) nextSel.add(i);
+			else if (i > idx) nextSel.add(i - 1);
 		});
-
-	const nextSel = new Set<number>();
-	selectedIndices.forEach((i) => {
-		if (i < idx) nextSel.add(i);
-		else if (i > idx) nextSel.add(i - 1);
-	});
-	selectedIndices = nextSel;
-	updatePayloadPreview();
+		selectedIndices = nextSel;
+		updatePayloadPreview();
+	}
 }
 
 function addNewGuest() {
@@ -1383,11 +1409,12 @@ onMount(() => {
                 {@const fStatus = valState.fieldStatus || {}}
                 {@const isEditing = editingIndices.has(idx)}
                 {@const isChecked = selectedIndices.has(idx)}
+                {@const isDeleting = deletingIndices.has(idx)}
                 {@const addrInfo = getDisplayAddress(row)}
 
-                <tr ondblclick={() => openEditModal(idx)} class={`hover:bg-slate-100/80 transition ${!isComplete ? 'bg-rose-50/30' : ''} ${isChecked ? 'bg-indigo-50/30' : ''}`}>
+                <tr ondblclick={() => !isDeleting && openEditModal(idx)} class={`transition-all duration-200 ${isDeleting ? 'line-through opacity-40 bg-rose-100/70 pointer-events-none select-none grayscale' : 'hover:bg-slate-100/80'} ${!isComplete && !isDeleting ? 'bg-rose-50/30' : ''} ${isChecked && !isDeleting ? 'bg-indigo-50/30' : ''}`}>
                   <td class="p-3 text-center">
-                    <input type="checkbox" checked={isChecked} onchange={(e) => toggleRowSelect(idx, (e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                    <input type="checkbox" checked={isChecked} disabled={isDeleting} onchange={(e) => toggleRowSelect(idx, (e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-30">
                   </td>
 
                   <td class="p-3 text-center font-mono text-slate-400">{idx + 1}</td>
@@ -1535,17 +1562,23 @@ onMount(() => {
 
                   <!-- Thao tác -->
                   <td class="p-3 text-center whitespace-nowrap">
-                    <div class="inline-flex items-center gap-1">
-                      <button onclick={() => openEditModal(idx)} class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition" title="Chỉnh sửa chi tiết">
-                        <i class="fa-solid fa-pen"></i>
-                      </button>
-                      <button onclick={() => pushSingleRow(idx)} class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition" title="Đăng ký riêng dòng này">
-                        <i class="fa-solid fa-paper-plane"></i>
-                      </button>
-                      <button onclick={() => removeRow(idx)} class="text-rose-500 hover:text-rose-700 p-1.5 rounded hover:bg-rose-50 transition" title="Xóa dòng">
-                        <i class="fa-solid fa-trash-can"></i>
-                      </button>
-                    </div>
+                    {#if isDeleting}
+                      <span class="inline-flex items-center gap-1 text-rose-600 font-semibold text-[11px] animate-pulse">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Đang xóa...
+                      </span>
+                    {:else}
+                      <div class="inline-flex items-center gap-1">
+                        <button onclick={() => openEditModal(idx)} class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition cursor-pointer" title="Chỉnh sửa chi tiết">
+                          <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick={() => pushSingleRow(idx)} class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition cursor-pointer" title="Đăng ký riêng dòng này">
+                          <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                        <button onclick={() => promptDeleteRow(idx)} class="text-rose-500 hover:text-rose-700 p-1.5 rounded hover:bg-rose-50 transition cursor-pointer" title="Xóa dòng khỏi bảng & Google Sheet">
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
+                    {/if}
                   </td>
                 </tr>
               {/each}
@@ -1908,6 +1941,39 @@ onMount(() => {
             <i class="fa-solid fa-floppy-disk"></i> Lưu & Cập nhật Sheet
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Custom Delete Confirmation Modal -->
+{#if deleteModalOpen}
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+      <div class="p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl shrink-0">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-base font-bold text-slate-900 mb-1">Xác nhận xóa khách lưu trú</h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+              Bạn có chắc chắn muốn xóa khách <strong class="text-slate-900 font-bold">"{deleteTargetName}"</strong> (dòng {deleteTargetSheetRow} trên Google Sheet) không?
+            </p>
+            <div class="bg-rose-50 border border-rose-200 rounded-lg p-2.5 text-[11px] text-rose-700 font-medium flex items-center gap-2">
+              <i class="fa-solid fa-circle-info shrink-0"></i>
+              <span>Dòng này sẽ bị xóa hoàn toàn khỏi bảng và xóa vật lý trên Google Sheet.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-slate-50 px-6 py-3.5 border-t border-slate-200 flex items-center justify-end gap-2.5">
+        <button onclick={cancelDeleteRow} class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition shadow-xs cursor-pointer">
+          Hủy bỏ
+        </button>
+        <button onclick={confirmDeleteRow} class="px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition shadow flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-trash-can"></i> Xác nhận xóa
+        </button>
       </div>
     </div>
   </div>

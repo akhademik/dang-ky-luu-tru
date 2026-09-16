@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 276 nodes · 511 edges · 16 communities (7 shown, 6 thin omitted)
+- 278 nodes · 513 edges · 16 communities (7 shown, 6 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e643b960`
+- Built from commit: `90fa3a17`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -70,8 +70,8 @@ Cohesion: 0.07
 Nodes (26): author, description, keywords, license, main, name, scripts, build (+18 more)
 
 ### Community 3 - "+page.svelte"
-Cohesion: 0.14
-Nodes (16): addNewGuest(), buildOrderedRowValues(), checkToken(), closeEditModal(), executeSyncBatch(), handleManualLogin(), openEditModal(), parseAndApplyAddress() (+8 more)
+Cohesion: 0.13
+Nodes (16): addNewGuest(), buildOrderedRowValues(), checkToken(), closeEditModal(), confirmDeleteRow(), executeSyncBatch(), handleManualLogin(), openEditModal() (+8 more)
 
 ### Community 4 - "devDependencies"
 Cohesion: 0.09
@@ -87,14 +87,14 @@ Nodes (11): entry, ignoreDependencies, test/**/*.ts, project, $schema, tailwindc
 
 ## Knowledge Gaps
 - **72 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `ApiResponse`, `LogEntry` (+67 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 109 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 111 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`, `DataTransformer`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **Why does `DataTransformer` connect `DataTransformer` to `TokenManager`, `syncPipeline.ts`, `CatalogManager`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `scripts`, `entry`?**

@@ -715,6 +715,18 @@
       "source_location": "L4"
     },
     {
+      "id": "src_routes_api_sheets_delete_row_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L6"
+    },
+    {
       "id": "src_routes_api_sheets_pull_server_post",
       "label": "POST()",
       "_callable": true,
@@ -796,17 +808,6 @@
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/transform/+server.ts",
-      "source_location": "L6"
-    },
-    {
-      "id": "src_routes_api_sheets_delete_row_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
       "source_location": "L6"
     },
     {
@@ -951,7 +952,7 @@
       "file_type": "code",
       "norm_label": "addnewguest()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1055"
+      "source_location": "L1081"
     },
     {
       "id": "src_routes_page_buildorderedrowvalues",
@@ -962,7 +963,18 @@
       "file_type": "code",
       "norm_label": "buildorderedrowvalues()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L868"
+      "source_location": "L875"
+    },
+    {
+      "id": "src_routes_page_canceldeleterow",
+      "label": "cancelDeleteRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "norm_label": "canceldeleterow()",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1005"
     },
     {
       "id": "src_routes_page_checktoken",
@@ -973,7 +985,7 @@
       "file_type": "code",
       "norm_label": "checktoken()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1168"
+      "source_location": "L1194"
     },
     {
       "id": "src_routes_page_closeeditmodal",
@@ -984,7 +996,18 @@
       "file_type": "code",
       "norm_label": "closeeditmodal()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L823"
+      "source_location": "L830"
+    },
+    {
+      "id": "src_routes_page_confirmdeleterow",
+      "label": "confirmDeleteRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "norm_label": "confirmdeleterow()",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1012"
     },
     {
       "id": "src_routes_page_copycode",
@@ -995,7 +1018,7 @@
       "file_type": "code",
       "norm_label": "copycode()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1206"
+      "source_location": "L1232"
     },
     {
       "id": "src_routes_page_executesyncbatch",
@@ -1006,7 +1029,7 @@
       "file_type": "code",
       "norm_label": "executesyncbatch()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1115"
+      "source_location": "L1141"
     },
     {
       "id": "src_routes_page_fetchsheettabslist",
@@ -1017,7 +1040,7 @@
       "file_type": "code",
       "norm_label": "fetchsheettabslist()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L539"
+      "source_location": "L546"
     },
     {
       "id": "src_routes_page_handlemanuallogin",
@@ -1028,7 +1051,7 @@
       "file_type": "code",
       "norm_label": "handlemanuallogin()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1179"
+      "source_location": "L1205"
     },
     {
       "id": "src_routes_page_handletabchange",
@@ -1039,7 +1062,7 @@
       "file_type": "code",
       "norm_label": "handletabchange()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L636"
+      "source_location": "L643"
     },
     {
       "id": "src_routes_page_loadcatalogs",
@@ -1050,7 +1073,7 @@
       "file_type": "code",
       "norm_label": "loadcatalogs()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1194"
+      "source_location": "L1220"
     },
     {
       "id": "src_routes_page_openeditmodal",
@@ -1061,7 +1084,7 @@
       "file_type": "code",
       "norm_label": "openeditmodal()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L780"
+      "source_location": "L787"
     },
     {
       "id": "src_routes_page_parseandapplyaddress",
@@ -1072,7 +1095,18 @@
       "file_type": "code",
       "norm_label": "parseandapplyaddress()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L677"
+      "source_location": "L684"
+    },
+    {
+      "id": "src_routes_page_promptdeleterow",
+      "label": "promptDeleteRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "norm_label": "promptdeleterow()",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L993"
     },
     {
       "id": "src_routes_page_pushselectedrows",
@@ -1083,7 +1117,7 @@
       "file_type": "code",
       "norm_label": "pushselectedrows()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1142"
+      "source_location": "L1168"
     },
     {
       "id": "src_routes_page_pushsinglerow",
@@ -1094,18 +1128,7 @@
       "file_type": "code",
       "norm_label": "pushsinglerow()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1160"
-    },
-    {
-      "id": "src_routes_page_removerow",
-      "label": "removeRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "file_type": "code",
-      "norm_label": "removerow()",
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L986"
+      "source_location": "L1186"
     },
     {
       "id": "src_routes_page_savemodal",
@@ -1116,7 +1139,7 @@
       "file_type": "code",
       "norm_label": "savemodal()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L828"
+      "source_location": "L835"
     },
     {
       "id": "src_routes_page_syncrowtogooglesheet",
@@ -1127,7 +1150,7 @@
       "file_type": "code",
       "norm_label": "syncrowtogooglesheet()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L941"
+      "source_location": "L948"
     },
     {
       "id": "src_routes_page_toggleeditinline",
@@ -1138,7 +1161,7 @@
       "file_type": "code",
       "norm_label": "toggleeditinline()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L768"
+      "source_location": "L775"
     },
     {
       "id": "src_routes_page_togglerowselect",
@@ -1149,7 +1172,7 @@
       "file_type": "code",
       "norm_label": "togglerowselect()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L662"
+      "source_location": "L669"
     },
     {
       "id": "src_routes_page_toggleselectall",
@@ -1160,7 +1183,7 @@
       "file_type": "code",
       "norm_label": "toggleselectall()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L669"
+      "source_location": "L676"
     },
     {
       "id": "src_routes_page_updatecell",
@@ -1171,7 +1194,7 @@
       "file_type": "code",
       "norm_label": "updatecell()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L717"
+      "source_location": "L724"
     },
     {
       "id": "src_routes_page_updatepayloadpreview",
@@ -1182,7 +1205,7 @@
       "file_type": "code",
       "norm_label": "updatepayloadpreview()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L640"
+      "source_location": "L647"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
@@ -2080,6 +2103,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_routes_api_sheets_delete_row_server",
+      "label": "delete-row/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "delete-row/+server.ts",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_routes_api_sheets_pull_server",
       "label": "pull/+server.ts",
       "_origin": "ast",
@@ -2164,16 +2198,6 @@
       "file_type": "code",
       "norm_label": "googlesheetservice.ts",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_sheets_delete_row_server",
-      "label": "delete-row/+server.ts",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "delete-row/+server.ts",
-      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
       "source_location": "L1"
     },
     {
@@ -4662,7 +4686,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1110",
+      "source_location": "L1136",
       "weight": 1.0
     },
     {
@@ -4674,7 +4698,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1111",
+      "source_location": "L1137",
       "weight": 1.0
     },
     {
@@ -4686,7 +4710,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1112",
+      "source_location": "L1138",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page_confirmdeleterow",
+      "target": "src_routes_page_updatepayloadpreview",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1077",
       "weight": 1.0
     },
     {
@@ -4698,7 +4734,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1129",
+      "source_location": "L1155",
       "weight": 1.0
     },
     {
@@ -4710,7 +4746,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1188",
+      "source_location": "L1214",
       "weight": 1.0
     },
     {
@@ -4722,7 +4758,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1157",
+      "source_location": "L1183",
       "weight": 1.0
     },
     {
@@ -4734,19 +4770,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1162",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page_removerow",
-      "target": "src_routes_page_updatepayloadpreview",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L1052",
+      "source_location": "L1188",
       "weight": 1.0
     },
     {
@@ -4758,7 +4782,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L860",
+      "source_location": "L867",
       "weight": 1.0
     },
     {
@@ -4770,7 +4794,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L863",
+      "source_location": "L870",
       "weight": 1.0
     },
     {
@@ -4782,7 +4806,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L864",
+      "source_location": "L871",
       "weight": 1.0
     },
     {
@@ -4794,7 +4818,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L865",
+      "source_location": "L872",
       "weight": 1.0
     },
     {
@@ -4806,7 +4830,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L958",
+      "source_location": "L965",
       "weight": 1.0
     },
     {
@@ -4818,7 +4842,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L773",
+      "source_location": "L780",
       "weight": 1.0
     },
     {
@@ -4830,7 +4854,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L763",
+      "source_location": "L770",
       "weight": 1.0
     },
     {
@@ -4842,7 +4866,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L765",
+      "source_location": "L772",
       "weight": 1.0
     },
     {
@@ -7918,13 +7942,35 @@
     },
     {
       "source": "src_routes_page",
+      "target": "src_routes_page_canceldeleterow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1005",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_confirmdeleterow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1012",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
       "target": "src_routes_page_addnewguest",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1055",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -7935,7 +7981,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1115",
+      "source_location": "L1141",
       "weight": 1.0
     },
     {
@@ -7946,7 +7992,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1142",
+      "source_location": "L1168",
       "weight": 1.0
     },
     {
@@ -7957,7 +8003,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1160",
+      "source_location": "L1186",
       "weight": 1.0
     },
     {
@@ -7968,7 +8014,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1168",
+      "source_location": "L1194",
       "weight": 1.0
     },
     {
@@ -7979,7 +8025,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1179",
+      "source_location": "L1205",
       "weight": 1.0
     },
     {
@@ -7990,7 +8036,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1194",
+      "source_location": "L1220",
       "weight": 1.0
     },
     {
@@ -8001,7 +8047,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1206",
+      "source_location": "L1232",
       "weight": 1.0
     },
     {
@@ -8012,7 +8058,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L539",
+      "source_location": "L546",
       "weight": 1.0
     },
     {
@@ -8023,7 +8069,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L636",
+      "source_location": "L643",
       "weight": 1.0
     },
     {
@@ -8034,7 +8080,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L640",
+      "source_location": "L647",
       "weight": 1.0
     },
     {
@@ -8045,7 +8091,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L662",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -8056,7 +8102,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L669",
+      "source_location": "L676",
       "weight": 1.0
     },
     {
@@ -8067,7 +8113,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L677",
+      "source_location": "L684",
       "weight": 1.0
     },
     {
@@ -8078,7 +8124,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L717",
+      "source_location": "L724",
       "weight": 1.0
     },
     {
@@ -8089,7 +8135,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L768",
+      "source_location": "L775",
       "weight": 1.0
     },
     {
@@ -8100,7 +8146,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L780",
+      "source_location": "L787",
       "weight": 1.0
     },
     {
@@ -8111,7 +8157,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L823",
+      "source_location": "L830",
       "weight": 1.0
     },
     {
@@ -8122,7 +8168,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L828",
+      "source_location": "L835",
       "weight": 1.0
     },
     {
@@ -8133,7 +8179,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L868",
+      "source_location": "L875",
       "weight": 1.0
     },
     {
@@ -8144,18 +8190,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L941",
+      "source_location": "L948",
       "weight": 1.0
     },
     {
       "source": "src_routes_page",
-      "target": "src_routes_page_removerow",
+      "target": "src_routes_page_promptdeleterow",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L986",
+      "source_location": "L993",
       "weight": 1.0
     },
     {
@@ -9097,5 +9143,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e643b9608a8367b82ea787ef3a2f5cb15c6ad969"
+  "built_at_commit": "90fa3a17bca2491a2774a72c4c9ad8f048213afe"
 }
