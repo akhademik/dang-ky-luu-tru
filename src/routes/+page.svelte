@@ -57,6 +57,7 @@ interface ValidationState {
 interface SyncResult {
 	branch?: string;
 	status: string;
+	success?: boolean;
 	message: string;
 	payload?: unknown;
 	row?: RowData;
@@ -75,6 +76,10 @@ let currentRows = $state<RowData[]>([]);
 let selectedIndices = $state<Set<number>>(new Set());
 let editingIndices = $state<Set<number>>(new Set());
 let validationStates = $state<ValidationState[]>([]);
+let eligibleRowsCount = $derived(
+	currentRows.filter((r, i) => !isRowRegistered(r) && !deletingIndices.has(i))
+		.length,
+);
 
 // Payloads Preview
 let vnPayloads = $state<unknown[]>([]);
@@ -727,7 +732,40 @@ async function updatePayloadPreview() {
 	}
 }
 
+function isRowRegistered(row: unknown): boolean {
+	if (!row || typeof row !== "object") return false;
+	const r = row as Record<string, unknown>;
+	const val = String(
+		r.daDangKy || r["Đã đăng ký"] || r["da_dang_ky"] || r["status"] || "",
+	)
+		.trim()
+		.toLowerCase();
+
+	if (!val) return false;
+	if (
+		val === "chưa" ||
+		val === "chưa đăng ký" ||
+		val === "chua" ||
+		val === "chua dang ky" ||
+		val === "chưa khai báo" ||
+		val === "chua khai bao" ||
+		val === "false" ||
+		val === "0"
+	) {
+		return false;
+	}
+	return (
+		val.includes("đã đăng ký") ||
+		val.includes("da dang ky") ||
+		val.includes("đã khai báo") ||
+		val.includes("da khai bao") ||
+		val === "true" ||
+		val === "1"
+	);
+}
+
 function toggleRowSelect(idx: number, checked: boolean) {
+	if (isRowRegistered(currentRows[idx])) return;
 	const next = new Set(selectedIndices);
 	if (checked) next.add(idx);
 	else next.delete(idx);
@@ -736,7 +774,11 @@ function toggleRowSelect(idx: number, checked: boolean) {
 
 function toggleSelectAll(checked: boolean) {
 	if (checked) {
-		selectedIndices = new Set(currentRows.map((_, i) => i));
+		const unregIndices = currentRows
+			.map((r, i) => ({ r, i }))
+			.filter(({ r, i }) => !isRowRegistered(r) && !deletingIndices.has(i))
+			.map(({ i }) => i);
+		selectedIndices = new Set(unregIndices);
 	} else {
 		selectedIndices = new Set();
 	}
@@ -1214,6 +1256,62 @@ async function executeSyncBatch(rows: RowData[], title: string) {
 		const data = await res.json();
 		syncResults = data.results || [];
 		await checkToken();
+
+		// Tự động cập nhật 'Đã đăng ký' vào local state và tự động đồng bộ lên Google Sheet cột 16
+		const nextSelected = new Set(selectedIndices);
+		let updatedCount = 0;
+		for (const result of syncResults) {
+			if (result.success && result.row) {
+				const rowDoc = String(
+					result.row.soGiayTo ||
+						result.row["Số giấy tờ"] ||
+						result.row.soHoChieu ||
+						result.row["Số hộ chiếu"] ||
+						"",
+				).trim();
+				const rowName = String(
+					result.row.hoTen || result.row["Họ tên"] || "",
+				).trim();
+				const rowSheetIdx = Number(
+					result.row._sheetRow || result.row.sheetRowIndex || 0,
+				);
+
+				const targetIdx = currentRows.findIndex((r) => {
+					if (
+						rowSheetIdx > 0 &&
+						(r._sheetRow === rowSheetIdx || r.sheetRowIndex === rowSheetIdx)
+					) {
+						return true;
+					}
+					const curDoc = String(
+						r.soGiayTo ||
+							r["Số giấy tờ"] ||
+							r.soHoChieu ||
+							r["Số hộ chiếu"] ||
+							"",
+					).trim();
+					const curName = String(r.hoTen || r["Họ tên"] || "").trim();
+					return curDoc.length > 0 && curDoc === rowDoc && curName === rowName;
+				});
+
+				if (targetIdx !== -1) {
+					currentRows[targetIdx].daDangKy = "Đã đăng ký";
+					currentRows[targetIdx]["Đã đăng ký"] = "Đã đăng ký";
+					nextSelected.delete(targetIdx);
+					updatedCount++;
+					// Tự động ghi nhận lên Google Sheet cột 16
+					await syncRowToGoogleSheet(targetIdx);
+				}
+			}
+		}
+		selectedIndices = nextSelected;
+		updatePayloadPreview();
+		if (updatedCount > 0) {
+			showToast(
+				"THÀNH CÔNG",
+				`Đã đăng ký và cập nhật trạng thái "Đã đăng ký" cho ${updatedCount} khách lên Sheet!`,
+			);
+		}
 	} catch (err) {
 		syncResults = [
 			{
@@ -1231,21 +1329,45 @@ async function pushSelectedRows() {
 		alert("Bảng danh sách khách đang trống!");
 		return;
 	}
+	const unregRows = currentRows.filter((r) => !isRowRegistered(r));
+	if (unregRows.length === 0) {
+		showToast(
+			"THÔNG BÁO",
+			"Tất cả khách trong danh sách đều đã hoàn tất đăng ký lưu trú!",
+		);
+		return;
+	}
 	const rows =
 		selectedIndices.size > 0
 			? Array.from(selectedIndices)
 					.map((i) => currentRows[i])
-					.filter(Boolean)
-			: currentRows;
+					.filter((r) => r && !isRowRegistered(r))
+			: unregRows;
+
+	if (rows.length === 0) {
+		showToast(
+			"THÔNG BÁO",
+			"Vui lòng chọn khách chưa đăng ký để gửi lên hệ thống!",
+		);
+		return;
+	}
+
 	const title =
 		selectedIndices.size > 0
 			? `Đăng ký ${rows.length} khách đã chọn`
-			: `Đăng ký tất cả ${rows.length} khách`;
+			: `Đăng ký tất cả ${rows.length} khách chưa đăng ký`;
 	await executeSyncBatch(rows, title);
 }
 
 async function pushSingleRow(idx: number) {
 	if (!currentRows[idx]) return;
+	if (isRowRegistered(currentRows[idx])) {
+		showToast(
+			"THÔNG BÁO",
+			"Khách này đã được đăng ký lưu trú thành công trước đó!",
+		);
+		return;
+	}
 	await executeSyncBatch(
 		[currentRows[idx]],
 		`Đăng ký khách: ${currentRows[idx].hoTen || currentRows[idx]["Họ tên"]}`,
@@ -1435,8 +1557,8 @@ onMount(() => {
           <button onclick={addNewGuest} class="px-3.5 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm" title="Thêm khách mới vào danh sách và đồng bộ Google Sheets">
             <i class="fa-solid fa-user-plus"></i> Thêm khách
           </button>
-          <button onclick={pushSelectedRows} class="px-4 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm" title="Đăng ký các khách đã chọn hoặc tất cả lên hệ thống KBTT">
-            <i class="fa-solid fa-paper-plane"></i> Đăng ký ({selectedIndices.size > 0 ? `${selectedIndices.size}/${currentRows.length}` : 'Tất cả'})
+          <button onclick={pushSelectedRows} class="px-4 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm" title="Đăng ký các khách chưa đăng ký lên hệ thống KBTT">
+            <i class="fa-solid fa-paper-plane"></i> Đăng ký ({selectedIndices.size > 0 ? `${selectedIndices.size}` : `${currentRows.filter(r => !isRowRegistered(r)).length}`} khách)
           </button>
         </div>
       </div>
@@ -1448,7 +1570,14 @@ onMount(() => {
             <thead class="bg-slate-300/80 text-slate-800 uppercase font-bold text-[11px] sticky top-0 z-10 border-b border-slate-300">
               <tr>
                 <th class="p-3 w-8 text-center">
-                  <input type="checkbox" checked={currentRows.length > 0 && selectedIndices.size === currentRows.length} onchange={(e) => toggleSelectAll((e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={eligibleRowsCount > 0 && selectedIndices.size === eligibleRowsCount}
+                    disabled={eligibleRowsCount === 0}
+                    onchange={(e) => toggleSelectAll((e.target as HTMLInputElement).checked)}
+                    class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    title={eligibleRowsCount === 0 ? "Tất cả khách đều đã hoàn tất đăng ký lưu trú" : "Chọn tất cả khách chưa đăng ký"}
+                  >
                 </th>
                 <th class="p-3 w-8 text-center">#</th>
                 <th class="p-3">Họ tên</th>
@@ -1471,18 +1600,21 @@ onMount(() => {
                 {@const isEditing = editingIndices.has(idx)}
                 {@const isChecked = selectedIndices.has(idx)}
                 {@const isDeleting = deletingIndices.has(idx)}
+                {@const isRegistered = isRowRegistered(row)}
                 {@const addrInfo = getDisplayAddress(row)}
 
-                <tr ondblclick={() => !isDeleting && openEditModal(idx)} class={`transition-all duration-200 ${isDeleting ? 'line-through opacity-40 bg-rose-100/70 pointer-events-none select-none grayscale' : 'hover:bg-slate-100/80'} ${!isComplete && !isDeleting ? 'bg-rose-50/30' : ''} ${isChecked && !isDeleting ? 'bg-indigo-50/30' : ''}`}>
+                <tr ondblclick={() => !isDeleting && !isRegistered && openEditModal(idx)} class={`transition-all duration-200 ${isDeleting ? 'line-through opacity-40 bg-rose-100/70 pointer-events-none select-none grayscale' : isRegistered ? 'bg-slate-100/75 text-slate-500 hover:bg-slate-200/50' : 'hover:bg-slate-100/80'} ${!isComplete && !isDeleting && !isRegistered ? 'bg-rose-50/30' : ''} ${isChecked && !isDeleting && !isRegistered ? 'bg-indigo-50/30' : ''}`}>
                   <td class="p-3 text-center">
-                    <input type="checkbox" checked={isChecked} disabled={isDeleting} onchange={(e) => toggleRowSelect(idx, (e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-30">
+                    <input type="checkbox" checked={isChecked} disabled={isDeleting || isRegistered} onchange={(e) => toggleRowSelect(idx, (e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed" title={isRegistered ? "Khách này đã được đăng ký lưu trú thành công" : "Chọn khách"}>
                   </td>
 
                   <td class="p-3 text-center font-mono text-slate-400">{idx + 1}</td>
 
                   <!-- Họ tên -->
-                  <td class="p-3 font-medium text-slate-900">
-                    {#if isEditing}
+                  <td class="p-3 font-medium {isRegistered ? 'text-slate-600' : 'text-slate-900'}">
+                    {#if isRegistered}
+                      <span class="uppercase font-bold text-slate-600 select-none cursor-default" title="Khách này đã hoàn tất đăng ký lưu trú">{row.hoTen || row['Họ tên']}</span>
+                    {:else if isEditing}
                       <input type="text" value={row.hoTen || row['Họ tên'] || ''} onchange={(e) => updateCell(idx, 'hoTen', (e.target as HTMLInputElement).value)} class="w-full rounded px-2 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
                     {:else if fStatus.hoTen?.valid ?? (row.hoTen || row['Họ tên'])}
                       <button type="button" class="uppercase font-bold text-slate-800 cursor-pointer hover:text-indigo-600 transition text-left" onclick={() => openEditModal(idx)}>{row.hoTen || row['Họ tên']}</button>
@@ -1493,7 +1625,9 @@ onMount(() => {
 
                   <!-- Ngày sinh -->
                   <td class="p-3 font-mono">
-                    {#if isEditing}
+                    {#if isRegistered}
+                      <span class="text-slate-500">{formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))}</span>
+                    {:else if isEditing}
                       <input type="text" value={formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))} onchange={(e) => updateCell(idx, 'ngaySinh', (e.target as HTMLInputElement).value)} placeholder="DD/MM/YYYY" class="w-24 rounded px-2 py-1 outline-none text-xs font-mono transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
                     {:else if fStatus.ngaySinh?.valid ?? (row.ngaySinh || row['D.O.B'] || row['Ngày sinh'])}
                       <button type="button" class="cursor-pointer hover:text-indigo-600 transition" onclick={() => openEditModal(idx)}>{formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))}</button>
@@ -1510,7 +1644,7 @@ onMount(() => {
                         <option value="Nữ" selected={(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F'}>Nữ</option>
                       </select>
                     {:else}
-                      <span class="px-2 py-0.5 rounded bg-slate-200/80 font-semibold text-slate-700 text-xs">{(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'Nữ' : 'Nam'}</span>
+                      <span class={`px-2 py-0.5 rounded font-semibold text-xs ${isRegistered ? 'bg-slate-200 text-slate-500' : 'bg-slate-200/80 text-slate-700'}`}>{(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'Nữ' : 'Nam'}</span>
                     {/if}
                   </td>
 
@@ -1529,7 +1663,7 @@ onMount(() => {
                         class="w-20 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800"
                       >
                     {:else if fStatus.quocTich?.valid ?? isValidAlpha3Country(String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'))}
-                      <span class="font-bold text-slate-700 text-xs">{String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>
+                      <span class={`font-bold text-xs ${isRegistered ? 'text-slate-500' : 'text-slate-700'}`}>{String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>
                     {:else}
                       <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-bold px-1.5 py-0.5 rounded text-xs cursor-help" title={fStatus.quocTich?.error || 'Mã quốc tịch Alpha-3 không hợp lệ'}>{String(row.quocTich || 'LỖI').toUpperCase()} <i class="fa-solid fa-circle-exclamation"></i></span>
                     {/if}
@@ -1547,13 +1681,15 @@ onMount(() => {
                       </select>
                     {:else}
                       {@const curLt = String(row.loaiGiayTo || row['Loại giấy tờ'] || 'CCCD')}
-                      <span class="text-slate-700 text-xs">{curLt === 'Thẻ CCCD' ? 'CCCD' : curLt}</span>
+                      <span class={`text-xs ${isRegistered ? 'text-slate-500' : 'text-slate-700'}`}>{curLt === 'Thẻ CCCD' ? 'CCCD' : curLt}</span>
                     {/if}
                   </td>
 
                   <!-- Số giấy tờ -->
-                  <td class="p-3 font-mono font-bold text-indigo-700">
-                    {#if isEditing}
+                  <td class="p-3 font-mono font-bold {isRegistered ? 'text-slate-500' : 'text-indigo-700'}">
+                    {#if isRegistered}
+                      <span class="font-mono font-bold text-slate-500 select-none">{row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu']}</span>
+                    {:else if isEditing}
                       {@const curDocType = row.loaiGiayTo || row['Loại giấy tờ'] || 'Thẻ CCCD'}
                       <input
                         type="text"
@@ -1585,15 +1721,20 @@ onMount(() => {
                         {/each}
                       </select>
                     {:else if fStatus.soPhong?.valid ?? (row.soPhong || row['Số phòng'])}
-                      <span class="font-bold text-slate-800 bg-slate-200/80 px-2 py-0.5 rounded text-xs">{cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>
+                      <span class={`font-bold px-2 py-0.5 rounded text-xs ${isRegistered ? 'text-slate-500 bg-slate-200' : 'text-slate-800 bg-slate-200/80'}`}>{cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>
                     {:else}
                       <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs cursor-help" title="Thiếu hoặc sai số phòng">Thiếu</span>
                     {/if}
                   </td>
 
                   <!-- Ngày đến / đi -->
-                  <td class="p-3 text-[11px] text-slate-500">
-                    {#if isEditing}
+                  <td class="p-3 text-[11px] {isRegistered ? 'text-slate-400' : 'text-slate-500'}">
+                    {#if isRegistered}
+                      <div class="space-y-0.5">
+                        <div>Đến: <strong>{row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || 'N/A'}</strong></div>
+                        <div>Đi: <strong>{row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || 'N/A'}</strong></div>
+                      </div>
+                    {:else if isEditing}
                       <div class="space-y-1">
                         <input type="text" value={row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || ''} onchange={(e) => updateCell(idx, 'ngayDen', (e.target as HTMLInputElement).value)} placeholder="Đến (hôm nay/qua)" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
                         <input type="text" value={row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || ''} onchange={(e) => updateCell(idx, 'ngayDi', (e.target as HTMLInputElement).value)} placeholder="Đi" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
@@ -1611,8 +1752,10 @@ onMount(() => {
                   </td>
 
                   <!-- Địa chỉ -->
-                  <td class="p-3 text-slate-700 text-[11px] max-w-[150px]">
-                    {#if isEditing}
+                  <td class="p-3 text-[11px] max-w-[150px] {isRegistered ? 'text-slate-400' : 'text-slate-700'}">
+                    {#if isRegistered}
+                      <span class="font-medium truncate inline-block max-w-[130px]" title={addrInfo.fullText}>{addrInfo.shortText}</span>
+                    {:else if isEditing}
                       <input type="text" value={getCombinedAddress(row) || row.diaChi || row['Địa chỉ'] || ''} onchange={(e) => updateCell(idx, 'diaChi', (e.target as HTMLInputElement).value)} placeholder="Chi tiết, Xã, Huyện, Tỉnh" class="w-32 rounded px-1.5 py-0.5 outline-none text-[11px] bg-emerald-50/50 border border-emerald-400 text-slate-800 transition-all duration-150 focus:scale-110 focus:shadow-xl focus:ring-2 focus:ring-indigo-500">
                     {:else}
                       <button type="button" onclick={() => openEditModal(idx)} class="cursor-pointer hover:text-indigo-600 transition underline decoration-dotted decoration-slate-400 font-medium truncate inline-block max-w-[130px] text-left" title={`Bấm để chỉnh sửa: ${addrInfo.fullText}`}>
@@ -1627,6 +1770,15 @@ onMount(() => {
                       <span class="inline-flex items-center gap-1 text-rose-600 font-semibold text-[11px] animate-pulse">
                         <i class="fa-solid fa-spinner fa-spin"></i> Đang xóa...
                       </span>
+                    {:else if isRegistered}
+                      <div class="inline-flex items-center gap-1.5 justify-center">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300" title="Khách này đã được đăng ký lưu trú thành công">
+                          <i class="fa-solid fa-circle-check text-emerald-600"></i> Đã đăng ký
+                        </span>
+                        <button onclick={() => promptDeleteRow(idx)} class="text-rose-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition cursor-pointer" title="Xóa dòng khỏi bảng & Google Sheet">
+                          <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                      </div>
                     {:else}
                       <div class="inline-flex items-center gap-1">
                         <button onclick={() => openEditModal(idx)} class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition cursor-pointer" title="Chỉnh sửa chi tiết">
