@@ -20,6 +20,33 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
 };
 
+// Quản lý SSE Clients cho Hot-reload
+const sseClients = new Set();
+
+function broadcastReload(type = 'reload') {
+  for (const client of sseClients) {
+    try {
+      client.write(`data: ${JSON.stringify({ type, timestamp: Date.now() })}\n\n`);
+    } catch {
+      sseClients.delete(client);
+    }
+  }
+}
+
+// Watch directory changes for Hot-reload
+const watchDirs = ['public', 'src'];
+watchDirs.forEach(dir => {
+  const fullPath = path.resolve(process.cwd(), dir);
+  if (fs.existsSync(fullPath)) {
+    fs.watch(fullPath, { recursive: true }, (eventType, filename) => {
+      if (filename && !filename.includes('node_modules') && !filename.includes('.git')) {
+        console.log(`[Hot-Reload] File thay đổi: ${filename}. Đang làm mới giao diện...`);
+        broadcastReload('reload');
+      }
+    });
+  }
+});
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -59,6 +86,23 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     });
     res.end();
+    return;
+  }
+
+  // SSE Hot-Reload Endpoint
+  if (pathname === '/api/events') {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.write('retry: 2000\n\n');
+    sseClients.add(res);
+
+    req.on('close', () => {
+      sseClients.delete(res);
+    });
     return;
   }
 
@@ -125,17 +169,23 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, result);
       }
 
+      if (pathname === '/api/sheets/tabs') {
+        const sheetIdParam = parsedUrl.searchParams.get('sheetId') || CONFIG.GOOGLE_SHEET_ID;
+        const resData = await pipeline.googleSheetService.fetchSheetTabs(sheetIdParam);
+        return sendJson(res, resData.success ? 200 : 400, resData);
+      }
+
       if (pathname === '/api/sheets/pull' && req.method === 'POST') {
-        const { sheetId, apiKey } = await readBody(req);
+        const { sheetId, gid, apiKey } = await readBody(req);
         const targetId = sheetId || CONFIG.GOOGLE_SHEET_ID;
-        const resData = await pipeline.googleSheetService.fetchSheetData(targetId, apiKey);
+        const resData = await pipeline.googleSheetService.fetchSheetData(targetId, gid, apiKey);
         return sendJson(res, resData.success ? 200 : 400, resData);
       }
 
       if (pathname === '/api/sheets/sync' && req.method === 'POST') {
-        const { sheetId } = await readBody(req);
+        const { sheetId, gid } = await readBody(req);
         const targetId = sheetId || CONFIG.GOOGLE_SHEET_ID;
-        const resData = await pipeline.pullAndProcessGoogleSheet(targetId);
+        const resData = await pipeline.pullAndProcessGoogleSheet(targetId, gid);
         return sendJson(res, resData.success ? 200 : 400, resData);
       }
 
@@ -162,7 +212,6 @@ const server = http.createServer(async (req, res) => {
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        // Fallback to public/index.html
         fs.readFile(path.join(process.cwd(), 'public', 'index.html'), (err2, fallback) => {
           if (err2) {
             res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -186,6 +235,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`\n🚀 [KBTT Dev Server] đang chạy tại: http://localhost:${PORT}`);
   console.log(`📡 Môi trường API: ${CONFIG.BASE_URL}`);
+  console.log(`🔥 Hot-Reload: Đã kích hoạt (tự động cập nhật khi sửa code/giao diện)`);
   console.log(`✨ Bấm Ctrl+C để dừng server.\n`);
 });
 

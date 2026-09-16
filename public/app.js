@@ -1,57 +1,142 @@
-let currentRows = [
-  {
-    hoTen: 'NGUYỄN VĂN AN',
-    ngaySinh: '15/08/1990',
-    gioiTinh: 'Nam',
-    quocTich: 'Việt Nam',
-    loaiGiayTo: 'Thẻ CCCD',
-    soGiayTo: '001090012345',
-    soDienThoai: '0912345678',
-    tinhTp: 'Hà Nội',
-    phuongXa: 'Phường Hàng Bạc',
-    diaChi: '123 Hàng Bạc, Hoàn Kiếm, Hà Nội',
-    ngayDen: '2026-09-16 14:00:00',
-    ngayDi: '2026-09-18 12:00:00',
-    lyDo: 'Du lịch',
-    soPhong: 'P302',
-    anhTruocB64: '',
-    anhSauB64: '',
-  },
-  {
-    hoTen: 'JOHN DOE',
-    ngaySinh: '1985-05-20',
-    gioiTinh: 'Nam',
-    quocTich: 'Hoa Kỳ',
-    loaiGiayTo: 'Hộ chiếu',
-    soGiayTo: 'C1234567',
-    diaChi: 'California, USA',
-    ngayDen: '2026-09-16 15:30:00',
-    ngayDi: '2026-09-20 11:00:00',
-    thoiHanTamTru: '2026-09-20 23:59:59',
-    soPhong: 'P501',
-    anhTruocB64: '',
-  },
-  {
-    hoTen: 'TRẦN THỊ LỖI',
-    ngaySinh: '01/01/1995',
-    gioiTinh: 'Nữ',
-    quocTich: 'Việt Nam',
-    loaiGiayTo: 'Thẻ CCCD',
-    soGiayTo: '12345', // Lỗi: CCCD không đủ 12 số
-    soPhong: 'P101',
-    ngayDen: '2026-09-16 14:00:00',
-    ngayDi: '2026-09-17 12:00:00',
-  }
-];
-
+let currentRows = [];
 let catalogData = {};
+let availableTabs = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
-  renderTable();
+  setupHotReload();
   await loadCatalogs();
   await checkTokenStatus();
-  await updatePayloadPreview();
+  await fetchSheetTabsList();
+  if (currentRows.length === 0) {
+    loadSampleData();
+  }
 });
+
+/**
+ * Cấu hình Live Hot-Reload qua Server-Sent Events (SSE)
+ */
+function setupHotReload() {
+  if (window.EventSource) {
+    const eventSource = new EventSource('/api/events');
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'reload') {
+          console.log('⚡ [Hot-Reload] Phát hiện thay đổi từ server, đang tự động làm mới...');
+          updatePayloadPreview();
+          checkTokenStatus();
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+    eventSource.onerror = () => {
+      // Reconnect automatically
+    };
+  }
+}
+
+/**
+ * Lấy danh sách các Tab (Sheets) từ Google Sheets và tự động chọn tab ngày gần nhất
+ */
+async function fetchSheetTabsList() {
+  const sheetIdInput = (document.getElementById('sheetIdInput').value || '').trim();
+  const select = document.getElementById('sheetTabSelect');
+  const statusLabel = document.getElementById('tabFetchStatus');
+
+  if (!sheetIdInput) return;
+
+  statusLabel.textContent = 'Đang quét tabs...';
+  try {
+    const res = await fetch(`/api/sheets/tabs?sheetId=${encodeURIComponent(sheetIdInput)}`);
+    const data = await res.json();
+
+    if (data.success && data.tabs && data.tabs.length > 0) {
+      availableTabs = data.tabs;
+      select.innerHTML = '';
+
+      let defaultGid = data.defaultGid;
+      availableTabs.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.gid;
+        opt.textContent = `${t.name} ${t.isDefault ? '⭐ (Gần nhất)' : ''}`;
+        if (t.isDefault) {
+          opt.selected = true;
+          defaultGid = t.gid;
+        }
+        select.appendChild(opt);
+      });
+
+      statusLabel.textContent = `Tìm thấy ${availableTabs.length} tabs`;
+
+      // Tự động kéo dữ liệu tab mặc định
+      if (defaultGid) {
+        await pullDataFromGoogleSheet(defaultGid);
+      }
+    } else {
+      select.innerHTML = '<option value="0">Tab Mặc định (GID 0)</option>';
+      statusLabel.textContent = 'Tab mặc định';
+    }
+  } catch (err) {
+    console.warn('Lỗi khi lấy tabs:', err);
+    statusLabel.textContent = 'Không lấy được tabs';
+  }
+}
+
+function handleTabChange() {
+  const select = document.getElementById('sheetTabSelect');
+  const gid = select.value;
+  if (gid !== undefined) {
+    pullDataFromGoogleSheet(gid);
+  }
+}
+
+async function pullDataFromGoogleSheet(forcedGid = null) {
+  const sheetId = (document.getElementById('sheetIdInput').value || '').trim();
+  const select = document.getElementById('sheetTabSelect');
+  const gid = forcedGid !== null ? forcedGid : (select ? select.value : '0');
+
+  if (!sheetId) {
+    alert('Vui lòng nhập Google Sheet ID hoặc đường link');
+    return;
+  }
+
+  const sourceLabel = document.getElementById('currentSourceLabel');
+  sourceLabel.textContent = 'Đang kéo dữ liệu từ Google Sheets...';
+
+  try {
+    const res = await fetch('/api/sheets/pull', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheetId, gid }),
+    });
+    const data = await res.json();
+
+    if (data.success && data.rows && data.rows.length > 0) {
+      currentRows = data.rows;
+      renderTable();
+      updatePayloadPreview();
+
+      const selectedTab = availableTabs.find(t => t.gid === String(gid));
+      const tabName = selectedTab ? selectedTab.name : `GID ${gid}`;
+      sourceLabel.textContent = `Nguồn: Google Sheets [${tabName}] - ${data.rows.length} bản ghi`;
+    } else {
+      sourceLabel.textContent = `Cảnh báo: ${data.message || 'Không có dữ liệu trong tab này'}`;
+      if (forcedGid === null) {
+        alert(data.message || 'Không có dữ liệu trong tab');
+      }
+    }
+  } catch (err) {
+    sourceLabel.textContent = `Lỗi kết nối: ${err.message}`;
+  }
+}
+
+async function pullAndSyncDirectly() {
+  const select = document.getElementById('sheetTabSelect');
+  const gid = select ? select.value : '0';
+  await pullDataFromGoogleSheet(gid);
+  await processAndSyncNow();
+}
 
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -85,35 +170,35 @@ function renderTable() {
     tr.innerHTML = `
       <td class="p-3 text-center font-mono text-slate-400">${idx + 1}</td>
       <td class="p-3 font-medium text-slate-900">
-        <input type="text" value="${row.hoTen || ''}" onchange="updateCell(${idx}, 'hoTen', this.value)" class="w-full bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.hoTen || row['Họ tên'] || ''}" onchange="updateCell(${idx}, 'hoTen', this.value)" class="w-full bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
       </td>
       <td class="p-3 font-mono">
-        <input type="text" value="${row.ngaySinh || ''}" onchange="updateCell(${idx}, 'ngaySinh', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''}" onchange="updateCell(${idx}, 'ngaySinh', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
       </td>
       <td class="p-3">
         <select onchange="updateCell(${idx}, 'gioiTinh', this.value)" class="bg-transparent border border-slate-200 rounded px-1 py-0.5 outline-none text-xs">
-          <option value="Nam" ${row.gioiTinh === 'Nam' || row.gioiTinh === 'M' ? 'selected' : ''}>Nam</option>
-          <option value="Nữ" ${row.gioiTinh === 'Nữ' || row.gioiTinh === 'F' ? 'selected' : ''}>Nữ</option>
+          <option value="Nam" ${(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M' ? 'selected' : ''}>Nam</option>
+          <option value="Nữ" ${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'selected' : ''}>Nữ</option>
         </select>
       </td>
       <td class="p-3">
-        <input type="text" value="${row.quocTich || ''}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || ''}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
       </td>
       <td class="p-3">
-        <input type="text" value="${row.loaiGiayTo || ''}" onchange="updateCell(${idx}, 'loaiGiayTo', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || ''}" onchange="updateCell(${idx}, 'loaiGiayTo', this.value)" class="w-24 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
       </td>
       <td class="p-3 font-mono">
-        <input type="text" value="${row.soGiayTo || ''}" onchange="updateCell(${idx}, 'soGiayTo', this.value)" class="w-28 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none font-bold text-indigo-700">
+        <input type="text" value="${row.soGiayTo || row['Số giấy tờ'] || ''}" onchange="updateCell(${idx}, 'soGiayTo', this.value)" class="w-28 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none font-bold text-indigo-700">
       </td>
       <td class="p-3">
-        <input type="text" value="${row.soPhong || ''}" onchange="updateCell(${idx}, 'soPhong', this.value)" class="w-16 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
+        <input type="text" value="${row.soPhong || row['Số phòng'] || ''}" onchange="updateCell(${idx}, 'soPhong', this.value)" class="w-16 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none">
       </td>
       <td class="p-3 text-[11px] text-slate-500">
-        <div>Đến: ${row.ngayDen || 'N/A'}</div>
-        <div>Đi: ${row.ngayDi || 'N/A'}</div>
+        <div>Đến: ${row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || 'N/A'}</div>
+        <div>Đi: ${row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || 'N/A'}</div>
       </td>
-      <td class="p-3 text-slate-500 truncate max-w-xs" title="${row.diaChi || ''}">
-        ${row.diaChi || (row.tinhTp ? `${row.phuongXa || ''}, ${row.tinhTp}` : 'N/A')}
+      <td class="p-3 text-slate-500 truncate max-w-xs" title="${row.diaChi || row['Địa chỉ'] || ''}">
+        ${row.diaChi || row['Địa chỉ'] || (row.tinhTp ? `${row.phuongXa || ''}, ${row.tinhTp}` : 'N/A')}
       </td>
       <td class="p-3 text-center">
         <button onclick="removeRow(${idx})" class="text-rose-500 hover:text-rose-700 p-1 rounded hover:bg-rose-50 transition" title="Xóa dòng">
@@ -128,6 +213,7 @@ function renderTable() {
 function updateCell(idx, field, value) {
   if (currentRows[idx]) {
     currentRows[idx][field] = value;
+    updatePayloadPreview();
   }
 }
 
@@ -145,7 +231,7 @@ function addNewRow() {
     quocTich: 'Việt Nam',
     loaiGiayTo: 'Thẻ CCCD',
     soGiayTo: '001095000999',
-    soPhong: 'P102',
+    soPhong: 'P.102',
     diaChi: 'Hà Nội',
     ngayDen: '2026-09-16 14:00:00',
     ngayDi: '2026-09-18 12:00:00',
@@ -157,87 +243,40 @@ function addNewRow() {
 function loadSampleData() {
   currentRows = [
     {
-      hoTen: 'NGUYỄN VĂN AN',
-      ngaySinh: '15/08/1990',
-      gioiTinh: 'Nam',
-      quocTich: 'Việt Nam',
-      loaiGiayTo: 'Thẻ CCCD',
-      soGiayTo: '001090012345',
-      soDienThoai: '0912345678',
-      tinhTp: 'Hà Nội',
-      phuongXa: 'Phường Hàng Bạc',
-      diaChi: '123 Hàng Bạc, Hoàn Kiếm, Hà Nội',
-      ngayDen: '2026-09-16 14:00:00',
-      ngayDi: '2026-09-18 12:00:00',
-      lyDo: 'Du lịch',
-      soPhong: 'P302',
+      'Họ tên': 'NGUYEN VAN A',
+      'Giới tính': 'M',
+      'Số điện thoại': '0987654321',
+      'Ngày sinh': '1995-10-20',
+      'Nơi cư trú': 'Thường trú',
+      'Tỉnh/TP': 'Đắk Lắk',
+      'Phường/Xã': 'Dliê Yang',
+      'Địa chỉ chi tiết': 'Thôn 3, Dliê Yang, Ea H\'leo, Đắk Lắk',
+      'Ngày đến': '2026-09-16 14:00:00',
+      'Ngày đi': '2026-09-18 12:00:00',
+      'Số phòng': 'P.102',
+      'Lý do': 'Du lịch',
+      'Loại giấy tờ': 'Thẻ CCCD',
+      'Số giấy tờ': '066201008768',
+      'Ảnh mặt trước': '',
+      'Ảnh mặt sau': '',
     },
     {
-      hoTen: 'JOHN DOE',
-      ngaySinh: '1985-05-20',
-      gioiTinh: 'Nam',
-      quocTich: 'Hoa Kỳ',
-      loaiGiayTo: 'Hộ chiếu',
-      soGiayTo: 'C1234567',
-      diaChi: 'California, USA',
-      ngayDen: '2026-09-16 15:30:00',
-      ngayDi: '2026-09-20 11:00:00',
-      thoiHanTamTru: '2026-09-20 23:59:59',
-      soPhong: 'P501',
-    },
-    {
-      hoTen: 'TRẦN THỊ LỖI',
-      ngaySinh: '01/01/1995',
-      gioiTinh: 'Nữ',
-      quocTich: 'Việt Nam',
-      loaiGiayTo: 'Thẻ CCCD',
-      soGiayTo: '12345',
-      soPhong: 'P101',
-      ngayDen: '2026-09-16 14:00:00',
-      ngayDi: '2026-09-17 12:00:00',
+      'Họ tên': 'GRACHEV NIKITA',
+      'Quốc tịch': 'RUS',
+      'Số giấy tờ': '552165656',
+      'Giới tính': 'Nam',
+      'Ngày sinh': '1995-11-25',
+      'Ngày đến': '2026-09-16 14:00:00',
+      'Ngày đi': '2026-09-20 12:00:00',
+      'Thời hạn tạm trú': '2026-10-30 23:59:59',
+      'Số phòng': 'P.09',
+      'Loại giấy tờ': 'Hộ chiếu',
+      'Ảnh hộ chiếu': '',
     }
   ];
+  document.getElementById('currentSourceLabel').textContent = 'Đang hiển thị dữ liệu mẫu chuẩn v1.4';
   renderTable();
   updatePayloadPreview();
-}
-
-async function pullDataFromGoogleSheet() {
-  const sheetId = (document.getElementById('sheetIdInput').value || '').trim();
-  if (!sheetId) {
-    alert('Vui lòng nhập Google Sheet ID');
-    return;
-  }
-
-  try {
-    const res = await fetch('/api/sheets/pull', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sheetId }),
-    });
-    const data = await res.json();
-
-    if (data.success && data.rows && data.rows.length > 0) {
-      currentRows = data.rows;
-      renderTable();
-      updatePayloadPreview();
-      alert(`Đã kéo thành công ${data.rows.length} bản ghi từ Google Sheets (${data.source})!`);
-    } else {
-      alert(`Thông báo: ${data.message || 'Không có dữ liệu trong Sheet'}`);
-    }
-  } catch (err) {
-    alert(`Lỗi khi kết nối Google Sheets: ${err.message}`);
-  }
-}
-
-async function pullAndSyncDirectly() {
-  const sheetId = (document.getElementById('sheetIdInput').value || '').trim();
-  if (!sheetId) {
-    alert('Vui lòng nhập Google Sheet ID');
-    return;
-  }
-
-  await pullDataFromGoogleSheet();
-  await processAndSyncNow();
 }
 
 async function updatePayloadPreview() {
@@ -304,7 +343,7 @@ async function processAndSyncNow() {
         <p class="text-xs text-slate-600 mb-2"><strong>Phản hồi / Ghi chú Sheets:</strong> ${r.message}</p>
         ${r.payload ? `
           <details class="text-[11px]">
-            <summary class="cursor-pointer text-indigo-600 hover:underline">Xem JSON Payload gửi đi</summary>
+            <summary class="cursor-pointer text-indigo-600 hover:underline font-medium">Xem Request Payload gửi đi (API ${r.branch === 'VN' ? '5' : '4'})</summary>
             <pre class="bg-slate-900 text-slate-200 p-2.5 rounded mt-1.5 overflow-x-auto">${JSON.stringify(r.payload, null, 2)}</pre>
           </details>
         ` : ''}
@@ -327,18 +366,15 @@ async function loadCatalogs() {
     document.getElementById('catDot').className = 'w-2 h-2 rounded-full bg-emerald-400';
     document.getElementById('catCountText').textContent = 'Đã sẵn sàng';
 
-    // Counts
     document.getElementById('tinhCount').textContent = `${data.tinhTpCount} tỉnh/tp`;
     document.getElementById('quocTichCount').textContent = `${data.quocTichCount} quốc gia`;
 
     renderCatalogList('tinh', catalogData.tinhTp || []);
     renderCatalogList('quocTich', catalogData.quocTich || []);
 
-    // Loại giấy tờ
     const lgUl = document.getElementById('loaiGiayToList');
     lgUl.innerHTML = (catalogData.loaiGiayTo || []).map(lg => `<li><span class="font-mono text-indigo-600 font-bold">${lg.id}</span> - ${lg.name}</li>`).join('');
 
-    // Lý do cư trú
     const ldUl = document.getElementById('lyDoCuTruList');
     ldUl.innerHTML = (catalogData.lyDoCuTru || []).map(ld => `<li><span class="font-mono text-indigo-600 font-bold">${ld.id}</span> - ${ld.name}</li>`).join('');
   } catch (err) {

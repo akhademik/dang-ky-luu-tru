@@ -88,10 +88,11 @@ export class SyncPipeline {
   /**
    * Kéo dữ liệu từ Google Sheets và thực hiện đồng bộ tự động
    * @param {string} [sheetId]
+   * @param {string} [gid]
    */
-  async pullAndProcessGoogleSheet(sheetId = this.config.GOOGLE_SHEET_ID) {
-    console.log(`[SyncPipeline] Đang kéo dữ liệu từ Google Sheet ID: ${sheetId}...`);
-    const sheetRes = await this.googleSheetService.fetchSheetData(sheetId);
+  async pullAndProcessGoogleSheet(sheetId = this.config.GOOGLE_SHEET_ID, gid = null) {
+    console.log(`[SyncPipeline] Đang kéo dữ liệu từ Google Sheet ID: ${sheetId} (gid: ${gid || 'default'})...`);
+    const sheetRes = await this.googleSheetService.fetchSheetData(sheetId, gid);
     if (!sheetRes.success || !sheetRes.rows || sheetRes.rows.length === 0) {
       return {
         success: false,
@@ -105,7 +106,7 @@ export class SyncPipeline {
     const results = await this.processRows(sheetRes.rows);
     return {
       success: true,
-      message: `Đồng bộ hoàn tất ${sheetRes.rows.length} bản ghi`,
+      message: `Đồng bộ hoàn tất ${sheetRes.rows.length} bản ghi (${sheetRes.source})`,
       results,
       rawRows: sheetRes.rows,
     };

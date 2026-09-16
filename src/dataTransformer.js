@@ -1,6 +1,6 @@
 /**
  * Module 2: Data Transformer & Validator
- * Chuẩn hóa dữ liệu dòng từ Google Sheets / OCR thành payload API 4 hoặc API 5
+ * Chuẩn hóa dữ liệu dòng từ Google Sheets / OCR thành payload chuẩn API 4 hoặc API 5 (v1.4)
  */
 export class DataTransformer {
   /**
@@ -14,8 +14,8 @@ export class DataTransformer {
    * Xác định dòng dữ liệu thuộc diện Khách Việt Nam hay Nước ngoài
    */
   isVietnamese(row) {
-    const quocTichRaw = row.quocTich || row['Quốc tịch'] || row.nationality || '';
-    const loaiGiayToRaw = row.loaiGiayTo || row['Loại giấy tờ'] || row.idType || '';
+    const quocTichRaw = row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || row.nationality || '';
+    const loaiGiayToRaw = row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || row.idType || '';
     const quocTich = this.catalog.findQuocTich(quocTichRaw);
 
     if (quocTich === 'VNM') return true;
@@ -28,7 +28,7 @@ export class DataTransformer {
   }
 
   /**
-   * Chuẩn hóa ngày sinh thành YYYY-MM-DD
+   * Chuẩn hóa ngày sinh thành YYYY-MM-DD (hoặc YYYY nếu chỉ có năm sinh)
    */
   formatDateOnly(dateStr) {
     if (!dateStr) return '';
@@ -36,6 +36,7 @@ export class DataTransformer {
       return dateStr.toISOString().split('T')[0];
     }
     const str = String(dateStr).trim();
+
     // Match DD/MM/YYYY or DD-MM-YYYY
     const dmyMatch = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
     if (dmyMatch) {
@@ -52,6 +53,11 @@ export class DataTransformer {
       const month = ymdMatch[2].padStart(2, '0');
       const day = ymdMatch[3].padStart(2, '0');
       return `${year}-${month}-${day}`;
+    }
+
+    // Nếu chỉ có năm (ví dụ "1995")
+    if (/^\d{4}$/.test(str)) {
+      return str;
     }
 
     const d = new Date(str);
@@ -78,7 +84,7 @@ export class DataTransformer {
     }
 
     const str = String(dateTimeStr).trim();
-    // Case có cả ngày và giờ
+    // Case có cả ngày và giờ (ví dụ 15/09/2026 16:53:29)
     const fullMatch = str.match(/^(\d{1,2}|\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2}|\d{4})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
     if (fullMatch) {
       let year, month, day;
@@ -89,7 +95,7 @@ export class DataTransformer {
       } else {
         day = fullMatch[1].padStart(2, '0');
         month = fullMatch[2].padStart(2, '0');
-        year = fullMatch[3];
+        year = fullMatch[3].length === 2 ? `20${fullMatch[3]}` : fullMatch[3];
       }
       const hh = fullMatch[4].padStart(2, '0');
       const min = fullMatch[5].padStart(2, '0');
@@ -97,7 +103,7 @@ export class DataTransformer {
       return `${year}-${month}-${day} ${hh}:${min}:${ss}`;
     }
 
-    // Chỉ có ngày -> thêm default time
+    // Chỉ có ngày -> gắn defaultTime
     const dateOnly = this.formatDateOnly(str);
     if (dateOnly && /^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
       return `${dateOnly} ${defaultTime}`;
@@ -135,7 +141,7 @@ export class DataTransformer {
       return { valid: false, error: 'Số giấy tờ không được để trống' };
     }
 
-    // CCCD (id: 1) hoặc Căn Cước (id: 8) -> 12 chữ số
+    // CCCD (id: 1) hoặc Căn Cước (id: 8) -> đúng 12 chữ số
     if (docTypeId === 1 || docTypeId === 8) {
       if (!/^\d{12}$/.test(clean)) {
         return { valid: false, error: `Số CCCD/Căn cước (${clean}) phải có đúng 12 chữ số` };
@@ -163,11 +169,12 @@ export class DataTransformer {
   async transformRow(rawRow) {
     const hoTen = (rawRow.hoTen || rawRow['Họ tên'] || rawRow.fullName || '').trim();
     const gioiTinh = this.normalizeGender(rawRow.gioiTinh || rawRow['Giới tính'] || rawRow.gender);
-    const ngaySinhStr = this.formatDateOnly(rawRow.ngaySinh || rawRow['Ngày sinh'] || rawRow.dob);
-    const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDen || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
-    const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDi || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
+    const rawDob = rawRow.ngaySinh || rawRow['Ngày sinh'] || rawRow['D.O.B'] || rawRow.dob || '';
+    const ngaySinhStr = this.formatDateOnly(rawDob);
+    const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDen || rawRow['(từ ngày)'] || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
+    const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDi || rawRow['(đến ngày)'] || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
     const soPhong = String(rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '').trim();
-    const rawAddress = (rawRow.diaChi || rawRow['Địa chỉ chi tiết'] || rawRow.address || '').trim();
+    const rawAddress = (rawRow.diaChi || rawRow['Địa chỉ'] || rawRow['Địa chỉ chi tiết'] || rawRow.address || '').trim();
 
     if (!hoTen) {
       return { validationError: 'Thiếu thông tin Họ tên khách' };
@@ -185,21 +192,25 @@ export class DataTransformer {
     const isVN = this.isVietnamese(rawRow);
 
     if (isVN) {
-      // Nhánh A: Khách Việt Nam
-      const loaiGiayToId = this.catalog.findLoaiGiayTo(rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow.idType);
-      const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow.idNumber || '';
+      // ----------------------------------------------------
+      // NHÁNH A: KHÁCH VIỆT NAM (API 5)
+      // ----------------------------------------------------
+      const rawLoaiGiayTo = rawRow.loaiGiayTo || rawRow['Loại giấy tờ'] || rawRow['Tên giấy tờ'] || rawRow.idType;
+      const loaiGiayToId = this.catalog.findLoaiGiayTo(rawLoaiGiayTo);
+      const rawDocNum = rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số CCCD'] || rawRow.idNumber || '';
       const docVal = this.validateDocNumber(rawDocNum, loaiGiayToId);
       if (!docVal.valid) {
         return { validationError: docVal.error };
       }
 
-      // Xử lý địa giới hành chính
+      // Tra cứu địa giới hành chính
       let maTT = '';
       let maPX = '';
       let diaChi = rawAddress;
 
-      const tinhRaw = rawRow.tinhTp || rawRow['Tỉnh/TP'] || rawRow.province || '';
+      const tinhRaw = rawRow.tinhTp || rawRow['Tỉnh'] || rawRow['Tỉnh/TP'] || rawRow.province || '';
       const phuongXaRaw = rawRow.phuongXa || rawRow['Phường/Xã'] || rawRow.ward || '';
+      const quanHuyenRaw = rawRow.quanHuyen || rawRow['Quận/Huyện'] || rawRow.district || '';
 
       if (tinhRaw) {
         const foundMaTT = this.catalog.findTinhTp(tinhRaw);
@@ -214,75 +225,85 @@ export class DataTransformer {
         }
       }
 
-      // Nếu không tìm thấy maTT hoặc maPX, để trống và đưa địa chỉ đầy đủ vào diaChi
-      const quanHuyenRaw = rawRow.quanHuyen || rawRow['Quận/Huyện'] || rawRow.district || '';
+      // Nếu không tra cứu được mã thì để "", dồn địa chỉ đầy đủ vào trường diaChi
       if (!maTT || !maPX) {
         maTT = '';
         maPX = '';
-        // Ghép địa chỉ đầy đủ bao gồm số nhà, xã/phường, quận/huyện, tỉnh/thành
         const addressParts = [rawAddress, phuongXaRaw, quanHuyenRaw, tinhRaw].filter(Boolean);
         diaChi = addressParts.join(', ');
       } else {
-        // Có mã tỉnh và mã phường xã, bổ sung quận/huyện vào diaChi nếu chưa có
         if (quanHuyenRaw && !diaChi.includes(quanHuyenRaw)) {
           diaChi = [diaChi, quanHuyenRaw].filter(Boolean).join(', ');
         }
       }
 
+      const noiCuTru = Number(
+        typeof rawRow.noiCuTru === 'number'
+          ? rawRow.noiCuTru
+          : this.catalog.findNoiCuTru(rawRow.noiCuTru || rawRow['Nơi cư trú'] || rawRow['Loại cư trú'] || 'Thường trú') || 1
+      );
+
+      const lyDoCuTru = Number(
+        typeof rawRow.lyDoCuTru === 'number'
+          ? rawRow.lyDoCuTru
+          : this.catalog.findLyDoCuTru(rawRow.lyDo || rawRow['Lý do'] || 'Du lịch') || 1
+      );
+
       const payloadVN = {
-        hoTen,
+        hoTen: hoTen.toUpperCase(),
         gioiTinh,
-        soDienThoai: String(rawRow.soDienThoai || rawRow['Số điện thoại'] || rawRow.phone || '').trim(),
+        soDienThoai: String(rawRow.soDienThoai || rawRow['SDT'] || rawRow['Số điện thoại'] || rawRow.phone || '').trim(),
         ngayThangNamSinhStr: ngaySinhStr,
-        noiCuTru: Number(
-          typeof rawRow.noiCuTru === 'number'
-            ? rawRow.noiCuTru
-            : this.catalog.findNoiCuTru(rawRow.noiCuTru || rawRow['Nơi cư trú'] || rawRow['Loại cư trú'] || 'Thường trú') || 1
-        ),
+        noiCuTru,
         maTT: String(maTT),
         maPX: String(maPX),
         diaChi,
         ngayDenCsltStr,
         ngayDiDuKienStr,
         soPhong,
-        lyDoCuTru: Number(
-          typeof rawRow.lyDoCuTru === 'number'
-            ? rawRow.lyDoCuTru
-            : this.catalog.findLyDoCuTru(rawRow.lyDo || rawRow['Lý do'] || 'Du lịch') || 1
-        ),
+        lyDoCuTru,
+        lyDoChiTiet: String(rawRow.lyDoChiTiet || rawRow['Lý do chi tiết'] || '').trim(),
         loaiGiayTo: Number(loaiGiayToId || 1),
         soGiayTo: docVal.cleanNumber,
         anhTruocB64: rawRow.anhTruocB64 || rawRow['Ảnh mặt trước'] || '',
         anhSauB64: rawRow.anhSauB64 || rawRow['Ảnh mặt sau'] || '',
+        ghiChu: String(rawRow.ghiChu || rawRow['Ghi chú'] || '').trim(),
       };
 
       return { branch: 'VN', payload: payloadVN };
     } else {
-      // Nhánh B: Khách Nước ngoài
-      const quocTich = this.catalog.findQuocTich(rawRow.quocTich || rawRow['Quốc tịch'] || rawRow.nationality);
+      // ----------------------------------------------------
+      // NHÁNH B: KHÁCH NƯỚC NGOÀI (API 4)
+      // ----------------------------------------------------
+      const quocTich = this.catalog.findQuocTich(rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality);
       const rawPassport = rawRow.soHoChieu || rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số hộ chiếu'] || rawRow.passportNumber || '';
       const docVal = this.validateDocNumber(rawPassport, 4);
       if (!docVal.valid) {
         return { validationError: docVal.error };
       }
 
-      const thoiHanTamTruStr = this.formatDateTime(
+      // loaiNgayThangNamSinh: "D" nếu có đầy đủ YYYY-MM-DD, "Y" nếu chỉ có năm
+      const isYearOnly = /^\d{4}$/.test(ngaySinhStr);
+      const loaiNgayThangNamSinh = isYearOnly ? 'Y' : 'D';
+
+      // thoiHanTamTruStr: Bắt buộc >= ngày hiện tại
+      let thoiHanTamTruStr = this.formatDateTime(
         rawRow.thoiHanTamTru || rawRow.thoiHanTamTruStr || rawRow['Thời hạn tạm trú'] || ngayDiDuKienStr,
         '23:59:59'
       );
 
       const payloadForeign = {
-        hoTen,
+        hoTen: hoTen.toUpperCase(),
         quocTich,
         soHoChieu: docVal.cleanNumber,
         gioiTinh,
-        loaiNgayThangNamSinh: 'D',
+        loaiNgayThangNamSinh,
         ngayThangNamSinhStr: ngaySinhStr,
         ngayDenCsltStr,
         ngayDiDuKienStr,
         soPhong,
-        anhHoChieuB64: rawRow.anhHoChieuB64 || rawRow.anhTruocB64 || rawRow['Ảnh hộ chiếu'] || '',
         thoiHanTamTruStr,
+        anhHoChieuB64: rawRow.anhHoChieuB64 || rawRow.anhTruocB64 || rawRow['Ảnh hộ chiếu'] || '',
       };
 
       return { branch: 'FOREIGN', payload: payloadForeign };

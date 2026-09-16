@@ -44,7 +44,7 @@ async function runTests() {
   };
   const vnRes = await transformer.transformRow(rawVn);
   assert.equal(vnRes.branch, 'VN');
-  assert.equal(vnRes.payload.hoTen, 'Nguyễn Văn A');
+  assert.equal(vnRes.payload.hoTen, 'NGUYỄN VĂN A');
   assert.equal(vnRes.payload.gioiTinh, 'M');
   assert.equal(vnRes.payload.soGiayTo, '001092000001');
   assert.equal(vnRes.payload.ngayThangNamSinhStr, '1992-10-01');
@@ -97,10 +97,18 @@ async function runTests() {
   assert.equal(parsedRows[1].soGiayTo, 'G12345678');
   console.log('✅ GoogleSheetService (CSV Parsing & Normalization) test passed!');
 
-  // 3.1 Test GoogleSheetService Live Fetch with full URL / gid
-  console.log('--- Kiểm tra kéo dữ liệu trực tiếp từ Google Sheets công khai ---');
+  // 3.1 Test GoogleSheetService Live Fetch with full URL / gid & Tabs list
+  console.log('--- Kiểm tra kéo dữ liệu trực tiếp từ Google Sheets công khai & Quét Tabs ---');
   const liveUrl = 'https://docs.google.com/spreadsheets/d/16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q/edit?pli=1&gid=159547744#gid=159547744';
-  const liveRes = await sheetService.fetchSheetData(liveUrl);
+  
+  // Test Tabs scanning
+  const tabsRes = await sheetService.fetchSheetTabs(liveUrl);
+  assert.ok(tabsRes.success, 'fetchSheetTabs phải thành công');
+  assert.ok(tabsRes.tabs.length > 0, 'Phải tìm thấy ít nhất 1 tab');
+  console.log(`✅ Tìm thấy ${tabsRes.tabs.length} tabs trên Google Sheet. Tab mặc định: GID ${tabsRes.defaultGid}`);
+
+  // Test Live Fetch with default date tab
+  const liveRes = await sheetService.fetchSheetData(liveUrl, tabsRes.defaultGid);
   if (liveRes.success && liveRes.rows.length > 0) {
     console.log(`✅ Kéo thành công ${liveRes.rows.length} dòng từ Google Sheet! Khách: ${liveRes.rows[0].hoTen}`);
     const transformed = await transformer.transformRow(liveRes.rows[0]);
@@ -109,7 +117,10 @@ async function runTests() {
     assert.equal(transformed.payload.gioiTinh, 'F');
     assert.equal(transformed.payload.soGiayTo, '001302011971');
     assert.equal(transformed.payload.ngayThangNamSinhStr, '2002-09-22');
-    console.log('✅ Chuẩn hóa dòng dữ liệu thực tế từ Google Sheet sang API 5 thành công:');
+    assert.equal(transformed.payload.noiCuTru, 1);
+    assert.equal(transformed.payload.loaiGiayTo, 1);
+    assert.equal(transformed.payload.lyDoCuTru, 1);
+    console.log('✅ Chuẩn hóa dòng dữ liệu thực tế từ Google Sheet sang API 5 (v1.4) thành công:');
     console.log(JSON.stringify(transformed.payload, null, 2));
   } else {
     console.warn('⚠️ Live fetch info:', liveRes.message);

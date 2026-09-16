@@ -9,7 +9,7 @@ export class GoogleSheetService {
   }
 
   /**
-   * Phân tích chuỗi đầu vào (có thể là Sheet ID hoặc Full URL) để trích xuất Sheet ID và GID (sheet tab)
+   * Phân tích chuỗi đầu vào (có thể là Sheet ID hoặc Full URL) để trích xuất Sheet ID và GID
    * @param {string} input Sheet ID hoặc Full URL
    * @returns {{ sheetId: string, gid?: string }}
    */
@@ -17,7 +17,6 @@ export class GoogleSheetService {
     if (!input) return { sheetId: this.sheetId };
     const str = String(input).trim();
 
-    // Trường hợp là URL đầy đủ: https://docs.google.com/spreadsheets/d/{id}/edit?...gid={gid}
     const urlMatch = str.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
     const gidMatch = str.match(/[?&#]gid=([0-9]+)/);
 
@@ -32,38 +31,122 @@ export class GoogleSheetService {
   }
 
   /**
-   * Kéo dữ liệu từ Google Sheets (không cần API key nếu đã bật chia sẻ link)
+   * Lấy danh sách các Tab (Sheets) trong Google Spreadsheet và tìm tab theo ngày
+   * @param {string} [input] Sheet ID hoặc Full URL
+   * @returns {Promise<{ success: boolean, tabs: Array<{ name: string, gid: string, dateStr?: string, isDateTab: boolean, isDefault: boolean }>, defaultGid?: string }>}
+   */
+  async fetchSheetTabs(input = this.sheetId) {
+    const { sheetId } = this.parseSheetIdentifier(input);
+    if (!sheetId) return { success: false, tabs: [] };
+
+    const htmlViewUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlview`;
+    try {
+      const res = await fetch(htmlViewUrl, { redirect: 'follow' });
+      const html = await res.text();
+
+      // Trích xuất các items từ JavaScript object trong htmlview
+      const itemsRegex = /items\.push\(\{\s*name:\s*"([^"]+)",\s*pageUrl:[^}]+gid:\s*"([^"]+)"/g;
+      const tabs = [];
+      let match;
+
+      while ((match = itemsRegex.exec(html)) !== null) {
+        const name = match[1];
+        const gid = match[2];
+        const parsedDate = this._parseDateFromTabName(name);
+
+        tabs.push({
+          name,
+          gid,
+          dateStr: parsedDate ? parsedDate.toISOString().split('T')[0] : null,
+          isDateTab: !!parsedDate,
+          parsedDate,
+        });
+      }
+
+      if (tabs.length === 0) {
+        // Fallback default gid 0
+        tabs.push({ name: 'Sheet 1', gid: '0', isDateTab: false });
+      }
+
+      // Tìm tab gần với ngày hiện tại nhất
+      const now = new Date();
+      let bestTab = null;
+      let minDiff = Infinity;
+
+      for (const tab of tabs) {
+        if (tab.parsedDate) {
+          const diff = Math.abs(tab.parsedDate.getTime() - now.getTime());
+          if (diff < minDiff) {
+            minDiff = diff;
+            bestTab = tab;
+          }
+        }
+      }
+
+      // Nếu không tìm thấy date tab, chọn tab cuối cùng (hoặc tab đầu tiên nếu có 1 tab)
+      if (!bestTab) {
+        bestTab = tabs.find(t => t.isDateTab) || tabs[tabs.length - 1] || tabs[0];
+      }
+
+      tabs.forEach(t => {
+        t.isDefault = bestTab && t.gid === bestTab.gid;
+        delete t.parsedDate; // Dọn sạch object để trả về JSON
+      });
+
+      return {
+        success: true,
+        tabs,
+        defaultGid: bestTab ? bestTab.gid : tabs[0].gid,
+      };
+    } catch (err) {
+      console.warn('[GoogleSheetService] Lỗi khi lấy danh sách tab:', err.message);
+      return {
+        success: false,
+        tabs: [{ name: 'Mặc định', gid: '0', isDefault: true, isDateTab: false }],
+        defaultGid: '0',
+      };
+    }
+  }
+
+  /**
+   * Phân tích tên tab (ví dụ: 'ngay 15-09-26' hoặc '15-09-2026') thành đối tượng Date
+   */
+  _parseDateFromTabName(tabName) {
+    if (!tabName) return null;
+    const clean = String(tabName).toLowerCase().replace(/ngày|ngay/g, '').trim();
+
+    // Định dạng DD-MM-YY hoặc DD-MM-YYYY hoặc DD/MM/YYYY
+    const match = clean.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if (match) {
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      let year = parseInt(match[3], 10);
+      if (year < 100) year += 2000;
+
+      const d = new Date(year, month, day);
+      if (!isNaN(d.getTime())) return d;
+    }
+
+    return null;
+  }
+
+  /**
+   * Kéo dữ liệu từ Google Sheets theo Sheet ID và GID cụ thể
    * @param {string} [input] Sheet ID hoặc URL đầy đủ
-   * @param {string} [apiKey] Google API Key (tùy chọn)
-   * @param {string} [range] Range (nếu dùng API v4)
+   * @param {string} [specificGid] GID của tab cần lấy
+   * @param {string} [apiKey]
    * @returns {Promise<{ success: boolean, rows: Array<Object>, message?: string, source: string, sheetId?: string, gid?: string }>}
    */
-  async fetchSheetData(input = this.sheetId, apiKey = process.env.GOOGLE_API_KEY, range = 'Sheet1!A1:Z100') {
-    const { sheetId, gid } = this.parseSheetIdentifier(input);
+  async fetchSheetData(input = this.sheetId, specificGid = null, apiKey = process.env.GOOGLE_API_KEY) {
+    const parsed = this.parseSheetIdentifier(input);
+    const sheetId = parsed.sheetId;
+    const gid = specificGid !== null && specificGid !== undefined ? specificGid : parsed.gid;
 
     if (!sheetId) {
       return { success: false, rows: [], message: 'Thiếu Google Sheet ID' };
     }
 
-    // 1. Thử kéo qua Google Sheets API v4 nếu có API Key
-    if (apiKey) {
-      try {
-        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
-        const res = await fetch(apiUrl);
-        if (res.ok) {
-          const json = await res.json();
-          const values = json.values || [];
-          if (values.length > 1) {
-            const rows = this._parseMatrixToObjects(values);
-            return { success: true, rows, source: 'Google Sheets API v4', sheetId, gid };
-          }
-        }
-      } catch (err) {
-        console.warn('[GoogleSheetService] Lỗi khi gọi Sheets API v4:', err.message);
-      }
-    }
-
-    // 2. Kéo qua đường dẫn xuất CSV công khai (Không cần API Key)
+    // 1. Kéo qua CSV Export công khai kết hợp gid
     const gidParam = gid ? `&gid=${gid}` : '';
     const exportCsvUrls = [
       `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gidParam}`,
@@ -75,16 +158,15 @@ export class GoogleSheetService {
         const res = await fetch(url, { redirect: 'follow' });
         const text = await res.text();
 
-        // Kiểm tra xem dữ liệu trả về có phải trang đăng nhập HTML không
         if (res.ok && text && !text.includes('<!DOCTYPE html>') && !text.includes('<html')) {
           const rows = this.parseCsv(text);
           if (rows && rows.length > 0) {
             return {
               success: true,
               rows,
-              source: `Google Sheets CSV Export công khai (gid: ${gid || '0'})`,
+              source: `Google Sheets CSV Export (Tab GID: ${gid || '0'})`,
               sheetId,
-              gid,
+              gid: gid || '0',
             };
           }
         }
@@ -122,7 +204,7 @@ export class GoogleSheetService {
       if (char === '"') {
         if (insideQuote && nextChar === '"') {
           cell += '"';
-          i++; // Bỏ qua escape quote
+          i++;
         } else {
           insideQuote = !insideQuote;
         }
@@ -213,6 +295,7 @@ export class GoogleSheetService {
     if (clean.includes('tu ngay') || clean.includes('ngay den') || clean === 'check in' || clean === 'checkin') return 'ngayDen';
     if (clean.includes('den ngay') || clean.includes('ngay di') || clean === 'check out' || clean === 'checkout') return 'ngayDi';
     if (clean.includes('thoi han tam tru')) return 'thoiHanTamTru';
+    if (clean.includes('ly do chi tiet')) return 'lyDoChiTiet';
     if (clean.includes('ly do') || clean === 'reason') return 'lyDo';
     if (clean.includes('so phong') || clean.includes('phong') || clean === 'room') return 'soPhong';
     if (clean.includes('dien thoai') || clean === 'sdt' || clean.includes('sdt') || clean === 'phone') return 'soDienThoai';
@@ -220,6 +303,7 @@ export class GoogleSheetService {
     if (clean.includes('anh truoc') || clean.includes('mat truoc')) return 'anhTruocB64';
     if (clean.includes('anh sau') || clean.includes('mat sau')) return 'anhSauB64';
     if (clean.includes('anh ho chieu') || clean.includes('passport')) return 'anhHoChieuB64';
+    if (clean.includes('ghi chu') || clean === 'note') return 'ghiChu';
 
     return null;
   }
