@@ -22,11 +22,15 @@ interface TabItem {
 }
 
 interface RowData {
+	_sheetRow?: number | string;
+	sheetRowIndex?: number | string;
+	stt?: string | number;
 	hoTen?: string;
 	gioiTinh?: string;
 	ngaySinh?: string;
 	quocTich?: string;
 	loaiGiayTo?: string;
+	tenGiayTo?: string;
 	soGiayTo?: string;
 	soHoChieu?: string;
 	soPhong?: string;
@@ -37,6 +41,7 @@ interface RowData {
 	ngayDen?: string;
 	ngayDi?: string;
 	thoiHanTamTru?: string;
+	daDangKy?: string;
 	[key: string]: unknown;
 }
 
@@ -233,6 +238,64 @@ function isValidAlpha3Country(code: string): boolean {
 		});
 	}
 	return /^[A-Z]{3}$/.test(clean);
+}
+
+function isNumericDocType(docTypeRaw: unknown): boolean {
+	const clean = String(docTypeRaw || "").toLowerCase();
+	return (
+		clean.includes("cccd") ||
+		clean.includes("cmnd") ||
+		clean.includes("căn cước") ||
+		clean.includes("1") ||
+		clean.includes("2") ||
+		clean.includes("8")
+	);
+}
+
+function cleanDocNumberInput(val: string, docTypeRaw: unknown): string {
+	if (!val) return "";
+	if (isNumericDocType(docTypeRaw)) {
+		// Chỉ cho phép chữ số (0-9), cấm ký tự chữ cái và ký tự đặc biệt (*, /, (, -, ...)
+		return val.replace(/\D/g, "").slice(0, 12);
+	}
+	// Hộ chiếu (Passport) / Giấy phép lái xe: chỉ cho phép chữ cái và số, cấm tất cả ký tự đặc biệt (*, /, @, #, v.v.)
+	return val
+		.replace(/[^a-zA-Z0-9]/g, "")
+		.toUpperCase()
+		.slice(0, 12);
+}
+
+function handleDocNumberKeyDown(e: KeyboardEvent, docTypeRaw: unknown): void {
+	if (
+		[
+			"Backspace",
+			"Delete",
+			"Tab",
+			"ArrowLeft",
+			"ArrowRight",
+			"ArrowUp",
+			"ArrowDown",
+			"Home",
+			"End",
+			"Enter",
+		].includes(e.key) ||
+		e.ctrlKey ||
+		e.metaKey
+	) {
+		return;
+	}
+
+	if (isNumericDocType(docTypeRaw)) {
+		// CCCD/CMND: Chặn tất cả ký tự không phải số 0-9
+		if (!/^[0-9]$/.test(e.key)) {
+			e.preventDefault();
+		}
+	} else {
+		// Hộ chiếu: Chặn tất cả ký tự đặc biệt, chỉ cho phép chữ cái A-Z và số 0-9
+		if (!/^[a-zA-Z0-9]$/.test(e.key)) {
+			e.preventDefault();
+		}
+	}
 }
 
 let liveVal = $derived.by(() => {
@@ -490,13 +553,20 @@ async function pullDataFromGoogleSheet(forcedGid: string | null = null) {
 		});
 		const data = await res.json();
 		if (data.success && data.rows && data.rows.length > 0) {
-			currentRows = data.rows.map((row: RowData) => {
+			currentRows = data.rows.map((row: RowData, idx: number) => {
 				const rawRoom = row.soPhong || row["Số phòng"] || row.room || "";
 				const cleaned = cleanRoomNumber(rawRoom);
 				if (cleaned) {
 					row.soPhong = cleaned;
 					row["Số phòng"] = cleaned;
 				}
+				// Gán chính xác số dòng trên Sheet (luôn >= 2)
+				const sheetRow = Math.max(
+					2,
+					Number(row._sheetRow || row.sheetRowIndex || idx + 2),
+				);
+				row._sheetRow = sheetRow;
+				row.sheetRowIndex = sheetRow;
 				return row;
 			});
 			selectedIndices = new Set();
@@ -623,11 +693,24 @@ function updateCell(idx: number, field: string, value: string) {
 		currentRows[idx]["Quốc gia"] = upper;
 	} else if (field === "loaiGiayTo") {
 		currentRows[idx]["Loại giấy tờ"] = value;
+		currentRows[idx].loaiGiayTo = value;
+		const curDoc = String(currentRows[idx].soGiayTo || "");
+		const cleanedDoc = cleanDocNumberInput(curDoc, value);
+		currentRows[idx].soGiayTo = cleanedDoc;
+		currentRows[idx]["Số giấy tờ"] = cleanedDoc;
+		currentRows[idx]["Số CCCD"] = cleanedDoc;
+		currentRows[idx].soHoChieu = cleanedDoc;
 	} else if (field === "soGiayTo") {
-		currentRows[idx]["Số giấy tờ"] = value;
-		currentRows[idx]["Số CCCD"] = value;
-		currentRows[idx]["Số hộ chiếu"] = value;
-		currentRows[idx].soHoChieu = value;
+		const docType =
+			currentRows[idx].loaiGiayTo ||
+			currentRows[idx]["Loại giấy tờ"] ||
+			"Thẻ CCCD";
+		const cleaned = cleanDocNumberInput(value, docType);
+		currentRows[idx]["Số giấy tờ"] = cleaned;
+		currentRows[idx]["Số CCCD"] = cleaned;
+		currentRows[idx]["Số hộ chiếu"] = cleaned;
+		currentRows[idx].soHoChieu = cleaned;
+		currentRows[idx].soGiayTo = cleaned;
 	} else if (field === "ngayDen") {
 		currentRows[idx]["Ngày đến"] = value;
 		currentRows[idx]["(từ ngày)"] = value;
@@ -671,12 +754,15 @@ function openEditModal(idx: number) {
 		).toUpperCase(),
 		soPhong: cleanRoomNumber(row.soPhong || row["Số phòng"]) || "1",
 		loaiGiayTo: String(row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD"),
-		soGiayTo: String(
-			row.soGiayTo ||
-				row["Số giấy tờ"] ||
-				row.soHoChieu ||
-				row["Số hộ chiếu"] ||
-				"",
+		soGiayTo: cleanDocNumberInput(
+			String(
+				row.soGiayTo ||
+					row["Số giấy tờ"] ||
+					row.soHoChieu ||
+					row["Số hộ chiếu"] ||
+					"",
+			),
+			row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD",
 		),
 		ngayDen: String(row.ngayDen || row["(từ ngày)"] || row["Ngày đến"] || ""),
 		ngayDi: String(row.ngayDi || row["(đến ngày)"] || row["Ngày đi"] || ""),
@@ -707,7 +793,10 @@ function saveModal() {
 	row["Số phòng"] = row.soPhong;
 	row.loaiGiayTo = modalForm.loaiGiayTo;
 	row["Loại giấy tờ"] = row.loaiGiayTo;
-	row.soGiayTo = modalForm.soGiayTo.trim();
+	row.soGiayTo = cleanDocNumberInput(
+		modalForm.soGiayTo.trim(),
+		modalForm.loaiGiayTo,
+	);
 	row["Số giấy tờ"] = row.soGiayTo;
 	row["Số CCCD"] = row.soGiayTo;
 	row.soHoChieu = row.soGiayTo;
@@ -728,9 +817,18 @@ function saveModal() {
 }
 
 async function syncRowToGoogleSheet(idx: number) {
-	// Dòng 1 luôn là Header, dữ liệu bắt đầu từ Dòng 2 (sheetRowIndex = idx + 2)
-	const sheetRowIndex = idx + 2;
-	showToast("LƯU", `Đang lưu dòng ${sheetRowIndex} lên Google Sheet...`);
+	const row = currentRows[idx];
+	if (!row) return;
+
+	// Dòng 1 luôn là Header, dòng thực tế trên Sheet là row._sheetRow hoặc idx + 2 (luôn >= 2)
+	const targetSheetRow = Math.max(
+		2,
+		Number(row._sheetRow || row.sheetRowIndex || idx + 2),
+	);
+	row._sheetRow = targetSheetRow;
+	row.sheetRowIndex = targetSheetRow;
+
+	showToast("LƯU", `Đang lưu dòng ${targetSheetRow} lên Google Sheet...`);
 	const selectedTab = availableTabs.find(
 		(t) => String(t.gid) === String(selectedGid),
 	);
@@ -741,8 +839,8 @@ async function syncRowToGoogleSheet(idx: number) {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
-				rowIndex: idx,
-				sheetRowIndex,
+				rowIndex: targetSheetRow,
+				sheetRowIndex: targetSheetRow,
 				row: currentRows[idx],
 				gid: selectedGid,
 				sheetName,
@@ -750,9 +848,9 @@ async function syncRowToGoogleSheet(idx: number) {
 		});
 		const data = await res.json();
 		if (data.success) {
-			showToast("OK", `Đã cập nhật dòng ${sheetRowIndex} lên Google Sheet!`);
+			showToast("OK", `Đã cập nhật dòng ${targetSheetRow} lên Google Sheet!`);
 		} else if (data.notConfigured) {
-			showToast("LƯU", `Đã lưu dòng ${sheetRowIndex} vào bộ nhớ.`);
+			showToast("LƯU", `Đã lưu dòng ${targetSheetRow} vào bộ nhớ.`);
 		} else {
 			showToast("CẢNH BÁO", `Lỗi cập nhật Sheet: ${data.message}`);
 		}
@@ -780,7 +878,21 @@ function addNewGuest() {
 	next2Days.setDate(next2Days.getDate() + 2);
 	const next2DaysStr = `${pad(next2Days.getDate())}/${pad(next2Days.getMonth() + 1)}/${next2Days.getFullYear()} 12:00:00`;
 
+	// Tính toán dòng Google Sheet tiếp theo (bắt đầu từ dòng 2 trở đi, không bao giờ ghi vào dòng 1)
+	let nextSheetRow = 2;
+	if (currentRows.length > 0) {
+		const maxRow = currentRows.reduce((max, r) => {
+			const rNum = Number(r._sheetRow || r.sheetRowIndex || 0);
+			return Math.max(max, rNum);
+		}, 1);
+		nextSheetRow = Math.max(2, maxRow + 1);
+	}
+
 	const newRow: RowData = {
+		_sheetRow: nextSheetRow,
+		sheetRowIndex: nextSheetRow,
+		stt: String(currentRows.length + 1),
+		STT: String(currentRows.length + 1),
 		hoTen: "KHÁCH MỚI",
 		"Họ tên": "KHÁCH MỚI",
 		ngaySinh: "1995-01-01",
@@ -807,6 +919,8 @@ function addNewGuest() {
 		ngayDi: next2DaysStr,
 		"Ngày đi": next2DaysStr,
 		"(đến ngày)": next2DaysStr,
+		daDangKy: "Chưa đăng ký",
+		"Đã đăng ký": "Chưa đăng ký",
 	};
 
 	currentRows = [...currentRows, newRow];
@@ -1169,7 +1283,20 @@ onMount(() => {
                   <!-- Số giấy tờ -->
                   <td class="p-3 font-mono font-bold text-indigo-700">
                     {#if isEditing}
-                      <input type="text" value={row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || ''} onchange={(e) => updateCell(idx, 'soGiayTo', (e.target as HTMLInputElement).value)} placeholder="Số giấy tờ" class="w-28 rounded px-2 py-1 outline-none font-bold font-mono text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-indigo-700">
+                      {@const curDocType = row.loaiGiayTo || row['Loại giấy tờ'] || 'Thẻ CCCD'}
+                      <input
+                        type="text"
+                        value={row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || ''}
+                        onkeydown={(e) => handleDocNumberKeyDown(e, curDocType)}
+                        oninput={(e) => {
+                          const cleaned = cleanDocNumberInput((e.target as HTMLInputElement).value, curDocType);
+                          (e.target as HTMLInputElement).value = cleaned;
+                          updateCell(idx, 'soGiayTo', cleaned);
+                        }}
+                        placeholder={isNumericDocType(curDocType) ? "Chỉ nhập số" : "Số hộ chiếu (chữ & số)"}
+                        maxlength="12"
+                        class="w-28 rounded px-2 py-1 outline-none font-bold font-mono text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-indigo-700"
+                      >
                     {:else if fStatus.soGiayTo?.valid ?? (fStatus.soHoChieu?.valid ?? true)}
                       <button type="button" class="cursor-pointer hover:underline font-mono font-bold text-indigo-700" onclick={() => openEditModal(idx)}>{row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu']}</button>
                     {:else}
@@ -1496,7 +1623,16 @@ onMount(() => {
           <!-- Loại giấy tờ -->
           <div>
             <label for="modalLoaiGiayTo" class="block font-semibold text-slate-700 mb-1">Loại giấy tờ</label>
-            <select id="modalLoaiGiayTo" bind:value={modalForm.loaiGiayTo} class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition">
+            <select
+              id="modalLoaiGiayTo"
+              value={modalForm.loaiGiayTo}
+              onchange={(e) => {
+                const newType = (e.target as HTMLSelectElement).value;
+                modalForm.loaiGiayTo = newType;
+                modalForm.soGiayTo = cleanDocNumberInput(modalForm.soGiayTo, newType);
+              }}
+              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition"
+            >
               <option value="Thẻ CCCD">Thẻ CCCD (1)</option>
               <option value="Thẻ CMND">Thẻ CMND (2)</option>
               <option value="Giấy phép lái xe">GPLX (3)</option>
@@ -1508,14 +1644,21 @@ onMount(() => {
           <!-- Số giấy tờ -->
           <div class="md:col-span-2">
             <label for="modalSoGiayTo" class="block font-semibold text-slate-700 mb-1">
-              Số giấy tờ <span class="text-rose-500">*</span>
+              Số giấy tờ {isNumericDocType(modalForm.loaiGiayTo) ? "(Chỉ nhập số, không chữ/ký tự đặc biệt)" : "(Chữ và số, không ký tự đặc biệt)"} <span class="text-rose-500">*</span>
             </label>
             <input
               type="text"
               id="modalSoGiayTo"
-              bind:value={modalForm.soGiayTo}
+              value={modalForm.soGiayTo}
+              onkeydown={(e) => handleDocNumberKeyDown(e, modalForm.loaiGiayTo)}
+              oninput={(e) => {
+                const cleaned = cleanDocNumberInput((e.target as HTMLInputElement).value, modalForm.loaiGiayTo);
+                (e.target as HTMLInputElement).value = cleaned;
+                modalForm.soGiayTo = cleaned;
+              }}
               class={`w-full px-3 py-2 text-sm font-mono font-bold text-indigo-700 rounded-lg outline-none transition ${!liveVal.soGiayTo.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
-              placeholder="Số CCCD (12 số) / Hộ chiếu (6-12 ký tự)"
+              placeholder={isNumericDocType(modalForm.loaiGiayTo) ? "Số CCCD (12 chữ số)" : "Số Hộ chiếu (6-12 ký tự chữ và số)"}
+              maxlength="12"
             >
             {#if !liveVal.soGiayTo.valid}
               <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">

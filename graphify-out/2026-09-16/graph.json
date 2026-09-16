@@ -17,6 +17,45 @@
       "source_location": "L5"
     },
     {
+      "id": "src_lib_server_datatransformer_completenessresult",
+      "label": "CompletenessResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "completenessresult",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_lib_server_datatransformer_rawocrrow",
+      "label": "RawOcrRow",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "rawocrrow",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_lib_server_datatransformer_transformedrowresult",
+      "label": "TransformedRowResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "transformedrowresult",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L16"
+    },
+    {
       "id": "src_lib_server_kbttclient_apiresponse",
       "label": "ApiResponse",
       "_callable": true,
@@ -95,42 +134,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_lib_server_datatransformer_completenessresult",
-      "label": "CompletenessResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "completenessresult",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "src_lib_server_datatransformer_rawocrrow",
-      "label": "RawOcrRow",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "rawocrrow",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L3"
-    },
-    {
-      "id": "src_lib_server_datatransformer_transformedrowresult",
-      "label": "TransformedRowResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "transformedrowresult",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L16"
-    },
-    {
       "id": "src_lib_server_googlesheetservice_tabinfo",
       "label": "TabInfo",
       "_callable": true,
@@ -161,6 +164,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 6,
+      "community_name": "DataTransformer",
       "file_type": "code",
       "norm_label": "datatransformer",
       "source_file": "src/lib/server/dataTransformer.ts",
@@ -735,6 +739,18 @@
       "source_location": "L6"
     },
     {
+      "id": "src_routes_api_sheets_update_row_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L6"
+    },
+    {
       "id": "src_routes_api_sync_server_post",
       "label": "POST()",
       "_callable": true,
@@ -783,17 +799,6 @@
       "source_location": "L6"
     },
     {
-      "id": "src_routes_api_sheets_update_row_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/sheets/update-row/+server.ts",
-      "source_location": "L6"
-    },
-    {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
       "label": ".constructor()",
       "_callable": true,
@@ -835,7 +840,7 @@
       "file_type": "code",
       "norm_label": "._mapheadertokey()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L543"
+      "source_location": "L550"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
@@ -846,7 +851,7 @@
       "file_type": "code",
       "norm_label": "._parseapivalues()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L493"
+      "source_location": "L497"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
@@ -890,7 +895,7 @@
       "file_type": "code",
       "norm_label": ".updatesheetrow()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L658"
+      "source_location": "L665"
     },
     {
       "id": "src_routes_api_events_server_get",
@@ -913,7 +918,7 @@
       "file_type": "code",
       "norm_label": "addnewguest()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L775"
+      "source_location": "L873"
     },
     {
       "id": "src_routes_page_checktoken",
@@ -924,7 +929,7 @@
       "file_type": "code",
       "norm_label": "checktoken()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L872"
+      "source_location": "L986"
     },
     {
       "id": "src_routes_page_closeeditmodal",
@@ -935,7 +940,7 @@
       "file_type": "code",
       "norm_label": "closeeditmodal()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L689"
+      "source_location": "L775"
     },
     {
       "id": "src_routes_page_copycode",
@@ -946,7 +951,7 @@
       "file_type": "code",
       "norm_label": "copycode()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L910"
+      "source_location": "L1024"
     },
     {
       "id": "src_routes_page_executesyncbatch",
@@ -957,7 +962,7 @@
       "file_type": "code",
       "norm_label": "executesyncbatch()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L819"
+      "source_location": "L933"
     },
     {
       "id": "src_routes_page_fetchsheettabslist",
@@ -968,7 +973,7 @@
       "file_type": "code",
       "norm_label": "fetchsheettabslist()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L452"
+      "source_location": "L515"
     },
     {
       "id": "src_routes_page_handlemanuallogin",
@@ -979,7 +984,7 @@
       "file_type": "code",
       "norm_label": "handlemanuallogin()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L883"
+      "source_location": "L997"
     },
     {
       "id": "src_routes_page_handletabchange",
@@ -990,7 +995,7 @@
       "file_type": "code",
       "norm_label": "handletabchange()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L524"
+      "source_location": "L594"
     },
     {
       "id": "src_routes_page_loadcatalogs",
@@ -1001,7 +1006,7 @@
       "file_type": "code",
       "norm_label": "loadcatalogs()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L898"
+      "source_location": "L1012"
     },
     {
       "id": "src_routes_page_openeditmodal",
@@ -1012,7 +1017,7 @@
       "file_type": "code",
       "norm_label": "openeditmodal()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L655"
+      "source_location": "L738"
     },
     {
       "id": "src_routes_page_parseandapplyaddress",
@@ -1023,7 +1028,7 @@
       "file_type": "code",
       "norm_label": "parseandapplyaddress()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L565"
+      "source_location": "L635"
     },
     {
       "id": "src_routes_page_pushselectedrows",
@@ -1034,7 +1039,7 @@
       "file_type": "code",
       "norm_label": "pushselectedrows()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L846"
+      "source_location": "L960"
     },
     {
       "id": "src_routes_page_pushsinglerow",
@@ -1045,7 +1050,7 @@
       "file_type": "code",
       "norm_label": "pushsinglerow()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L864"
+      "source_location": "L978"
     },
     {
       "id": "src_routes_page_removerow",
@@ -1056,7 +1061,7 @@
       "file_type": "code",
       "norm_label": "removerow()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L764"
+      "source_location": "L862"
     },
     {
       "id": "src_routes_page_savemodal",
@@ -1067,7 +1072,7 @@
       "file_type": "code",
       "norm_label": "savemodal()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L694"
+      "source_location": "L780"
     },
     {
       "id": "src_routes_page_syncrowtogooglesheet",
@@ -1078,7 +1083,7 @@
       "file_type": "code",
       "norm_label": "syncrowtogooglesheet()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L730"
+      "source_location": "L819"
     },
     {
       "id": "src_routes_page_toggleeditinline",
@@ -1089,7 +1094,7 @@
       "file_type": "code",
       "norm_label": "toggleeditinline()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L643"
+      "source_location": "L726"
     },
     {
       "id": "src_routes_page_togglerowselect",
@@ -1100,7 +1105,7 @@
       "file_type": "code",
       "norm_label": "togglerowselect()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L550"
+      "source_location": "L620"
     },
     {
       "id": "src_routes_page_toggleselectall",
@@ -1111,7 +1116,7 @@
       "file_type": "code",
       "norm_label": "toggleselectall()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L557"
+      "source_location": "L627"
     },
     {
       "id": "src_routes_page_updatecell",
@@ -1122,7 +1127,7 @@
       "file_type": "code",
       "norm_label": "updatecell()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L605"
+      "source_location": "L675"
     },
     {
       "id": "src_routes_page_updatepayloadpreview",
@@ -1133,7 +1138,223 @@
       "file_type": "code",
       "norm_label": "updatepayloadpreview()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L528"
+      "source_location": "L598"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
+      "label": ".checkCompleteness()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".checkcompleteness()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L236"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
+      "label": ".checkRowCompleteness()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".checkrowcompleteness()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L230"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
+      "label": ".cleanDocNumber()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".cleandocnumber()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L150"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
+      "label": ".cleanRoomNumber()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".cleanroomnumber()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L27"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_formatdateonly",
+      "label": ".formatDateOnly()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".formatdateonly()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L49"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_formatdatetime",
+      "label": ".formatDateTime()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".formatdatetime()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L532"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
+      "label": ".isArrivalDateValid()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".isarrivaldatevalid()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L161"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_isguestvn",
+      "label": ".isGuestVN()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".isguestvn()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L196"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_mapgender",
+      "label": ".mapGender()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".mapgender()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L143"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
+      "label": ".mapLoaiGiayTo()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".maploaigiayto()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L557"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_mapquoctich",
+      "label": ".mapQuocTich()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".mapquoctich()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L561"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_normalizegender",
+      "label": ".normalizeGender()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".normalizegender()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L139"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_parsedatetime",
+      "label": ".parseDateTime()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".parsedatetime()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L53"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformbatch",
+      "label": ".transformBatch()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformbatch()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L377"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformrow",
+      "label": ".transformRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformrow()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L354"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
+      "label": ".transformToPayloadForeign()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformtopayloadforeign()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L483"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
+      "label": ".transformToPayloadVn()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformtopayloadvn()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L412"
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline_processrows",
@@ -1148,209 +1369,12 @@
       "source_location": "L38"
     },
     {
-      "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
-      "label": ".checkCompleteness()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".checkcompleteness()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L236"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
-      "label": ".checkRowCompleteness()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".checkrowcompleteness()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L230"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
-      "label": ".cleanDocNumber()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".cleandocnumber()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L150"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
-      "label": ".cleanRoomNumber()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".cleanroomnumber()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L27"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_formatdateonly",
-      "label": ".formatDateOnly()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".formatdateonly()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L49"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_formatdatetime",
-      "label": ".formatDateTime()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".formatdatetime()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L532"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
-      "label": ".isArrivalDateValid()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".isarrivaldatevalid()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L161"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_isguestvn",
-      "label": ".isGuestVN()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".isguestvn()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L196"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_mapgender",
-      "label": ".mapGender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".mapgender()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L143"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
-      "label": ".mapLoaiGiayTo()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".maploaigiayto()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L557"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_mapquoctich",
-      "label": ".mapQuocTich()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".mapquoctich()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L561"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_normalizegender",
-      "label": ".normalizeGender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".normalizegender()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L139"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_parsedatetime",
-      "label": ".parseDateTime()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".parsedatetime()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L53"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformbatch",
-      "label": ".transformBatch()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformbatch()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L377"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformrow",
-      "label": ".transformRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformrow()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L354"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
-      "label": ".transformToPayloadForeign()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformtopayloadforeign()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L483"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
-      "label": ".transformToPayloadVn()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformtopayloadvn()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L412"
-    },
-    {
       "id": "test_test_pipeline_runtests",
       "label": "runTests()",
       "_callable": true,
       "_origin": "ast",
       "community": 6,
+      "community_name": "DataTransformer",
       "file_type": "code",
       "norm_label": "runtests()",
       "source_file": "test/test-pipeline.ts",
@@ -1946,6 +1970,17 @@
       "source_location": "L29"
     },
     {
+      "id": "src_lib_server_datatransformer",
+      "label": "dataTransformer.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "datatransformer.ts",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_lib_server_kbttclient",
       "label": "kbttClient.ts",
       "_origin": "ast",
@@ -2023,6 +2058,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_routes_api_sheets_update_row_server",
+      "label": "update-row/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "update-row/+server.ts",
+      "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_routes_api_sync_server",
       "label": "sync/+server.ts",
       "_origin": "ast",
@@ -2056,13 +2102,14 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_server_datatransformer",
-      "label": "dataTransformer.ts",
+      "id": "test_test_pipeline",
+      "label": "test-pipeline.ts",
       "_origin": "ast",
       "community": 1,
+      "community_name": "syncPipeline.ts",
       "file_type": "code",
-      "norm_label": "datatransformer.ts",
-      "source_file": "src/lib/server/dataTransformer.ts",
+      "norm_label": "test-pipeline.ts",
+      "source_file": "test/test-pipeline.ts",
       "source_location": "L1"
     },
     {
@@ -2073,26 +2120,6 @@
       "file_type": "code",
       "norm_label": "googlesheetservice.ts",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_sheets_update_row_server",
-      "label": "update-row/+server.ts",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "update-row/+server.ts",
-      "source_file": "src/routes/api/sheets/update-row/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_test_pipeline",
-      "label": "test-pipeline.ts",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "test-pipeline.ts",
-      "source_file": "test/test-pipeline.ts",
       "source_location": "L1"
     },
     {
@@ -4281,7 +4308,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L533",
+      "source_location": "L537",
       "weight": 1.0
     },
     {
@@ -4569,7 +4596,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L814",
+      "source_location": "L928",
       "weight": 1.0
     },
     {
@@ -4581,7 +4608,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L815",
+      "source_location": "L929",
       "weight": 1.0
     },
     {
@@ -4593,7 +4620,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L816",
+      "source_location": "L930",
       "weight": 1.0
     },
     {
@@ -4605,7 +4632,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L833",
+      "source_location": "L947",
       "weight": 1.0
     },
     {
@@ -4617,7 +4644,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L892",
+      "source_location": "L1006",
       "weight": 1.0
     },
     {
@@ -4629,7 +4656,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L861",
+      "source_location": "L975",
       "weight": 1.0
     },
     {
@@ -4641,7 +4668,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L866",
+      "source_location": "L980",
       "weight": 1.0
     },
     {
@@ -4653,7 +4680,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L772",
+      "source_location": "L870",
       "weight": 1.0
     },
     {
@@ -4665,7 +4692,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L722",
+      "source_location": "L811",
       "weight": 1.0
     },
     {
@@ -4677,7 +4704,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L725",
+      "source_location": "L814",
       "weight": 1.0
     },
     {
@@ -4689,7 +4716,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L726",
+      "source_location": "L815",
       "weight": 1.0
     },
     {
@@ -4701,7 +4728,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L727",
+      "source_location": "L816",
       "weight": 1.0
     },
     {
@@ -4713,7 +4740,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L648",
+      "source_location": "L731",
       "weight": 1.0
     },
     {
@@ -4725,7 +4752,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L638",
+      "source_location": "L721",
       "weight": 1.0
     },
     {
@@ -4737,7 +4764,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L640",
+      "source_location": "L723",
       "weight": 1.0
     },
     {
@@ -7706,222 +7733,13 @@
     },
     {
       "source": "src_routes_page",
-      "target": "src_routes_page_fetchsheettabslist",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L452",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_handletabchange",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L524",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_updatepayloadpreview",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L528",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_togglerowselect",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L550",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_toggleselectall",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L557",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_parseandapplyaddress",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L565",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_updatecell",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L605",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_toggleeditinline",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L643",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_openeditmodal",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L655",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_closeeditmodal",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L689",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_savemodal",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L694",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_syncrowtogooglesheet",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L730",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_removerow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L764",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_addnewguest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L775",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_executesyncbatch",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L819",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_pushselectedrows",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L846",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_pushsinglerow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L864",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_checktoken",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L872",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_handlemanuallogin",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L883",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
       "target": "src_routes_page_loadcatalogs",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L898",
+      "source_location": "L1012",
       "weight": 1.0
     },
     {
@@ -7932,7 +7750,216 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L910",
+      "source_location": "L1024",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_fetchsheettabslist",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L515",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_handletabchange",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L594",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_updatepayloadpreview",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L598",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_togglerowselect",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L620",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_toggleselectall",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L627",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_parseandapplyaddress",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L635",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_updatecell",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L675",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_toggleeditinline",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L726",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_openeditmodal",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L738",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_closeeditmodal",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L775",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_savemodal",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L780",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_syncrowtogooglesheet",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L819",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_removerow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L862",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_addnewguest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L873",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_executesyncbatch",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L933",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_pushselectedrows",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L960",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_pushsinglerow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L978",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_checktoken",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L986",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_routes_page_handlemanuallogin",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L997",
       "weight": 1.0
     },
     {
@@ -8524,7 +8551,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L493",
+      "source_location": "L497",
       "weight": 1.0
     },
     {
@@ -8535,7 +8562,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L543",
+      "source_location": "L550",
       "weight": 1.0
     },
     {
@@ -8546,7 +8573,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L658",
+      "source_location": "L665",
       "weight": 1.0
     },
     {
@@ -8852,5 +8879,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "bdf7bf9ac749fcca6f8630b50d388b70873d9114"
+  "built_at_commit": "2159f8ff82715e3353123c6f65670a0b5141b3bb"
 }

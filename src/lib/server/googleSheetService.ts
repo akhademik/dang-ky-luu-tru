@@ -466,6 +466,10 @@ export class GoogleSheetService {
 				obj.daDangKy = row[15].trim();
 			}
 
+			// Gán số dòng chính xác trên Google Sheet (1-based, dòng 1 là header, data từ dòng 2)
+			obj._sheetRow = String(i + 1);
+			obj.sheetRowIndex = String(i + 1);
+
 			// Lọc bỏ dòng trống hoàn toàn
 			if (hasData) {
 				const hoTen = obj.hoTen || "";
@@ -534,6 +538,9 @@ export class GoogleSheetService {
 					if (k && !obj[k]) obj[k] = val;
 				}
 			});
+
+			obj._sheetRow = String(i + 1);
+			obj.sheetRowIndex = String(i + 1);
 
 			if (hasData) result.push(obj);
 		}
