@@ -153,19 +153,21 @@ function validateDateString(val: string): boolean {
 function formatToDisplayDate(val: string): string {
 	if (!val) return "";
 	const str = String(val).trim();
-	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(.*)/);
 	if (dmy) {
 		const d = dmy[1].padStart(2, "0");
 		const m = dmy[2].padStart(2, "0");
 		const y = dmy[3];
-		return `${d}/${m}/${y}`;
+		const rest = dmy[4] || "";
+		return `${d}/${m}/${y}${rest}`;
 	}
-	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})(.*)/);
 	if (ymd) {
 		const y = ymd[1];
 		const m = ymd[2].padStart(2, "0");
 		const d = ymd[3].padStart(2, "0");
-		return `${d}/${m}/${y}`;
+		const rest = ymd[4] || "";
+		return `${d}/${m}/${y}${rest}`;
 	}
 	return str;
 }
@@ -229,7 +231,9 @@ function getCountryInfo(
 			return {
 				maQT: String(found.maQT || code).toUpperCase(),
 				tenQT: String(found.tenQT || found.ten || ""),
-				tenQTEn: String(found.tenQTEn || found.tenEn || found.name || ""),
+				tenQTEn: String(
+					found.tenQTEn || found.tenEn || found.name || found.tenQT || "",
+				),
 			};
 		}
 	}
@@ -238,7 +242,7 @@ function getCountryInfo(
 		USA: { tenQT: "Hoa Kỳ", tenQTEn: "United States" },
 		RUS: { tenQT: "Nga", tenQTEn: "Russia" },
 		CHN: { tenQT: "Trung Quốc", tenQTEn: "China" },
-		KOR: { tenQT: "Hàn Quốc", tenQTEn: "Korea (South)" },
+		KOR: { tenQT: "Hàn Quốc", tenQTEn: "South Korea" },
 		JPN: { tenQT: "Nhật Bản", tenQTEn: "Japan" },
 		GBR: { tenQT: "Vương quốc Anh", tenQTEn: "United Kingdom" },
 		FRA: { tenQT: "Pháp", tenQTEn: "France" },
@@ -378,6 +382,19 @@ let liveVal = $derived.by(() => {
 		}
 	}
 
+	let thoiHanTamTruValid = true;
+	let thoiHanTamTruError = "";
+	if (modalForm.thoiHanTamTru.trim()) {
+		const dmyTh = modalForm.thoiHanTamTru
+			.trim()
+			.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+		if (!dmyTh) {
+			thoiHanTamTruValid = false;
+			thoiHanTamTruError =
+				"Thời hạn tạm trú phải theo định dạng DD/MM/YYYY (ví dụ: 31/12/2026 23:59:59)";
+		}
+	}
+
 	const docNum = modalForm.soGiayTo.trim();
 	let soGiayToValid = true;
 	let soGiayToError = "";
@@ -415,10 +432,10 @@ let liveVal = $derived.by(() => {
 	const qt = modalForm.quocTich.trim().toUpperCase();
 	if (!qt) {
 		quocTichValid = false;
-		quocTichError = "Vui lòng nhập mã quốc tịch Alpha-3 (ví dụ: VNM, USA, CHN)";
+		quocTichError = "Vui lòng nhập mã quốc gia (ví dụ: VNM, USA, CHN)";
 	} else if (!isValidAlpha3Country(qt)) {
 		quocTichValid = false;
-		quocTichError = `Mã Alpha-3 không hợp lệ: "${qt}" (Phải là 3 chữ cái chuẩn ISO, vd: VNM, USA, CHN, RUS)`;
+		quocTichError = `Mã quốc gia không hợp lệ: "${qt}" (Phải là 3 chữ cái chuẩn ISO, vd: VNM, USA, CHN, DEU)`;
 	}
 
 	const allValid =
@@ -427,6 +444,7 @@ let liveVal = $derived.by(() => {
 		soPhongValid &&
 		arrivalCheck.valid &&
 		ngayDiValid &&
+		thoiHanTamTruValid &&
 		soGiayToValid &&
 		quocTichValid;
 
@@ -450,6 +468,10 @@ let liveVal = $derived.by(() => {
 		ngayDi: {
 			valid: ngayDiValid,
 			error: ngayDiError || undefined,
+		},
+		thoiHanTamTru: {
+			valid: thoiHanTamTruValid,
+			error: thoiHanTamTruError || undefined,
 		},
 		soGiayTo: { valid: soGiayToValid, error: soGiayToError || undefined },
 		quocTich: { valid: quocTichValid, error: quocTichError || undefined },
@@ -1830,13 +1852,13 @@ onMount(() => {
             {/if}
           </div>
 
-          <!-- Quốc tịch -->
+          <!-- Mã Quốc gia -->
           <div>
             <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1 flex items-center justify-between">
-              <span>Quốc tịch (Mã Alpha-3) <span class="text-rose-500">*</span></span>
+              <span>Mã Quốc gia <span class="text-rose-500">*</span></span>
               {#if countryInfoHint}
-                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 truncate max-w-[170px]" title={countryInfoHint.tenQTEn ? `${countryInfoHint.tenQT} (${countryInfoHint.tenQTEn})` : countryInfoHint.tenQT}>
-                  <i class="fa-solid fa-earth-americas text-emerald-600"></i> {countryInfoHint.tenQTEn ? `${countryInfoHint.tenQT} (${countryInfoHint.tenQTEn})` : countryInfoHint.tenQT}
+                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 truncate max-w-[170px]" title={countryInfoHint.tenQTEn || countryInfoHint.tenQT}>
+                  <i class="fa-solid fa-earth-americas text-emerald-600"></i> {countryInfoHint.tenQTEn || countryInfoHint.tenQT}
                 </span>
               {/if}
             </label>
@@ -1858,7 +1880,7 @@ onMount(() => {
               </p>
             {:else if countryInfoHint}
               <p class="text-emerald-700 text-[11px] font-medium mt-1 flex items-center gap-1">
-                <i class="fa-solid fa-circle-check"></i> Quốc gia: <strong>{countryInfoHint.tenQT}</strong> {countryInfoHint.tenQTEn ? `(${countryInfoHint.tenQTEn})` : ''}
+                <i class="fa-solid fa-circle-check"></i> Quốc gia: <strong>{countryInfoHint.tenQTEn || countryInfoHint.tenQT}</strong>
               </p>
             {/if}
           </div>
@@ -1969,8 +1991,21 @@ onMount(() => {
 
           <!-- Thời hạn tạm trú -->
           <div>
-            <label for="modalThoiHanTamTru" class="block font-semibold text-slate-700 mb-1">Thời hạn tạm trú (Khách NN)</label>
-            <input type="text" id="modalThoiHanTamTru" bind:value={modalForm.thoiHanTamTru} class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" placeholder="2026-12-31 23:59:59">
+            <label for="modalThoiHanTamTru" class="block font-semibold text-slate-700 mb-1">
+              Được phép ở tại VN đến ngày (Khách quốc tế)
+            </label>
+            <input
+              type="text"
+              id="modalThoiHanTamTru"
+              bind:value={modalForm.thoiHanTamTru}
+              class={`w-full px-3 py-2 text-xs font-mono rounded-lg outline-none transition ${!liveVal.thoiHanTamTru.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
+              placeholder="31/12/2026 23:59:59"
+            >
+            {#if !liveVal.thoiHanTamTru.valid}
+              <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i> {liveVal.thoiHanTamTru.error}
+              </p>
+            {/if}
           </div>
 
           <!-- Toàn bộ Địa chỉ đầy đủ -->

@@ -954,7 +954,7 @@
       "file_type": "code",
       "norm_label": "has()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1449"
+      "source_location": "L1471"
     },
     {
       "id": "src_routes_api_events_server_get",
@@ -7520,7 +7520,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1449",
+      "source_location": "L1471",
       "weight": 1.0
     },
     {
@@ -8462,5 +8462,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d75ee2f61b53e4e188bac8777fc41e5ce8b89fbe"
+  "built_at_commit": "a122e259c36af3a54f5c360e337e52681b6be2b9"
 }
