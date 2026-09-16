@@ -362,114 +362,122 @@ export class GoogleSheetService {
 			"GoogleSheetService",
 			`Đã phân tách CSV thành ${lines.length} dòng`,
 			{
-				firstLine: lines[0],
+				headerLine: lines[0],
 			},
 		);
 
-		// Standard positional column mapping fallback
+		// Quy chuẩn chuẩn 16 cột theo Google Sheet (Thứ tự từ cột 0 đến 15)
+		// 0: STT | 1: Họ tên | 2: D.O.B | 3: Giới tính | 4: Quốc tịch | 5: Loại giấy tờ | 6: Tên giấy tờ | 7: Số giấy tờ
+		// 8: Tỉnh | 9: Quận/Huyện | 10: Phường/Xã | 11: Địa chỉ | 12: (từ ngày) | 13: (đến ngày) | 14: Số phòng | 15: Đã đăng ký
 		const standardCols = [
-			"stt",
-			"hoTen",
-			"ngaySinh",
-			"gioiTinh",
-			"quocGia",
-			"quocTich",
-			"loaiGiayTo",
-			"tenGiayTo",
-			"soGiayTo",
-			"soDienThoai",
-			"loaiCuTru",
-			"tinhTp",
-			"quanHuyen",
-			"phuongXa",
-			"diaChi",
-			"ngayDen",
-			"ngayDi",
-			"lyDo",
-			"soPhong",
+			"stt", // 0: STT
+			"hoTen", // 1: Họ tên
+			"ngaySinh", // 2: D.O.B
+			"gioiTinh", // 3: Giới tính
+			"quocTich", // 4: Quốc tịch
+			"loaiGiayTo", // 5: Loại giấy tờ
+			"tenGiayTo", // 6: Tên giấy tờ
+			"soGiayTo", // 7: Số giấy tờ
+			"tinhTp", // 8: Tỉnh
+			"quanHuyen", // 9: Quận/Huyện
+			"phuongXa", // 10: Phường/Xã
+			"diaChi", // 11: Địa chỉ
+			"ngayDen", // 12: (từ ngày)
+			"ngayDi", // 13: (đến ngày)
+			"soPhong", // 14: Số phòng
+			"daDangKy", // 15: Đã đăng ký
 		];
 
-		// Check if line 0 looks like a header
-		const firstLineStr = lines[0].join(" ").toLowerCase();
-		const isFirstLineHeader =
-			firstLineStr.includes("họ tên") ||
-			firstLineStr.includes("họ và tên") ||
-			firstLineStr.includes("d.o.b") ||
-			firstLineStr.includes("ngày sinh") ||
-			firstLineStr.includes("số giấy tờ") ||
-			firstLineStr.includes("loại giấy tờ") ||
-			firstLineStr.includes("số cccd");
-
-		let rawHeaders: string[];
-		let startRowIndex = 1;
-
-		if (isFirstLineHeader) {
-			rawHeaders = lines[0].map((h) => h.trim());
-			startRowIndex = 1;
-			logger.debug(
-				"GoogleSheetService",
-				"Nhận diện dòng 1 là tiêu đề cột chuẩn",
-				{ rawHeaders },
-			);
-		} else {
-			// Line 0 is a data row or headers are corrupted!
-			rawHeaders = standardCols;
-			startRowIndex = 0;
-			logger.warn(
-				"GoogleSheetService",
-				"Dòng 1 không chứa tiêu đề chuẩn, áp dụng fallback mapping theo vị trí cột",
-				{ firstLine: lines[0] },
-			);
-		}
-
+		// Dòng 1 luôn luôn là header cột, dữ liệu khách bắt đầu từ dòng 2 (index 1)
+		const rawHeaders = lines[0].map((h) => h.trim());
 		const dataObjects: Record<string, string>[] = [];
 
-		for (let i = startRowIndex; i < lines.length; i++) {
+		for (let i = 1; i < lines.length; i++) {
 			const row = lines[i];
 			const obj: Record<string, string> = {};
 			let hasData = false;
 
+			// 1. Ánh xạ ưu tiên theo vị trí 16 cột chuẩn
+			standardCols.forEach((colKey, colIdx) => {
+				const val = (row[colIdx] || "").trim();
+				if (val) hasData = true;
+				obj[colKey] = val;
+			});
+
+			// 2. Ánh xạ theo tên header thực tế trên dòng 1 nếu có
 			row.forEach((valRaw, colIdx) => {
 				const val = (valRaw || "").trim();
 				if (val) hasData = true;
 
-				const header = rawHeaders[colIdx] || `Col_${colIdx}`;
-				obj[header] = val;
-				const normalizedKey = this._mapHeaderToKey(header);
-				if (normalizedKey && !obj[normalizedKey]) {
-					obj[normalizedKey] = val;
-				}
-
-				// Positional backup
-				const positionalKey = standardCols[colIdx];
-				if (positionalKey && !obj[positionalKey]) {
-					obj[positionalKey] = val;
+				const header = rawHeaders[colIdx];
+				if (header) {
+					obj[header] = val;
+					const normalizedKey = this._mapHeaderToKey(header);
+					if (normalizedKey && !obj[normalizedKey]) {
+						obj[normalizedKey] = val;
+					}
 				}
 			});
 
-			if (!obj.soPhong) {
-				const possibleRoom =
-					obj["Số phòng"] ||
-					obj["Phòng"] ||
-					row[18] ||
-					row[14] ||
-					row[15] ||
-					"";
-				if (possibleRoom) obj.soPhong = possibleRoom;
+			// 3. Đảm bảo các trường khóa chính được điền đầy đủ
+			if (!obj.soPhong && row[14]) {
+				obj.soPhong = row[14].trim();
+			}
+			if (!obj.hoTen && row[1]) {
+				obj.hoTen = row[1].trim();
+			}
+			if (!obj.ngaySinh && row[2]) {
+				obj.ngaySinh = row[2].trim();
+			}
+			if (!obj.gioiTinh && row[3]) {
+				obj.gioiTinh = row[3].trim();
+			}
+			if (!obj.quocTich && row[4]) {
+				obj.quocTich = row[4].trim();
+			}
+			if (!obj.loaiGiayTo && row[5]) {
+				obj.loaiGiayTo = row[5].trim();
+			}
+			if (!obj.tenGiayTo && row[6]) {
+				obj.tenGiayTo = row[6].trim();
+			}
+			if (!obj.soGiayTo && row[7]) {
+				obj.soGiayTo = row[7].trim();
+			}
+			if (!obj.tinhTp && row[8]) {
+				obj.tinhTp = row[8].trim();
+			}
+			if (!obj.quanHuyen && row[9]) {
+				obj.quanHuyen = row[9].trim();
+			}
+			if (!obj.phuongXa && row[10]) {
+				obj.phuongXa = row[10].trim();
+			}
+			if (!obj.diaChi && row[11]) {
+				obj.diaChi = row[11].trim();
+			}
+			if (!obj.ngayDen && row[12]) {
+				obj.ngayDen = row[12].trim();
+			}
+			if (!obj.ngayDi && row[13]) {
+				obj.ngayDi = row[13].trim();
+			}
+			if (!obj.daDangKy && row[15]) {
+				obj.daDangKy = row[15].trim();
 			}
 
+			// Lọc bỏ dòng trống hoàn toàn
 			if (hasData) {
-				const hoTen = obj.hoTen || obj["Họ tên"] || row[1] || "";
-				const soGiayTo =
-					obj.soGiayTo ||
-					obj["Số giấy tờ"] ||
-					obj["Số CCCD"] ||
-					row[8] ||
-					row[7] ||
-					"";
-				if (hoTen || soGiayTo || obj.ngayDen || row.length >= 3) {
-					if (!obj.hoTen && hoTen) obj.hoTen = hoTen;
-					if (!obj.soGiayTo && soGiayTo) obj.soGiayTo = soGiayTo;
+				const hoTen = obj.hoTen || "";
+				const soGiayTo = obj.soGiayTo || "";
+				if (
+					hoTen ||
+					soGiayTo ||
+					obj.diaChi ||
+					obj.ngayDen ||
+					obj.soPhong ||
+					row.some((cell) => cell.trim().length > 0)
+				) {
 					dataObjects.push(obj);
 				}
 			}
@@ -477,27 +485,56 @@ export class GoogleSheetService {
 
 		logger.info(
 			"GoogleSheetService",
-			`Đã trích xuất ${dataObjects.length} bản ghi hợp lệ từ CSV`,
+			`Đã trích xuất ${dataObjects.length} bản ghi hợp lệ từ CSV (bắt đầu từ dòng 2)`,
 		);
 		return dataObjects;
 	}
 
 	private _parseApiValues(values: string[][]): Record<string, string>[] {
 		if (!values || values.length < 2) return [];
-		const headers = values[0].map((h) => String(h).trim());
+		const rawHeaders = values[0].map((h) => String(h).trim());
+		const standardCols = [
+			"stt",
+			"hoTen",
+			"ngaySinh",
+			"gioiTinh",
+			"quocTich",
+			"loaiGiayTo",
+			"tenGiayTo",
+			"soGiayTo",
+			"tinhTp",
+			"quanHuyen",
+			"phuongXa",
+			"diaChi",
+			"ngayDen",
+			"ngayDi",
+			"soPhong",
+			"daDangKy",
+		];
 		const result: Record<string, string>[] = [];
 
 		for (let i = 1; i < values.length; i++) {
 			const row = values[i];
 			const obj: Record<string, string> = {};
 			let hasData = false;
-			headers.forEach((h, col) => {
-				const val = String(row[col] || "").trim();
+
+			standardCols.forEach((colKey, colIdx) => {
+				const val = String(row[colIdx] || "").trim();
 				if (val) hasData = true;
-				obj[h] = val;
-				const k = this._mapHeaderToKey(h);
-				if (k && !obj[k]) obj[k] = val;
+				obj[colKey] = val;
 			});
+
+			row.forEach((valRaw, colIdx) => {
+				const val = String(valRaw || "").trim();
+				if (val) hasData = true;
+				const header = rawHeaders[colIdx];
+				if (header) {
+					obj[header] = val;
+					const k = this._mapHeaderToKey(header);
+					if (k && !obj[k]) obj[k] = val;
+				}
+			});
+
 			if (hasData) result.push(obj);
 		}
 		return result;
@@ -507,16 +544,21 @@ export class GoogleSheetService {
 		const clean = String(headerName || "")
 			.toLowerCase()
 			.trim();
+		if (clean === "stt" || clean.includes("số thứ tự")) return "stt";
 		if (
 			clean.includes("họ tên") ||
 			clean.includes("họ và tên") ||
-			clean === "ho ten"
+			clean === "ho ten" ||
+			clean === "name" ||
+			clean === "full name"
 		)
 			return "hoTen";
 		if (
 			clean.includes("ngày sinh") ||
 			clean.includes("d.o.b") ||
-			clean === "dob"
+			clean === "dob" ||
+			clean.includes("ngay sinh") ||
+			clean.includes("date of birth")
 		)
 			return "ngaySinh";
 		if (
@@ -529,19 +571,61 @@ export class GoogleSheetService {
 		if (
 			clean.includes("quốc tịch") ||
 			clean.includes("quốc gia") ||
-			clean === "nationality"
+			clean === "nationality" ||
+			clean === "country"
 		)
 			return "quocTich";
+		if (clean.includes("loại giấy tờ") || clean === "loai giay to")
+			return "loaiGiayTo";
+		if (clean.includes("tên giấy tờ") || clean === "ten giay to")
+			return "tenGiayTo";
 		if (
-			clean.includes("số phòng") ||
-			clean.includes("phòng") ||
-			clean === "room"
+			clean.includes("số cccd") ||
+			clean.includes("số cmnd") ||
+			clean.includes("số giấy tờ") ||
+			clean.includes("số hộ chiếu") ||
+			clean === "so giay to" ||
+			clean === "passport"
 		)
-			return "soPhong";
+			return "soGiayTo";
+		if (
+			clean.includes("tỉnh/tp") ||
+			clean.includes("tỉnh") ||
+			clean === "tinh" ||
+			clean === "province" ||
+			clean === "city"
+		)
+			return "tinhTp";
+		if (
+			clean.includes("quận/huyện") ||
+			clean.includes("quận") ||
+			clean.includes("huyện") ||
+			clean === "quan" ||
+			clean === "huyen" ||
+			clean === "district"
+		)
+			return "quanHuyen";
+		if (
+			clean.includes("phường/xã") ||
+			clean.includes("phường") ||
+			clean.includes("xã") ||
+			clean === "phuong" ||
+			clean === "xa" ||
+			clean === "ward"
+		)
+			return "phuongXa";
+		if (
+			clean.includes("địa chỉ chi tiết") ||
+			clean.includes("địa chỉ") ||
+			clean === "dia chi" ||
+			clean === "address"
+		)
+			return "diaChi";
 		if (
 			clean.includes("ngày đến") ||
 			clean.includes("(từ ngày)") ||
 			clean.includes("từ ngày") ||
+			clean === "tu ngay" ||
 			clean === "check in"
 		)
 			return "ngayDen";
@@ -549,38 +633,24 @@ export class GoogleSheetService {
 			clean.includes("ngày đi") ||
 			clean.includes("(đến ngày)") ||
 			clean.includes("đến ngày") ||
+			clean === "den ngay" ||
 			clean === "check out"
 		)
 			return "ngayDi";
-		if (clean.includes("loại giấy tờ") || clean.includes("tên giấy tờ"))
-			return "loaiGiayTo";
 		if (
-			clean.includes("số cccd") ||
-			clean.includes("số cmnd") ||
-			clean.includes("số giấy tờ") ||
-			clean.includes("số hộ chiếu")
+			clean.includes("số phòng") ||
+			clean.includes("phòng") ||
+			clean === "so phong" ||
+			clean === "room"
 		)
-			return "soGiayTo";
+			return "soPhong";
 		if (
-			clean.includes("địa chỉ chi tiết") ||
-			clean.includes("địa chỉ") ||
-			clean === "dia chi"
+			clean.includes("đã đăng ký") ||
+			clean.includes("da dang ky") ||
+			clean.includes("trạng thái") ||
+			clean === "status"
 		)
-			return "diaChi";
-		if (
-			clean.includes("tỉnh/tp") ||
-			clean.includes("tỉnh") ||
-			clean === "province"
-		)
-			return "tinhTp";
-		if (clean.includes("phường/xã") || clean.includes("xã") || clean === "ward")
-			return "phuongXa";
-		if (
-			clean.includes("quận/huyện") ||
-			clean.includes("huyện") ||
-			clean === "district"
-		)
-			return "quanHuyen";
+			return "daDangKy";
 		if (clean.includes("thời hạn tạm trú")) return "thoiHanTamTru";
 		return null;
 	}

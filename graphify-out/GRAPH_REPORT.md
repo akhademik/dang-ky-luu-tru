@@ -9,7 +9,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8d7f5f4d`
+- Built from commit: `34635447`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -47,10 +47,10 @@
   test/test-pipeline.ts → src/lib/server/kbttClient.ts
 - `ignoreDependencies` --extends--> `tailwindcss`  [EXTRACTED]
   knip.json → package.json
+- `SyncResult` --references--> `RawOcrRow`  [EXTRACTED]
+  src/lib/server/syncPipeline.ts → src/lib/server/dataTransformer.ts
 - `SyncPipeline` --references--> `CatalogManager`  [EXTRACTED]
   src/lib/server/syncPipeline.ts → src/lib/server/catalogManager.ts
-- `SyncPipeline` --references--> `DataTransformer`  [EXTRACTED]
-  src/lib/server/syncPipeline.ts → src/lib/server/dataTransformer.ts
 
 ## Import Cycles
 - None detected.
@@ -86,7 +86,7 @@ Cohesion: 0.18
 Nodes (11): entry, ignoreDependencies, test/**/*.ts, project, $schema, tailwindcss, src/index.ts, src/**/*.{js,ts,svelte} (+3 more)
 
 ## Knowledge Gaps
-- **72 isolated node(s):** `CatalogItem`, `ApiResponse`, `TokenState`, `CompletenessResult`, `TransformedRowResult` (+67 more)
+- **72 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `ApiResponse`, `LogEntry` (+67 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 108 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -99,7 +99,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `scripts`, `entry`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
-- **What connects `CatalogItem`, `ApiResponse`, `TokenState` to the rest of the system?**
+- **What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?**
   _72 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.js` be split into smaller, more focused modules?**
   _Cohesion score 0.09797979797979799 - nodes in this community are weakly interconnected._

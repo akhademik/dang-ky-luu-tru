@@ -408,15 +408,15 @@
       "why": "connects across different repos/directories"
     },
     {
-      "source": "SyncPipeline",
-      "target": "KbttClient",
+      "source": "SyncResult",
+      "target": "RawOcrRow",
       "source_files": [
         "src/lib/server/syncPipeline.ts",
-        "src/lib/server/kbttClient.ts"
+        "src/lib/server/dataTransformer.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "bridges separate communities"
+      "why": "peripheral node `SyncResult` unexpectedly reaches hub `RawOcrRow`"
     },
     {
       "source": "SyncPipeline",

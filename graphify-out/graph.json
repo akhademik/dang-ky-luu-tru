@@ -846,7 +846,7 @@
       "file_type": "code",
       "norm_label": "._mapheadertokey()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L506"
+      "source_location": "L543"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
@@ -858,7 +858,7 @@
       "file_type": "code",
       "norm_label": "._parseapivalues()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L485"
+      "source_location": "L493"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
@@ -906,7 +906,7 @@
       "file_type": "code",
       "norm_label": ".updatesheetrow()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L588"
+      "source_location": "L658"
     },
     {
       "id": "src_routes_api_events_server_get",
@@ -4332,7 +4332,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L498",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -4344,7 +4344,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L438",
+      "source_location": "L415",
       "weight": 1.0
     },
     {
@@ -4824,7 +4824,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/test-pipeline.ts",
-      "source_location": "L237",
+      "source_location": "L249",
       "weight": 1.0
     },
     {
@@ -8566,7 +8566,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L485",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -8577,7 +8577,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L506",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -8588,7 +8588,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L588",
+      "source_location": "L658",
       "weight": 1.0
     },
     {
@@ -8865,7 +8865,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "test/test-pipeline.ts",
-      "source_location": "L197",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -8877,7 +8877,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "test/test-pipeline.ts",
-      "source_location": "L204",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -8889,10 +8889,10 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "test/test-pipeline.ts",
-      "source_location": "L238",
+      "source_location": "L250",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8d7f5f4d389d9f8e2ee7430a7e5a61aa0b8bed2c"
+  "built_at_commit": "346354476b6cdd7280136a2ec0ed37364caa2c09"
 }

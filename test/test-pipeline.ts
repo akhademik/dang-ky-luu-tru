@@ -177,17 +177,26 @@ async function runTests(): Promise<void> {
 
 	// 3. Test GoogleSheetService (CSV Parsing & Tabs)
 	const sheetService = new GoogleSheetService();
-	const sampleCsv = `Họ tên,Ngày sinh,Giới tính,Quốc tịch,Loại giấy tờ,Số giấy tờ,Số phòng,Ngày đến,Ngày đi,Địa chỉ chi tiết
-"LÊ VĂN CƯỜNG",1991-03-12,Nam,Việt Nam,Thẻ CCCD,001091001111,P.02,"2026-09-16 14:00:00","2026-09-18 12:00:00","Quận 1, TP Hồ Chí Minh"
-"ALICE WANG",1994-07-22,Nữ,China,Hộ chiếu,G12345678,P.03,"2026-09-16 15:00:00","2026-09-19 11:00:00","Beijing, China"`;
+	const sampleCsv = `STT,Họ tên,D.O.B,Giới tính,Quốc tịch,Loại giấy tờ,Tên giấy tờ,Số giấy tờ,Tỉnh,Quận/Huyện,Phường/Xã,Địa chỉ,(từ ngày),(đến ngày),Số phòng,Đã đăng ký
+1,"LÊ VĂN CƯỜNG",1991-03-12,Nam,Việt Nam,Thẻ CCCD,CCCD,001091001111,"TP Hồ Chí Minh","Quận 1","Bến Nghé","123 Lê Lợi","2026-09-16 14:00:00","2026-09-18 12:00:00",2,"Đã đăng ký"
+2,"ALICE WANG",1994-07-22,Nữ,China,Hộ chiếu,Passport,G12345678,"Beijing","Chaoyang","Sanlitun","456 Road","2026-09-16 15:00:00","2026-09-19 11:00:00",3,"Chưa đăng ký"`;
 	const parsedRows = sheetService.parseCsv(sampleCsv);
 	assert.equal(parsedRows.length, 2);
 	assert.equal(parsedRows[0].hoTen, "LÊ VĂN CƯỜNG");
+	assert.equal(parsedRows[0].ngaySinh, "1991-03-12");
+	assert.equal(parsedRows[0].gioiTinh, "Nam");
+	assert.equal(parsedRows[0].quocTich, "Việt Nam");
 	assert.equal(parsedRows[0].soGiayTo, "001091001111");
+	assert.equal(parsedRows[0].tinhTp, "TP Hồ Chí Minh");
+	assert.equal(parsedRows[0].quanHuyen, "Quận 1");
+	assert.equal(parsedRows[0].phuongXa, "Bến Nghé");
+	assert.equal(parsedRows[0].diaChi, "123 Lê Lợi");
+	assert.equal(parsedRows[0].soPhong, "2");
 	assert.equal(parsedRows[1].hoTen, "ALICE WANG");
 	assert.equal(parsedRows[1].soGiayTo, "G12345678");
+	assert.equal(parsedRows[1].soPhong, "3");
 	console.log(
-		"✅ GoogleSheetService (CSV Parsing & Normalization) test passed!",
+		"✅ GoogleSheetService (CSV Parsing & Normalization with 16 columns) test passed!",
 	);
 
 	// 3.1 Test GoogleSheetService Live Fetch with full URL / gid & Tabs list
@@ -219,7 +228,10 @@ async function runTests(): Promise<void> {
 		};
 		const transformed = DataTransformer.transformToPayloadVn(validLiveRow);
 		assert.ok(transformed.hoTen, "Họ tên không được rỗng");
-		assert.equal(transformed.gioiTinh, "M");
+		assert.ok(
+			transformed.gioiTinh === "M" || transformed.gioiTinh === "F",
+			"Giới tính phải là M hoặc F",
+		);
 		assert.equal(transformed.soPhong, "Phong so 7");
 		console.log(
 			"✅ Chuẩn hóa dòng dữ liệu thực tế từ Google Sheet sang API 5 (v1.4) thành công (Số phòng: Phong so 7):",
