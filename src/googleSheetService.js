@@ -189,31 +189,66 @@ export class GoogleSheetService {
   /**
    * Cập nhật một dòng dữ liệu ngược lại Google Sheet
    * Hỗ trợ Google Apps Script Webhook hoặc Google Sheets API
-   * @param {{ sheetId?: string, gid?: string, rowIndex: number, rowData: Object, appsScriptUrl?: string }} params
+   * @param {{ sheetId?: string, gid?: string, sheetName?: string, rowIndex: number, rowData: Object, appsScriptUrl?: string }} params
    */
-  async updateSheetRow({ sheetId = this.sheetId, gid = '0', rowIndex, rowData, appsScriptUrl = CONFIG.GOOGLE_APPS_SCRIPT_URL }) {
+  async updateSheetRow({ sheetId = this.sheetId, gid = '0', sheetName = '', rowIndex, rowData, appsScriptUrl = CONFIG.GOOGLE_APPS_SCRIPT_URL }) {
     const url = (appsScriptUrl || process.env.GOOGLE_APPS_SCRIPT_URL || CONFIG.GOOGLE_APPS_SCRIPT_URL || '').trim();
 
     if (url) {
+      // Tìm sheetName nếu chưa có
+      let targetSheetName = sheetName;
+      if (!targetSheetName && gid) {
+        try {
+          const tabsRes = await this.fetchSheetTabs(sheetId);
+          if (tabsRes.success && tabsRes.tabs) {
+            const found = tabsRes.tabs.find(t => String(t.gid) === String(gid));
+            if (found) targetSheetName = found.name;
+          }
+        } catch {}
+      }
+
+      const payload = {
+        action: 'updateRow',
+        id: sheetId || this.sheetId,
+        sheetId: sheetId || this.sheetId,
+        spreadsheetId: sheetId || this.sheetId,
+        gid: String(gid || '0'),
+        sheetName: targetSheetName || '',
+        tabName: targetSheetName || '',
+        rowIndex: Number(rowIndex) + 2, // 1-indexed including header
+        row: rowData,
+        data: rowData,
+      };
+
       try {
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'updateRow',
-            sheetId: sheetId || this.sheetId,
-            gid: gid || '0',
-            rowIndex: Number(rowIndex) + 2, // 1-indexed including header
-            row: rowData,
-          }),
+          body: JSON.stringify(payload),
+          redirect: 'follow',
         });
-        const result = await response.json();
-        return {
-          success: true,
-          message: result.message || `Đã cập nhật dòng ${Number(rowIndex) + 1} lên Google Sheet thành công`,
-          source: 'Google Apps Script Webhook',
-          result,
-        };
+        const text = await response.text();
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch {
+          result = { success: true, raw: text };
+        }
+
+        if (result.success !== false) {
+          return {
+            success: true,
+            message: result.message || `Đã cập nhật dòng ${Number(rowIndex) + 1} lên Google Sheet thành công`,
+            source: 'Google Apps Script Webhook',
+            result,
+          };
+        } else {
+          return {
+            success: false,
+            message: result.error || 'Google Apps Script phản hồi không thành công',
+            result,
+          };
+        }
       } catch (err) {
         return {
           success: false,

@@ -470,29 +470,45 @@ async function toggleEditRow(idx) {
 function updateCell(idx, field, value) {
   if (currentRows[idx]) {
     currentRows[idx][field] = value;
-    // Đồng bộ cả alias tiếng Việt để tránh xung đột
+    // Đồng bộ toàn bộ alias cột Google Sheet để đảm bảo ghi ngược lại chính xác
     if (field === 'soPhong') {
       currentRows[idx]['Số phòng'] = value;
+      currentRows[idx]['soPhong'] = value;
     } else if (field === 'hoTen') {
       currentRows[idx]['Họ tên'] = value;
+      currentRows[idx]['hoTen'] = value;
     } else if (field === 'ngaySinh') {
       currentRows[idx]['Ngày sinh'] = value;
+      currentRows[idx]['D.O.B'] = value;
+      currentRows[idx]['ngaySinh'] = value;
     } else if (field === 'gioiTinh') {
       currentRows[idx]['Giới tính'] = value;
+      currentRows[idx]['gioiTinh'] = value;
     } else if (field === 'quocTich') {
       currentRows[idx]['Quốc tịch'] = value;
+      currentRows[idx]['Quốc gia'] = value;
+      currentRows[idx]['quocTich'] = value;
+    } else if (field === 'loaiGiayTo') {
+      currentRows[idx]['Loại giấy tờ'] = value;
+      currentRows[idx]['loaiGiayTo'] = value;
     } else if (field === 'soGiayTo') {
       currentRows[idx]['Số giấy tờ'] = value;
       currentRows[idx]['Số CCCD'] = value;
       currentRows[idx]['Số hộ chiếu'] = value;
+      currentRows[idx]['soGiayTo'] = value;
       currentRows[idx].soHoChieu = value;
     } else if (field === 'ngayDen') {
       currentRows[idx]['Ngày đến'] = value;
+      currentRows[idx]['(từ ngày)'] = value;
+      currentRows[idx]['ngayDen'] = value;
     } else if (field === 'ngayDi') {
       currentRows[idx]['Ngày đi'] = value;
+      currentRows[idx]['(đến ngày)'] = value;
+      currentRows[idx]['ngayDi'] = value;
     } else if (field === 'diaChi') {
       currentRows[idx]['Địa chỉ'] = value;
       currentRows[idx]['Địa chỉ chi tiết'] = value;
+      currentRows[idx]['diaChi'] = value;
     }
     updatePayloadPreview();
   }
