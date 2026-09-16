@@ -15,29 +15,17 @@ export interface CatalogItem {
   [key: string]: unknown;
 }
 
-export interface CatalogStore {
-  quocTich: CatalogItem[];
-  tinhTp: CatalogItem[];
-  phuongXa: Record<string, CatalogItem[]>;
-  lyDoCuTru: CatalogItem[];
-  loaiGiayTo: CatalogItem[];
-  noiCuTru: CatalogItem[];
-}
-
 export class CatalogManager {
   private static instance: CatalogManager;
-  private catalogs: CatalogStore = {
-    quocTich: [],
-    tinhTp: [],
-    phuongXa: {},
-    lyDoCuTru: [],
-    loaiGiayTo: [],
-    noiCuTru: [],
-  };
-  private isLoaded = false;
+  public quocTichList: CatalogItem[] = [];
+  public tinhTpList: CatalogItem[] = [];
+  public lyDoCuTruList: CatalogItem[] = [];
+  public loaiGiayToList: CatalogItem[] = [];
+  public noiCuTruList: CatalogItem[] = [];
+  public isLoaded = false;
   private standardQuocTichMap = new Map<string, { ten_quoc_gia: string; ten_tieng_anh: string }>();
 
-  private constructor() {
+  public constructor() {
     this.loadStandardQuocTich();
   }
 
@@ -53,7 +41,6 @@ export class CatalogManager {
       const candidates = [
         path.resolve(process.cwd(), 'quoc_tich.json'),
         path.resolve(process.cwd(), 'src/lib/server/quoc_tich.json'),
-        path.resolve(process.cwd(), 'src/quoc_tich.json'),
       ];
       for (const jsonPath of candidates) {
         if (fs.existsSync(jsonPath)) {
@@ -73,7 +60,7 @@ export class CatalogManager {
         }
       }
     } catch (err) {
-      console.warn('[CatalogManager] Không thể nạp file quoc_tich.json cục bộ:', err);
+      console.warn('[CatalogManager] Không thể nạp quoc_tich.json:', err);
     }
   }
 
@@ -83,13 +70,10 @@ export class CatalogManager {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
-      if (!res.ok) {
-        throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
-      }
+      if (!res.ok) return [];
       const data = await res.json();
       return (data.data || data || []) as CatalogItem[];
-    } catch (error) {
-      console.warn(`[CatalogManager] Không thể nạp danh mục từ ${endpoint}:`, (error as Error).message);
+    } catch {
       return [];
     }
   }
@@ -105,36 +89,16 @@ export class CatalogManager {
         this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_NOI_CU_TRU),
       ]);
 
-      this.catalogs.quocTich = qt.length > 0 ? qt : this.getFallbackQuocTich();
-      this.catalogs.tinhTp = tinh.length > 0 ? tinh : this.getFallbackTinhTp();
-      this.catalogs.lyDoCuTru = lyDo.length > 0 ? lyDo : this.getFallbackLyDoCuTru();
-      this.catalogs.loaiGiayTo = loaiGt.length > 0 ? loaiGt : this.getFallbackLoaiGiayTo();
-      this.catalogs.noiCuTru = noiCt.length > 0 ? noiCt : this.getFallbackNoiCuTru();
+      this.quocTichList = qt.length > 0 ? qt : this.getFallbackQuocTich();
+      this.tinhTpList = tinh.length > 0 ? tinh : this.getFallbackTinhTp();
+      this.lyDoCuTruList = lyDo.length > 0 ? lyDo : this.getFallbackLyDoCuTru();
+      this.loaiGiayToList = loaiGt.length > 0 ? loaiGt : this.getFallbackLoaiGiayTo();
+      this.noiCuTruList = noiCt.length > 0 ? noiCt : this.getFallbackNoiCuTru();
 
       this.isLoaded = true;
     } catch (err) {
       console.error('[CatalogManager] Lỗi khởi tạo danh mục:', err);
     }
-  }
-
-  public getQuocTichList(): CatalogItem[] {
-    return this.catalogs.quocTich;
-  }
-
-  public getTinhTpList(): CatalogItem[] {
-    return this.catalogs.tinhTp;
-  }
-
-  public getLyDoCuTruList(): CatalogItem[] {
-    return this.catalogs.lyDoCuTru;
-  }
-
-  public getLoaiGiayToList(): CatalogItem[] {
-    return this.catalogs.loaiGiayTo;
-  }
-
-  public getNoiCuTruList(): CatalogItem[] {
-    return this.catalogs.noiCuTru;
   }
 
   public isValidQuocTichCode(code: string): boolean {
@@ -143,32 +107,33 @@ export class CatalogManager {
     if (this.standardQuocTichMap.size > 0 && this.standardQuocTichMap.has(clean)) {
       return true;
     }
-    const foundInApi = this.catalogs.quocTich.some(item => {
+    return this.quocTichList.some(item => {
       const ma = String(item.maQT || item.id || item.code || '').trim().toUpperCase();
       return ma === clean;
     });
-    return foundInApi;
   }
 
-  public findQuocTich(keyword: string): CatalogItem | null {
+  public findQuocTich(keyword: string): string | null {
     if (!keyword) return null;
     const clean = String(keyword).trim().toUpperCase();
-    return this.catalogs.quocTich.find(item => {
-      const ma = String(item.maQT || item.id || item.code || '').toUpperCase();
-      const ten = String(item.tenQT || item.name || '').toUpperCase();
-      const tenEn = String(item.tenQTEn || '').toUpperCase();
+    const item = this.quocTichList.find(i => {
+      const ma = String(i.maQT || i.id || i.code || '').toUpperCase();
+      const ten = String(i.tenQT || i.name || '').toUpperCase();
+      const tenEn = String(i.tenQTEn || '').toUpperCase();
       return ma === clean || ten.includes(clean) || tenEn.includes(clean);
-    }) || null;
+    });
+    return (item?.maQT as string) || null;
   }
 
-  public findTinhTp(keyword: string): CatalogItem | null {
-    if (!keyword) return null;
-    const clean = String(keyword).trim().toLowerCase();
-    return this.catalogs.tinhTp.find(item => {
-      const ten = String(item.tenTT || item.name || '').toLowerCase();
-      const ma = String(item.maTT || item.id || '').toLowerCase();
-      return ten.includes(clean) || ma === clean;
-    }) || null;
+  public findLoaiGiayTo(name: string): number {
+    if (!name) return 1;
+    const clean = String(name).toLowerCase();
+    if (clean.includes('căn cước') && !clean.includes('thẻ cccd')) return 8;
+    if (clean.includes('cccd')) return 1;
+    if (clean.includes('cmnd')) return 2;
+    if (clean.includes('lái xe') || clean.includes('gplx')) return 3;
+    if (clean.includes('hộ chiếu') || clean.includes('passport')) return 4;
+    return 1;
   }
 
   private getFallbackQuocTich(): CatalogItem[] {

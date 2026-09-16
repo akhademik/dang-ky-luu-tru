@@ -1033,10 +1033,10 @@ var options = {
 	service_worker_options: void 0,
 	server_error_boundaries: false,
 	templates: {
-		app: ({ head, body, assets, nonce, env }) => "<!DOCTYPE html>\n<html lang=\"vi\">\n	<head>\n		<meta charset=\"utf-8\" />\n		<link rel=\"icon\" href=\"/favicon.png\" />\n		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n		<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\">\n		" + head + "\n	</head>\n	<body class=\"bg-[#edf2f7] text-slate-800 antialiased min-h-screen flex flex-col font-sans\" data-sveltekit-preload-data=\"hover\">\n		<div style=\"display: contents\">" + body + "</div>\n	</body>\n</html>\n",
+		app: ({ head, body, assets, nonce, env }) => "<!DOCTYPE html>\n<html lang=\"vi\">\n	<head>\n		<meta charset=\"utf-8\" />\n		<link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏨</text></svg>\" />\n		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n		<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\">\n		" + head + "\n	</head>\n	<body class=\"bg-[#edf2f7] text-slate-800 antialiased min-h-screen flex flex-col font-sans\" data-sveltekit-preload-data=\"hover\">\n		<div style=\"display: contents\">" + body + "</div>\n	</body>\n</html>\n",
 		error: error_template_default
 	},
-	version_hash: "89r5jx"
+	version_hash: "1hxifi2"
 };
 async function get_hooks() {
 	let handle;

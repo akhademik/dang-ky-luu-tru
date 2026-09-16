@@ -29,7 +29,7 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/" | "/api" | "/api/catalogs" | "/api/sheets" | "/api/sheets/update-row" | "/api/sync" | "/api/token" | "/api/transform";
+		RouteId(): "/" | "/api" | "/api/catalogs" | "/api/events" | "/api/sheets" | "/api/sheets/pull" | "/api/sheets/tabs" | "/api/sheets/update-row" | "/api/sync" | "/api/token" | "/api/transform";
 		RouteParams(): {
 			
 		};
@@ -37,13 +37,16 @@ declare module "$app/types" {
 			"/": Record<string, never>;
 			"/api": Record<string, never>;
 			"/api/catalogs": Record<string, never>;
+			"/api/events": Record<string, never>;
 			"/api/sheets": Record<string, never>;
+			"/api/sheets/pull": Record<string, never>;
+			"/api/sheets/tabs": Record<string, never>;
 			"/api/sheets/update-row": Record<string, never>;
 			"/api/sync": Record<string, never>;
 			"/api/token": Record<string, never>;
 			"/api/transform": Record<string, never>
 		};
-		Pathname(): "/" | "/api/catalogs" | "/api/sheets" | "/api/sheets/update-row" | "/api/sync" | "/api/token" | "/api/transform";
+		Pathname(): "/" | "/api/catalogs" | "/api/events" | "/api/sheets/pull" | "/api/sheets/tabs" | "/api/sheets/update-row" | "/api/sync" | "/api/token" | "/api/transform";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): string & {};
 	}

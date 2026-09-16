@@ -10,7 +10,7 @@ return {
 	assets: new Set([]),
 	mimeTypes: {},
 	_: {
-		client: {start:"_app/immutable/entry/start.CllWqZk3.js",app:"_app/immutable/entry/app.Da8PkTdV.js",imports:["_app/immutable/entry/start.CllWqZk3.js","_app/immutable/chunks/DrovLG3v.js","_app/immutable/chunks/CtOauXrc.js","_app/immutable/entry/app.Da8PkTdV.js","_app/immutable/chunks/CtOauXrc.js","_app/immutable/chunks/xihTtKlq.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
+		client: {start:"_app/immutable/entry/start.Doi4g7Az.js",app:"_app/immutable/entry/app.DbW4nkvJ.js",imports:["_app/immutable/entry/start.Doi4g7Az.js","_app/immutable/chunks/BTlNhAGL.js","_app/immutable/chunks/CtOauXrc.js","_app/immutable/entry/app.DbW4nkvJ.js","_app/immutable/chunks/CtOauXrc.js","_app/immutable/chunks/xihTtKlq.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js')),
@@ -35,11 +35,25 @@ return {
 				endpoint: __memo(() => import('./entries/endpoints/api/catalogs/_server.ts.js'))
 			},
 			{
-				id: "/api/sheets",
-				pattern: /^\/api\/sheets\/?$/,
+				id: "/api/events",
+				pattern: /^\/api\/events\/?$/,
 				params: [],
 				page: null,
-				endpoint: __memo(() => import('./entries/endpoints/api/sheets/_server.ts.js'))
+				endpoint: __memo(() => import('./entries/endpoints/api/events/_server.ts.js'))
+			},
+			{
+				id: "/api/sheets/pull",
+				pattern: /^\/api\/sheets\/pull\/?$/,
+				params: [],
+				page: null,
+				endpoint: __memo(() => import('./entries/endpoints/api/sheets/pull/_server.ts.js'))
+			},
+			{
+				id: "/api/sheets/tabs",
+				pattern: /^\/api\/sheets\/tabs\/?$/,
+				params: [],
+				page: null,
+				endpoint: __memo(() => import('./entries/endpoints/api/sheets/tabs/_server.ts.js'))
 			},
 			{
 				id: "/api/sheets/update-row",

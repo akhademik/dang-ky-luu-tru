@@ -1,4 +1,4 @@
-import { catalogManager } from './catalogManager.js';
+import { CatalogManager, catalogManager } from './catalogManager.js';
 
 export interface RawOcrRow {
   [key: string]: string | number | undefined;
@@ -10,49 +10,107 @@ export interface CompletenessResult {
   fieldStatus: Record<string, { valid: boolean; value: unknown; error?: string }>;
 }
 
-export interface KbttVnPayload {
-  hoTen: string;
-  gioiTinh: 'M' | 'F';
-  soDienThoai: string;
-  ngayThangNamSinhStr: string;
-  noiCuTru: number;
-  maTT: string;
-  maPX: string;
-  diaChi: string;
-  ngayDenCsltStr: string;
-  ngayDiDuKienStr: string;
-  soPhong: string;
-  lyDoCuTru: number;
-  lyDoChiTiet: string;
-  loaiGiayTo: number;
-  soGiayTo: string;
-  anhTruocB64: string;
-  anhSauB64: string;
-  ghiChu: string;
-}
-
-export interface KbttForeignPayload {
-  hoTen: string;
-  gioiTinh: 'M' | 'F';
-  soDienThoai: string;
-  ngayThangNamSinhStr: string;
-  maQuocTich: string;
-  ngayDenCsltStr: string;
-  ngayDiDuKienStr: string;
-  soPhong: string;
-  thoiHanTamTruStr: string;
-  loaiGiayTo: number;
-  soHoChieu: string;
-  anhHoChieuB64: string;
-  ghiChu: string;
+export interface TransformedRowResult {
+  branch: 'VN' | 'FOREIGN';
+  payload: Record<string, unknown>;
+  completeness: CompletenessResult;
+  validationError?: string;
+  originalRow: RawOcrRow;
 }
 
 export class DataTransformer {
+  private catalogManager: CatalogManager;
+
+  public constructor(catalog: CatalogManager = catalogManager) {
+    this.catalogManager = catalog;
+  }
+
+  public cleanRoomNumber(roomRaw: unknown): string {
+    return DataTransformer.cleanRoomNumber(roomRaw);
+  }
+
   public static cleanRoomNumber(roomRaw: unknown): string {
     const raw = String(roomRaw ?? '').trim();
     if (!raw) return '';
-    const match = raw.match(/[1-9]/);
-    return match ? match[0] : '';
+    const matches = raw.match(/\d+/g);
+    if (!matches || matches.length === 0) return '';
+    for (const m of matches) {
+      const num = parseInt(m, 10);
+      if (num >= 1 && num <= 9) {
+        return String(num);
+      }
+    }
+    return '';
+  }
+
+  public formatDateOnly(dateRaw: unknown): string {
+    return DataTransformer.formatDateOnly(dateRaw);
+  }
+
+  public static formatDateOnly(dateRaw: unknown): string {
+    if (!dateRaw) return '';
+    const str = String(dateRaw).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+
+    const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    if (dmy) {
+      const [, d, m, y] = dmy;
+      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    }
+
+    const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+    if (ymd) {
+      const [, y, m, d] = ymd;
+      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    }
+    return str;
+  }
+
+  public normalizeGender(genderRaw: unknown): 'M' | 'F' {
+    return DataTransformer.mapGender(genderRaw);
+  }
+
+  public static mapGender(genderRaw: unknown): 'M' | 'F' {
+    if (!genderRaw) return 'M';
+    const str = String(genderRaw).trim().toLowerCase();
+    if (['f', 'female', 'nữ', 'nu', 'gái', 'w'].includes(str)) return 'F';
+    return 'M';
+  }
+
+  public cleanDocNumber(docRaw: unknown): string {
+    return DataTransformer.cleanDocNumber(docRaw);
+  }
+
+  public static cleanDocNumber(docRaw: unknown): string {
+    if (!docRaw) return '';
+    return String(docRaw).replace(/[^a-zA-Z0-9]/g, '').trim();
+  }
+
+  public static isArrivalDateValid(dateStr: unknown): { valid: boolean; error?: string } {
+    if (!dateStr) return { valid: false, error: 'Thiếu ngày đến' };
+    const str = String(dateStr).trim();
+    const arrivalDate = new Date(str.includes('T') ? str : str.replace(' ', 'T'));
+    if (isNaN(arrivalDate.getTime())) {
+      const match = str.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+      if (!match) return { valid: false, error: 'Định dạng ngày đến không hợp lệ' };
+    }
+
+    const arrivalDay = new Date(arrivalDate.getFullYear(), arrivalDate.getMonth(), arrivalDate.getDate());
+    const today = new Date();
+    const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const yesterday = new Date(currentDay);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (arrivalDay.getTime() === currentDay.getTime() || arrivalDay.getTime() === yesterday.getTime()) {
+      return { valid: true };
+    }
+    if (arrivalDay.getTime() < yesterday.getTime()) {
+      return { valid: false, error: 'Ngày đến ở quá khứ (> 1 ngày trước)' };
+    }
+    if (arrivalDay.getTime() > currentDay.getTime()) {
+      return { valid: false, error: 'Ngày đến ở tương lai' };
+    }
+    return { valid: true };
   }
 
   public static isGuestVN(row: RawOcrRow): boolean {
@@ -67,36 +125,8 @@ export class DataTransformer {
     return false;
   }
 
-  public static isArrivalDateValid(dateStr: unknown): { valid: boolean; error?: string } {
-    if (!dateStr) return { valid: false, error: 'Thiếu ngày đến' };
-    const str = String(dateStr).trim();
-    const parsed = new Date(str.replace(' ', 'T'));
-    if (isNaN(parsed.getTime())) {
-      const match = str.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-      if (!match) return { valid: false, error: 'Định dạng ngày đến không hợp lệ' };
-    }
-
-    const arrivalDate = new Date(str.includes('T') ? str : str.replace(' ', 'T'));
-    const arrivalDay = new Date(arrivalDate.getFullYear(), arrivalDate.getMonth(), arrivalDate.getDate());
-
-    const today = new Date();
-    const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    const yesterday = new Date(currentDay);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (arrivalDay.getTime() === currentDay.getTime() || arrivalDay.getTime() === yesterday.getTime()) {
-      return { valid: true };
-    }
-
-    if (arrivalDay.getTime() < yesterday.getTime()) {
-      return { valid: false, error: 'Ngày đến ở quá khứ (> 1 ngày trước)' };
-    }
-    if (arrivalDay.getTime() > currentDay.getTime()) {
-      return { valid: false, error: 'Ngày đến ở tương lai' };
-    }
-
-    return { valid: true };
+  public async checkRowCompleteness(row: RawOcrRow): Promise<CompletenessResult> {
+    return DataTransformer.checkCompleteness(row);
   }
 
   public static checkCompleteness(row: RawOcrRow): CompletenessResult {
@@ -104,18 +134,15 @@ export class DataTransformer {
     const missing: string[] = [];
     const status: Record<string, { valid: boolean; value: unknown; error?: string }> = {};
 
-    // 1. Họ tên
     const hoTen = String(row.hoTen || row['Họ tên'] || '').trim();
     status.hoTen = { valid: Boolean(hoTen), value: hoTen };
     if (!hoTen) missing.push('Họ tên');
 
-    // 2. Ngày sinh
     const ngaySinh = String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || '').trim();
     const dobValid = Boolean(ngaySinh && this.formatDateOnly(ngaySinh));
     status.ngaySinh = { valid: dobValid, value: ngaySinh };
     if (!dobValid) missing.push('Ngày sinh');
 
-    // 3. Số phòng
     const cleanedRoom = this.cleanRoomNumber(row.soPhong || row['Số phòng']);
     const roomValid = Boolean(cleanedRoom);
     status.soPhong = {
@@ -125,18 +152,11 @@ export class DataTransformer {
     };
     if (!roomValid) missing.push('Số phòng (1-9)');
 
-    // 4. Ngày đến
     const ngayDenRaw = row.ngayDen || row['(từ ngày)'] || row['Ngày đến'];
     const arrivalCheck = this.isArrivalDateValid(ngayDenRaw);
     status.ngayDen = { valid: arrivalCheck.valid, value: ngayDenRaw, error: arrivalCheck.error };
     if (!arrivalCheck.valid) missing.push(`Ngày đến (${arrivalCheck.error})`);
 
-    // 5. Ngày đi
-    const ngayDiRaw = row.ngayDi || row['(đến ngày)'] || row['Ngày đi'];
-    const ngayDiValid = Boolean(ngayDiRaw);
-    status.ngayDi = { valid: ngayDiValid, value: ngayDiRaw };
-
-    // 6. Giấy tờ & Quốc tịch
     const docTypeName = String(row.loaiGiayTo || row['Loại giấy tờ'] || (isVN ? 'Thẻ CCCD' : 'Hộ chiếu')).toLowerCase();
     const docNumRaw = String(row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số CCCD'] || row['Số hộ chiếu'] || '').trim();
 
@@ -167,7 +187,8 @@ export class DataTransformer {
       };
       if (!isQtValid) missing.push('Mã quốc tịch chuẩn');
 
-      const isPassportValid = docNumRaw.length >= 6 && docNumRaw.length <= 12;
+      const cleanPassport = this.cleanDocNumber(docNumRaw);
+      const isPassportValid = cleanPassport.length >= 6 && cleanPassport.length <= 12;
       status.soHoChieu = {
         valid: isPassportValid,
         value: docNumRaw,
@@ -180,11 +201,65 @@ export class DataTransformer {
     return { isComplete, missingFields: missing, fieldStatus: status };
   }
 
-  public static transformToPayloadVn(row: RawOcrRow): KbttVnPayload {
-    const rawAddress = String(row.diaChi || row['Địa chỉ'] || row['Địa chỉ chi tiết'] || row.address || '').trim();
-    const tinhRaw = String(row.tinhTp || row['Tỉnh'] || row['Tỉnh/TP'] || row.province || '').trim();
-    const phuongXaRaw = String(row.phuongXa || row['Phường/Xã'] || row.ward || '').trim();
-    const quanHuyenRaw = String(row.quanHuyen || row['Quận/Huyện'] || row.district || '').trim();
+  public async transformRow(row: RawOcrRow): Promise<TransformedRowResult> {
+    const completeness = DataTransformer.checkCompleteness(row);
+    const isVN = DataTransformer.isGuestVN(row);
+    const branch = isVN ? 'VN' : 'FOREIGN';
+
+    let validationError: string | undefined;
+    if (!completeness.isComplete) {
+      validationError = `Dữ liệu chưa hoàn thiện: ${completeness.missingFields.join(', ')}`;
+    }
+
+    const payload = isVN
+      ? DataTransformer.transformToPayloadVn(row)
+      : DataTransformer.transformToPayloadForeign(row);
+
+    return {
+      branch,
+      payload,
+      completeness,
+      validationError,
+      originalRow: row,
+    };
+  }
+
+  public async transformBatch(rows: RawOcrRow[]) {
+    const vnPayloads: Array<{ originalIndex: number; payload: unknown }> = [];
+    const foreignPayloads: Array<{ originalIndex: number; payload: unknown }> = [];
+    const completenessList: Array<{ index: number; completeness: CompletenessResult }> = [];
+
+    rows.forEach((row, idx) => {
+      const completeness = DataTransformer.checkCompleteness(row);
+      completenessList.push({ index: idx, completeness });
+
+      if (DataTransformer.isGuestVN(row)) {
+        vnPayloads.push({
+          originalIndex: idx,
+          payload: DataTransformer.transformToPayloadVn(row),
+        });
+      } else {
+        foreignPayloads.push({
+          originalIndex: idx,
+          payload: DataTransformer.transformToPayloadForeign(row),
+        });
+      }
+    });
+
+    return {
+      success: true,
+      totalRows: rows.length,
+      vnPayloads,
+      foreignPayloads,
+      completenessList,
+    };
+  }
+
+  public static transformToPayloadVn(row: RawOcrRow): Record<string, unknown> {
+    const rawAddress = String(row.diaChi || row['Địa chỉ'] || row['Địa chỉ chi tiết'] || '').trim();
+    const tinhRaw = String(row.tinhTp || row['Tỉnh'] || row['Tỉnh/TP'] || '').trim();
+    const phuongXaRaw = String(row.phuongXa || row['Phường/Xã'] || '').trim();
+    const quanHuyenRaw = String(row.quanHuyen || row['Quận/Huyện'] || '').trim();
 
     let fullAddress = '';
     const loaiGiayToName = String(row.loaiGiayTo || row['Loại giấy tờ'] || '').toLowerCase();
@@ -197,99 +272,54 @@ export class DataTransformer {
     const roomFormatted = cleanedRoom ? `Phong so ${cleanedRoom}` : '';
 
     return {
-      hoTen: this.cleanName(row.hoTen || row['Họ tên']),
+      hoTen: String(row.hoTen || row['Họ tên'] || '').trim().toUpperCase(),
       gioiTinh: this.mapGender(row.gioiTinh || row['Giới tính']),
-      soDienThoai: this.cleanPhone(row.soDienThoai || row['Số điện thoại']),
+      soDienThoai: String(row.soDienThoai || row['Số điện thoại'] || '').replace(/[^\d+]/g, ''),
       ngayThangNamSinhStr: this.formatDateOnly(row.ngaySinh || row['D.O.B'] || row['Ngày sinh']),
-      noiCuTru: this.mapNoiCuTru(row.noiCuTru || row['Nơi cư trú']),
+      noiCuTru: 1,
       maTT: '',
       maPX: '',
       diaChi: fullAddress,
       ngayDenCsltStr: this.formatDateTime(row.ngayDen || row['(từ ngày)'] || row['Ngày đến'], '14:00:00'),
       ngayDiDuKienStr: this.formatDateTime(row.ngayDi || row['(đến ngày)'] || row['Ngày đi'], '12:00:00'),
       soPhong: roomFormatted,
-      lyDoCuTru: this.mapLyDoCuTru(row.lyDo || row['Lý do']),
-      lyDoChiTiet: String(row.lyDoChiTiet || row['Lý do chi tiết'] || ''),
+      lyDoCuTru: 1,
+      lyDoChiTiet: '',
       loaiGiayTo: this.mapLoaiGiayTo(row.loaiGiayTo || row['Loại giấy tờ'] || 'Thẻ CCCD'),
       soGiayTo: this.cleanDocNumber(row.soGiayTo || row['Số giấy tờ'] || row['Số CCCD']),
-      anhTruocB64: String(row.anhTruocB64 || row['Ảnh mặt trước'] || ''),
-      anhSauB64: String(row.anhSauB64 || row['Ảnh mặt sau'] || ''),
-      ghiChu: String(row.ghiChu || row['Ghi chú'] || ''),
+      anhTruocB64: '',
+      anhSauB64: '',
+      ghiChu: '',
     };
   }
 
-  public static transformToPayloadForeign(row: RawOcrRow): KbttForeignPayload {
+  public static transformToPayloadForeign(row: RawOcrRow): Record<string, unknown> {
     const cleanedRoom = this.cleanRoomNumber(row.soPhong || row['Số phòng']);
     const roomFormatted = cleanedRoom ? `Phong so ${cleanedRoom}` : '';
 
     return {
-      hoTen: this.cleanName(row.hoTen || row['Họ tên']),
+      hoTen: String(row.hoTen || row['Họ tên'] || '').trim().toUpperCase(),
       gioiTinh: this.mapGender(row.gioiTinh || row['Giới tính']),
-      soDienThoai: this.cleanPhone(row.soDienThoai || row['Số điện thoại']),
+      soDienThoai: String(row.soDienThoai || row['Số điện thoại'] || '').replace(/[^\d+]/g, ''),
       ngayThangNamSinhStr: this.formatDateOnly(row.ngaySinh || row['D.O.B'] || row['Ngày sinh']),
+      loaiNgayThangNamSinh: 'D',
+      quocTich: this.mapQuocTich(row.quocTich || row['Quốc tịch'] || row['Quốc gia']),
       maQuocTich: this.mapQuocTich(row.quocTich || row['Quốc tịch'] || row['Quốc gia']),
       ngayDenCsltStr: this.formatDateTime(row.ngayDen || row['(từ ngày)'] || row['Ngày đến'], '14:00:00'),
       ngayDiDuKienStr: this.formatDateTime(row.ngayDi || row['(đến ngày)'] || row['Ngày đi'], '12:00:00'),
       soPhong: roomFormatted,
       thoiHanTamTruStr: this.formatDateTime(row.thoiHanTamTru || row.thoiHanTamTruStr || row['Thời hạn tạm trú'], '23:59:59'),
       loaiGiayTo: 4,
-      soHoChieu: this.cleanPassportNumber(row.soHoChieu || row.soGiayTo || row['Số hộ chiếu'] || row['Số giấy tờ']),
-      anhHoChieuB64: String(row.anhHoChieuB64 || row['Ảnh hộ chiếu'] || ''),
-      ghiChu: String(row.ghiChu || row['Ghi chú'] || ''),
+      soHoChieu: this.cleanDocNumber(row.soHoChieu || row.soGiayTo || row['Số hộ chiếu'] || row['Số giấy tờ']),
+      anhHoChieuB64: '',
+      ghiChu: '',
     };
-  }
-
-  public static cleanName(nameRaw: unknown): string {
-    if (!nameRaw) return '';
-    return String(nameRaw).trim().toUpperCase().replace(/\s+/g, ' ');
-  }
-
-  public static mapGender(genderRaw: unknown): 'M' | 'F' {
-    if (!genderRaw) return 'M';
-    const str = String(genderRaw).trim().toLowerCase();
-    if (['f', 'female', 'nữ', 'nu', 'gái', 'w'].includes(str)) return 'F';
-    return 'M';
-  }
-
-  public static cleanPhone(phoneRaw: unknown): string {
-    if (!phoneRaw) return '';
-    return String(phoneRaw).replace(/[^\d+]/g, '').trim();
-  }
-
-  public static cleanDocNumber(docRaw: unknown): string {
-    if (!docRaw) return '';
-    return String(docRaw).replace(/[^a-zA-Z0-9]/g, '').trim();
-  }
-
-  public static cleanPassportNumber(docRaw: unknown): string {
-    if (!docRaw) return '';
-    return String(docRaw).replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase();
-  }
-
-  public static formatDateOnly(dateRaw: unknown): string {
-    if (!dateRaw) return '';
-    const str = String(dateRaw).trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
-
-    const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
-    if (dmy) {
-      const [, d, m, y] = dmy;
-      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-    }
-
-    const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-    if (ymd) {
-      const [, y, m, d] = ymd;
-      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-    }
-    return str;
   }
 
   public static formatDateTime(dateRaw: unknown, defaultTime = '12:00:00'): string {
     if (!dateRaw) return '';
     const str = String(dateRaw).trim();
     if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(str)) return str;
-
     const dateOnly = this.formatDateOnly(str);
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
       return `${dateOnly} ${defaultTime}`;
@@ -297,36 +327,14 @@ export class DataTransformer {
     return str;
   }
 
-  public static mapNoiCuTru(val: unknown): number {
-    if (!val) return 1;
-    const str = String(val).toLowerCase();
-    if (str.includes('tạm') || str === '2') return 2;
-    return 1;
-  }
-
-  public static mapLyDoCuTru(val: unknown): number {
-    if (!val) return 1;
-    const str = String(val).toLowerCase();
-    if (str.includes('khác') || str === '20') return 20;
-    return 1;
-  }
-
   public static mapLoaiGiayTo(val: unknown): number {
-    if (!val) return 1;
-    const str = String(val).toLowerCase();
-    if (str.includes('căn cước') && !str.includes('thẻ cccd')) return 8;
-    if (str.includes('cccd') || str === '1') return 1;
-    if (str.includes('cmnd') || str === '2') return 2;
-    if (str.includes('lái xe') || str.includes('gplx') || str === '3') return 3;
-    if (str.includes('hộ chiếu') || str.includes('passport') || str === '4') return 4;
-    return 1;
+    return catalogManager.findLoaiGiayTo(String(val || ''));
   }
 
   public static mapQuocTich(val: unknown): string {
     if (!val) return 'VNM';
     const clean = String(val).trim().toUpperCase();
     if (clean.length === 3) return clean;
-    const item = catalogManager.findQuocTich(clean);
-    return (item?.maQT as string) || clean;
+    return catalogManager.findQuocTich(clean) || clean;
   }
 }

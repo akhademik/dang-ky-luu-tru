@@ -1,28 +1,39 @@
-import { t as tokenManager } from "../../../../chunks/tokenManager.js";
+import { t as syncPipeline } from "../../../../chunks/syncPipeline.js";
 import { json } from "@sveltejs/kit";
 //#region src/routes/api/token/+server.ts
 var GET = async () => {
-	return json(tokenManager.getTokenStatus());
+	return json(syncPipeline.tokenManager.getStatus());
 };
 var POST = async ({ url }) => {
-	if (url.searchParams.get("action") === "revoke") {
-		const ok = await tokenManager.revokeToken();
-		return json({
-			success: ok,
-			message: "Revoked"
-		});
+	const action = url.searchParams.get("action") || "login";
+	const tm = syncPipeline.tokenManager;
+	if (action === "revoke") {
+		const success = await tm.revoke();
+		return json({ success });
 	}
-	try {
-		await tokenManager.login();
+	if (action === "refresh") try {
+		const token = await tm.refresh();
 		return json({
 			success: true,
-			...tokenManager.getTokenStatus()
+			token
 		});
 	} catch (err) {
 		return json({
 			success: false,
 			error: err.message
-		}, { status: 500 });
+		}, { status: 400 });
+	}
+	try {
+		const token = await tm.login();
+		return json({
+			success: true,
+			token
+		});
+	} catch (err) {
+		return json({
+			success: false,
+			error: err.message
+		}, { status: 400 });
 	}
 };
 //#endregion

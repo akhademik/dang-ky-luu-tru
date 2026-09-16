@@ -48,125 +48,44 @@
       "public_app_updateselectedcountbadge"
     ],
     "1": [
+      "src_index",
       "src_lib_server_catalogmanager",
       "src_lib_server_catalogmanager_catalogitem",
-      "src_lib_server_catalogmanager_catalogstore",
       "src_lib_server_config",
-      "src_lib_server_config_appconfig",
       "src_lib_server_config_config",
       "src_lib_server_config_loadenv",
       "src_lib_server_datatransformer",
       "src_lib_server_datatransformer_completenessresult",
-      "src_lib_server_datatransformer_kbttforeignpayload",
-      "src_lib_server_datatransformer_kbttvnpayload",
       "src_lib_server_datatransformer_rawocrrow",
+      "src_lib_server_datatransformer_transformedrowresult",
       "src_lib_server_googlesheetservice",
-      "src_lib_server_googlesheetservice_googlesheetservice",
-      "src_lib_server_googlesheetservice_googlesheetservice_buildheadermapping",
-      "src_lib_server_googlesheetservice_googlesheetservice_fetchpublicsheetcsv",
-      "src_lib_server_googlesheetservice_googlesheetservice_fetchpublicsheettabs",
-      "src_lib_server_googlesheetservice_googlesheetservice_findclosesttab",
-      "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
-      "src_lib_server_googlesheetservice_googlesheetservice_updaterowviaappsscript",
-      "src_lib_server_googlesheetservice_rawrowobject",
-      "src_lib_server_googlesheetservice_sheettabinfo",
+      "src_lib_server_googlesheetservice_tabinfo",
       "src_lib_server_kbttclient",
       "src_lib_server_kbttclient_apiresponse",
-      "src_lib_server_kbttclient_kbttclient",
-      "src_lib_server_kbttclient_kbttclient_sendbatchforeign",
-      "src_lib_server_kbttclient_kbttclient_sendbatchvn",
-      "src_lib_server_kbttclient_kbttclient_sendrequest",
       "src_lib_server_syncpipeline",
-      "src_lib_server_syncpipeline_fullsyncreport",
       "src_lib_server_syncpipeline_syncpipeline",
-      "src_lib_server_syncpipeline_syncpipeline_processandsyncrows",
-      "src_lib_server_syncpipeline_syncpipeline_runfromgooglesheet",
-      "src_lib_server_syncpipeline_syncpipelineresult",
+      "src_lib_server_syncpipeline_syncpipeline_initialize",
+      "src_lib_server_syncpipeline_syncresult",
       "src_lib_server_tokenmanager",
       "src_lib_server_tokenmanager_tokenstate",
-      "src_routes_api_sheets_server",
-      "src_routes_api_sheets_server_get",
+      "src_routes_api_catalogs_server",
+      "src_routes_api_catalogs_server_get",
+      "src_routes_api_sheets_pull_server",
+      "src_routes_api_sheets_pull_server_post",
+      "src_routes_api_sheets_tabs_server",
+      "src_routes_api_sheets_tabs_server_get",
       "src_routes_api_sheets_update_row_server",
       "src_routes_api_sheets_update_row_server_post",
       "src_routes_api_sync_server",
       "src_routes_api_sync_server_post",
+      "src_routes_api_token_server",
+      "src_routes_api_token_server_get",
+      "src_routes_api_token_server_post",
       "src_routes_api_transform_server",
-      "src_routes_api_transform_server_post"
+      "src_routes_api_transform_server_post",
+      "test_test_pipeline"
     ],
     "2": [
-      "legacy_src_catalogmanager",
-      "legacy_src_config",
-      "legacy_src_config_config",
-      "legacy_src_config_loadenv",
-      "legacy_src_datatransformer",
-      "legacy_src_googlesheetservice",
-      "legacy_src_kbttclient",
-      "legacy_src_kbttclient_kbttclient",
-      "legacy_src_kbttclient_kbttclient_constructor",
-      "legacy_src_kbttclient_kbttclient_postpayload",
-      "legacy_src_kbttclient_kbttclient_submitforeignguests",
-      "legacy_src_kbttclient_kbttclient_submitvietnameseguests",
-      "legacy_src_server",
-      "legacy_src_server_broadcastreload",
-      "legacy_src_server_mime_types",
-      "legacy_src_server_pipeline",
-      "legacy_src_server_readbody",
-      "legacy_src_server_sendjson",
-      "legacy_src_server_server",
-      "legacy_src_server_sseclients",
-      "legacy_src_server_watchdirs",
-      "legacy_src_syncpipeline",
-      "legacy_src_syncpipeline_syncpipeline",
-      "legacy_src_syncpipeline_syncpipeline_closesession",
-      "legacy_src_syncpipeline_syncpipeline_constructor",
-      "legacy_src_syncpipeline_syncpipeline_initialize",
-      "legacy_src_syncpipeline_syncpipeline_processrows",
-      "legacy_src_syncpipeline_syncpipeline_pullandprocessgooglesheet",
-      "legacy_src_tokenmanager",
-      "legacy_src_tokenmanager_tokenmanager",
-      "legacy_src_tokenmanager_tokenmanager_constructor",
-      "legacy_src_tokenmanager_tokenmanager_getvalidtoken",
-      "legacy_src_tokenmanager_tokenmanager_login",
-      "legacy_src_tokenmanager_tokenmanager_refresh",
-      "legacy_src_tokenmanager_tokenmanager_revoke",
-      "legacy_src_tokenmanager_tokenmanager_savetokendata"
-    ],
-    "3": [
-      "jiti",
-      "knip",
-      "knip_entry",
-      "knip_ignoredependencies",
-      "knip_json_ref_test_ts",
-      "knip_project",
-      "knip_schema",
-      "package_devdependencies",
-      "package_devdependencies_jiti",
-      "package_devdependencies_svelte",
-      "package_devdependencies_svelte_check",
-      "package_devdependencies_sveltejs_adapter_node",
-      "package_devdependencies_sveltejs_kit",
-      "package_devdependencies_sveltejs_vite_plugin_svelte",
-      "package_devdependencies_tailwindcss",
-      "package_devdependencies_tailwindcss_vite",
-      "package_devdependencies_types_node",
-      "package_devdependencies_typescript",
-      "package_devdependencies_vite",
-      "package_json_svelte",
-      "ref_src_index_ts",
-      "ref_src_js_ts_svelte",
-      "ref_src_lib_js_ts",
-      "ref_src_routes_js_ts_svelte",
-      "svelte_check",
-      "sveltejs_adapter_node",
-      "sveltejs_kit",
-      "sveltejs_vite_plugin_svelte",
-      "tailwindcss",
-      "tailwindcss_vite",
-      "types_node",
-      "typescript",
-      "vite"
-    ],
-    "4": [
       "package",
       "package_author",
       "package_description",
@@ -193,18 +112,18 @@
       "ref_pnpm",
       "ref_tam_tru"
     ],
-    "5": [
+    "3": [
       "src_routes_page",
       "src_routes_page_addnewrow",
       "src_routes_page_checktoken",
       "src_routes_page_closeeditmodal",
       "src_routes_page_copycode",
       "src_routes_page_executesyncbatch",
-      "src_routes_page_fetchsheetdata",
+      "src_routes_page_fetchsheettabslist",
       "src_routes_page_handlemanuallogin",
+      "src_routes_page_handletabchange",
       "src_routes_page_loadcatalogs",
       "src_routes_page_loadsampledata",
-      "src_routes_page_loadsheettabs",
       "src_routes_page_openeditmodal",
       "src_routes_page_parseandapplyaddress",
       "src_routes_page_pushselectedrows",
@@ -217,40 +136,40 @@
       "src_routes_page_togglerowselect",
       "src_routes_page_toggleselectall",
       "src_routes_page_updatecell",
-      "src_routes_page_updatepayloadpreview"
+      "src_routes_page_updatepayloadpreview",
+      "svelte"
     ],
-    "6": [
-      "legacy_src_catalogmanager_catalogmanager",
-      "legacy_src_catalogmanager_catalogmanager_constructor",
-      "legacy_src_catalogmanager_catalogmanager_fetchpublic",
-      "legacy_src_catalogmanager_catalogmanager_findloaigiayto",
-      "legacy_src_catalogmanager_catalogmanager_findlydocutru",
-      "legacy_src_catalogmanager_catalogmanager_findnoicutru",
-      "legacy_src_catalogmanager_catalogmanager_findphuongxa",
-      "legacy_src_catalogmanager_catalogmanager_findquoctich",
-      "legacy_src_catalogmanager_catalogmanager_findtinhtp",
-      "legacy_src_catalogmanager_catalogmanager_getphuongxabytinh",
-      "legacy_src_catalogmanager_catalogmanager_initialize",
-      "legacy_src_catalogmanager_catalogmanager_loadloaigiayto",
-      "legacy_src_catalogmanager_catalogmanager_loadlydocutru",
-      "legacy_src_catalogmanager_catalogmanager_loadnoicutru",
-      "legacy_src_catalogmanager_catalogmanager_loadquoctich",
-      "legacy_src_catalogmanager_catalogmanager_loadtinhtp",
-      "legacy_src_catalogmanager_catalogmanager_matchquoctich",
-      "legacy_src_catalogmanager_catalogmanager_normalizetext",
-      "legacy_src_catalogmanager_catalogmanager_readlocalfallback",
-      "legacy_src_catalogmanager_catalogmanager_searchquoctich",
-      "legacy_src_catalogmanager_catalogmanager_searchtinhtp",
-      "legacy_src_catalogmanager_catalogmanager_validatequoctich"
+    "4": [
+      "jiti",
+      "package_devdependencies",
+      "package_devdependencies_jiti",
+      "package_devdependencies_svelte",
+      "package_devdependencies_svelte_check",
+      "package_devdependencies_sveltejs_adapter_node",
+      "package_devdependencies_sveltejs_kit",
+      "package_devdependencies_sveltejs_vite_plugin_svelte",
+      "package_devdependencies_tailwindcss_vite",
+      "package_devdependencies_types_node",
+      "package_devdependencies_typescript",
+      "package_devdependencies_vite",
+      "package_json_svelte",
+      "svelte_check",
+      "sveltejs_adapter_node",
+      "sveltejs_kit",
+      "sveltejs_vite_plugin_svelte",
+      "tailwindcss_vite",
+      "types_node",
+      "typescript",
+      "vite"
     ],
-    "7": [
-      "ref_legacy_src",
+    "5": [
       "ref_node_modules",
       "ref_public",
       "ref_src_js",
       "ref_src_svelte",
       "ref_src_ts",
       "ref_svelte_kit_tsconfig_json",
+      "ref_test_ts",
       "tsconfig",
       "tsconfig_compileroptions",
       "tsconfig_compileroptions_allowjs",
@@ -264,39 +183,13 @@
       "tsconfig_compileroptions_strict",
       "tsconfig_exclude",
       "tsconfig_extends",
-      "tsconfig_include",
-      "tsconfig_json_ref_test_ts"
+      "tsconfig_include"
     ],
-    "8": [
-      "src_lib_server_catalogmanager_catalogmanager",
-      "src_lib_server_catalogmanager_catalogmanager_constructor",
-      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
-      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_findtinhtp",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
-      "src_lib_server_catalogmanager_catalogmanager_getinstance",
-      "src_lib_server_catalogmanager_catalogmanager_getloaigiaytolist",
-      "src_lib_server_catalogmanager_catalogmanager_getlydocutrulist",
-      "src_lib_server_catalogmanager_catalogmanager_getnoicutrulist",
-      "src_lib_server_catalogmanager_catalogmanager_getquoctichlist",
-      "src_lib_server_catalogmanager_catalogmanager_gettinhtplist",
-      "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
-      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
-      "src_routes_api_catalogs_server",
-      "src_routes_api_catalogs_server_get"
-    ],
-    "9": [
+    "6": [
       "src_lib_server_datatransformer_datatransformer",
       "src_lib_server_datatransformer_datatransformer_checkcompleteness",
+      "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
       "src_lib_server_datatransformer_datatransformer_cleandocnumber",
-      "src_lib_server_datatransformer_datatransformer_cleanname",
-      "src_lib_server_datatransformer_datatransformer_cleanpassportnumber",
-      "src_lib_server_datatransformer_datatransformer_cleanphone",
       "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
       "src_lib_server_datatransformer_datatransformer_formatdateonly",
       "src_lib_server_datatransformer_datatransformer_formatdatetime",
@@ -304,118 +197,137 @@
       "src_lib_server_datatransformer_datatransformer_isguestvn",
       "src_lib_server_datatransformer_datatransformer_mapgender",
       "src_lib_server_datatransformer_datatransformer_maploaigiayto",
-      "src_lib_server_datatransformer_datatransformer_maplydocutru",
-      "src_lib_server_datatransformer_datatransformer_mapnoicutru",
       "src_lib_server_datatransformer_datatransformer_mapquoctich",
+      "src_lib_server_datatransformer_datatransformer_normalizegender",
+      "src_lib_server_datatransformer_datatransformer_transformbatch",
+      "src_lib_server_datatransformer_datatransformer_transformrow",
       "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
-      "src_lib_server_datatransformer_datatransformer_transformtopayloadvn"
+      "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
+      "src_lib_server_syncpipeline_syncpipeline_processrows",
+      "test_test_pipeline_runtests"
     ],
-    "10": [
+    "7": [
+      "src_lib_server_kbttclient_kbttclient",
+      "src_lib_server_kbttclient_kbttclient_constructor",
+      "src_lib_server_kbttclient_kbttclient_postpayload",
+      "src_lib_server_kbttclient_kbttclient_submitforeignguests",
+      "src_lib_server_kbttclient_kbttclient_submitvietnameseguests",
+      "src_lib_server_syncpipeline_syncpipeline_constructor",
       "src_lib_server_tokenmanager_tokenmanager",
-      "src_lib_server_tokenmanager_tokenmanager_canrefreshtoken",
-      "src_lib_server_tokenmanager_tokenmanager_cleartoken",
+      "src_lib_server_tokenmanager_tokenmanager_clear",
       "src_lib_server_tokenmanager_tokenmanager_constructor",
       "src_lib_server_tokenmanager_tokenmanager_getinstance",
-      "src_lib_server_tokenmanager_tokenmanager_gettokenstatus",
+      "src_lib_server_tokenmanager_tokenmanager_getstatus",
       "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
-      "src_lib_server_tokenmanager_tokenmanager_istokenvalid",
       "src_lib_server_tokenmanager_tokenmanager_login",
-      "src_lib_server_tokenmanager_tokenmanager_refreshaccesstoken",
-      "src_lib_server_tokenmanager_tokenmanager_revoketoken",
-      "src_lib_server_tokenmanager_tokenmanager_savetokenresponse",
-      "src_routes_api_token_server",
-      "src_routes_api_token_server_get",
-      "src_routes_api_token_server_post"
+      "src_lib_server_tokenmanager_tokenmanager_refresh",
+      "src_lib_server_tokenmanager_tokenmanager_revoke",
+      "src_lib_server_tokenmanager_tokenmanager_savetoken"
+    ],
+    "8": [
+      "src_lib_server_catalogmanager_catalogmanager",
+      "src_lib_server_catalogmanager_catalogmanager_constructor",
+      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
+      "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
+      "src_lib_server_catalogmanager_catalogmanager_getinstance",
+      "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
+      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
+      "src_lib_server_datatransformer_datatransformer_constructor"
+    ],
+    "9": [
+      "knip",
+      "knip_entry",
+      "knip_ignoredependencies",
+      "knip_json_ref_test_ts",
+      "knip_project",
+      "knip_schema",
+      "package_devdependencies_tailwindcss",
+      "ref_src_index_ts",
+      "ref_src_js_ts_svelte",
+      "ref_src_lib_js_ts",
+      "ref_src_routes_js_ts_svelte",
+      "tailwindcss"
+    ],
+    "10": [
+      "src_lib_server_googlesheetservice_googlesheetservice",
+      "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+      "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
+      "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
+      "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
+      "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
+      "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
+      "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
+      "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
+      "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow"
     ],
     "11": [
-      "legacy_src_datatransformer_datatransformer",
-      "legacy_src_datatransformer_datatransformer_checkrowcompleteness",
-      "legacy_src_datatransformer_datatransformer_cleandocnumber",
-      "legacy_src_datatransformer_datatransformer_cleanroomnumber",
-      "legacy_src_datatransformer_datatransformer_constructor",
-      "legacy_src_datatransformer_datatransformer_formatdateonly",
-      "legacy_src_datatransformer_datatransformer_formatdatetime",
-      "legacy_src_datatransformer_datatransformer_isvietnamese",
-      "legacy_src_datatransformer_datatransformer_normalizegender",
-      "legacy_src_datatransformer_datatransformer_transformbatch",
-      "legacy_src_datatransformer_datatransformer_transformrow",
-      "legacy_src_datatransformer_datatransformer_validatecheckindate",
-      "legacy_src_datatransformer_datatransformer_validatedocnumber"
+      "src_routes_api_events_server",
+      "src_routes_api_events_server_get"
     ],
     "12": [
-      "legacy_src_googlesheetservice_googlesheetservice",
-      "legacy_src_googlesheetservice_googlesheetservice_constructor",
-      "legacy_src_googlesheetservice_googlesheetservice_fetchsheetdata",
-      "legacy_src_googlesheetservice_googlesheetservice_fetchsheettabs",
-      "legacy_src_googlesheetservice_googlesheetservice_mapheadertokey",
-      "legacy_src_googlesheetservice_googlesheetservice_parsecsv",
-      "legacy_src_googlesheetservice_googlesheetservice_parsedatefromtabname",
-      "legacy_src_googlesheetservice_googlesheetservice_parsematrixtoobjects",
-      "legacy_src_googlesheetservice_googlesheetservice_parsesheetidentifier",
-      "legacy_src_googlesheetservice_googlesheetservice_updatesheetrow"
-    ],
-    "13": [
-      "kit",
       "svelte_config",
       "svelte_config_config"
     ],
-    "14": [
-      "src_index_runcli"
-    ],
-    "15": [
+    "13": [
       "src_routes_layout"
     ],
-    "16": [
-      "svelte_svelte"
-    ],
-    "17": [
+    "14": [
       "vite_config"
     ]
   },
   "cohesion": {
     "0": 0.09797979797979799,
-    "1": 0.08985200845665962,
-    "2": 0.10158730158730159,
-    "3": 0.0625,
-    "4": 0.08,
-    "5": 0.14492753623188406,
-    "6": 0.19480519480519481,
-    "7": 0.09090909090909091,
-    "8": 0.12857142857142856,
-    "9": 0.2679738562091503,
-    "10": 0.2,
-    "11": 0.3974358974358974,
-    "12": 0.35555555555555557,
-    "13": 0.6666666666666666,
-    "14": 1.0,
-    "15": 1.0,
-    "16": 1.0,
-    "17": 1.0
+    "1": 0.12857142857142856,
+    "2": 0.08,
+    "3": 0.13,
+    "4": 0.09523809523809523,
+    "5": 0.09523809523809523,
+    "6": 0.3333333333333333,
+    "7": 0.2,
+    "8": 0.2,
+    "9": 0.18181818181818182,
+    "10": 0.35555555555555557,
+    "11": 1.0,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0
   },
   "gods": [
     {
-      "id": "legacy_src_catalogmanager_catalogmanager",
-      "label": "CatalogManager",
-      "degree": 24
+      "id": "src_lib_server_datatransformer_datatransformer",
+      "label": "DataTransformer",
+      "degree": 25
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "CatalogManager",
-      "degree": 24
+      "degree": 21
     },
     {
-      "id": "src_lib_server_datatransformer_datatransformer",
-      "label": "DataTransformer",
-      "degree": 20
-    },
-    {
-      "id": "legacy_src_datatransformer_datatransformer",
-      "label": "DataTransformer",
-      "degree": 15
+      "id": "src_lib_server_syncpipeline_syncpipeline",
+      "label": "SyncPipeline",
+      "degree": 17
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager",
       "label": "TokenManager",
+      "degree": 17
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice",
+      "label": "GoogleSheetService",
+      "degree": 16
+    },
+    {
+      "id": "test_test_pipeline_runtests",
+      "label": "runTests()",
       "degree": 15
     },
     {
@@ -424,27 +336,44 @@
       "degree": 13
     },
     {
-      "id": "legacy_src_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
+      "id": "src_lib_server_kbttclient_kbttclient",
+      "label": "KbttClient",
       "degree": 12
+    },
+    {
+      "id": "src_lib_server_config_config",
+      "label": "CONFIG",
+      "degree": 11
     },
     {
       "id": "public_app_updatepayloadpreview",
       "label": "updatePayloadPreview()",
       "degree": 10
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
-      "degree": 10
-    },
-    {
-      "id": "tsconfig_compileroptions",
-      "label": "compilerOptions",
-      "degree": 10
     }
   ],
   "surprises": [
+    {
+      "source": "runTests()",
+      "target": "GoogleSheetService",
+      "source_files": [
+        "test/test-pipeline.ts",
+        "src/lib/server/googleSheetService.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "runTests()",
+      "target": "KbttClient",
+      "source_files": [
+        "test/test-pipeline.ts",
+        "src/lib/server/kbttClient.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
     {
       "source": "ignoreDependencies",
       "target": "tailwindcss",
@@ -457,48 +386,26 @@
       "why": "connects across different repos/directories"
     },
     {
-      "source": "SyncPipelineResult",
-      "target": "RawOcrRow",
+      "source": "DataTransformer",
+      "target": "CatalogManager",
       "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
+        "src/lib/server/dataTransformer.ts",
+        "src/lib/server/catalogManager.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "cross-file semantic connection"
+      "why": "bridges separate communities"
     },
     {
-      "source": "SyncPipelineResult",
-      "target": "KbttVnPayload",
+      "source": "SyncPipeline",
+      "target": "CatalogManager",
       "source_files": [
         "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
+        "src/lib/server/catalogManager.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "cross-file semantic connection"
-    },
-    {
-      "source": "SyncPipelineResult",
-      "target": "KbttForeignPayload",
-      "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "cross-file semantic connection"
-    },
-    {
-      "source": "FullSyncReport",
-      "target": "SheetTabInfo",
-      "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/googleSheetService.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "cross-file semantic connection"
+      "why": "bridges separate communities"
     }
   ],
   "tokens": {

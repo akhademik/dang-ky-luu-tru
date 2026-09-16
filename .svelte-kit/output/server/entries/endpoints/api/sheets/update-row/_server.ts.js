@@ -1,23 +1,21 @@
-import { t as GoogleSheetService } from "../../../../../chunks/googleSheetService.js";
+import { n as CONFIG, t as syncPipeline } from "../../../../../chunks/syncPipeline.js";
 import { json } from "@sveltejs/kit";
 //#region src/routes/api/sheets/update-row/+server.ts
 var POST = async ({ request }) => {
-	try {
-		const { sheetId, gid, sheetName, rowIndex, row } = await request.json();
-		const result = await GoogleSheetService.updateRowViaAppsScript({
-			sheetId,
-			gid,
-			sheetName,
-			rowIndex,
-			row
-		});
-		return json(result);
-	} catch (err) {
-		return json({
-			success: false,
-			message: err.message
-		}, { status: 500 });
-	}
+	const { rowIndex, row, sheetId, gid } = await request.json().catch(() => ({}));
+	const result = await syncPipeline.googleSheetService.updateSheetRow({
+		sheetId: sheetId || CONFIG.GOOGLE_SHEET_ID,
+		gid: gid || "0",
+		rowIndex,
+		rowData: row
+	});
+	return json({
+		...result,
+		rowIndex,
+		row,
+		sheetId: sheetId || CONFIG.GOOGLE_SHEET_ID,
+		gid: gid || "0"
+	});
 };
 //#endregion
 export { POST };

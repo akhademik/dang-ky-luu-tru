@@ -1,80 +1,47 @@
-import { catalogManager } from './catalogManager.js';
-import { tokenManager } from './tokenManager.js';
-import { DataTransformer, type RawOcrRow, type KbttVnPayload, type KbttForeignPayload } from './dataTransformer.js';
-import { GoogleSheetService, type SheetTabInfo } from './googleSheetService.js';
-import { KbttClient } from './kbttClient.js';
 import { CONFIG } from './config.js';
+import { CatalogManager, catalogManager } from './catalogManager.js';
+import { TokenManager, tokenManager } from './tokenManager.js';
+import { DataTransformer, type RawOcrRow } from './dataTransformer.js';
+import { GoogleSheetService } from './googleSheetService.js';
+import { KbttClient } from './kbttClient.js';
 
-export interface SyncPipelineResult {
+export interface SyncResult {
   step: string;
   success: boolean;
   status: string;
   message: string;
   row?: RawOcrRow;
-  branch?: 'VN' | 'FOREIGN' | 'UNKNOWN';
-  payload?: KbttVnPayload | KbttForeignPayload;
+  branch?: 'VN' | 'FOREIGN';
+  payload?: Record<string, unknown>;
   response?: unknown;
 }
 
-export interface FullSyncReport {
-  timestamp: string;
-  sheetId: string;
-  selectedTab: SheetTabInfo | null;
-  totalFetched: number;
-  results: SyncPipelineResult[];
-}
-
 export class SyncPipeline {
-  public static async runFromGoogleSheet(sheetId: string = CONFIG.GOOGLE_SHEET_ID, targetGid?: string): Promise<FullSyncReport> {
-    const report: FullSyncReport = {
-      timestamp: new Date().toISOString(),
-      sheetId,
-      selectedTab: null,
-      totalFetched: 0,
-      results: [],
-    };
+  public catalogManager: CatalogManager;
+  public tokenManager: TokenManager;
+  public dataTransformer: DataTransformer;
+  public googleSheetService: GoogleSheetService;
+  public kbttClient: KbttClient;
 
-    try {
-      await catalogManager.initialize();
-      const tabs = await GoogleSheetService.fetchPublicSheetTabs(sheetId);
-      const chosenTab = targetGid ? tabs.find(t => t.gid === targetGid) || tabs[0] : GoogleSheetService.findClosestTab(tabs);
-      report.selectedTab = chosenTab || null;
-
-      const gid = chosenTab ? chosenTab.gid : '0';
-      const csv = await GoogleSheetService.fetchPublicSheetCsv(sheetId, gid);
-      const rawRows = GoogleSheetService.parseCsv(csv);
-      report.totalFetched = rawRows.length;
-
-      if (rawRows.length === 0) {
-        report.results.push({
-          step: 'PARSE_CSV',
-          success: true,
-          status: 'Cảnh báo',
-          message: 'Không tìm thấy dòng dữ liệu nào trong tab đã chọn.',
-        });
-        return report;
-      }
-
-      report.results = await this.processAndSyncRows(rawRows);
-    } catch (error) {
-      report.results.push({
-        step: 'PIPELINE_ERROR',
-        success: false,
-        status: 'Thất bại',
-        message: (error as Error).message,
-      });
-    }
-
-    return report;
+  public constructor() {
+    this.catalogManager = catalogManager;
+    this.tokenManager = tokenManager;
+    this.dataTransformer = new DataTransformer(this.catalogManager);
+    this.googleSheetService = new GoogleSheetService();
+    this.kbttClient = new KbttClient(this.tokenManager);
   }
 
-  public static async processAndSyncRows(rawRows: RawOcrRow[]): Promise<SyncPipelineResult[]> {
-    const results: SyncPipelineResult[] = [];
-    const vnBatch: { row: RawOcrRow; payload: KbttVnPayload; originalIndex: number }[] = [];
-    const foreignBatch: { row: RawOcrRow; payload: KbttForeignPayload; originalIndex: number }[] = [];
+  public async initialize(): Promise<void> {
+    await this.catalogManager.initialize();
+  }
 
-    for (let i = 0; i < rawRows.length; i++) {
-      const row = rawRows[i];
+  public async processRows(rows: RawOcrRow[]): Promise<SyncResult[]> {
+    const results: SyncResult[] = [];
+    const vnBatch: { row: RawOcrRow; payload: Record<string, unknown>; index: number }[] = [];
+    const foreignBatch: { row: RawOcrRow; payload: Record<string, unknown>; index: number }[] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
       const check = DataTransformer.checkCompleteness(row);
       const isVN = DataTransformer.isGuestVN(row);
 
@@ -84,31 +51,36 @@ export class SyncPipeline {
           row,
           branch: isVN ? 'VN' : 'FOREIGN',
           success: false,
-          status: 'Thiếu thông tin bắt buộc',
-          message: `Dòng ${i + 1} thiếu hoặc sai trường: ${check.missingFields.join(', ')}`,
+          status: 'Thiếu thông tin',
+          message: `Dòng ${i + 1} thiếu: ${check.missingFields.join(', ')}`,
         });
         continue;
       }
 
       if (isVN) {
-        const payload = DataTransformer.transformToPayloadVn(row);
-        vnBatch.push({ row, payload, originalIndex: i });
+        vnBatch.push({
+          row,
+          payload: DataTransformer.transformToPayloadVn(row),
+          index: i,
+        });
       } else {
-        const payload = DataTransformer.transformToPayloadForeign(row);
-        foreignBatch.push({ row, payload, originalIndex: i });
+        foreignBatch.push({
+          row,
+          payload: DataTransformer.transformToPayloadForeign(row),
+          index: i,
+        });
       }
     }
 
     if (vnBatch.length > 0) {
       try {
-        const payloads = vnBatch.map(item => item.payload);
-        const res = await KbttClient.sendBatchVn(payloads);
-        vnBatch.forEach(item => {
+        const res = await this.kbttClient.submitVietnameseGuests(vnBatch.map(b => b.payload));
+        vnBatch.forEach(b => {
           results.push({
             step: 'API_5_VN',
-            row: item.row,
+            row: b.row,
             branch: 'VN',
-            payload: item.payload,
+            payload: b.payload,
             success: res.success,
             status: res.success ? 'Thành công' : 'Thất bại',
             message: res.message,
@@ -116,14 +88,14 @@ export class SyncPipeline {
           });
         });
       } catch (err) {
-        vnBatch.forEach(item => {
+        vnBatch.forEach(b => {
           results.push({
             step: 'API_5_VN',
-            row: item.row,
+            row: b.row,
             branch: 'VN',
-            payload: item.payload,
+            payload: b.payload,
             success: false,
-            status: 'Lỗi gửi yêu cầu',
+            status: 'Lỗi',
             message: (err as Error).message,
           });
         });
@@ -132,14 +104,13 @@ export class SyncPipeline {
 
     if (foreignBatch.length > 0) {
       try {
-        const payloads = foreignBatch.map(item => item.payload);
-        const res = await KbttClient.sendBatchForeign(payloads);
-        foreignBatch.forEach(item => {
+        const res = await this.kbttClient.submitForeignGuests(foreignBatch.map(b => b.payload));
+        foreignBatch.forEach(b => {
           results.push({
             step: 'API_4_FOREIGN',
-            row: item.row,
+            row: b.row,
             branch: 'FOREIGN',
-            payload: item.payload,
+            payload: b.payload,
             success: res.success,
             status: res.success ? 'Thành công' : 'Thất bại',
             message: res.message,
@@ -147,14 +118,14 @@ export class SyncPipeline {
           });
         });
       } catch (err) {
-        foreignBatch.forEach(item => {
+        foreignBatch.forEach(b => {
           results.push({
             step: 'API_4_FOREIGN',
-            row: item.row,
+            row: b.row,
             branch: 'FOREIGN',
-            payload: item.payload,
+            payload: b.payload,
             success: false,
-            status: 'Lỗi gửi yêu cầu',
+            status: 'Lỗi',
             message: (err as Error).message,
           });
         });
@@ -164,3 +135,5 @@ export class SyncPipeline {
     return results;
   }
 }
+
+export const syncPipeline = new SyncPipeline();

@@ -1,6 +1,6 @@
 import { CONFIG } from './config.js';
-import { tokenManager } from './tokenManager.js';
-import type { KbttVnPayload, KbttForeignPayload } from './dataTransformer.js';
+import { tokenManager, TokenManager } from './tokenManager.js';
+import { DataTransformer } from './dataTransformer.js';
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -10,30 +10,34 @@ export interface ApiResponse<T = unknown> {
 }
 
 export class KbttClient {
-  public static async sendBatchVn(payloadList: KbttVnPayload[]): Promise<ApiResponse> {
-    return this.sendRequest(CONFIG.ENDPOINTS.KBTT_VIETNAM, payloadList, 'Thông báo lưu trú (VN)');
+  private tokenManager: TokenManager;
+
+  public constructor(tm: TokenManager = tokenManager) {
+    this.tokenManager = tm;
   }
 
-  public static async sendBatchForeign(payloadList: KbttForeignPayload[]): Promise<ApiResponse> {
-    return this.sendRequest(CONFIG.ENDPOINTS.KBTT_FOREIGN, payloadList, 'Thông báo lưu trú (Nước ngoài)');
+  public async submitVietnameseGuests(payloads: Record<string, unknown>[]): Promise<ApiResponse> {
+    return this._postPayload(CONFIG.ENDPOINTS.KBTT_VIETNAM, payloads, 'Thông báo lưu trú (VN)');
   }
 
-  private static async sendRequest(endpoint: string, payloadList: unknown[], label: string): Promise<ApiResponse> {
-    const token = await tokenManager.getValidToken();
+  public async submitForeignGuests(payloads: Record<string, unknown>[]): Promise<ApiResponse> {
+    return this._postPayload(CONFIG.ENDPOINTS.KBTT_FOREIGN, payloads, 'Thông báo lưu trú (Nước ngoài)');
+  }
+
+  private async _postPayload(endpoint: string, payloads: unknown[], actionName: string): Promise<ApiResponse> {
+    const token = await this.tokenManager.getValidToken();
     if (!token) {
-      throw new Error('[KbttClient] Không thể lấy Access Token hợp lệ.');
+      throw new Error('Token không được rỗng');
     }
 
     const url = `${CONFIG.BASE_URL}${endpoint}`;
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    };
-
     const res = await fetch(url, {
       method: 'POST',
-      headers,
-      body: JSON.stringify(payloadList),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(payloads),
     });
 
     let resData: Record<string, unknown> = {};
@@ -43,7 +47,7 @@ export class KbttClient {
       resData = { message: await res.text() };
     }
 
-    const isSuccess = res.ok && (resData.code === '200' || resData.code === 200 || !resData.code);
+    const isSuccess = res.ok && (resData.code === '200' || resData.code === 200);
     return {
       success: isSuccess,
       code: (resData.code as string | number) || res.status,

@@ -3,22 +3,18 @@ import { CONFIG } from './config.js';
 export interface TokenState {
   accessToken: string | null;
   refreshToken: string | null;
-  expiresAt: number; // Unix timestamp in ms
+  expiresAt: number;
   tokenType: string;
 }
 
 export class TokenManager {
   private static instance: TokenManager;
-  private tokenState: TokenState = {
-    accessToken: null,
-    refreshToken: null,
-    expiresAt: 0,
-    tokenType: 'Bearer',
-  };
-  private isAuthenticating = false;
-  private authPromise: Promise<string | null> | null = null;
+  public accessToken: string | null = null;
+  public refreshToken: string | null = null;
+  public expiresAt: number = 0;
+  public tokenType: string = 'Bearer';
 
-  private constructor() {}
+  public constructor() {}
 
   public static getInstance(): TokenManager {
     if (!TokenManager.instance) {
@@ -28,44 +24,25 @@ export class TokenManager {
   }
 
   public async getValidToken(): Promise<string | null> {
-    if (this.isTokenValid()) {
-      return this.tokenState.accessToken;
-    }
-
-    if (this.isAuthenticating && this.authPromise) {
-      return this.authPromise;
-    }
-
-    this.isAuthenticating = true;
-    this.authPromise = (async () => {
-      try {
-        if (this.tokenState.refreshToken && this.canRefreshToken()) {
-          const refreshed = await this.refreshAccessToken();
-          if (refreshed) return this.tokenState.accessToken;
-        }
-        await this.login();
-        return this.tokenState.accessToken;
-      } finally {
-        this.isAuthenticating = false;
-        this.authPromise = null;
-      }
-    })();
-
-    return this.authPromise;
-  }
-
-  public isTokenValid(): boolean {
-    if (!this.tokenState.accessToken) return false;
     const now = Date.now();
     const bufferMs = CONFIG.TOKEN_REFRESH_BUFFER_SECONDS * 1000;
-    return this.tokenState.expiresAt - now > bufferMs;
+    if (this.accessToken && this.expiresAt - now > bufferMs) {
+      return this.accessToken;
+    }
+
+    try {
+      if (this.refreshToken) {
+        const ok = await this.refresh();
+        if (ok) return this.accessToken;
+      }
+      await this.login();
+      return this.accessToken;
+    } catch {
+      return null;
+    }
   }
 
-  public canRefreshToken(): boolean {
-    return Boolean(this.tokenState.refreshToken);
-  }
-
-  public async login(): Promise<TokenState> {
+  public async login(): Promise<string> {
     const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.TOKEN}`;
     const params = new URLSearchParams({
       grant_type: CONFIG.AUTH.GRANT_TYPE,
@@ -73,67 +50,55 @@ export class TokenManager {
       password: CONFIG.AUTH.PASSWORD,
     });
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': CONFIG.AUTH.BASIC_AUTH,
-    };
-
     const res = await fetch(url, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': CONFIG.AUTH.BASIC_AUTH,
+      },
       body: params.toString(),
     });
 
     if (!res.ok) {
-      const errBody = await res.text();
-      throw new Error(`[TokenManager] Đăng nhập thất bại (${res.status}): ${errBody}`);
+      const err = await res.text();
+      throw new Error(`Đăng nhập thất bại (${res.status}): ${err}`);
     }
 
     const data = await res.json();
-    this.saveTokenResponse(data);
-    return this.tokenState;
+    this.saveToken(data);
+    return this.accessToken as string;
   }
 
-  public async refreshAccessToken(): Promise<boolean> {
-    if (!this.tokenState.refreshToken) return false;
-
+  public async refresh(): Promise<string> {
+    if (!this.refreshToken) throw new Error('Không có refresh token');
     const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.REFRESH_TOKEN}`;
     const params = new URLSearchParams({
       grant_type: 'refresh_token',
-      refresh_token: this.tokenState.refreshToken,
+      refresh_token: this.refreshToken,
     });
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': CONFIG.AUTH.BASIC_AUTH,
-    };
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': CONFIG.AUTH.BASIC_AUTH,
+      },
+      body: params.toString(),
+    });
 
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: params.toString(),
-      });
-
-      if (!res.ok) {
-        return false;
-      }
-
-      const data = await res.json();
-      this.saveTokenResponse(data);
-      return true;
-    } catch {
-      return false;
+    if (!res.ok) {
+      return this.login();
     }
+
+    const data = await res.json();
+    this.saveToken(data);
+    return this.accessToken as string;
   }
 
-  public async revokeToken(): Promise<boolean> {
-    if (!this.tokenState.accessToken) return true;
-
+  public async revoke(): Promise<boolean> {
+    if (!this.accessToken) return true;
     const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.REVOKE}`;
-    const params = new URLSearchParams({
-      token: this.tokenState.accessToken,
-    });
+    const params = new URLSearchParams({ token: this.accessToken });
 
     try {
       const res = await fetch(url, {
@@ -144,45 +109,36 @@ export class TokenManager {
         },
         body: params.toString(),
       });
-
-      this.clearToken();
+      this.clear();
       return res.ok;
     } catch {
-      this.clearToken();
+      this.clear();
       return false;
     }
   }
 
-  public saveTokenResponse(data: Record<string, unknown>): void {
-    const accessToken = (data.access_token || data.accessToken) as string;
-    const refreshToken = (data.refresh_token || data.refreshToken || null) as string | null;
+  private saveToken(data: Record<string, unknown>): void {
+    const token = (data.access_token || data.accessToken) as string;
+    const refresh = (data.refresh_token || data.refreshToken || null) as string | null;
     const expiresIn = Number(data.expires_in || data.expiresIn || 3600);
-    const tokenType = (data.token_type || data.tokenType || 'Bearer') as string;
-
-    this.tokenState = {
-      accessToken,
-      refreshToken,
-      expiresAt: Date.now() + expiresIn * 1000,
-      tokenType,
-    };
+    this.accessToken = token;
+    this.refreshToken = refresh;
+    this.expiresAt = Math.floor(Date.now() / 1000) + expiresIn;
   }
 
-  public clearToken(): void {
-    this.tokenState = {
-      accessToken: null,
-      refreshToken: null,
-      expiresAt: 0,
-      tokenType: 'Bearer',
-    };
+  private clear(): void {
+    this.accessToken = null;
+    this.refreshToken = null;
+    this.expiresAt = 0;
   }
 
-  public getTokenStatus(): { hasToken: boolean; expiresInSeconds: number; tokenType: string } {
-    const now = Date.now();
-    const remaining = Math.max(0, Math.floor((this.tokenState.expiresAt - now) / 1000));
+  public getStatus() {
+    const nowSec = Math.floor(Date.now() / 1000);
     return {
-      hasToken: Boolean(this.tokenState.accessToken),
-      expiresInSeconds: remaining,
-      tokenType: this.tokenState.tokenType,
+      hasToken: Boolean(this.accessToken),
+      accessToken: this.accessToken ? `${this.accessToken.substring(0, 15)}...` : null,
+      expiresAt: this.expiresAt,
+      expiresInSeconds: this.expiresAt ? Math.max(0, this.expiresAt - nowSec) : 0,
     };
   }
 }

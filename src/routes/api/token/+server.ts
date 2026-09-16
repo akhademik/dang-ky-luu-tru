@@ -1,21 +1,32 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { tokenManager } from '$lib/server/tokenManager.js';
+import { syncPipeline } from '$lib/server/syncPipeline.js';
 
 export const GET: RequestHandler = async () => {
-  return json(tokenManager.getTokenStatus());
+  return json(syncPipeline.tokenManager.getStatus());
 };
 
 export const POST: RequestHandler = async ({ url }) => {
-  const isRevoke = url.searchParams.get('action') === 'revoke';
-  if (isRevoke) {
-    const ok = await tokenManager.revokeToken();
-    return json({ success: ok, message: 'Revoked' });
+  const action = url.searchParams.get('action') || 'login';
+  const tm = syncPipeline.tokenManager;
+
+  if (action === 'revoke') {
+    const success = await tm.revoke();
+    return json({ success });
+  }
+
+  if (action === 'refresh') {
+    try {
+      const token = await tm.refresh();
+      return json({ success: true, token });
+    } catch (err) {
+      return json({ success: false, error: (err as Error).message }, { status: 400 });
+    }
   }
 
   try {
-    await tokenManager.login();
-    return json({ success: true, ...tokenManager.getTokenStatus() });
+    const token = await tm.login();
+    return json({ success: true, token });
   } catch (err) {
-    return json({ success: false, error: (err as Error).message }, { status: 500 });
+    return json({ success: false, error: (err as Error).message }, { status: 400 });
   }
 };

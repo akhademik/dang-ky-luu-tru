@@ -16,6 +16,8 @@
   interface TabItem {
     gid: string;
     name: string;
+    isDefault?: boolean;
+    isDateTab?: boolean;
   }
 
   interface RowData {
@@ -52,11 +54,11 @@
   }
 
   // App State
-  let activeTab = $state<'dataTab' | 'payloadTab' | 'syncTab' | 'catalogTab'>('dataTab');
-  let sheetId = $state('16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q');
+  let activeTab = $state<'dataTab' | 'syncTab' | 'catalogTab'>('dataTab');
   let selectedGid = $state('0');
   let availableTabs = $state<TabItem[]>([]);
-  let currentSourceLabel = $state('Chưa nạp dữ liệu');
+  let currentSourceLabel = $state('Đang tải dữ liệu từ Google Sheets...');
+  let tabFetchStatus = $state('');
   let isLoadingSheet = $state(false);
 
   // Rows & Selection
@@ -125,11 +127,19 @@
     }, 2500);
   }
 
-  function cleanRoomNumber(roomRaw: unknown): string {
-    const raw = String(roomRaw ?? '').trim();
-    if (!raw) return '';
-    const match = raw.match(/[1-9]/);
-    return match ? match[0] : '';
+  function cleanRoomNumber(rawRoom: unknown): string {
+    if (rawRoom === null || rawRoom === undefined) return '';
+    const str = String(rawRoom).trim();
+    if (!str) return '';
+    const matches = str.match(/\d+/g);
+    if (!matches || matches.length === 0) return '';
+    for (const m of matches) {
+      const num = parseInt(m, 10);
+      if (num >= 1 && num <= 9) {
+        return String(num);
+      }
+    }
+    return '';
   }
 
   function isGuestVN(row: RowData): boolean {
@@ -191,43 +201,78 @@
       .trim();
   }
 
-  async function loadSheetTabs() {
+  async function fetchSheetTabsList() {
+    tabFetchStatus = 'Đang quét tabs...';
     try {
-      const res = await fetch(`/api/sheets?action=tabs&sheetId=${encodeURIComponent(sheetId)}`);
+      const res = await fetch('/api/sheets/tabs');
       const data = await res.json();
-      if (data.success) {
-        availableTabs = data.tabs || [];
-        if (availableTabs.length > 0) {
-          selectedGid = data.defaultGid || availableTabs[0].gid;
-          await fetchSheetData();
-        }
+      if (data.success && data.tabs && data.tabs.length > 0) {
+        availableTabs = data.tabs;
+        tabFetchStatus = `Tìm thấy ${availableTabs.length} tabs`;
+
+        let defaultGid = data.defaultGid;
+        const foundDef = availableTabs.find(t => t.isDefault);
+        if (foundDef) defaultGid = foundDef.gid;
+        else defaultGid = availableTabs[0].gid;
+
+        selectedGid = defaultGid;
+        await pullDataFromGoogleSheet(defaultGid);
+      } else {
+        availableTabs = [{ name: 'Tab Mặc định', gid: '0', isDefault: true }];
+        selectedGid = '0';
+        tabFetchStatus = 'Tab mặc định';
+        await pullDataFromGoogleSheet('0');
       }
     } catch (err) {
-      console.error('Lỗi nạp tabs:', err);
+      console.warn('Lỗi khi lấy tabs:', err);
+      tabFetchStatus = 'Lỗi nạp tabs';
     }
   }
 
-  async function fetchSheetData() {
+  async function pullDataFromGoogleSheet(forcedGid: string | null = null) {
+    const gid = forcedGid !== null ? forcedGid : selectedGid;
     isLoadingSheet = true;
+    currentSourceLabel = 'Đang kéo dữ liệu từ Google Sheets...';
+
     try {
-      const res = await fetch(`/api/sheets?sheetId=${encodeURIComponent(sheetId)}&gid=${encodeURIComponent(selectedGid)}`);
+      const res = await fetch('/api/sheets/pull', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gid }),
+      });
       const data = await res.json();
-      if (data.success) {
-        currentRows = data.rows || [];
+      if (data.success && data.rows && data.rows.length > 0) {
+        currentRows = data.rows.map((row: RowData) => {
+          const rawRoom = row.soPhong || row['Số phòng'] || row.room || '';
+          const cleaned = cleanRoomNumber(rawRoom);
+          if (cleaned) {
+            row.soPhong = cleaned;
+            row['Số phòng'] = cleaned;
+          }
+          return row;
+        });
         selectedIndices = new Set();
         editingIndices = new Set();
-        const tabName = data.selectedTab?.name || 'Tab hiện tại';
-        currentSourceLabel = `Tab: "${tabName}" (${currentRows.length} dòng)`;
+
+        const currentTab = availableTabs.find(t => String(t.gid) === String(gid));
+        const tabName = currentTab ? currentTab.name : `GID ${gid}`;
+        currentSourceLabel = `Tab: "${tabName}" (${currentRows.length} dòng dữ liệu)`;
         await updatePayloadPreview();
         showToast('NẠP', `Đã tải ${currentRows.length} dòng từ Google Sheet!`);
       } else {
-        alert(`Lỗi nạp dữ liệu: ${data.error}`);
+        currentSourceLabel = 'Tab đã chọn không có dữ liệu phù hợp';
+        currentRows = [];
+        await updatePayloadPreview();
       }
     } catch (err) {
-      alert(`Lỗi kết nối: ${(err as Error).message}`);
+      currentSourceLabel = `Lỗi kéo dữ liệu: ${(err as Error).message}`;
     } finally {
       isLoadingSheet = false;
     }
+  }
+
+  function handleTabChange() {
+    pullDataFromGoogleSheet(selectedGid);
   }
 
   async function updatePayloadPreview() {
@@ -319,6 +364,7 @@
       currentRows[idx]['Số giấy tờ'] = value;
       currentRows[idx]['Số CCCD'] = value;
       currentRows[idx]['Số hộ chiếu'] = value;
+      currentRows[idx].soHoChieu = value;
     } else if (field === 'ngayDen') {
       currentRows[idx]['Ngày đến'] = value;
       currentRows[idx]['(từ ngày)'] = value;
@@ -416,7 +462,6 @@
         body: JSON.stringify({
           rowIndex: idx,
           row: currentRows[idx],
-          sheetId,
           gid: selectedGid,
           sheetName,
         }),
@@ -579,7 +624,7 @@
       const res = await fetch('/api/token', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        alert('Đăng nhập lấy Token thành công!');
+        showToast('OK', 'Đăng nhập lấy Token thành công!');
       } else {
         alert(`Đăng nhập thất bại: ${data.error}`);
       }
@@ -632,145 +677,133 @@
   onMount(() => {
     loadCatalogs();
     checkToken();
-    loadSheetTabs();
+    fetchSheetTabsList();
   });
 </script>
 
 <svelte:head>
-  <title>KBTT Hub v1.4 | Đồng Bộ Khai Báo Lưu Trú</title>
+  <title>KBTT - Hệ Thống Đồng Bộ Tự Động Khai Báo Tạm Trú & Lưu Trú (v1.4)</title>
 </svelte:head>
 
 <!-- Header -->
-<header class="bg-slate-900 text-white border-b border-slate-700/80 sticky top-0 z-40 shadow-sm backdrop-blur-md">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="bg-indigo-600 p-2.5 rounded-xl shadow-inner flex items-center justify-center">
-        <i class="fa-solid fa-hotel text-white text-base"></i>
+<header class="bg-slate-800 text-white shadow-sm sticky top-0 z-50 border-b border-slate-700/80">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-indigo-600/90 flex items-center justify-center shadow-sm">
+        <i class="fa-solid fa-hotel text-xl text-white"></i>
       </div>
       <div>
-        <h1 class="font-bold text-base tracking-tight flex items-center gap-2">
-          <span>KBTT Hub</span>
-          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">API v1.4</span>
+        <h1 class="text-base font-bold tracking-tight flex items-center gap-2 text-slate-100">
+          Hệ Thống Tích Hợp KBTT v1.4
+          <span class="text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded-full font-mono flex items-center gap-1 font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Live Sync
+          </span>
         </h1>
-        <p class="text-xs text-slate-400">Đồng bộ OCR Google Sheets & Khai Báo CSDL Lưu Trú</p>
+        <p class="text-xs text-slate-400">Đồng bộ tự động OCR từ Google Sheets lên api-kbtt.ai-vlab.com</p>
       </div>
     </div>
 
-    <!-- Status badges -->
-    <div class="flex items-center gap-3 text-xs">
-      <div class="flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
-        <span class={`w-2 h-2 rounded-full ${tokenStatus.hasToken ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-        <span class="text-slate-300">Token:</span>
-        <span class="font-mono font-semibold text-slate-200">
-          {tokenStatus.hasToken ? `Hợp lệ (${tokenStatus.expiresInSeconds}s)` : 'Chưa nạp'}
-        </span>
-        <button onclick={handleManualLogin} class="ml-1 text-indigo-400 hover:text-indigo-300 underline font-medium">Lấy lại</button>
+    <!-- Auth & System Badges -->
+    <div class="flex items-center space-x-3 text-xs">
+      <div class="bg-slate-900/60 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="text-slate-300">Danh mục: <strong class="text-white">{catalogs.quocTich.length > 0 ? 'Đã nạp' : 'Đang nạp...'}</strong></span>
       </div>
 
-      <div class="flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
-        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <span class="text-slate-300">Danh mục:</span>
-        <span class="font-medium text-slate-200">{catalogs.quocTich.length > 0 ? 'Sẵn sàng' : 'Đang tải...'}</span>
+      <div class="bg-slate-900/60 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class={`w-2 h-2 rounded-full ${tokenStatus.hasToken ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+        <span class="text-slate-300">Token:</span>
+        <span class="font-mono font-bold text-slate-100">{tokenStatus.hasToken ? `Hợp lệ (${tokenStatus.expiresInSeconds}s)` : 'Chưa nạp'}</span>
       </div>
+
+      <button onclick={handleManualLogin} class="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-medium transition shadow-sm flex items-center gap-1.5">
+        <i class="fa-solid fa-key"></i> Đăng nhập / Refresh
+      </button>
     </div>
   </div>
 </header>
 
-<!-- Main Container -->
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-4">
-  <!-- Control Bar -->
-  <section class="bg-slate-100/90 p-4 rounded-xl border border-slate-300/80 shadow-sm space-y-3">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-      <!-- Sheet ID -->
-      <div class="md:col-span-4 flex items-center gap-2">
-        <label for="sheetIdInput" class="text-xs font-semibold text-slate-600 whitespace-nowrap">Sheet ID:</label>
-        <input type="text" id="sheetIdInput" bind:value={sheetId} placeholder="Google Sheet ID" class="w-full text-xs font-mono bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
-      </div>
-
-      <!-- Tab selector -->
-      <div class="md:col-span-3 flex items-center gap-2">
-        <label for="sheetTabSelect" class="text-xs font-semibold text-slate-600 whitespace-nowrap">Tab:</label>
-        <select id="sheetTabSelect" bind:value={selectedGid} onchange={fetchSheetData} class="w-full text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none transition">
-          {#each availableTabs as tab}
-            <option value={tab.gid}>{tab.name}</option>
-          {/each}
-        </select>
-      </div>
-
-      <!-- Action buttons -->
-      <div class="md:col-span-5 flex items-center justify-end gap-2 flex-wrap">
-        <button onclick={fetchSheetData} disabled={isLoadingSheet} class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-xs font-medium transition shadow-xs flex items-center gap-1.5 disabled:opacity-50">
-          <i class={`fa-solid fa-arrows-rotate ${isLoadingSheet ? 'fa-spin' : ''}`}></i>
-          <span>Kéo Dữ Liệu Tab</span>
-        </button>
-
-        <button onclick={loadSampleData} class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-medium transition border border-slate-300">
-          Dữ liệu mẫu
-        </button>
-
-        <button onclick={addNewRow} class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition shadow-xs flex items-center gap-1">
-          <i class="fa-solid fa-plus"></i> Thêm Dòng
-        </button>
-
-        <button onclick={syncAllRows} class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow flex items-center gap-1.5">
-          <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Tất Cả
-        </button>
-      </div>
-    </div>
-
-    <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200/80 text-slate-500">
-      <span class="flex items-center gap-1.5 font-medium">
-        <i class="fa-regular fa-folder-open text-slate-400"></i>
-        <span>{currentSourceLabel}</span>
-      </span>
-      <span class="text-slate-400">Hỗ trợ OCR 2 nhánh: API 5 (Việt Nam) & API 4 (Nước ngoài)</span>
-    </div>
-  </section>
-
+<!-- Main Content Area -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
   <!-- Navigation Tabs -->
-  <nav class="flex border-b border-slate-300 text-xs font-medium space-x-6">
-    <button onclick={() => activeTab = 'dataTab'} class={`pb-2.5 transition flex items-center gap-2 border-b-2 ${activeTab === 'dataTab' ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
-      <i class="fa-solid fa-table-list"></i>
-      <span>Bảng Dữ Liệu Khách Lưu Trú</span>
-      <span class="bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.2 rounded-full text-[11px]">{currentRows.length}</span>
+  <div class="flex border-b border-slate-300 gap-2 overflow-x-auto text-sm font-medium">
+    <button onclick={() => activeTab = 'dataTab'} class={`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 ${activeTab === 'dataTab' ? 'border-indigo-600 text-indigo-800 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+      <i class="fa-solid fa-table-list"></i> Dữ Liệu Google Sheets / OCR
     </button>
-
-    <button onclick={() => activeTab = 'payloadTab'} class={`pb-2.5 transition flex items-center gap-2 border-b-2 ${activeTab === 'payloadTab' ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
-      <i class="fa-solid fa-code"></i>
-      <span>Xem JSON Payload API</span>
+    <button onclick={() => activeTab = 'syncTab'} class={`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 ${activeTab === 'syncTab' ? 'border-indigo-600 text-indigo-800 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+      <i class="fa-solid fa-cloud-arrow-up"></i> Thực Thi Đồng Bộ & Log Phản Hồi
     </button>
-
-    <button onclick={() => activeTab = 'syncTab'} class={`pb-2.5 transition flex items-center gap-2 border-b-2 ${activeTab === 'syncTab' ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      <span>Nhật Ký & Kết Quả Thực Thi</span>
+    <button onclick={() => activeTab = 'catalogTab'} class={`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 ${activeTab === 'catalogTab' ? 'border-indigo-600 text-indigo-800 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+      <i class="fa-solid fa-book-bookmark"></i> Tra Cứu Danh Mục Rút Gọn
     </button>
+  </div>
 
-    <button onclick={() => activeTab = 'catalogTab'} class={`pb-2.5 transition flex items-center gap-2 border-b-2 ${activeTab === 'catalogTab' ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
-      <i class="fa-solid fa-book-atlas"></i>
-      <span>Tra Cứu Danh Mục Hệ Thống</span>
-    </button>
-  </nav>
-
-  <!-- TAB 1: Data Table -->
+  <!-- TAB 1: Google Sheets / OCR Data Table -->
   {#if activeTab === 'dataTab'}
-    <section class="space-y-3">
-      <!-- Actions Sub-bar -->
-      <div class="flex items-center justify-between bg-slate-200/60 px-4 py-2.5 rounded-lg border border-slate-300 text-xs">
-        <div class="flex items-center gap-2">
-          <span class="font-semibold text-slate-700">Đã chọn:</span>
-          <span class="bg-indigo-600 text-white font-bold px-2 py-0.5 rounded-full text-[11px]">
-            {selectedIndices.size > 0 ? selectedIndices.size : 'Tất cả'}
-          </span>
-          <span class="text-slate-500 ml-2">Nhấp đúp chuột vào dòng để mở Modal chỉnh sửa chi tiết</span>
+    <section class="space-y-4">
+      <!-- Google Sheets Connection Panel with Date Tab Selection (Sheet ID Hidden) -->
+      <div class="bg-slate-800 text-white p-4 rounded-xl border border-slate-700 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-emerald-800 flex items-center justify-center text-white text-lg">
+              <i class="fa-solid fa-file-excel"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-100">Google Sheets Tích Hợp & Lựa Chọn Ngày</h3>
+              <p class="text-xs text-slate-300">Kéo dữ liệu tự động theo từng Tab ngày (Mặc định tab ngày gần hiện tại nhất)</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-emerald-300 font-mono">{tabFetchStatus}</span>
+            <button onclick={fetchSheetTabsList} class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg border border-slate-600 transition shadow-sm flex items-center gap-1.5 text-slate-200" title="Làm mới danh sách Tab ngày">
+              <i class={`fa-solid fa-arrows-rotate ${isLoadingSheet ? 'fa-spin' : ''}`}></i> Nạp lại Tabs
+            </button>
+          </div>
         </div>
 
-        <button onclick={pushSelectedRows} class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold transition shadow-xs flex items-center gap-1.5">
-          <i class="fa-solid fa-paper-plane"></i>
-          <span>Push Đăng Ký Đã Chọn</span>
-        </button>
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <!-- Tab Selection Dropdown -->
+          <div class="flex-1 min-w-[240px] flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-lg border border-slate-700">
+            <label for="tabSelectInput" class="text-xs font-semibold text-slate-300 whitespace-nowrap pl-1.5"><i class="fa-regular fa-calendar-days mr-1"></i> Chọn Tab Ngày:</label>
+            <select id="tabSelectInput" bind:value={selectedGid} onchange={handleTabChange} class="text-xs text-slate-800 bg-[#f1f5f9] border border-slate-400 rounded-md px-3 py-1.5 flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-400 font-bold">
+              {#each availableTabs as t}
+                <option value={t.gid}>{t.name} {t.isDefault ? '⭐ (Gần nhất)' : ''}</option>
+              {/each}
+            </select>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-2">
+            <button onclick={() => pullDataFromGoogleSheet()} disabled={isLoadingSheet} class="px-4 py-2 text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg transition shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50" title="Lấy dữ liệu từ Google Sheets về bảng">
+              <i class="fa-solid fa-cloud-arrow-down"></i> Lấy thông tin từ sheet
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Table Container -->
+      <!-- Action Bar -->
+      <div class="bg-slate-100/90 p-4 rounded-xl border border-slate-300/80 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-sm font-bold text-slate-800">Danh sách bản ghi OCR cần đồng bộ</h2>
+          <p class="text-xs text-slate-500">{currentSourceLabel}</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick={loadSampleData} class="px-3 py-1.5 text-xs bg-slate-200/90 hover:bg-slate-300 text-slate-700 rounded-lg border border-slate-300 font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left"></i> Dữ liệu mẫu
+          </button>
+          <button onclick={addNewRow} class="px-3 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-medium transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-plus"></i> Thêm dòng
+          </button>
+          <button onclick={pushSelectedRows} class="px-3.5 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-paper-plane"></i> Push đăng ký đã chọn (<span class="font-mono">{selectedIndices.size > 0 ? selectedIndices.size : 'Tất cả'}</span>)
+          </button>
+          <button onclick={syncAllRows} class="px-4 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-bolt"></i> Push tất cả
+          </button>
+        </div>
+      </div>
+
+      <!-- Table with Read-only / Edit Mode & Checkbox Selection -->
       <div class="bg-slate-100/90 rounded-xl border border-slate-300/80 shadow-sm overflow-hidden">
         <div class="overflow-x-auto max-h-[520px]">
           <table class="w-full text-left text-xs text-slate-700">
@@ -786,7 +819,7 @@
                 <th class="p-3">Quốc tịch</th>
                 <th class="p-3">Loại giấy tờ</th>
                 <th class="p-3">Số giấy tờ</th>
-                <th class="p-3 text-center">Phòng</th>
+                <th class="p-3">Phòng</th>
                 <th class="p-3">Ngày đến / đi</th>
                 <th class="p-3">Địa chỉ</th>
                 <th class="p-3 w-28 text-center">Thao tác</th>
@@ -802,7 +835,6 @@
                 {@const addrInfo = getDisplayAddress(row)}
 
                 <tr ondblclick={() => openEditModal(idx)} class={`hover:bg-slate-100/80 transition ${!isComplete ? 'bg-rose-50/30' : ''} ${isChecked ? 'bg-indigo-50/30' : ''}`}>
-                  <!-- Checkbox -->
                   <td class="p-3 text-center">
                     <input type="checkbox" checked={isChecked} onchange={(e) => toggleRowSelect(idx, (e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
                   </td>
@@ -952,34 +984,7 @@
     </section>
   {/if}
 
-  <!-- TAB 2: Payloads Preview -->
-  {#if activeTab === 'payloadTab'}
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-slate-100/90 p-4 rounded-xl border border-slate-300/80 shadow-sm flex flex-col">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-bold text-xs uppercase tracking-wider text-indigo-700 flex items-center gap-2">
-            <i class="fa-solid fa-passport"></i>
-            <span>API 5: Khách Việt Nam (JSON Array)</span>
-          </h3>
-          <span class="bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full text-xs">{vnPayloads.length} bản ghi</span>
-        </div>
-        <pre class="bg-slate-900 text-slate-200 p-3 rounded-lg text-xs font-mono overflow-auto max-h-[500px] flex-1">{JSON.stringify(vnPayloads, null, 2)}</pre>
-      </div>
-
-      <div class="bg-slate-100/90 p-4 rounded-xl border border-slate-300/80 shadow-sm flex flex-col">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-bold text-xs uppercase tracking-wider text-cyan-700 flex items-center gap-2">
-            <i class="fa-solid fa-globe"></i>
-            <span>API 4: Khách Nước Ngoài (JSON Array)</span>
-          </h3>
-          <span class="bg-cyan-100 text-cyan-800 font-bold px-2 py-0.5 rounded-full text-xs">{foreignPayloads.length} bản ghi</span>
-        </div>
-        <pre class="bg-slate-900 text-slate-200 p-3 rounded-lg text-xs font-mono overflow-auto max-h-[500px] flex-1">{JSON.stringify(foreignPayloads, null, 2)}</pre>
-      </div>
-    </section>
-  {/if}
-
-  <!-- TAB 3: Execution & Logs -->
+  <!-- TAB 2: Execution & Logs -->
   {#if activeTab === 'syncTab'}
     <section class="space-y-4">
       <div class="bg-slate-100/90 p-5 rounded-xl border border-slate-300/80 shadow-sm">
@@ -992,7 +997,7 @@
         {:else if syncResults.length === 0}
           <div class="text-center py-8 text-slate-400 text-xs">
             <i class="fa-solid fa-inbox text-3xl mb-2"></i>
-            <p>Chưa có lượt chạy đồng bộ nào. Nhấn "Push đăng ký đã chọn" hoặc "Đồng Bộ Tất Cả" để bắt đầu.</p>
+            <p>Chưa có lượt chạy đồng bộ nào. Nhấn "Push đăng ký đã chọn" hoặc "Push tất cả" để bắt đầu.</p>
           </div>
         {:else}
           <div class="space-y-3">
@@ -1005,8 +1010,8 @@
                       {idx + 1}
                     </span>
                     <strong class="text-sm font-semibold text-slate-800">{r.row ? (r.row.hoTen || r.row['Họ tên']) : `Dòng ${idx + 1}`}</strong>
-                    <span class={`text-xs px-2 py-0.5 rounded-full font-medium ${r.branch === 'VN' ? 'bg-indigo-100 text-indigo-800' : r.branch === 'FOREIGN' ? 'bg-cyan-100 text-cyan-800' : 'bg-slate-200 text-slate-700'}`}>
-                      {r.branch === 'VN' ? 'Khách Việt Nam (API 5)' : r.branch === 'FOREIGN' ? 'Khách Nước ngoài (API 4)' : 'Xử lý'}
+                    <span class={`text-xs px-2 py-0.5 rounded-full font-medium ${r.branch === 'VN' ? 'bg-indigo-100 text-indigo-800' : 'bg-cyan-100 text-cyan-800'}`}>
+                      {r.branch === 'VN' ? 'Khách Việt Nam (API 5)' : 'Khách Nước ngoài (API 4)'}
                     </span>
                   </div>
                   <span class={`text-xs px-2.5 py-1 rounded-md font-semibold ${isSuccess ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`}>
@@ -1028,7 +1033,7 @@
     </section>
   {/if}
 
-  <!-- TAB 4: Catalog Browser -->
+  <!-- TAB 3: Catalog Browser -->
   {#if activeTab === 'catalogTab'}
     <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <!-- Tỉnh / TP -->
@@ -1231,5 +1236,5 @@
 
 <!-- Footer -->
 <footer class="bg-slate-800 text-slate-300 border-t border-slate-700 py-3 text-center text-xs mt-auto">
-  Hệ thống Khai Báo Lưu Trú KBTT v1.4 &copy; 2026. Kiến trúc SvelteKit 2 + Svelte 5 + TypeScript.
+  Module kiểm thử tích hợp KBTT API v1.4 &copy; 2026. Chuẩn hóa kiến trúc SvelteKit & TypeScript.
 </footer>

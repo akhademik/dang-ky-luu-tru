@@ -3,10 +3,10 @@ import { _ as attr, i as head, n as derived, r as ensure_array_like, t as attr_c
 //#region src/routes/+page.svelte
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let sheetId = "16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q";
 		let selectedGid = "0";
 		let availableTabs = [];
-		let currentSourceLabel = "Chưa nạp dữ liệu";
+		let currentSourceLabel = "Đang tải dữ liệu từ Google Sheets...";
+		let tabFetchStatus = "";
 		let isLoadingSheet = false;
 		let currentRows = [];
 		let selectedIndices = /* @__PURE__ */ new Set();
@@ -37,11 +37,17 @@ function _page($$renderer, $$props) {
 				toastVisible = false;
 			}, 2500);
 		}
-		function cleanRoomNumber(roomRaw) {
-			const raw = String(roomRaw ?? "").trim();
-			if (!raw) return "";
-			const match = raw.match(/[1-9]/);
-			return match ? match[0] : "";
+		function cleanRoomNumber(rawRoom) {
+			if (rawRoom === null || rawRoom === void 0) return "";
+			const str = String(rawRoom).trim();
+			if (!str) return "";
+			const matches = str.match(/\d+/g);
+			if (!matches || matches.length === 0) return "";
+			for (const m of matches) {
+				const num = parseInt(m, 10);
+				if (num >= 1 && num <= 9) return String(num);
+			}
+			return "";
 		}
 		function isGuestVN(row) {
 			const qt = String(row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "").trim().toLowerCase();
@@ -116,23 +122,44 @@ function _page($$renderer, $$props) {
 		function normalizeStr(str) {
 			return String(str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
 		}
-		async function fetchSheetData() {
+		async function pullDataFromGoogleSheet(forcedGid = null) {
+			const gid = forcedGid !== null ? forcedGid : selectedGid;
 			isLoadingSheet = true;
+			currentSourceLabel = "Đang kéo dữ liệu từ Google Sheets...";
 			try {
-				const data = await (await fetch(`/api/sheets?sheetId=${encodeURIComponent(sheetId)}&gid=${encodeURIComponent(selectedGid)}`)).json();
-				if (data.success) {
-					currentRows = data.rows || [];
+				const data = await (await fetch("/api/sheets/pull", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ gid })
+				})).json();
+				if (data.success && data.rows && data.rows.length > 0) {
+					currentRows = data.rows.map((row) => {
+						const cleaned = cleanRoomNumber(row.soPhong || row["Số phòng"] || row.room || "");
+						if (cleaned) {
+							row.soPhong = cleaned;
+							row["Số phòng"] = cleaned;
+						}
+						return row;
+					});
 					selectedIndices = /* @__PURE__ */ new Set();
 					editingIndices = /* @__PURE__ */ new Set();
-					currentSourceLabel = `Tab: "${data.selectedTab?.name || "Tab hiện tại"}" (${currentRows.length} dòng)`;
+					const currentTab = availableTabs.find((t) => String(t.gid) === String(gid));
+					currentSourceLabel = `Tab: "${currentTab ? currentTab.name : `GID ${gid}`}" (${currentRows.length} dòng dữ liệu)`;
 					await updatePayloadPreview();
 					showToast("NẠP", `Đã tải ${currentRows.length} dòng từ Google Sheet!`);
-				} else alert(`Lỗi nạp dữ liệu: ${data.error}`);
+				} else {
+					currentSourceLabel = "Tab đã chọn không có dữ liệu phù hợp";
+					currentRows = [];
+					await updatePayloadPreview();
+				}
 			} catch (err) {
-				alert(`Lỗi kết nối: ${err.message}`);
+				currentSourceLabel = `Lỗi kéo dữ liệu: ${err.message}`;
 			} finally {
 				isLoadingSheet = false;
 			}
+		}
+		function handleTabChange() {
+			pullDataFromGoogleSheet(selectedGid);
 		}
 		async function updatePayloadPreview() {
 			try {
@@ -166,29 +193,29 @@ function _page($$renderer, $$props) {
 		}));
 		head("1uha8ag", $$renderer, ($$renderer) => {
 			$$renderer.title(($$renderer) => {
-				$$renderer.push(`<title>KBTT Hub v1.4 | Đồng Bộ Khai Báo Lưu Trú</title>`);
+				$$renderer.push(`<title>KBTT - Hệ Thống Đồng Bộ Tự Động Khai Báo Tạm Trú &amp; Lưu Trú (v1.4)</title>`);
 			});
 		});
-		$$renderer.push(`<header class="bg-slate-900 text-white border-b border-slate-700/80 sticky top-0 z-40 shadow-sm backdrop-blur-md"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"><div class="flex items-center gap-3"><div class="bg-indigo-600 p-2.5 rounded-xl shadow-inner flex items-center justify-center"><i class="fa-solid fa-hotel text-white text-base"></i></div> <div><h1 class="font-bold text-base tracking-tight flex items-center gap-2"><span>KBTT Hub</span> <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">API v1.4</span></h1> <p class="text-xs text-slate-400">Đồng bộ OCR Google Sheets &amp; Khai Báo CSDL Lưu Trú</p></div></div> <div class="flex items-center gap-3 text-xs"><div class="flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg"><span${attr_class(`w-2 h-2 rounded-full ${tokenStatus.hasToken ? "bg-emerald-400" : "bg-amber-400"}`)}></span> <span class="text-slate-300">Token:</span> <span class="font-mono font-semibold text-slate-200">${escape_html(tokenStatus.hasToken ? `Hợp lệ (${tokenStatus.expiresInSeconds}s)` : "Chưa nạp")}</span> <button class="ml-1 text-indigo-400 hover:text-indigo-300 underline font-medium">Lấy lại</button></div> <div class="flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span class="text-slate-300">Danh mục:</span> <span class="font-medium text-slate-200">${escape_html(catalogs.quocTich.length > 0 ? "Sẵn sàng" : "Đang tải...")}</span></div></div></div></header> <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-4"><section class="bg-slate-100/90 p-4 rounded-xl border border-slate-300/80 shadow-sm space-y-3"><div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center"><div class="md:col-span-4 flex items-center gap-2"><label for="sheetIdInput" class="text-xs font-semibold text-slate-600 whitespace-nowrap">Sheet ID:</label> <input type="text" id="sheetIdInput"${attr("value", sheetId)} placeholder="Google Sheet ID" class="w-full text-xs font-mono bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"/></div> <div class="md:col-span-3 flex items-center gap-2"><label for="sheetTabSelect" class="text-xs font-semibold text-slate-600 whitespace-nowrap">Tab:</label> `);
-		$$renderer.select({
-			id: "sheetTabSelect",
-			value: selectedGid,
-			onchange: fetchSheetData,
-			class: "w-full text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none transition"
-		}, ($$renderer) => {
-			$$renderer.push(`<!--[-->`);
-			const each_array = ensure_array_like(availableTabs);
-			for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-				let tab = each_array[$$index];
-				$$renderer.option({ value: tab.gid }, ($$renderer) => {
-					$$renderer.push(`${escape_html(tab.name)}`);
-				});
-			}
-			$$renderer.push(`<!--]-->`);
-		});
-		$$renderer.push(`</div> <div class="md:col-span-5 flex items-center justify-end gap-2 flex-wrap"><button${attr("disabled", isLoadingSheet, true)} class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-xs font-medium transition shadow-xs flex items-center gap-1.5 disabled:opacity-50"><i${attr_class(`fa-solid fa-arrows-rotate ${isLoadingSheet ? "fa-spin" : ""}`)}></i> <span>Kéo Dữ Liệu Tab</span></button> <button class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-medium transition border border-slate-300">Dữ liệu mẫu</button> <button class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition shadow-xs flex items-center gap-1"><i class="fa-solid fa-plus"></i> Thêm Dòng</button> <button class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow flex items-center gap-1.5"><i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Tất Cả</button></div></div> <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200/80 text-slate-500"><span class="flex items-center gap-1.5 font-medium"><i class="fa-regular fa-folder-open text-slate-400"></i> <span>${escape_html(currentSourceLabel)}</span></span> <span class="text-slate-400">Hỗ trợ OCR 2 nhánh: API 5 (Việt Nam) &amp; API 4 (Nước ngoài)</span></div></section> <nav class="flex border-b border-slate-300 text-xs font-medium space-x-6"><button${attr_class(`pb-2.5 transition flex items-center gap-2 border-b-2 border-indigo-600 text-indigo-600 font-semibold`)}><i class="fa-solid fa-table-list"></i> <span>Bảng Dữ Liệu Khách Lưu Trú</span> <span class="bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.2 rounded-full text-[11px]">${escape_html(currentRows.length)}</span></button> <button${attr_class(`pb-2.5 transition flex items-center gap-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800`)}><i class="fa-solid fa-code"></i> <span>Xem JSON Payload API</span></button> <button${attr_class(`pb-2.5 transition flex items-center gap-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800`)}><i class="fa-solid fa-clock-rotate-left"></i> <span>Nhật Ký &amp; Kết Quả Thực Thi</span></button> <button${attr_class(`pb-2.5 transition flex items-center gap-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800`)}><i class="fa-solid fa-book-atlas"></i> <span>Tra Cứu Danh Mục Hệ Thống</span></button></nav> `);
+		$$renderer.push(`<header class="bg-slate-800 text-white shadow-sm sticky top-0 z-50 border-b border-slate-700/80"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4"><div class="flex items-center space-x-3"><div class="w-10 h-10 rounded-xl bg-indigo-600/90 flex items-center justify-center shadow-sm"><i class="fa-solid fa-hotel text-xl text-white"></i></div> <div><h1 class="text-base font-bold tracking-tight flex items-center gap-2 text-slate-100">Hệ Thống Tích Hợp KBTT v1.4 <span class="text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded-full font-mono flex items-center gap-1 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Live Sync</span></h1> <p class="text-xs text-slate-400">Đồng bộ tự động OCR từ Google Sheets lên api-kbtt.ai-vlab.com</p></div></div> <div class="flex items-center space-x-3 text-xs"><div class="bg-slate-900/60 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span class="text-slate-300">Danh mục: <strong class="text-white">${escape_html(catalogs.quocTich.length > 0 ? "Đã nạp" : "Đang nạp...")}</strong></span></div> <div class="bg-slate-900/60 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2"><span${attr_class(`w-2 h-2 rounded-full ${tokenStatus.hasToken ? "bg-emerald-400" : "bg-amber-400"}`)}></span> <span class="text-slate-300">Token:</span> <span class="font-mono font-bold text-slate-100">${escape_html(tokenStatus.hasToken ? `Hợp lệ (${tokenStatus.expiresInSeconds}s)` : "Chưa nạp")}</span></div> <button class="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-medium transition shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-key"></i> Đăng nhập / Refresh</button></div></div></header> <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6"><div class="flex border-b border-slate-300 gap-2 overflow-x-auto text-sm font-medium"><button${attr_class(`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 border-indigo-600 text-indigo-800 font-bold`)}><i class="fa-solid fa-table-list"></i> Dữ Liệu Google Sheets / OCR</button> <button${attr_class(`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 border-transparent text-slate-500 hover:text-slate-700`)}><i class="fa-solid fa-cloud-arrow-up"></i> Thực Thi Đồng Bộ &amp; Log Phản Hồi</button> <button${attr_class(`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 border-transparent text-slate-500 hover:text-slate-700`)}><i class="fa-solid fa-book-bookmark"></i> Tra Cứu Danh Mục Rút Gọn</button></div> `);
 		{
-			$$renderer.push(`<!--[0--><section class="space-y-3"><div class="flex items-center justify-between bg-slate-200/60 px-4 py-2.5 rounded-lg border border-slate-300 text-xs"><div class="flex items-center gap-2"><span class="font-semibold text-slate-700">Đã chọn:</span> <span class="bg-indigo-600 text-white font-bold px-2 py-0.5 rounded-full text-[11px]">${escape_html(selectedIndices.size > 0 ? selectedIndices.size : "Tất cả")}</span> <span class="text-slate-500 ml-2">Nhấp đúp chuột vào dòng để mở Modal chỉnh sửa chi tiết</span></div> <button class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold transition shadow-xs flex items-center gap-1.5"><i class="fa-solid fa-paper-plane"></i> <span>Push Đăng Ký Đã Chọn</span></button></div> <div class="bg-slate-100/90 rounded-xl border border-slate-300/80 shadow-sm overflow-hidden"><div class="overflow-x-auto max-h-[520px]"><table class="w-full text-left text-xs text-slate-700"><thead class="bg-slate-300/80 text-slate-800 uppercase font-bold text-[11px] sticky top-0 z-10 border-b border-slate-300"><tr><th class="p-3 w-8 text-center"><input type="checkbox"${attr("checked", currentRows.length > 0 && selectedIndices.size === currentRows.length, true)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"/></th><th class="p-3 w-8 text-center">#</th><th class="p-3">Họ tên</th><th class="p-3">Ngày sinh</th><th class="p-3">Giới tính</th><th class="p-3">Quốc tịch</th><th class="p-3">Loại giấy tờ</th><th class="p-3">Số giấy tờ</th><th class="p-3 text-center">Phòng</th><th class="p-3">Ngày đến / đi</th><th class="p-3">Địa chỉ</th><th class="p-3 w-28 text-center">Thao tác</th></tr></thead><tbody class="divide-y divide-slate-200/90 bg-[#f8fafc]"><!--[-->`);
+			$$renderer.push(`<!--[0--><section class="space-y-4"><div class="bg-slate-800 text-white p-4 rounded-xl border border-slate-700 shadow-sm space-y-3"><div class="flex flex-wrap items-center justify-between gap-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-lg bg-emerald-800 flex items-center justify-center text-white text-lg"><i class="fa-solid fa-file-excel"></i></div> <div><h3 class="text-sm font-bold text-slate-100">Google Sheets Tích Hợp &amp; Lựa Chọn Ngày</h3> <p class="text-xs text-slate-300">Kéo dữ liệu tự động theo từng Tab ngày (Mặc định tab ngày gần hiện tại nhất)</p></div></div> <div class="flex items-center gap-2 text-xs"><span class="text-emerald-300 font-mono">${escape_html(tabFetchStatus)}</span> <button class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg border border-slate-600 transition shadow-sm flex items-center gap-1.5 text-slate-200" title="Làm mới danh sách Tab ngày"><i${attr_class(`fa-solid fa-arrows-rotate ${isLoadingSheet ? "fa-spin" : ""}`)}></i> Nạp lại Tabs</button></div></div> <div class="flex flex-wrap items-center gap-3 pt-1"><div class="flex-1 min-w-[240px] flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-lg border border-slate-700"><label for="tabSelectInput" class="text-xs font-semibold text-slate-300 whitespace-nowrap pl-1.5"><i class="fa-regular fa-calendar-days mr-1"></i> Chọn Tab Ngày:</label> `);
+			$$renderer.select({
+				id: "tabSelectInput",
+				value: selectedGid,
+				onchange: handleTabChange,
+				class: "text-xs text-slate-800 bg-[#f1f5f9] border border-slate-400 rounded-md px-3 py-1.5 flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-400 font-bold"
+			}, ($$renderer) => {
+				$$renderer.push(`<!--[-->`);
+				const each_array = ensure_array_like(availableTabs);
+				for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+					let t = each_array[$$index];
+					$$renderer.option({ value: t.gid }, ($$renderer) => {
+						$$renderer.push(`${escape_html(t.name)} ${escape_html(t.isDefault ? "⭐ (Gần nhất)" : "")}`);
+					});
+				}
+				$$renderer.push(`<!--]-->`);
+			});
+			$$renderer.push(`</div> <div class="flex items-center gap-2"><button${attr("disabled", isLoadingSheet, true)} class="px-4 py-2 text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg transition shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50" title="Lấy dữ liệu từ Google Sheets về bảng"><i class="fa-solid fa-cloud-arrow-down"></i> Lấy thông tin từ sheet</button></div></div></div> <div class="bg-slate-100/90 p-4 rounded-xl border border-slate-300/80 shadow-sm flex flex-wrap items-center justify-between gap-4"><div><h2 class="text-sm font-bold text-slate-800">Danh sách bản ghi OCR cần đồng bộ</h2> <p class="text-xs text-slate-500">${escape_html(currentSourceLabel)}</p></div> <div class="flex flex-wrap items-center gap-2"><button class="px-3 py-1.5 text-xs bg-slate-200/90 hover:bg-slate-300 text-slate-700 rounded-lg border border-slate-300 font-medium transition flex items-center gap-1.5"><i class="fa-solid fa-rotate-left"></i> Dữ liệu mẫu</button> <button class="px-3 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-medium transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-plus"></i> Thêm dòng</button> <button class="px-3.5 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-paper-plane"></i> Push đăng ký đã chọn (<span class="font-mono">${escape_html(selectedIndices.size > 0 ? selectedIndices.size : "Tất cả")}</span>)</button> <button class="px-4 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-bolt"></i> Push tất cả</button></div></div> <div class="bg-slate-100/90 rounded-xl border border-slate-300/80 shadow-sm overflow-hidden"><div class="overflow-x-auto max-h-[520px]"><table class="w-full text-left text-xs text-slate-700"><thead class="bg-slate-300/80 text-slate-800 uppercase font-bold text-[11px] sticky top-0 z-10 border-b border-slate-300"><tr><th class="p-3 w-8 text-center"><input type="checkbox"${attr("checked", currentRows.length > 0 && selectedIndices.size === currentRows.length, true)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"/></th><th class="p-3 w-8 text-center">#</th><th class="p-3">Họ tên</th><th class="p-3">Ngày sinh</th><th class="p-3">Giới tính</th><th class="p-3">Quốc tịch</th><th class="p-3">Loại giấy tờ</th><th class="p-3">Số giấy tờ</th><th class="p-3">Phòng</th><th class="p-3">Ngày đến / đi</th><th class="p-3">Địa chỉ</th><th class="p-3 w-28 text-center">Thao tác</th></tr></thead><tbody class="divide-y divide-slate-200/90 bg-[#f8fafc]"><!--[-->`);
 			const each_array_1 = ensure_array_like(currentRows);
 			for (let idx = 0, $$length = each_array_1.length; idx < $$length; idx++) {
 				let row = each_array_1[idx];
@@ -319,14 +346,12 @@ function _page($$renderer, $$props) {
 		$$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> `);
 		$$renderer.push("<!--[-1-->");
-		$$renderer.push(`<!--]--> `);
-		$$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--></main> `);
 		$$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> `);
 		if (toastVisible) $$renderer.push(`<!--[0--><div class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl border border-slate-700 flex items-center gap-2 z-50 transition-all duration-300"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> <span><strong>${escape_html(toastCode)}</strong>: ${escape_html(toastMsg)}</span></div>`);
 		else $$renderer.push("<!--[-1-->");
-		$$renderer.push(`<!--]--> <footer class="bg-slate-800 text-slate-300 border-t border-slate-700 py-3 text-center text-xs mt-auto">Hệ thống Khai Báo Lưu Trú KBTT v1.4 © 2026. Kiến trúc SvelteKit 2 + Svelte 5 + TypeScript.</footer>`);
+		$$renderer.push(`<!--]--> <footer class="bg-slate-800 text-slate-300 border-t border-slate-700 py-3 text-center text-xs mt-auto">Module kiểm thử tích hợp KBTT API v1.4 © 2026. Chuẩn hóa kiến trúc SvelteKit &amp; TypeScript.</footer>`);
 	});
 }
 //#endregion

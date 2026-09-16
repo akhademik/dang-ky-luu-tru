@@ -12,12 +12,12 @@ async function runTests(): Promise<void> {
   // 1. Test CatalogManager
   await catalogManager.initialize();
   const qtVn = catalogManager.findQuocTich('Việt Nam');
-  assert.equal(qtVn?.maQT, 'VNM');
+  assert.equal(qtVn, 'VNM');
   const qtUs = catalogManager.findQuocTich('Hoa Kỳ');
-  assert.equal(qtUs?.maQT, 'USA');
-  assert.equal(DataTransformer.mapLoaiGiayTo('Thẻ CCCD'), 1);
-  assert.equal(DataTransformer.mapLoaiGiayTo('Hộ chiếu'), 4);
-  assert.equal(DataTransformer.mapLoaiGiayTo('Thẻ Căn Cước'), 8);
+  assert.equal(qtUs, 'USA');
+  assert.equal(catalogManager.findLoaiGiayTo('Thẻ CCCD'), 1);
+  assert.equal(catalogManager.findLoaiGiayTo('Hộ chiếu'), 4);
+  assert.equal(catalogManager.findLoaiGiayTo('Thẻ Căn Cước'), 8);
   console.log('✅ CatalogManager test passed!');
 
   // 2. Test DataTransformer formatting
@@ -142,11 +142,12 @@ async function runTests(): Promise<void> {
   assert.equal(compRus.fieldStatus.quocTich?.valid, true);
   console.log('✅ DataTransformer (Validation & Past Date Blocking) test passed!');
 
-  // 3. Test GoogleSheetService (CSV Parsing)
+  // 3. Test GoogleSheetService (CSV Parsing & Tabs)
+  const sheetService = new GoogleSheetService();
   const sampleCsv = `Họ tên,Ngày sinh,Giới tính,Quốc tịch,Loại giấy tờ,Số giấy tờ,Số phòng,Ngày đến,Ngày đi,Địa chỉ chi tiết
 "LÊ VĂN CƯỜNG",1991-03-12,Nam,Việt Nam,Thẻ CCCD,001091001111,P.02,"2026-09-16 14:00:00","2026-09-18 12:00:00","Quận 1, TP Hồ Chí Minh"
 "ALICE WANG",1994-07-22,Nữ,China,Hộ chiếu,G12345678,P.03,"2026-09-16 15:00:00","2026-09-19 11:00:00","Beijing, China"`;
-  const parsedRows = GoogleSheetService.parseCsv(sampleCsv);
+  const parsedRows = sheetService.parseCsv(sampleCsv);
   assert.equal(parsedRows.length, 2);
   assert.equal(parsedRows[0].hoTen, 'LÊ VĂN CƯỜNG');
   assert.equal(parsedRows[0].soGiayTo, '001091001111');
@@ -156,18 +157,15 @@ async function runTests(): Promise<void> {
 
   // 3.1 Test GoogleSheetService Live Fetch with full URL / gid & Tabs list
   console.log('--- Kiểm tra kéo dữ liệu trực tiếp từ Google Sheets công khai & Quét Tabs ---');
-  const tabs = await GoogleSheetService.fetchPublicSheetTabs(CONFIG.GOOGLE_SHEET_ID);
-  assert.ok(tabs.length > 0, 'Phải tìm thấy ít nhất 1 tab');
-  const closestTab = GoogleSheetService.findClosestTab(tabs);
-  console.log(`✅ Tìm thấy ${tabs.length} tabs trên Google Sheet. Tab mặc định: GID ${closestTab?.gid || tabs[0].gid}`);
+  const tabsRes = await sheetService.fetchSheetTabs(CONFIG.GOOGLE_SHEET_ID);
+  assert.ok(tabsRes.tabs.length > 0, 'Phải tìm thấy ít nhất 1 tab');
+  console.log(`✅ Tìm thấy ${tabsRes.tabs.length} tabs trên Google Sheet. Tab mặc định: GID ${tabsRes.defaultGid}`);
 
   // Test Live Fetch with default date tab
-  const gid = closestTab ? closestTab.gid : '0';
-  const csv = await GoogleSheetService.fetchPublicSheetCsv(CONFIG.GOOGLE_SHEET_ID, gid);
-  const liveRows = GoogleSheetService.parseCsv(csv);
-  if (liveRows.length > 0) {
-    const liveRow = liveRows[0];
-    console.log(`✅ Kéo thành công ${liveRows.length} dòng từ Google Sheet! Khách: ${liveRow.hoTen}, Phòng trên Sheet: "${liveRow.soPhong}"`);
+  const liveRes = await sheetService.fetchSheetData(CONFIG.GOOGLE_SHEET_ID, tabsRes.defaultGid);
+  if (liveRes.success && liveRes.rows.length > 0) {
+    const liveRow = liveRes.rows[0];
+    console.log(`✅ Kéo thành công ${liveRes.rows.length} dòng từ Google Sheet! Khách: ${liveRow.hoTen}, Phòng trên Sheet: "${liveRow.soPhong}"`);
     const validLiveRow: RawOcrRow = {
       ...liveRow,
       quocTich: 'VNM',
@@ -187,14 +185,15 @@ async function runTests(): Promise<void> {
   // 4. Test TokenManager & KbttClient live call
   console.log('\n--- Kiểm tra kết nối OAuth & API Client ---');
   try {
-    const tokenState = await tokenManager.login();
-    assert.ok(tokenState.accessToken, 'Token không được rỗng');
+    const token = await tokenManager.login();
+    assert.ok(token, 'Token không được rỗng');
     console.log('✅ TokenManager Login test passed!');
 
-    const apiRes = await KbttClient.sendBatchVn([vnPayload]);
+    const client = new KbttClient(tokenManager);
+    const apiRes = await client.submitVietnameseGuests([vnPayload]);
     console.log('✅ API Client test response:', apiRes);
 
-    await tokenManager.revokeToken();
+    await tokenManager.revoke();
     console.log('✅ TokenManager Revoke test passed!');
   } catch (err) {
     console.warn('⚠️ Kiểm tra API Server trả về:', (err as Error).message);
