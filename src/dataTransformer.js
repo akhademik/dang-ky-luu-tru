@@ -162,6 +162,31 @@ export class DataTransformer {
   }
 
   /**
+   * Strip và chuẩn hóa số phòng: chỉ lấy số cố định từ 1 - 9
+   * Ví dụ: "P.06" -> "6", "P.07" -> "7", "Phòng 3" -> "3", "P01" -> "1"
+   * Nếu không trích xuất được số từ 1 - 9 thì trả về '' (để flag thiếu số phòng)
+   * @param {string|number} rawRoom
+   * @returns {string}
+   */
+  cleanRoomNumber(rawRoom) {
+    if (rawRoom === null || rawRoom === undefined) return '';
+    const str = String(rawRoom).trim();
+    if (!str) return '';
+
+    const matches = str.match(/\d+/g);
+    if (!matches || matches.length === 0) return '';
+
+    for (const m of matches) {
+      const num = parseInt(m, 10);
+      if (num >= 1 && num <= 9) {
+        return String(num);
+      }
+    }
+
+    return '';
+  }
+
+  /**
    * Validate ngày đến cơ sở lưu trú: bắt buộc phải là ngày hiện tại hoặc hôm qua
    * @param {string} ngayDenStr - Chuỗi định dạng YYYY-MM-DD HH:mm:ss hoặc YYYY-MM-DD
    * @returns {{ valid: boolean, error?: string, checkInDate?: string }}
@@ -219,7 +244,8 @@ export class DataTransformer {
     const ngaySinhStr = this.formatDateOnly(rawDob);
     const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDen || rawRow['(từ ngày)'] || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
     const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDi || rawRow['(đến ngày)'] || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
-    const soPhong = String(rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '').trim();
+    const rawRoom = rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '';
+    const soPhong = this.cleanRoomNumber(rawRoom);
     const rawAddress = (rawRow.diaChi || rawRow['Địa chỉ'] || rawRow['Địa chỉ chi tiết'] || rawRow.address || '').trim();
 
     if (!hoTen) {
@@ -229,7 +255,7 @@ export class DataTransformer {
       return { validationError: 'Thiếu hoặc sai định dạng Ngày sinh' };
     }
     if (!soPhong) {
-      return { validationError: 'Thiếu thông tin Số phòng' };
+      return { validationError: `Số phòng không hợp lệ hoặc không tìm thấy số từ 1-9 (giá trị hiện tại: "${rawRoom || 'trống'}")` };
     }
     if (!ngayDenCsltStr || !ngayDiDuKienStr) {
       return { validationError: 'Thiếu thông tin Ngày đến hoặc Ngày đi dự kiến' };
@@ -386,9 +412,16 @@ export class DataTransformer {
     const gioiTinh = this.normalizeGender(rawRow.gioiTinh || rawRow['Giới tính'] || rawRow.gender);
     fieldStatus.gioiTinh = { label: 'Giới tính', value: gioiTinh, required: true, valid: true };
 
-    const soPhong = String(rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '').trim();
-    if (!soPhong) missingFields.push('Số phòng (soPhong)');
-    fieldStatus.soPhong = { label: 'Số phòng', value: soPhong, required: true, valid: !!soPhong };
+    const rawRoom = rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '';
+    const soPhong = this.cleanRoomNumber(rawRoom);
+    if (!soPhong) missingFields.push('Số phòng (cần số 1-9)');
+    fieldStatus.soPhong = {
+      label: 'Số phòng',
+      value: soPhong || rawRoom,
+      required: true,
+      valid: !!soPhong,
+      error: !soPhong ? 'Số phòng phải là số từ 1 đến 9' : ''
+    };
 
     const ngayDen = this.formatDateTime(rawRow.ngayDen || rawRow['(từ ngày)'] || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
     const checkInVal = this.validateCheckInDate(ngayDen);

@@ -36,17 +36,35 @@ function setupHotReload() {
   }
 }
 
+function cleanRoomNumber(rawRoom) {
+  if (rawRoom === null || rawRoom === undefined) return '';
+  const str = String(rawRoom).trim();
+  if (!str) return '';
+
+  const matches = str.match(/\d+/g);
+  if (!matches || matches.length === 0) return '';
+
+  for (const m of matches) {
+    const num = parseInt(m, 10);
+    if (num >= 1 && num <= 9) {
+      return String(num);
+    }
+  }
+
+  return '';
+}
+
 /**
  * Lấy danh sách các Tab (Sheets) từ Google Sheets và tự động chọn tab ngày gần nhất
  */
 async function fetchSheetTabsList() {
-  const sheetIdInput = (document.getElementById('sheetIdInput').value || '').trim();
+  const sheetIdInput = (document.getElementById('sheetIdInput') ? document.getElementById('sheetIdInput').value : '16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q').trim();
   const select = document.getElementById('sheetTabSelect');
   const statusLabel = document.getElementById('tabFetchStatus');
 
   if (!sheetIdInput) return;
 
-  statusLabel.textContent = 'Đang quét tabs...';
+  if (statusLabel) statusLabel.textContent = 'Đang quét tabs...';
   try {
     const res = await fetch(`/api/sheets/tabs?sheetId=${encodeURIComponent(sheetIdInput)}`);
     const data = await res.json();
@@ -67,18 +85,18 @@ async function fetchSheetTabsList() {
         select.appendChild(opt);
       });
 
-      statusLabel.textContent = `Tìm thấy ${availableTabs.length} tabs`;
+      if (statusLabel) statusLabel.textContent = `Tìm thấy ${availableTabs.length} tabs`;
 
       if (defaultGid) {
         await pullDataFromGoogleSheet(defaultGid);
       }
     } else {
       select.innerHTML = '<option value="0">Tab Mặc định (GID 0)</option>';
-      statusLabel.textContent = 'Tab mặc định';
+      if (statusLabel) statusLabel.textContent = 'Tab mặc định';
     }
   } catch (err) {
     console.warn('Lỗi khi lấy tabs:', err);
-    statusLabel.textContent = 'Không lấy được tabs';
+    if (statusLabel) statusLabel.textContent = 'Không lấy được tabs';
   }
 }
 
@@ -91,17 +109,12 @@ function handleTabChange() {
 }
 
 async function pullDataFromGoogleSheet(forcedGid = null) {
-  const sheetId = (document.getElementById('sheetIdInput').value || '').trim();
+  const sheetId = (document.getElementById('sheetIdInput') ? document.getElementById('sheetIdInput').value : '16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q').trim();
   const select = document.getElementById('sheetTabSelect');
   const gid = forcedGid !== null ? forcedGid : (select ? select.value : '0');
 
-  if (!sheetId) {
-    alert('Vui lòng nhập Google Sheet ID hoặc đường link');
-    return;
-  }
-
   const sourceLabel = document.getElementById('currentSourceLabel');
-  sourceLabel.textContent = 'Đang kéo dữ liệu từ Google Sheets...';
+  if (sourceLabel) sourceLabel.textContent = 'Đang kéo dữ liệu từ Google Sheets...';
 
   try {
     const res = await fetch('/api/sheets/pull', {
@@ -112,7 +125,15 @@ async function pullDataFromGoogleSheet(forcedGid = null) {
     const data = await res.json();
 
     if (data.success && data.rows && data.rows.length > 0) {
-      currentRows = data.rows;
+      currentRows = data.rows.map(row => {
+        const rawRoom = row.soPhong || row['Số phòng'] || row.room || '';
+        const cleaned = cleanRoomNumber(rawRoom);
+        if (cleaned) {
+          row.soPhong = cleaned;
+          if (row['Số phòng']) row['Số phòng'] = cleaned;
+        }
+        return row;
+      });
       selectedRowIndices = new Set(currentRows.map((_, i) => i)); // Mặc định chọn tất cả
       editingRowIndices.clear();
 
@@ -122,15 +143,15 @@ async function pullDataFromGoogleSheet(forcedGid = null) {
 
       const selectedTab = availableTabs.find(t => t.gid === String(gid));
       const tabName = selectedTab ? selectedTab.name : `GID ${gid}`;
-      sourceLabel.textContent = `Nguồn: Google Sheets [${tabName}] - ${data.rows.length} bản ghi`;
+      if (sourceLabel) sourceLabel.textContent = `Nguồn: Google Sheets [${tabName}] - ${data.rows.length} bản ghi`;
     } else {
-      sourceLabel.textContent = `Cảnh báo: ${data.message || 'Không có dữ liệu trong tab này'}`;
+      if (sourceLabel) sourceLabel.textContent = `Cảnh báo: ${data.message || 'Không có dữ liệu trong tab này'}`;
       if (forcedGid === null) {
         alert(data.message || 'Không có dữ liệu trong tab');
       }
     }
   } catch (err) {
-    sourceLabel.textContent = `Lỗi kết nối: ${err.message}`;
+    if (sourceLabel) sourceLabel.textContent = `Lỗi kết nối: ${err.message}`;
   }
 }
 
@@ -155,10 +176,6 @@ function switchTab(tabId) {
   if (activeBtn) {
     activeBtn.classList.add('border-indigo-600', 'text-indigo-600', 'font-semibold');
     activeBtn.classList.remove('border-transparent', 'text-slate-500');
-  }
-
-  if (tabId === 'transformTab') {
-    updatePayloadPreview();
   }
 }
 
@@ -404,6 +421,13 @@ function removeRow(idx) {
 }
 
 function addNewRow() {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const next2Days = new Date(now);
+  next2Days.setDate(next2Days.getDate() + 2);
+  const next2DaysStr = `${next2Days.getFullYear()}-${pad(next2Days.getMonth() + 1)}-${pad(next2Days.getDate())}`;
+
   const newIdx = currentRows.length;
   currentRows.push({
     hoTen: 'NGUYỄN VĂN MỚI',
@@ -412,10 +436,10 @@ function addNewRow() {
     quocTich: 'VNM',
     loaiGiayTo: 'Thẻ CCCD',
     soGiayTo: '001095000999',
-    soPhong: 'P.102',
+    soPhong: '1',
     diaChi: 'Hà Nội',
-    ngayDen: '2026-09-16 14:00:00',
-    ngayDi: '2026-09-18 12:00:00',
+    ngayDen: `${todayStr} 14:00:00`,
+    ngayDi: `${next2DaysStr} 12:00:00`,
     lyDo: 'Du lịch',
   });
   selectedRowIndices.add(newIdx);
@@ -447,7 +471,7 @@ function loadSampleData() {
       'Địa chỉ chi tiết': 'Tổ Dân Phố 5',
       'Ngày đến': `${todayStr} 12:00:00`,
       'Ngày đi': `${next2DaysStr} 12:00:00`,
-      'Số phòng': 'P.06',
+      'Số phòng': '6',
       'Lý do': 'Du lịch',
       'Loại giấy tờ': 'Thẻ CCCD',
       'Số giấy tờ': '066201008768',
@@ -463,14 +487,15 @@ function loadSampleData() {
       'Ngày đến': `${todayStr} 12:00:00`,
       'Ngày đi': `${next2DaysStr} 12:00:00`,
       'Thời hạn tạm trú': '2026-12-31 23:59:59',
-      'Số phòng': 'P.09',
+      'Số phòng': '9',
       'Loại giấy tờ': 'Hộ chiếu',
       'Ảnh hộ chiếu': '',
     }
   ];
   selectedRowIndices = new Set(currentRows.map((_, i) => i));
   editingRowIndices.clear();
-  document.getElementById('currentSourceLabel').textContent = 'Đang hiển thị dữ liệu mẫu chuẩn v1.4';
+  const sourceLabel = document.getElementById('currentSourceLabel');
+  if (sourceLabel) sourceLabel.textContent = 'Đang hiển thị dữ liệu mẫu chuẩn v1.4';
   updatePayloadPreview().then(() => {
     renderTable();
     updateSelectedCountBadge();
@@ -489,11 +514,15 @@ async function updatePayloadPreview() {
     const vnPayloads = (data.vnPayloads || []).map(item => item.payload);
     const foreignPayloads = (data.foreignPayloads || []).map(item => item.payload);
 
-    document.getElementById('vnPayloadJson').textContent = JSON.stringify(vnPayloads, null, 2);
-    document.getElementById('foreignPayloadJson').textContent = JSON.stringify(foreignPayloads, null, 2);
+    const vnJsonEl = document.getElementById('vnPayloadJson');
+    if (vnJsonEl) vnJsonEl.textContent = JSON.stringify(vnPayloads, null, 2);
+    const foreignJsonEl = document.getElementById('foreignPayloadJson');
+    if (foreignJsonEl) foreignJsonEl.textContent = JSON.stringify(foreignPayloads, null, 2);
 
-    document.getElementById('vnCountBadge').textContent = `${vnPayloads.length} bản ghi`;
-    document.getElementById('foreignCountBadge').textContent = `${foreignPayloads.length} bản ghi`;
+    const vnBadgeEl = document.getElementById('vnCountBadge');
+    if (vnBadgeEl) vnBadgeEl.textContent = `${vnPayloads.length} bản ghi`;
+    const foreignBadgeEl = document.getElementById('foreignCountBadge');
+    if (foreignBadgeEl) foreignBadgeEl.textContent = `${foreignPayloads.length} bản ghi`;
 
     rowValidationStates = (data.completenessList || []).map(item => item.completeness);
   } catch (err) {
