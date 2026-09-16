@@ -97,6 +97,24 @@ async function runTests() {
   assert.equal(parsedRows[1].soGiayTo, 'G12345678');
   console.log('✅ GoogleSheetService (CSV Parsing & Normalization) test passed!');
 
+  // 3.1 Test GoogleSheetService Live Fetch with full URL / gid
+  console.log('--- Kiểm tra kéo dữ liệu trực tiếp từ Google Sheets công khai ---');
+  const liveUrl = 'https://docs.google.com/spreadsheets/d/16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q/edit?pli=1&gid=159547744#gid=159547744';
+  const liveRes = await sheetService.fetchSheetData(liveUrl);
+  if (liveRes.success && liveRes.rows.length > 0) {
+    console.log(`✅ Kéo thành công ${liveRes.rows.length} dòng từ Google Sheet! Khách: ${liveRes.rows[0].hoTen}`);
+    const transformed = await transformer.transformRow(liveRes.rows[0]);
+    assert.equal(transformed.branch, 'VN');
+    assert.equal(transformed.payload.hoTen, 'TRỊNH NGỌC LINH');
+    assert.equal(transformed.payload.gioiTinh, 'F');
+    assert.equal(transformed.payload.soGiayTo, '001302011971');
+    assert.equal(transformed.payload.ngayThangNamSinhStr, '2002-09-22');
+    console.log('✅ Chuẩn hóa dòng dữ liệu thực tế từ Google Sheet sang API 5 thành công:');
+    console.log(JSON.stringify(transformed.payload, null, 2));
+  } else {
+    console.warn('⚠️ Live fetch info:', liveRes.message);
+  }
+
   // 4. Test TokenManager & KbttClient live call (if test server reachable)
   console.log('\n--- Kiểm tra kết nối OAuth & API Client ---');
   const tokenManager = new TokenManager(CONFIG);

@@ -9,14 +9,38 @@ export class GoogleSheetService {
   }
 
   /**
-   * Kéo dữ liệu từ Google Sheets
-   * Hỗ trợ tải qua CSV Export công khai hoặc Google Sheets API v4
-   * @param {string} [sheetId]
-   * @param {string} [apiKey]
-   * @param {string} [range]
-   * @returns {Promise<{ success: boolean, rows: Array<Object>, message?: string, source: string }>}
+   * Phân tích chuỗi đầu vào (có thể là Sheet ID hoặc Full URL) để trích xuất Sheet ID và GID (sheet tab)
+   * @param {string} input Sheet ID hoặc Full URL
+   * @returns {{ sheetId: string, gid?: string }}
    */
-  async fetchSheetData(sheetId = this.sheetId, apiKey = process.env.GOOGLE_API_KEY, range = 'Sheet1!A1:Z100') {
+  parseSheetIdentifier(input) {
+    if (!input) return { sheetId: this.sheetId };
+    const str = String(input).trim();
+
+    // Trường hợp là URL đầy đủ: https://docs.google.com/spreadsheets/d/{id}/edit?...gid={gid}
+    const urlMatch = str.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    const gidMatch = str.match(/[?&#]gid=([0-9]+)/);
+
+    if (urlMatch) {
+      return {
+        sheetId: urlMatch[1],
+        gid: gidMatch ? gidMatch[1] : undefined,
+      };
+    }
+
+    return { sheetId: str };
+  }
+
+  /**
+   * Kéo dữ liệu từ Google Sheets (không cần API key nếu đã bật chia sẻ link)
+   * @param {string} [input] Sheet ID hoặc URL đầy đủ
+   * @param {string} [apiKey] Google API Key (tùy chọn)
+   * @param {string} [range] Range (nếu dùng API v4)
+   * @returns {Promise<{ success: boolean, rows: Array<Object>, message?: string, source: string, sheetId?: string, gid?: string }>}
+   */
+  async fetchSheetData(input = this.sheetId, apiKey = process.env.GOOGLE_API_KEY, range = 'Sheet1!A1:Z100') {
+    const { sheetId, gid } = this.parseSheetIdentifier(input);
+
     if (!sheetId) {
       return { success: false, rows: [], message: 'Thiếu Google Sheet ID' };
     }
@@ -31,7 +55,7 @@ export class GoogleSheetService {
           const values = json.values || [];
           if (values.length > 1) {
             const rows = this._parseMatrixToObjects(values);
-            return { success: true, rows, source: 'Google Sheets API v4' };
+            return { success: true, rows, source: 'Google Sheets API v4', sheetId, gid };
           }
         }
       } catch (err) {
@@ -39,10 +63,11 @@ export class GoogleSheetService {
       }
     }
 
-    // 2. Thử kéo qua đường dẫn xuất CSV (Yêu cầu sheet ở chế độ "Bất kỳ ai có đường link")
+    // 2. Kéo qua đường dẫn xuất CSV công khai (Không cần API Key)
+    const gidParam = gid ? `&gid=${gid}` : '';
     const exportCsvUrls = [
-      `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`,
-      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`,
+      `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gidParam}`,
+      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv${gidParam}`,
     ];
 
     for (const url of exportCsvUrls) {
@@ -50,14 +75,16 @@ export class GoogleSheetService {
         const res = await fetch(url, { redirect: 'follow' });
         const text = await res.text();
 
-        // Kiểm tra xem dữ liệu trả về có phải HTML trang đăng nhập không
+        // Kiểm tra xem dữ liệu trả về có phải trang đăng nhập HTML không
         if (res.ok && text && !text.includes('<!DOCTYPE html>') && !text.includes('<html')) {
           const rows = this.parseCsv(text);
           if (rows && rows.length > 0) {
             return {
               success: true,
               rows,
-              source: 'Google Sheets CSV Export (Công khai)',
+              source: `Google Sheets CSV Export công khai (gid: ${gid || '0'})`,
+              sheetId,
+              gid,
             };
           }
         }
@@ -66,13 +93,14 @@ export class GoogleSheetService {
       }
     }
 
-    // 3. Nếu chưa bật quyền công khai hoặc cần đăng nhập
     return {
       success: false,
       rows: [],
       message:
-        'Không thể truy cập Google Sheet trực tiếp do quyền riêng tư. Hãy đảm bảo Google Sheet đã được chia sẻ ở chế độ "Bất kỳ ai có đường liên kết đều có thể xem" (Anyone with the link can view), hoặc cung cấp GOOGLE_API_KEY.',
+        'Không thể truy cập Google Sheet trực tiếp. Hãy đảm bảo Google Sheet đã được mở quyền: "Bất kỳ ai có đường liên kết đều có thể xem" (Anyone with the link can view).',
       source: 'Direct Web Access',
+      sheetId,
+      gid,
     };
   }
 
@@ -173,20 +201,22 @@ export class GoogleSheetService {
       .trim();
 
     if (clean.includes('ho ten') || clean.includes('ten khach') || clean === 'name') return 'hoTen';
-    if (clean.includes('ngay sinh') || clean === 'dob' || clean === 'birth') return 'ngaySinh';
+    if (clean === 'd o b' || clean === 'dob' || clean.includes('ngay sinh') || clean === 'birth') return 'ngaySinh';
     if (clean.includes('gioi tinh') || clean === 'gender') return 'gioiTinh';
-    if (clean.includes('quoc tich') || clean === 'nationality') return 'quocTich';
-    if (clean.includes('loai giay to') || clean === 'id type') return 'loaiGiayTo';
+    if (clean.includes('quoc tich') || clean.includes('quoc gia') || clean === 'nationality') return 'quocTich';
+    if (clean.includes('loai giay to') || clean.includes('ten giay to') || clean === 'id type') return 'loaiGiayTo';
     if (clean.includes('so giay to') || clean.includes('so cccd') || clean.includes('so ho chieu') || clean === 'id number') return 'soGiayTo';
     if (clean.includes('dia chi chi tiet') || clean === 'dia chi' || clean === 'address') return 'diaChi';
     if (clean.includes('tinh') || clean.includes('thanh pho') || clean === 'province') return 'tinhTp';
     if (clean.includes('phuong') || clean.includes('xa') || clean === 'ward') return 'phuongXa';
-    if (clean.includes('ngay den') || clean === 'check in' || clean === 'checkin') return 'ngayDen';
-    if (clean.includes('ngay di') || clean === 'check out' || clean === 'checkout') return 'ngayDi';
+    if (clean.includes('quan') || clean.includes('huyen') || clean === 'district') return 'quanHuyen';
+    if (clean.includes('tu ngay') || clean.includes('ngay den') || clean === 'check in' || clean === 'checkin') return 'ngayDen';
+    if (clean.includes('den ngay') || clean.includes('ngay di') || clean === 'check out' || clean === 'checkout') return 'ngayDi';
     if (clean.includes('thoi han tam tru')) return 'thoiHanTamTru';
     if (clean.includes('ly do') || clean === 'reason') return 'lyDo';
     if (clean.includes('so phong') || clean.includes('phong') || clean === 'room') return 'soPhong';
-    if (clean.includes('dien thoai') || clean.includes('sdt') || clean === 'phone') return 'soDienThoai';
+    if (clean.includes('dien thoai') || clean === 'sdt' || clean.includes('sdt') || clean === 'phone') return 'soDienThoai';
+    if (clean.includes('loai cu tru') || clean.includes('noi cu tru')) return 'noiCuTru';
     if (clean.includes('anh truoc') || clean.includes('mat truoc')) return 'anhTruocB64';
     if (clean.includes('anh sau') || clean.includes('mat sau')) return 'anhSauB64';
     if (clean.includes('anh ho chieu') || clean.includes('passport')) return 'anhHoChieuB64';

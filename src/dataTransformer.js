@@ -215,12 +215,17 @@ export class DataTransformer {
       }
 
       // Nếu không tìm thấy maTT hoặc maPX, để trống và đưa địa chỉ đầy đủ vào diaChi
+      const quanHuyenRaw = rawRow.quanHuyen || rawRow['Quận/Huyện'] || rawRow.district || '';
       if (!maTT || !maPX) {
         maTT = '';
         maPX = '';
-        // Ghép địa chỉ nếu có thông tin rời
-        if (!diaChi) {
-          diaChi = [phuongXaRaw, tinhRaw].filter(Boolean).join(', ');
+        // Ghép địa chỉ đầy đủ bao gồm số nhà, xã/phường, quận/huyện, tỉnh/thành
+        const addressParts = [rawAddress, phuongXaRaw, quanHuyenRaw, tinhRaw].filter(Boolean);
+        diaChi = addressParts.join(', ');
+      } else {
+        // Có mã tỉnh và mã phường xã, bổ sung quận/huyện vào diaChi nếu chưa có
+        if (quanHuyenRaw && !diaChi.includes(quanHuyenRaw)) {
+          diaChi = [diaChi, quanHuyenRaw].filter(Boolean).join(', ');
         }
       }
 
@@ -229,15 +234,23 @@ export class DataTransformer {
         gioiTinh,
         soDienThoai: String(rawRow.soDienThoai || rawRow['Số điện thoại'] || rawRow.phone || '').trim(),
         ngayThangNamSinhStr: ngaySinhStr,
-        noiCuTru: Number(rawRow.noiCuTru || this.catalog.findNoiCuTru(rawRow['Nơi cư trú'] || 'Thường trú')),
+        noiCuTru: Number(
+          typeof rawRow.noiCuTru === 'number'
+            ? rawRow.noiCuTru
+            : this.catalog.findNoiCuTru(rawRow.noiCuTru || rawRow['Nơi cư trú'] || rawRow['Loại cư trú'] || 'Thường trú') || 1
+        ),
         maTT: String(maTT),
         maPX: String(maPX),
         diaChi,
         ngayDenCsltStr,
         ngayDiDuKienStr,
         soPhong,
-        lyDoCuTru: Number(rawRow.lyDoCuTru || this.catalog.findLyDoCuTru(rawRow.lyDo || rawRow['Lý do'] || 'Du lịch')),
-        loaiGiayTo: Number(loaiGiayToId),
+        lyDoCuTru: Number(
+          typeof rawRow.lyDoCuTru === 'number'
+            ? rawRow.lyDoCuTru
+            : this.catalog.findLyDoCuTru(rawRow.lyDo || rawRow['Lý do'] || 'Du lịch') || 1
+        ),
+        loaiGiayTo: Number(loaiGiayToId || 1),
         soGiayTo: docVal.cleanNumber,
         anhTruocB64: rawRow.anhTruocB64 || rawRow['Ảnh mặt trước'] || '',
         anhSauB64: rawRow.anhSauB64 || rawRow['Ảnh mặt sau'] || '',
