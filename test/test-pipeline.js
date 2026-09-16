@@ -127,7 +127,25 @@ async function runTests() {
   const pastRes = await transformer.transformRow(pastCheckIn);
   assert.ok(pastRes.validationError, 'Phải chặn ngày đến trong quá khứ');
   assert.ok(pastRes.validationError.includes('quá khứ'));
-  console.log('✅ DataTransformer (Validation & Past Date Blocking) test passed!');
+
+  // Test Validation Failure (invalid nationality code not in quoc_tich.json)
+  const invalidNationalityRow = {
+    'Họ tên': 'UNKNOWN GUEST',
+    'Ngày sinh': '1990-05-15',
+    'Quốc tịch': 'XYZ_INVALID_CODE',
+    'Số giấy tờ': 'P12345678',
+    'Số phòng': 'P.05',
+    'Loại giấy tờ': 'Hộ chiếu',
+    'Ngày đến': todayStr,
+    'Ngày đi': next2DaysStr
+  };
+  const invalidNatRes = await transformer.transformRow(invalidNationalityRow);
+  assert.ok(invalidNatRes.validationError, 'Phải chặn mã quốc tịch không tồn tại trong danh mục quoc_tich.json');
+  assert.ok(invalidNatRes.validationError.includes('quốc tịch'));
+
+  const compInvalidNat = await transformer.checkRowCompleteness(invalidNationalityRow);
+  assert.equal(compInvalidNat.fieldStatus.quocTich.valid, false, 'Field status quốc tịch phải invalid');
+  console.log('✅ DataTransformer (Validation, Past Date Blocking & Nationality Cross-Check) test passed!');
 
   // 3. Test GoogleSheetService (CSV Parsing & Header Normalization)
   const sheetService = new GoogleSheetService();

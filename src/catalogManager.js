@@ -157,10 +157,12 @@ export class CatalogManager {
   }
 
   /**
-   * Dò tìm mã Quốc tịch (ISO 3 ký tự hoặc tên)
+   * Khớp mã Quốc tịch chính xác hoặc tên từ danh mục
+   * @param {string} input
+   * @returns {string|null} Trả về maQT nếu tìm thấy trong danh mục, ngược lại null
    */
-  findQuocTich(input) {
-    if (!input) return 'VNM';
+  matchQuocTich(input) {
+    if (!input) return null;
     const clean = this._normalizeText(input);
 
     if (clean === 'vn' || clean === 'vnm' || clean === 'viet nam' || clean === 'vietnam') {
@@ -174,7 +176,38 @@ export class CatalogManager {
       return clean === ma || clean === ten || clean === tenEn || ten.includes(clean) || (tenEn && tenEn.includes(clean));
     });
 
-    return match ? match.maQT : (input.length === 3 ? input.toUpperCase() : 'VNM');
+    return match ? match.maQT : null;
+  }
+
+  /**
+   * Kiểm tra tính hợp lệ của mã/tên quốc tịch đối chiếu với quoc_tich.json
+   * @param {string} input
+   * @returns {{ valid: boolean, maQT?: string, error?: string }}
+   */
+  validateQuocTich(input) {
+    if (!input || !String(input).trim()) {
+      return { valid: false, error: 'Quốc tịch không được để trống' };
+    }
+    const matched = this.matchQuocTich(input);
+    if (!matched) {
+      return { valid: false, error: `Mã quốc tịch "${input}" không hợp lệ hoặc không có trong danh mục chuẩn API (quoc_tich.json)` };
+    }
+    return { valid: true, maQT: matched };
+  }
+
+  /**
+   * Dò tìm mã Quốc tịch (ISO 3 ký tự hoặc tên), mặc định VNM nếu không tìm thấy
+   */
+  findQuocTich(input) {
+    if (!input) return 'VNM';
+    const matched = this.matchQuocTich(input);
+    if (matched) return matched;
+
+    const clean = this._normalizeText(input);
+    if (clean === 'vn' || clean === 'vnm' || clean === 'viet nam' || clean === 'vietnam') {
+      return 'VNM';
+    }
+    return input.length === 3 ? input.toUpperCase() : 'VNM';
   }
 
   /**

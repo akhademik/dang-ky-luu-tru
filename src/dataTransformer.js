@@ -16,11 +16,17 @@ export class DataTransformer {
   isVietnamese(row) {
     const quocTichRaw = row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || row.nationality || '';
     const loaiGiayToRaw = row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || row.idType || '';
-    const quocTich = this.catalog.findQuocTich(quocTichRaw);
 
-    if (quocTich === 'VNM') return true;
+    // Nếu có trường quốc tịch, kiểm tra khớp
+    if (quocTichRaw && String(quocTichRaw).trim()) {
+      const matched = this.catalog.matchQuocTich(quocTichRaw);
+      if (matched === 'VNM') return true;
+      if (matched && matched !== 'VNM') return false;
+      // Nếu không khớp trong danh mục nhưng có giá trị khác rỗng thì coi là Nước ngoài (để validator bắt lỗi)
+      return false;
+    }
 
-    // Nếu loại giấy tờ là CCCD/CMND/Căn cước thì là VN
+    // Nếu không có trường quốc tịch thì xét loại giấy tờ
     const loaiGiayToId = this.catalog.findLoaiGiayTo(loaiGiayToRaw);
     if ([1, 2, 8].includes(loaiGiayToId)) return true;
 
@@ -358,7 +364,12 @@ export class DataTransformer {
       // ----------------------------------------------------
       // NHÁNH B: KHÁCH NƯỚC NGOÀI (API 4)
       // ----------------------------------------------------
-      const quocTich = this.catalog.findQuocTich(rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality);
+      const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
+      const qtVal = this.catalog.validateQuocTich(rawQuocTich);
+      if (!qtVal.valid) {
+        return { validationError: qtVal.error };
+      }
+      const quocTich = qtVal.maQT;
       const rawPassport = rawRow.soHoChieu || rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số hộ chiếu'] || rawRow.passportNumber || '';
       const docVal = this.validateDocNumber(rawPassport, 4);
       if (!docVal.valid) {
@@ -450,8 +461,18 @@ export class DataTransformer {
       fieldStatus.soGiayTo = { label: 'Số giấy tờ (CCCD/CMND)', value: docVal.cleanNumber || rawDocNum, required: true, valid: docVal.valid, error: docVal.error };
       fieldStatus.loaiGiayTo = { label: 'Loại giấy tờ', value: loaiGiayToId, required: true, valid: true };
     } else {
-      const quocTich = this.catalog.findQuocTich(rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality);
-      fieldStatus.quocTich = { label: 'Quốc tịch', value: quocTich, required: true, valid: !!quocTich };
+      const rawQuocTich = rawRow.quocTich || rawRow['Quốc tịch'] || rawRow['Quốc gia'] || rawRow.nationality || '';
+      const qtVal = this.catalog.validateQuocTich(rawQuocTich);
+      if (!qtVal.valid) {
+        missingFields.push(`Quốc tịch hợp lệ (${qtVal.error})`);
+      }
+      fieldStatus.quocTich = {
+        label: 'Quốc tịch',
+        value: qtVal.maQT || rawQuocTich,
+        required: true,
+        valid: qtVal.valid,
+        error: qtVal.error
+      };
 
       const rawPassport = rawRow.soHoChieu || rawRow.soGiayTo || rawRow['Số giấy tờ'] || rawRow['Số hộ chiếu'] || rawRow.passportNumber || '';
       const docVal = this.validateDocNumber(rawPassport, 4);

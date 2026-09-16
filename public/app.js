@@ -195,6 +195,35 @@ function getCombinedAddress(row) {
   return parts.length > 0 ? parts.join(', ') : '';
 }
 
+function getDisplayAddress(row) {
+  const loaiGiayToName = (row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || '').toLowerCase();
+  if (loaiGiayToName.includes('hộ chiếu') || loaiGiayToName.includes('passport')) {
+    return { shortText: '-', fullText: '-' };
+  }
+
+  const isVN = (row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase() === 'VNM' || (row.quocTich || '').toLowerCase() === 'việt nam';
+  if (!isVN) {
+    const val = row.thoiHanTamTru || row.thoiHanTamTruStr || row['Thời hạn tạm trú'] || '-';
+    return { shortText: val, fullText: val };
+  }
+
+  const fullAddr = getCombinedAddress(row);
+  if (!fullAddr) {
+    return { shortText: '-', fullText: '-' };
+  }
+
+  // Ưu tiên lấy trực tiếp tỉnh nếu có trường tỉnh riêng
+  const tinhRaw = (row.tinhTp || row['Tỉnh'] || row['Tỉnh/TP'] || row.province || '').trim();
+  if (tinhRaw) {
+    return { shortText: tinhRaw, fullText: fullAddr };
+  }
+
+  // Nếu không có trường riêng, trích xuất phần tử cuối sau dấu phẩy của địa chỉ
+  const parts = fullAddr.split(',').map(p => p.trim()).filter(Boolean);
+  const shortText = parts.length > 0 ? parts[parts.length - 1] : fullAddr;
+  return { shortText, fullText: fullAddr };
+}
+
 function renderTable() {
   const tbody = document.getElementById('dataTableBody');
   if (!tbody) return;
@@ -213,13 +242,13 @@ function renderTable() {
     const isChecked = selectedRowIndices.has(idx);
 
     const isVN = (row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase() === 'VNM' || (row.quocTich || '').toLowerCase() === 'việt nam';
-    const loaiGiayToName = (row.loaiGiayTo || row['Loại giấy tờ'] || row['Tên giấy tờ'] || '').toLowerCase();
-    const isPassport = loaiGiayToName.includes('hộ chiếu') || loaiGiayToName.includes('passport') || !isVN;
-    const addressOrExpiry = isPassport ? '-' : (isVN ? (getCombinedAddress(row) || '-') : (row.thoiHanTamTru || row.thoiHanTamTruStr || row['Thời hạn tạm trú'] || '-'));
+    const addrInfo = getDisplayAddress(row);
 
     // Field validity checks
     const isHoTenValid = fStatus.hoTen ? fStatus.hoTen.valid : !!(row.hoTen || row['Họ tên']);
     const isDobValid = fStatus.ngaySinh ? fStatus.ngaySinh.valid : !!(row.ngaySinh || row['Ngày sinh'] || row['D.O.B']);
+    const isQuocTichValid = fStatus.quocTich ? fStatus.quocTich.valid : true;
+    const quocTichError = fStatus.quocTich ? fStatus.quocTich.error : '';
     const isRoomValid = fStatus.soPhong ? fStatus.soPhong.valid : !!(row.soPhong || row['Số phòng']);
     const isDocValid = fStatus.soGiayTo ? fStatus.soGiayTo.valid : (fStatus.soHoChieu ? fStatus.soHoChieu.valid : true);
     const docError = fStatus.soGiayTo ? fStatus.soGiayTo.error : (fStatus.soHoChieu ? fStatus.soHoChieu.error : '');
@@ -228,7 +257,7 @@ function renderTable() {
     const isNgayDiValid = fStatus.ngayDi ? fStatus.ngayDi.valid : true;
 
     const tr = document.createElement('tr');
-    tr.className = `hover:bg-slate-50/90 transition ${!isComplete ? 'bg-rose-50/20' : ''} ${isChecked ? 'bg-indigo-50/20' : ''}`;
+    tr.className = `hover:bg-slate-100/80 transition ${!isComplete ? 'bg-rose-50/30' : ''} ${isChecked ? 'bg-indigo-50/30' : ''}`;
     tr.innerHTML = `
       <!-- Checkbox -->
       <td class="p-3 text-center">
@@ -266,15 +295,18 @@ function renderTable() {
               <option value="Nam" ${(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M' ? 'selected' : ''}>Nam</option>
               <option value="Nữ" ${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'selected' : ''}>Nữ</option>
             </select>`
-          : `<span class="px-2 py-0.5 rounded bg-slate-100 font-semibold text-slate-700 text-xs">${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'Nữ' : 'Nam'}</span>`
+          : `<span class="px-2 py-0.5 rounded bg-slate-200/80 font-semibold text-slate-700 text-xs">${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'Nữ' : 'Nam'}</span>`
         }
       </td>
 
       <!-- Quốc tịch -->
       <td class="p-3">
         ${isEditing
-          ? `<input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-20 bg-emerald-50/50 border border-emerald-400 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs">`
-          : `<span class="font-bold text-slate-700 text-xs">${(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>`
+          ? `<input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-20 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs transition ${isQuocTichValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}" title="${isQuocTichValid ? 'Hợp lệ' : quocTichError}">`
+          : (isQuocTichValid
+              ? `<span class="font-bold text-slate-700 text-xs">${(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>`
+              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-bold px-1.5 py-0.5 rounded text-xs cursor-help" title="${quocTichError || 'Sai mã quốc tịch'}">${(row.quocTich || row['Quốc tịch'] || 'LỖI').toUpperCase()} <i class="fa-solid fa-circle-exclamation"></i></span>`
+            )
         }
       </td>
 
@@ -313,7 +345,7 @@ function renderTable() {
               `).join('')}
             </select>`
           : (isRoomValid 
-              ? `<span class="font-bold text-slate-800 bg-slate-100/90 px-2 py-0.5 rounded text-xs">${cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>`
+              ? `<span class="font-bold text-slate-800 bg-slate-200/80 px-2 py-0.5 rounded text-xs">${cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>`
               : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs cursor-help" title="Thiếu hoặc sai số phòng">Thiếu</span>`
             )
         }
@@ -336,17 +368,11 @@ function renderTable() {
         }
       </td>
 
-      <!-- Địa chỉ ghép VN / Tạm trú NNN (Hộ chiếu để trống) -->
-      <td class="p-3 text-slate-600 truncate max-w-xs text-[11px]" title="${addressOrExpiry}">
-        ${addressOrExpiry}
-      </td>
-
-      <!-- Kiểm tra Status (Tick Xanh / Đỏ Tinh gọn) -->
-      <td class="p-3 text-center">
-        ${isComplete 
-          ? `<span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 font-bold shadow-sm" title="Hợp lệ"><i class="fa-solid fa-check text-sm"></i></span>` 
-          : `<span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-rose-100 text-rose-600 font-bold shadow-sm cursor-help" title="Không hợp lệ: ${missing.join('; ')}"><i class="fa-solid fa-xmark text-sm"></i></span>`
-        }
+      <!-- Địa chỉ (Hiển thị Tỉnh gọn gàng, Hover hiển thị đầy đủ tooltip) -->
+      <td class="p-3 text-slate-700 text-[11px] max-w-[140px] truncate" title="${addrInfo.fullText}">
+        <span class="cursor-help hover:text-indigo-600 transition underline decoration-dotted decoration-slate-300" title="${addrInfo.fullText}">
+          ${addrInfo.shortText}
+        </span>
       </td>
 
       <!-- Thao tác: Edit/Save + Push + Delete -->

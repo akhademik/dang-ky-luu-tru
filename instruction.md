@@ -1,5 +1,7 @@
-- toi da cap hanh huong dan ve api tai @api-khai-bao-luu-tru-guide.md
-- hay chay lenh graphify /graphify de luu tru thong tin
-- hay lam test case va ca knip, va ghi nhan lai tinh trang hien tại vao @readme.md
-- cap nhat het cac thong tin lien quan vao worfklow de lan sau biet ma van hanh
-- Toi chi muon dong bo khi gửi json vao api là "phòng số {number}" nhưng trên hiển thị frontend header nó sẽ là "Phòng" còn bên dưới select dropdown chỉ là {number}, seleect xong dướ đó cũng chỉ hiển thị {number} kho phải "phòng {number}"
+trong phan 'Quốc Tịch" phải kiểm tra tréo code đó có đúng với quốc tịch code đã qui định trong @quoc_tich.json hay ko neu ko đúng cũng phải flag lên de user biết mà chỉnh sửa
+
+chỉnh sửa lại giao diện cho màu sắc nó dịu mắt hơn hiện giờ nó quá sáng
+
+địa chỉ chỉ cần hiển thị tỉnh ví dụ "Tổ 16, Thịnh Liệt, Hoàng Mai, Hà Nội" chỉ hiển thị "Hà Nộ" khi hovertext lên mới hiển thị dđầy đủ trong tooltip để tối ưu hóa space
+
+bỏ cột 'CHUẨN' đi, entry nào ko dầy đủ thì đã có flag rồi, cái nào ko flag thì chắc chắn đúng chuẩn

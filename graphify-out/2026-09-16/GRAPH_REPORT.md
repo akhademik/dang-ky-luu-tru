@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 150 nodes · 315 edges · 9 communities (4 shown, 5 thin omitted)
+- 147 nodes · 308 edges · 9 communities (4 shown, 5 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3e546079`
+- Built from commit: `4fa2bea0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -25,7 +25,7 @@
 - TokenManager
 
 ## God Nodes (most connected - your core abstractions)
-1. `CatalogManager` - 27 edges
+1. `CatalogManager` - 25 edges
 2. `runTests()` - 21 edges
 3. `DataTransformer` - 18 edges
 4. `GoogleSheetService` - 13 edges
@@ -55,7 +55,7 @@
 
 ### Community 0 - "app.js"
 Cohesion: 0.12
-Nodes (35): addNewRow(), availableTabs, catalogData, checkTokenStatus(), cleanRoomNumber(), currentRows, editingRowIndices, executeSyncBatch() (+27 more)
+Nodes (34): addNewRow(), availableTabs, catalogData, checkTokenStatus(), cleanRoomNumber(), currentRows, editingRowIndices, executeSyncBatch() (+26 more)
 
 ### Community 1 - "package.json"
 Cohesion: 0.09
@@ -78,16 +78,16 @@ Nodes (8): entry, project, $schema, public/app.js, public/**/*.js, src/index.js,
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.js`, `runTests`?**
-  _High betweenness centrality (0.113) - this node is a cross-community bridge._
+  _High betweenness centrality (0.104) - this node is a cross-community bridge._
 - **Why does `runTests()` connect `runTests` to `TokenManager`, `CatalogManager`, `syncPipeline.js`, `GoogleSheetService`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
+  _High betweenness centrality (0.077) - this node is a cross-community bridge._
 - **Why does `DataTransformer` connect `runTests` to `syncPipeline.js`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
 - **Are the 15 inferred relationships involving `runTests()` (e.g. with `.findLoaiGiayTo()` and `.findQuocTich()`) actually correct?**
   _`runTests()` has 15 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `availableTabs`, `catalogData`, `currentRows` to the rest of the system?**
   _35 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.11587301587301588 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11932773109243698 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
