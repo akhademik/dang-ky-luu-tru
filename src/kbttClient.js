@@ -67,8 +67,8 @@ export class KbttClient {
         resData = { message: await response.text() };
       }
 
-      const statusCode = resData.code || response.status;
-      const isSuccess = statusCode === 200 || statusCode === '200' || response.ok;
+      const codeVal = resData.code !== undefined ? String(resData.code) : String(response.status);
+      const isSuccess = response.ok && (codeVal === '200' || codeVal === '0');
 
       if (isSuccess) {
         console.log(`[KbttClient] [${actionName}] Thành công 200: ${resData.message || 'Thành công'}`);
@@ -80,10 +80,10 @@ export class KbttClient {
         };
       } else {
         const errorMsg = resData.message || resData.error_description || resData.error || `HTTP ${response.status}`;
-        console.warn(`[KbttClient] [${actionName}] Thất bại (${statusCode}): ${errorMsg}`);
+        console.warn(`[KbttClient] [${actionName}] Thất bại (${codeVal}): ${errorMsg}`);
         return {
           success: false,
-          code: statusCode,
+          code: codeVal,
           message: errorMsg,
           raw: resData,
         };

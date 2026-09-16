@@ -391,6 +391,13 @@ function addNewRow() {
 }
 
 function loadSampleData() {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const next2Days = new Date(now);
+  next2Days.setDate(next2Days.getDate() + 2);
+  const next2DaysStr = `${next2Days.getFullYear()}-${pad(next2Days.getMonth() + 1)}-${pad(next2Days.getDate())}`;
+
   currentRows = [
     {
       'Họ tên': 'BUI TAN DUNG',
@@ -402,8 +409,8 @@ function loadSampleData() {
       'Quận/Huyện': 'Krông Năng',
       'Phường/Xã': 'Krông Năng',
       'Địa chỉ chi tiết': 'Tổ Dân Phố 5',
-      'Ngày đến': '2026-09-16 12:00:00',
-      'Ngày đi': '2026-09-18 12:00:00',
+      'Ngày đến': `${todayStr} 12:00:00`,
+      'Ngày đi': `${next2DaysStr} 12:00:00`,
       'Số phòng': 'P.06',
       'Lý do': 'Du lịch',
       'Loại giấy tờ': 'Thẻ CCCD',
@@ -417,8 +424,8 @@ function loadSampleData() {
       'Số giấy tờ': '552165656',
       'Giới tính': 'Nam',
       'Ngày sinh': '1995-11-25',
-      'Ngày đến': '2026-09-16 12:00:00',
-      'Ngày đi': '2026-09-19 12:00:00',
+      'Ngày đến': `${todayStr} 12:00:00`,
+      'Ngày đi': `${next2DaysStr} 12:00:00`,
       'Thời hạn tạm trú': '2026-12-31 23:59:59',
       'Số phòng': 'P.09',
       'Loại giấy tờ': 'Hộ chiếu',

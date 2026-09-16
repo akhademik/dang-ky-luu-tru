@@ -29,6 +29,13 @@ async function runTests() {
   assert.equal(transformer.normalizeGender('Nữ'), 'F');
   assert.equal(transformer.cleanDocNumber(' 001-090.012 345 '), '001090012345');
 
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const next2Days = new Date(now);
+  next2Days.setDate(next2Days.getDate() + 2);
+  const next2DaysStr = `${next2Days.getFullYear()}-${pad(next2Days.getMonth() + 1)}-${pad(next2Days.getDate())}`;
+
   // Test VN Guest transformation
   const rawVn = {
     'Họ tên': 'Nguyễn Văn A',
@@ -38,8 +45,8 @@ async function runTests() {
     'Loại giấy tờ': 'Thẻ CCCD',
     'Số giấy tờ': '001092000001',
     'Địa chỉ chi tiết': 'Ba Đình, Hà Nội',
-    'Ngày đến': '2026-09-16',
-    'Ngày đi': '2026-09-18',
+    'Ngày đến': todayStr,
+    'Ngày đi': next2DaysStr,
     'Số phòng': '101'
   };
   const vnRes = await transformer.transformRow(rawVn);
@@ -48,7 +55,7 @@ async function runTests() {
   assert.equal(vnRes.payload.gioiTinh, 'M');
   assert.equal(vnRes.payload.soGiayTo, '001092000001');
   assert.equal(vnRes.payload.ngayThangNamSinhStr, '1992-10-01');
-  assert.equal(vnRes.payload.ngayDenCsltStr, '2026-09-16 14:00:00');
+  assert.equal(vnRes.payload.ngayDenCsltStr, `${todayStr} 14:00:00`);
   console.log('✅ DataTransformer (VN) test passed!');
 
   // Test Foreign Guest transformation
@@ -60,8 +67,8 @@ async function runTests() {
     'Loại giấy tờ': 'Hộ chiếu',
     'Số giấy tờ': 'E98765432',
     'Số phòng': '202',
-    'Ngày đến': '2026-09-16 12:00:00',
-    'Ngày đi': '2026-09-20 12:00:00'
+    'Ngày đến': `${todayStr} 12:00:00`,
+    'Ngày đi': `${next2DaysStr} 12:00:00`
   };
   const foreignRes = await transformer.transformRow(rawForeign);
   assert.equal(foreignRes.branch, 'FOREIGN');
@@ -77,12 +84,26 @@ async function runTests() {
     'Loại giấy tờ': 'Thẻ CCCD',
     'Số giấy tờ': '123',
     'Số phòng': '101',
-    'Ngày đến': '2026-09-16',
-    'Ngày đi': '2026-09-17'
+    'Ngày đến': todayStr,
+    'Ngày đi': '2026-12-31'
   };
   const invalidRes = await transformer.transformRow(invalidVn);
   assert.ok(invalidRes.validationError);
-  console.log('✅ DataTransformer (Validation Error Handling) test passed!');
+
+  // Test Validation Failure (past check-in date blocked)
+  const pastCheckIn = {
+    'Họ tên': 'GRACHEV NIKITA',
+    'Ngày sinh': '1995-11-25',
+    'Quốc tịch': 'RUS',
+    'Số giấy tờ': '552165656',
+    'Số phòng': 'P.09',
+    'Ngày đến': '2020-01-01',
+    'Ngày đi': '2020-01-05'
+  };
+  const pastRes = await transformer.transformRow(pastCheckIn);
+  assert.ok(pastRes.validationError, 'Phải chặn ngày đến trong quá khứ');
+  assert.ok(pastRes.validationError.includes('quá khứ'));
+  console.log('✅ DataTransformer (Validation & Past Date Blocking) test passed!');
 
   // 3. Test GoogleSheetService (CSV Parsing & Header Normalization)
   const sheetService = new GoogleSheetService();

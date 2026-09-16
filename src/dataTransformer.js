@@ -162,6 +162,52 @@ export class DataTransformer {
   }
 
   /**
+   * Validate ngày đến cơ sở lưu trú: bắt buộc phải là ngày hiện tại hoặc hôm qua
+   * @param {string} ngayDenStr - Chuỗi định dạng YYYY-MM-DD HH:mm:ss hoặc YYYY-MM-DD
+   * @returns {{ valid: boolean, error?: string, checkInDate?: string }}
+   */
+  validateCheckInDate(ngayDenStr) {
+    if (!ngayDenStr) {
+      return { valid: false, error: 'Thiếu thông tin ngày đến cơ sở lưu trú' };
+    }
+
+    const match = String(ngayDenStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!match) {
+      return { valid: false, error: 'Định dạng ngày đến không hợp lệ (cần dạng YYYY-MM-DD)' };
+    }
+
+    const checkInDate = `${match[1]}-${match[2]}-${match[3]}`;
+
+    // Tính ngày hiện tại và hôm qua theo múi giờ địa phương
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const pad = (n) => String(n).padStart(2, '0');
+    const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    const yesterdayStr = `${yesterday.getFullYear()}-${pad(yesterday.getMonth() + 1)}-${pad(yesterday.getDate())}`;
+
+    if (checkInDate !== todayStr && checkInDate !== yesterdayStr) {
+      if (checkInDate < yesterdayStr) {
+        return {
+          valid: false,
+          error: `Ngày đến (${checkInDate}) là ngày trong quá khứ. API chỉ chấp nhận ngày đến là hôm nay (${todayStr}) hoặc hôm qua (${yesterdayStr})`,
+          checkInDate,
+        };
+      } else {
+        return {
+          valid: false,
+          error: `Ngày đến (${checkInDate}) là ngày trong tương lai. API chỉ chấp nhận ngày đến là hôm nay (${todayStr}) hoặc hôm qua (${yesterdayStr})`,
+          checkInDate,
+        };
+      }
+    }
+
+    return { valid: true, checkInDate };
+  }
+
+  /**
    * Chuyển đổi một dòng dữ liệu thô sang payload API
    * @param {Object} rawRow
    * @returns {Promise<{ branch: 'VN'|'FOREIGN', payload: Object, validationError?: string }>}
@@ -187,6 +233,12 @@ export class DataTransformer {
     }
     if (!ngayDenCsltStr || !ngayDiDuKienStr) {
       return { validationError: 'Thiếu thông tin Ngày đến hoặc Ngày đi dự kiến' };
+    }
+
+    // Chặn khai báo khách từ quá khứ / tương lai xa trước khi gửi API
+    const checkInVal = this.validateCheckInDate(ngayDenCsltStr);
+    if (!checkInVal.valid) {
+      return { validationError: checkInVal.error };
     }
 
     const isVN = this.isVietnamese(rawRow);
@@ -336,8 +388,13 @@ export class DataTransformer {
     fieldStatus.soPhong = { label: 'Số phòng', value: soPhong, required: true, valid: !!soPhong };
 
     const ngayDen = this.formatDateTime(rawRow.ngayDen || rawRow['(từ ngày)'] || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
-    if (!ngayDen) missingFields.push('Ngày đến (ngayDenCsltStr)');
-    fieldStatus.ngayDen = { label: 'Ngày đến', value: ngayDen, required: true, valid: !!ngayDen };
+    const checkInVal = this.validateCheckInDate(ngayDen);
+    if (!checkInVal.valid) {
+      missingFields.push(`Ngày đến hợp lệ (${checkInVal.error})`);
+      fieldStatus.ngayDen = { label: 'Ngày đến', value: ngayDen, required: true, valid: false, error: checkInVal.error };
+    } else {
+      fieldStatus.ngayDen = { label: 'Ngày đến', value: ngayDen, required: true, valid: true };
+    }
 
     const ngayDi = this.formatDateTime(rawRow.ngayDi || rawRow['(đến ngày)'] || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
     if (!ngayDi) missingFields.push('Ngày đi (ngayDiDuKienStr)');

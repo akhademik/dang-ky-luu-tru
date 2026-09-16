@@ -199,18 +199,19 @@ export class CatalogManager {
   }
 
   /**
-   * Dò tìm ID lý do cư trú
+   * Dò tìm ID lý do cư trú (Chỉ cho phép 1: Du lịch hoặc 20: Mục đích khác)
    */
   findLyDoCuTru(input) {
     if (!input) return 1; // Default Du lịch
-    if (typeof input === 'number') return input;
+    if (typeof input === 'number') {
+      return input === 20 ? 20 : 1;
+    }
 
     const clean = this._normalizeText(input);
-    const match = this.lyDoCuTruList.find(ld => {
-      const ten = this._normalizeText(ld.name);
-      return clean === ten || clean.includes(ten) || ten.includes(clean);
-    });
-    return match ? match.id : 1;
+    if (clean.includes('khac') || clean.includes('muc dich') || clean === '20') {
+      return 20;
+    }
+    return 1;
   }
 
   /**
