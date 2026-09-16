@@ -3,6 +3,7 @@ import { CatalogManager } from '../src/catalogManager.js';
 import { TokenManager } from '../src/tokenManager.js';
 import { DataTransformer } from '../src/dataTransformer.js';
 import { KbttClient } from '../src/kbttClient.js';
+import { GoogleSheetService } from '../src/googleSheetService.js';
 import { CONFIG } from '../src/config.js';
 
 async function runTests() {
@@ -83,7 +84,20 @@ async function runTests() {
   assert.ok(invalidRes.validationError);
   console.log('✅ DataTransformer (Validation Error Handling) test passed!');
 
-  // 3. Test TokenManager & KbttClient live call (if test server reachable)
+  // 3. Test GoogleSheetService (CSV Parsing & Header Normalization)
+  const sheetService = new GoogleSheetService();
+  const sampleCsv = `Họ tên,Ngày sinh,Giới tính,Quốc tịch,Loại giấy tờ,Số giấy tờ,Số phòng,Ngày đến,Ngày đi,Địa chỉ chi tiết
+"LÊ VĂN CƯỜNG",1991-03-12,Nam,Việt Nam,Thẻ CCCD,001091001111,P201,"2026-09-16 14:00:00","2026-09-18 12:00:00","Quận 1, TP Hồ Chí Minh"
+"ALICE WANG",1994-07-22,Nữ,China,Hộ chiếu,G12345678,P305,"2026-09-16 15:00:00","2026-09-19 11:00:00","Beijing, China"`;
+  const parsedRows = sheetService.parseCsv(sampleCsv);
+  assert.equal(parsedRows.length, 2);
+  assert.equal(parsedRows[0].hoTen, 'LÊ VĂN CƯỜNG');
+  assert.equal(parsedRows[0].soGiayTo, '001091001111');
+  assert.equal(parsedRows[1].hoTen, 'ALICE WANG');
+  assert.equal(parsedRows[1].soGiayTo, 'G12345678');
+  console.log('✅ GoogleSheetService (CSV Parsing & Normalization) test passed!');
+
+  // 4. Test TokenManager & KbttClient live call (if test server reachable)
   console.log('\n--- Kiểm tra kết nối OAuth & API Client ---');
   const tokenManager = new TokenManager(CONFIG);
   try {

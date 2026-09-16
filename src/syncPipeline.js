@@ -2,6 +2,7 @@ import { CatalogManager } from './catalogManager.js';
 import { TokenManager } from './tokenManager.js';
 import { DataTransformer } from './dataTransformer.js';
 import { KbttClient } from './kbttClient.js';
+import { GoogleSheetService } from './googleSheetService.js';
 import { CONFIG } from './config.js';
 
 /**
@@ -14,6 +15,7 @@ export class SyncPipeline {
     this.tokenManager = new TokenManager(config);
     this.dataTransformer = new DataTransformer(this.catalogManager);
     this.kbttClient = new KbttClient(this.tokenManager, config.BASE_URL);
+    this.googleSheetService = new GoogleSheetService(config.GOOGLE_SHEET_ID);
   }
 
   /**
@@ -81,6 +83,32 @@ export class SyncPipeline {
     }
 
     return results;
+  }
+
+  /**
+   * Kéo dữ liệu từ Google Sheets và thực hiện đồng bộ tự động
+   * @param {string} [sheetId]
+   */
+  async pullAndProcessGoogleSheet(sheetId = this.config.GOOGLE_SHEET_ID) {
+    console.log(`[SyncPipeline] Đang kéo dữ liệu từ Google Sheet ID: ${sheetId}...`);
+    const sheetRes = await this.googleSheetService.fetchSheetData(sheetId);
+    if (!sheetRes.success || !sheetRes.rows || sheetRes.rows.length === 0) {
+      return {
+        success: false,
+        message: sheetRes.message || 'Không thể kéo dữ liệu từ Google Sheet hoặc bảng tính trống',
+        results: [],
+        rawRows: [],
+      };
+    }
+
+    console.log(`[SyncPipeline] Đã kéo được ${sheetRes.rows.length} dòng dữ liệu. Bắt đầu chuẩn hóa và gửi API...`);
+    const results = await this.processRows(sheetRes.rows);
+    return {
+      success: true,
+      message: `Đồng bộ hoàn tất ${sheetRes.rows.length} bản ghi`,
+      results,
+      rawRows: sheetRes.rows,
+    };
   }
 
   /**

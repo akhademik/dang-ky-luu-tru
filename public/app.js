@@ -201,6 +201,45 @@ function loadSampleData() {
   updatePayloadPreview();
 }
 
+async function pullDataFromGoogleSheet() {
+  const sheetId = (document.getElementById('sheetIdInput').value || '').trim();
+  if (!sheetId) {
+    alert('Vui lòng nhập Google Sheet ID');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/sheets/pull', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheetId }),
+    });
+    const data = await res.json();
+
+    if (data.success && data.rows && data.rows.length > 0) {
+      currentRows = data.rows;
+      renderTable();
+      updatePayloadPreview();
+      alert(`Đã kéo thành công ${data.rows.length} bản ghi từ Google Sheets (${data.source})!`);
+    } else {
+      alert(`Thông báo: ${data.message || 'Không có dữ liệu trong Sheet'}`);
+    }
+  } catch (err) {
+    alert(`Lỗi khi kết nối Google Sheets: ${err.message}`);
+  }
+}
+
+async function pullAndSyncDirectly() {
+  const sheetId = (document.getElementById('sheetIdInput').value || '').trim();
+  if (!sheetId) {
+    alert('Vui lòng nhập Google Sheet ID');
+    return;
+  }
+
+  await pullDataFromGoogleSheet();
+  await processAndSyncNow();
+}
+
 async function updatePayloadPreview() {
   try {
     const res = await fetch('/api/transform', {

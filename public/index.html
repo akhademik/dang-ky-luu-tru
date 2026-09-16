@@ -85,7 +85,29 @@
 
     <!-- TAB 1: Google Sheets / OCR Data Table -->
     <section id="dataTab" class="tab-content space-y-4">
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+      <!-- Google Sheets Pull Box -->
+      <div class="bg-gradient-to-r from-emerald-900 to-teal-900 text-white p-4 rounded-xl border border-emerald-700 shadow flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-emerald-700 flex items-center justify-center text-white text-lg">
+            <i class="fa-solid fa-file-excel"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold">Google Sheets ID Tích Hợp</h3>
+            <p class="text-xs text-emerald-200">Kéo tự động các dòng OCR mới nhất từ Google Sheets về hệ thống</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <input type="text" id="sheetIdInput" value="16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q" placeholder="Nhập Google Sheet ID..." class="text-xs text-slate-800 bg-white border border-emerald-300 rounded-lg px-3 py-1.5 w-72 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-mono">
+          <button onclick="pullDataFromGoogleSheet()" class="px-3.5 py-1.5 text-xs bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-lg transition shadow flex items-center gap-1.5">
+            <i class="fa-solid fa-cloud-arrow-down"></i> Pull từ Sheet
+          </button>
+          <button onclick="pullAndSyncDirectly()" class="px-3.5 py-1.5 text-xs bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-lg transition shadow flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt"></i> Pull & Đồng bộ luôn
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-base font-semibold text-slate-900">Danh sách bản ghi OCR cần đồng bộ</h2>
           <p class="text-xs text-slate-500">Giả lập các dòng đọc được từ Google Sheets sau khi quét CCCD / Hộ chiếu</p>

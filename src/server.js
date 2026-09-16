@@ -125,6 +125,20 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, result);
       }
 
+      if (pathname === '/api/sheets/pull' && req.method === 'POST') {
+        const { sheetId, apiKey } = await readBody(req);
+        const targetId = sheetId || CONFIG.GOOGLE_SHEET_ID;
+        const resData = await pipeline.googleSheetService.fetchSheetData(targetId, apiKey);
+        return sendJson(res, resData.success ? 200 : 400, resData);
+      }
+
+      if (pathname === '/api/sheets/sync' && req.method === 'POST') {
+        const { sheetId } = await readBody(req);
+        const targetId = sheetId || CONFIG.GOOGLE_SHEET_ID;
+        const resData = await pipeline.pullAndProcessGoogleSheet(targetId);
+        return sendJson(res, resData.success ? 200 : 400, resData);
+      }
+
       if (pathname === '/api/sync' && req.method === 'POST') {
         const { rows } = await readBody(req);
         if (!Array.isArray(rows)) {
