@@ -102,10 +102,10 @@
     "semantic_hash": "1b163c03f3725608db5406d1a4581353"
   },
   "src/routes/+page.svelte": {
-    "mtime": 1789563478.6500106,
-    "seen": 1789563494.2096198,
-    "ast_hash": "99d52c5747ad40c3a0aace0f717834b7",
-    "semantic_hash": "99d52c5747ad40c3a0aace0f717834b7"
+    "mtime": 1789563760.879857,
+    "seen": 1789563785.875779,
+    "ast_hash": "cc1b4bf17d634f8908b89e61d226ef25",
+    "semantic_hash": "cc1b4bf17d634f8908b89e61d226ef25"
   },
   "src/routes/api/catalogs/+server.ts": {
     "mtime": 1789549541.6637275,

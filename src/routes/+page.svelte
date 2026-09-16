@@ -391,7 +391,7 @@ let liveVal = $derived.by(() => {
 		if (!dmyTh) {
 			thoiHanTamTruValid = false;
 			thoiHanTamTruError =
-				"Thời hạn tạm trú phải theo định dạng DD/MM/YYYY (ví dụ: 31/12/2026 23:59:59)";
+				"Thời hạn thị thực phải theo định dạng DD/MM/YYYY (ví dụ: 31/12/2026)";
 		}
 	}
 
@@ -1804,9 +1804,9 @@ onMount(() => {
       </div>
 
       <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
           <!-- Họ tên -->
-          <div class="md:col-span-2">
+          <div class="md:col-span-8">
             <label for="modalHoTen" class="block font-semibold text-slate-700 mb-1">
               Họ và tên <span class="text-rose-500">*</span>
             </label>
@@ -1825,7 +1825,7 @@ onMount(() => {
           </div>
 
           <!-- Giới tính -->
-          <div>
+          <div class="md:col-span-4">
             <label for="modalGioiTinh" class="block font-semibold text-slate-700 mb-1">Giới tính</label>
             <select id="modalGioiTinh" bind:value={modalForm.gioiTinh} class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition">
               <option value="Nam">Nam</option>
@@ -1834,7 +1834,7 @@ onMount(() => {
           </div>
 
           <!-- Ngày sinh -->
-          <div>
+          <div class="md:col-span-3">
             <label for="modalNgaySinh" class="block font-semibold text-slate-700 mb-1">
               Ngày sinh (DD/MM/YYYY) <span class="text-rose-500">*</span>
             </label>
@@ -1853,11 +1853,11 @@ onMount(() => {
           </div>
 
           <!-- Mã Quốc gia -->
-          <div>
+          <div class="md:col-span-6">
             <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1 flex items-center justify-between">
               <span>Mã Quốc gia <span class="text-rose-500">*</span></span>
               {#if countryInfoHint}
-                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 truncate max-w-[170px]" title={countryInfoHint.tenQTEn || countryInfoHint.tenQT}>
+                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 whitespace-nowrap" title={countryInfoHint.tenQTEn || countryInfoHint.tenQT}>
                   <i class="fa-solid fa-earth-americas text-emerald-600"></i> {countryInfoHint.tenQTEn || countryInfoHint.tenQT}
                 </span>
               {/if}
@@ -1886,7 +1886,7 @@ onMount(() => {
           </div>
 
           <!-- Số phòng -->
-          <div>
+          <div class="md:col-span-3">
             <label for="modalSoPhong" class="block font-semibold text-slate-700 mb-1">
               Số phòng <span class="text-rose-500">*</span>
             </label>
@@ -1907,7 +1907,7 @@ onMount(() => {
           </div>
 
           <!-- Loại giấy tờ -->
-          <div>
+          <div class="md:col-span-4">
             <label for="modalLoaiGiayTo" class="block font-semibold text-slate-700 mb-1">Loại giấy tờ</label>
             <select
               id="modalLoaiGiayTo"
@@ -1928,7 +1928,7 @@ onMount(() => {
           </div>
 
           <!-- Số giấy tờ -->
-          <div class="md:col-span-2">
+          <div class="md:col-span-8">
             <label for="modalSoGiayTo" class="block font-semibold text-slate-700 mb-1">
               Số giấy tờ {isNumericDocType(modalForm.loaiGiayTo) ? "(Chỉ nhập số, không chữ/ký tự đặc biệt)" : "(Chữ và số, không ký tự đặc biệt)"} <span class="text-rose-500">*</span>
             </label>
@@ -1954,7 +1954,7 @@ onMount(() => {
           </div>
 
           <!-- Ngày đến -->
-          <div>
+          <div class="md:col-span-4">
             <label for="modalNgayDen" class="block font-semibold text-slate-700 mb-1">
               Ngày đến (DD/MM/YYYY) <span class="text-rose-500">*</span>
             </label>
@@ -1973,7 +1973,7 @@ onMount(() => {
           </div>
 
           <!-- Ngày đi -->
-          <div>
+          <div class="md:col-span-4">
             <label for="modalNgayDi" class="block font-semibold text-slate-700 mb-1">Ngày đi (DD/MM/YYYY)</label>
             <input
               type="text"
@@ -1989,17 +1989,17 @@ onMount(() => {
             {/if}
           </div>
 
-          <!-- Thời hạn tạm trú -->
-          <div>
+          <!-- Thời hạn thị thực -->
+          <div class="md:col-span-4">
             <label for="modalThoiHanTamTru" class="block font-semibold text-slate-700 mb-1">
-              Được phép ở tại VN đến ngày (Khách quốc tế)
+              Thời hạn thị thực (Khách quốc tế)
             </label>
             <input
               type="text"
               id="modalThoiHanTamTru"
               bind:value={modalForm.thoiHanTamTru}
               class={`w-full px-3 py-2 text-xs font-mono rounded-lg outline-none transition ${!liveVal.thoiHanTamTru.valid ? 'border-2 border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' : 'border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'}`}
-              placeholder="31/12/2026 23:59:59"
+              placeholder="31/12/2026"
             >
             {#if !liveVal.thoiHanTamTru.valid}
               <p class="text-rose-600 text-[11px] font-medium mt-1 flex items-center gap-1">
@@ -2009,7 +2009,7 @@ onMount(() => {
           </div>
 
           <!-- Toàn bộ Địa chỉ đầy đủ -->
-          <div class="md:col-span-3">
+          <div class="md:col-span-12">
             <label for="modalDiaChiFull" class="block font-semibold text-slate-700 mb-1 flex items-center justify-between">
               <span>Địa chỉ đầy đủ (Cách nhau bởi dấu phẩy: [Chi tiết], [Phường/Xã], [Quận/Huyện], [Tỉnh/TP])</span>
               <span class="text-indigo-600 text-[11px] font-normal">Tự động phân tách và đồng bộ vào Sheet</span>
