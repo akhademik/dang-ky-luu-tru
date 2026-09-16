@@ -1,0 +1,110 @@
+{
+  "data/catalogs/loai_giay_to.json": {
+    "mtime": 1789533529.2582994,
+    "seen": 1789541817.0690038,
+    "ast_hash": "2aeab54614460c3115b1e9c34f0fd89a",
+    "semantic_hash": "2aeab54614460c3115b1e9c34f0fd89a"
+  },
+  "data/catalogs/ly_do_cu_tru.json": {
+    "mtime": 1789533532.6455436,
+    "seen": 1789541817.0690076,
+    "ast_hash": "bbd8a8728eb57a8d3f90f5809508cdb7",
+    "semantic_hash": "bbd8a8728eb57a8d3f90f5809508cdb7"
+  },
+  "data/catalogs/noi_cu_tru.json": {
+    "mtime": 1789528449.9140642,
+    "seen": 1789541817.069009,
+    "ast_hash": "3193b9caea9b91c9f62ba42a4a614073",
+    "semantic_hash": "3193b9caea9b91c9f62ba42a4a614073"
+  },
+  "data/catalogs/quoc_tich.json": {
+    "mtime": 1789528481.1106813,
+    "seen": 1789541817.0690103,
+    "ast_hash": "245e9debd4a3e24510941300d5ba67a8",
+    "semantic_hash": "245e9debd4a3e24510941300d5ba67a8"
+  },
+  "data/catalogs/tinh_tp.json": {
+    "mtime": 1789528457.661483,
+    "seen": 1789541817.0690112,
+    "ast_hash": "6b2fe1b52de8f7aa75de51999dfb286e",
+    "semantic_hash": "6b2fe1b52de8f7aa75de51999dfb286e"
+  },
+  "knip.json": {
+    "mtime": 1789541793.7589433,
+    "seen": 1789541817.0690122,
+    "ast_hash": "21336c9429defc7ce8c8022238ad80d7",
+    "semantic_hash": "21336c9429defc7ce8c8022238ad80d7"
+  },
+  "package.json": {
+    "mtime": 1789541801.6363144,
+    "seen": 1789541817.0690134,
+    "ast_hash": "1932a3005365bbefee753d2bb89ff6aa",
+    "semantic_hash": "1932a3005365bbefee753d2bb89ff6aa"
+  },
+  "public/app.js": {
+    "mtime": 1789541774.324589,
+    "seen": 1789541817.069014,
+    "ast_hash": "d38a3d00fd308c60b81d9ffc5a25344d",
+    "semantic_hash": "d38a3d00fd308c60b81d9ffc5a25344d"
+  },
+  "src/catalogManager.js": {
+    "mtime": 1789536695.4632516,
+    "seen": 1789541817.069015,
+    "ast_hash": "ef099ef5906754849b6a425e5b708ff7",
+    "semantic_hash": "ef099ef5906754849b6a425e5b708ff7"
+  },
+  "src/config.js": {
+    "mtime": 1789528899.330833,
+    "seen": 1789541817.069016,
+    "ast_hash": "6d82f74f3087a43f2fc25edce06ae494",
+    "semantic_hash": "6d82f74f3087a43f2fc25edce06ae494"
+  },
+  "src/dataTransformer.js": {
+    "mtime": 1789541553.1791387,
+    "seen": 1789541817.0690172,
+    "ast_hash": "e3160ee19d637103c9217c597174c71f",
+    "semantic_hash": "e3160ee19d637103c9217c597174c71f"
+  },
+  "src/googleSheetService.js": {
+    "mtime": 1789533074.0019846,
+    "seen": 1789541817.0690181,
+    "ast_hash": "af4d6fc34f725f3f62b7cd5fd255d71d",
+    "semantic_hash": "af4d6fc34f725f3f62b7cd5fd255d71d"
+  },
+  "src/index.js": {
+    "mtime": 1789527945.297741,
+    "seen": 1789541817.069019,
+    "ast_hash": "4ebe9d1a9414cb8d9e66c6f24cea9d76",
+    "semantic_hash": "4ebe9d1a9414cb8d9e66c6f24cea9d76"
+  },
+  "src/kbttClient.js": {
+    "mtime": 1789536689.8140528,
+    "seen": 1789541817.0690203,
+    "ast_hash": "af30b61f3f0615e9580399ec7b51cbb4",
+    "semantic_hash": "af30b61f3f0615e9580399ec7b51cbb4"
+  },
+  "src/server.js": {
+    "mtime": 1789533109.2503884,
+    "seen": 1789541817.069021,
+    "ast_hash": "8844904e460be4186729f417e8ea0b19",
+    "semantic_hash": "8844904e460be4186729f417e8ea0b19"
+  },
+  "src/syncPipeline.js": {
+    "mtime": 1789533097.4973319,
+    "seen": 1789541817.069022,
+    "ast_hash": "93d75d1a5f1d57dcccfa6a6ff32a641c",
+    "semantic_hash": "93d75d1a5f1d57dcccfa6a6ff32a641c"
+  },
+  "src/tokenManager.js": {
+    "mtime": 1789534325.697452,
+    "seen": 1789541817.069023,
+    "ast_hash": "2e6ec2eb1e6d98e274d58cc50a81e9e9",
+    "semantic_hash": "2e6ec2eb1e6d98e274d58cc50a81e9e9"
+  },
+  "test/test-pipeline.js": {
+    "mtime": 1789541570.254898,
+    "seen": 1789541817.069024,
+    "ast_hash": "adc4ac8b1eec3ace40ea2a6f85768d33",
+    "semantic_hash": "adc4ac8b1eec3ace40ea2a6f85768d33"
+  }
+}

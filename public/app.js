@@ -304,17 +304,17 @@ function renderTable() {
       </td>
 
       <!-- Phòng -->
-      <td class="p-3">
+      <td class="p-3 text-center">
         ${isEditing
-          ? `<select onchange="updateCell(${idx}, 'soPhong', this.value)" class="rounded px-2 py-1 outline-none text-xs font-semibold transition ${isRoomValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">
+          ? `<select onchange="updateCell(${idx}, 'soPhong', this.value)" class="rounded px-2 py-1 outline-none text-xs font-semibold transition text-center ${isRoomValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">
               <option value="">--</option>
               ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => `
-                <option value="${num}" ${cleanRoomNumber(row.soPhong || row['Số phòng']) === String(num) ? 'selected' : ''}>Phòng ${num}</option>
+                <option value="${num}" ${cleanRoomNumber(row.soPhong || row['Số phòng']) === String(num) ? 'selected' : ''}>${num}</option>
               `).join('')}
             </select>`
           : (isRoomValid 
-              ? `<span class="font-semibold text-slate-800 bg-slate-100/90 px-2 py-0.5 rounded text-xs">Phòng ${cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>`
-              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs cursor-help" title="Thiếu hoặc sai số phòng">Thiếu phòng</span>`
+              ? `<span class="font-bold text-slate-800 bg-slate-100/90 px-2 py-0.5 rounded text-xs">${cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>`
+              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs cursor-help" title="Thiếu hoặc sai số phòng">Thiếu</span>`
             )
         }
       </td>

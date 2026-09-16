@@ -1,6 +1,5 @@
-chinh lai cho gioi tinh chi ghi "Nam/Nu" ko can "M va F" nua, cho so phong chọn fix dropdown cho select cu 1 den 9 va logic de khi push di dang ky no se con text day du la "Phong so {number}"
-
-Số phòng \* -> Phòng
-và bỏ hết các dấu \* đi vì mình đã yêu cầu rồi thiếu trường nó sẽ tự dodojdng báo, ko cần thiết hiển thị trong đó nữa
-
-chinh style cho mau diu hon mot chut xíu bay gio mau trang qua bright, dau mat
+- toi da cap hanh huong dan ve api tai @api-khai-bao-luu-tru-guide.md
+- hay chay lenh graphify /graphify de luu tru thong tin
+- hay lam test case va ca knip, va ghi nhan lai tinh trang hien tại vao @readme.md
+- cap nhat het cac thong tin lien quan vao worfklow de lan sau biet ma van hanh
+- Toi chi muon dong bo khi gửi json vao api là "phòng số {number}" nhưng trên hiển thị frontend header nó sẽ là "Phòng" còn bên dưới select dropdown chỉ là {number}, seleect xong dướ đó cũng chỉ hiển thị {number} kho phải "phòng {number}"
