@@ -73,6 +73,8 @@
       "src_lib_server_tokenmanager_tokenstate",
       "src_routes_api_catalogs_server",
       "src_routes_api_catalogs_server_get",
+      "src_routes_api_sheets_delete_row_server",
+      "src_routes_api_sheets_delete_row_server_post",
       "src_routes_api_sheets_pull_server",
       "src_routes_api_sheets_pull_server_post",
       "src_routes_api_sheets_tabs_server",
@@ -282,6 +284,7 @@
       "src_lib_server_googlesheetservice_googlesheetservice",
       "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
       "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+      "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
       "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
       "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
       "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
@@ -308,7 +311,7 @@
   },
   "cohesion": {
     "0": 0.09797979797979799,
-    "1": 0.1214574898785425,
+    "1": 0.11707317073170732,
     "2": 0.07407407407407407,
     "3": 0.14130434782608695,
     "4": 0.08695652173913043,
@@ -318,7 +321,7 @@
     "8": 0.2,
     "9": 0.21794871794871795,
     "10": 0.18181818181818182,
-    "11": 0.32727272727272727,
+    "11": 0.2878787878787879,
     "12": 1.0,
     "13": 1.0,
     "14": 1.0,
@@ -338,21 +341,21 @@
     {
       "id": "src_lib_server_logger_logger",
       "label": "Logger",
-      "degree": 18
+      "degree": 19
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline",
       "label": "SyncPipeline",
-      "degree": 17
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager",
-      "label": "TokenManager",
-      "degree": 17
+      "degree": 18
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice",
       "label": "GoogleSheetService",
+      "degree": 18
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager",
+      "label": "TokenManager",
       "degree": 17
     },
     {
@@ -373,7 +376,7 @@
     {
       "id": "src_lib_server_config_config",
       "label": "CONFIG",
-      "degree": 11
+      "degree": 12
     }
   ],
   "surprises": [
@@ -411,22 +414,22 @@
       "why": "connects across different repos/directories"
     },
     {
+      "source": "SyncResult",
+      "target": "RawOcrRow",
+      "source_files": [
+        "src/lib/server/syncPipeline.ts",
+        "src/lib/server/dataTransformer.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "peripheral node `SyncResult` unexpectedly reaches hub `RawOcrRow`"
+    },
+    {
       "source": "SyncPipeline",
       "target": "CatalogManager",
       "source_files": [
         "src/lib/server/syncPipeline.ts",
         "src/lib/server/catalogManager.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "bridges separate communities"
-    },
-    {
-      "source": "SyncPipeline",
-      "target": "DataTransformer",
-      "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",

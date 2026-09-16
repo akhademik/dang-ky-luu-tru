@@ -717,6 +717,18 @@
       "source_location": "L4"
     },
     {
+      "id": "src_routes_api_sheets_delete_row_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L6"
+    },
+    {
       "id": "src_routes_api_sheets_pull_server_post",
       "label": "POST()",
       "_callable": true,
@@ -823,6 +835,18 @@
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/googleSheetService.ts",
       "source_location": "L23"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
+      "label": ".deleteSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".deletesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L913"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
@@ -942,7 +966,7 @@
       "file_type": "code",
       "norm_label": "addnewguest()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L997"
+      "source_location": "L1055"
     },
     {
       "id": "src_routes_page_buildorderedrowvalues",
@@ -966,7 +990,7 @@
       "file_type": "code",
       "norm_label": "checktoken()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1110"
+      "source_location": "L1168"
     },
     {
       "id": "src_routes_page_closeeditmodal",
@@ -990,7 +1014,7 @@
       "file_type": "code",
       "norm_label": "copycode()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1148"
+      "source_location": "L1206"
     },
     {
       "id": "src_routes_page_executesyncbatch",
@@ -1002,7 +1026,7 @@
       "file_type": "code",
       "norm_label": "executesyncbatch()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1057"
+      "source_location": "L1115"
     },
     {
       "id": "src_routes_page_fetchsheettabslist",
@@ -1026,7 +1050,7 @@
       "file_type": "code",
       "norm_label": "handlemanuallogin()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1121"
+      "source_location": "L1179"
     },
     {
       "id": "src_routes_page_handletabchange",
@@ -1050,7 +1074,7 @@
       "file_type": "code",
       "norm_label": "loadcatalogs()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1136"
+      "source_location": "L1194"
     },
     {
       "id": "src_routes_page_openeditmodal",
@@ -1086,7 +1110,7 @@
       "file_type": "code",
       "norm_label": "pushselectedrows()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1084"
+      "source_location": "L1142"
     },
     {
       "id": "src_routes_page_pushsinglerow",
@@ -1098,7 +1122,7 @@
       "file_type": "code",
       "norm_label": "pushsinglerow()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1102"
+      "source_location": "L1160"
     },
     {
       "id": "src_routes_page_removerow",
@@ -2100,6 +2124,17 @@
       "file_type": "code",
       "norm_label": "catalogs/+server.ts",
       "source_file": "src/routes/api/catalogs/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_sheets_delete_row_server",
+      "label": "delete-row/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "delete-row/+server.ts",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
       "source_location": "L1"
     },
     {
@@ -4667,7 +4702,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1052",
+      "source_location": "L1110",
       "weight": 1.0
     },
     {
@@ -4679,7 +4714,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1053",
+      "source_location": "L1111",
       "weight": 1.0
     },
     {
@@ -4691,7 +4726,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1054",
+      "source_location": "L1112",
       "weight": 1.0
     },
     {
@@ -4703,7 +4738,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1071",
+      "source_location": "L1129",
       "weight": 1.0
     },
     {
@@ -4715,7 +4750,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1130",
+      "source_location": "L1188",
       "weight": 1.0
     },
     {
@@ -4727,7 +4762,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1099",
+      "source_location": "L1157",
       "weight": 1.0
     },
     {
@@ -4739,7 +4774,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1104",
+      "source_location": "L1162",
       "weight": 1.0
     },
     {
@@ -4751,7 +4786,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L994",
+      "source_location": "L1052",
       "weight": 1.0
     },
     {
@@ -5751,6 +5786,42 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_syncpipeline_syncpipeline",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_config_config",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_pull_server",
       "target": "src_lib_server_syncpipeline_syncpipeline",
       "relation": "imports",
@@ -6228,6 +6299,42 @@
       "context": "import",
       "source_file": "src/routes/api/logs/+server.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_syncpipeline",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_config",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -7762,6 +7869,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_routes_api_sheets_delete_row_server_post",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_pull_server",
       "target": "src_routes_api_sheets_pull_server_post",
       "relation": "contains",
@@ -7840,13 +7958,24 @@
     },
     {
       "source": "src_routes_page",
+      "target": "src_routes_page_addnewguest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1055",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
       "target": "src_routes_page_executesyncbatch",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1057",
+      "source_location": "L1115",
       "weight": 1.0
     },
     {
@@ -7857,7 +7986,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1084",
+      "source_location": "L1142",
       "weight": 1.0
     },
     {
@@ -7868,7 +7997,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1102",
+      "source_location": "L1160",
       "weight": 1.0
     },
     {
@@ -7879,7 +8008,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1110",
+      "source_location": "L1168",
       "weight": 1.0
     },
     {
@@ -7890,7 +8019,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1121",
+      "source_location": "L1179",
       "weight": 1.0
     },
     {
@@ -7901,7 +8030,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1136",
+      "source_location": "L1194",
       "weight": 1.0
     },
     {
@@ -7912,7 +8041,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1148",
+      "source_location": "L1206",
       "weight": 1.0
     },
     {
@@ -8067,17 +8196,6 @@
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
       "source_location": "L986",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_addnewguest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L997",
       "weight": 1.0
     },
     {
@@ -8706,6 +8824,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_googlesheetservice_googlesheetservice",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L913",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_kbttclient_kbttclient",
       "target": "src_lib_server_kbttclient_kbttclient_constructor",
       "relation": "method",
@@ -9008,5 +9137,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ff64088d17bdf5fe866869219aeffbc82998cfab"
+  "built_at_commit": "e643b9608a8367b82ea787ef3a2f5cb15c6ad969"
 }

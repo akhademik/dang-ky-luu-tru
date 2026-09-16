@@ -89,6 +89,36 @@ function doPost(e) {
       targetSheet = sheets[0];
     }
     
+    // XỬ LÝ HÀNH ĐỘNG XÓA DÒNG (deleteRow)
+    if (body.action === "deleteRow") {
+      var rowToDelete = null;
+      if (body.sheetRowIndex !== undefined && body.sheetRowIndex !== null && Number(body.sheetRowIndex) >= 2) {
+        rowToDelete = Number(body.sheetRowIndex);
+      } else if (body.rowIndex !== undefined && body.rowIndex !== null && Number(body.rowIndex) >= 0) {
+        rowToDelete = Number(body.rowIndex) + 2;
+      }
+      
+      if (!rowToDelete || rowToDelete < 2) {
+        return ContentService.createTextOutput(JSON.stringify({
+          success: false,
+          error: "Không được phép xóa dòng tiêu đề hoặc chỉ số dòng không hợp lệ."
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+      
+      var lastRow = targetSheet.getLastRow();
+      if (rowToDelete <= lastRow) {
+        targetSheet.deleteRow(rowToDelete);
+        SpreadsheetApp.flush();
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        message: "Đã xóa dòng " + rowToDelete + " trên sheet [" + targetSheet.getName() + "]",
+        sheetName: targetSheet.getName(),
+        deletedRow: rowToDelete
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     // Xác định dòng trên Google Sheet (Tuyệt đối không bao giờ ghi vào Dòng 1 Tiêu đề)
     // 1. Nếu có body.sheetRowIndex (1-based): dùng trực tiếp (yêu cầu >= 2)
     // 2. Nếu có body.rowIndex (0-based): sheetRowIndex = body.rowIndex + 2

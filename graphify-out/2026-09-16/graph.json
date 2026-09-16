@@ -4,6 +4,58 @@
   "graph": {},
   "nodes": [
     {
+      "id": "src_lib_server_catalogmanager_catalogitem",
+      "label": "CatalogItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "catalogitem",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_server_datatransformer_completenessresult",
+      "label": "CompletenessResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "completenessresult",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_lib_server_datatransformer_rawocrrow",
+      "label": "RawOcrRow",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "rawocrrow",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_lib_server_datatransformer_transformedrowresult",
+      "label": "TransformedRowResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "transformedrowresult",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L16"
+    },
+    {
       "id": "src_lib_server_kbttclient_apiresponse",
       "label": "ApiResponse",
       "_callable": true,
@@ -82,54 +134,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_lib_server_catalogmanager_catalogitem",
-      "label": "CatalogItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "catalogitem",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_lib_server_datatransformer_completenessresult",
-      "label": "CompletenessResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "completenessresult",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "src_lib_server_datatransformer_rawocrrow",
-      "label": "RawOcrRow",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "rawocrrow",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L3"
-    },
-    {
-      "id": "src_lib_server_datatransformer_transformedrowresult",
-      "label": "TransformedRowResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "transformedrowresult",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L16"
-    },
-    {
       "id": "src_lib_server_googlesheetservice_tabinfo",
       "label": "TabInfo",
       "_callable": true,
@@ -160,6 +164,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 6,
+      "community_name": "DataTransformer",
       "file_type": "code",
       "norm_label": "datatransformer",
       "source_file": "src/lib/server/dataTransformer.ts",
@@ -172,6 +177,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": "catalogmanager",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -793,6 +799,17 @@
       "source_location": "L6"
     },
     {
+      "id": "src_routes_api_sheets_delete_row_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L6"
+    },
+    {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
       "label": ".buildOrderedRowValues()",
       "_callable": true,
@@ -813,6 +830,17 @@
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/googleSheetService.ts",
       "source_location": "L23"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
+      "label": ".deleteSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "file_type": "code",
+      "norm_label": ".deletesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L913"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
@@ -923,7 +951,7 @@
       "file_type": "code",
       "norm_label": "addnewguest()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L997"
+      "source_location": "L1055"
     },
     {
       "id": "src_routes_page_buildorderedrowvalues",
@@ -945,7 +973,7 @@
       "file_type": "code",
       "norm_label": "checktoken()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1110"
+      "source_location": "L1168"
     },
     {
       "id": "src_routes_page_closeeditmodal",
@@ -967,7 +995,7 @@
       "file_type": "code",
       "norm_label": "copycode()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1148"
+      "source_location": "L1206"
     },
     {
       "id": "src_routes_page_executesyncbatch",
@@ -978,7 +1006,7 @@
       "file_type": "code",
       "norm_label": "executesyncbatch()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1057"
+      "source_location": "L1115"
     },
     {
       "id": "src_routes_page_fetchsheettabslist",
@@ -1000,7 +1028,7 @@
       "file_type": "code",
       "norm_label": "handlemanuallogin()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1121"
+      "source_location": "L1179"
     },
     {
       "id": "src_routes_page_handletabchange",
@@ -1022,7 +1050,7 @@
       "file_type": "code",
       "norm_label": "loadcatalogs()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1136"
+      "source_location": "L1194"
     },
     {
       "id": "src_routes_page_openeditmodal",
@@ -1055,7 +1083,7 @@
       "file_type": "code",
       "norm_label": "pushselectedrows()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1084"
+      "source_location": "L1142"
     },
     {
       "id": "src_routes_page_pushsinglerow",
@@ -1066,7 +1094,7 @@
       "file_type": "code",
       "norm_label": "pushsinglerow()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1102"
+      "source_location": "L1160"
     },
     {
       "id": "src_routes_page_removerow",
@@ -1157,6 +1185,210 @@
       "source_location": "L640"
     },
     {
+      "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
+      "label": ".checkCompleteness()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".checkcompleteness()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L236"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
+      "label": ".checkRowCompleteness()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".checkrowcompleteness()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L230"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
+      "label": ".cleanDocNumber()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".cleandocnumber()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L150"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
+      "label": ".cleanRoomNumber()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".cleanroomnumber()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_formatdateonly",
+      "label": ".formatDateOnly()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".formatdateonly()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L49"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_formatdatetime",
+      "label": ".formatDateTime()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".formatdatetime()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L534"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
+      "label": ".isArrivalDateValid()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".isarrivaldatevalid()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L161"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_isguestvn",
+      "label": ".isGuestVN()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".isguestvn()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L196"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_mapgender",
+      "label": ".mapGender()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".mapgender()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L143"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
+      "label": ".mapLoaiGiayTo()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".maploaigiayto()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L559"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_mapquoctich",
+      "label": ".mapQuocTich()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".mapquoctich()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L563"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_normalizegender",
+      "label": ".normalizeGender()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".normalizegender()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L139"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_parsedatetime",
+      "label": ".parseDateTime()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".parsedatetime()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L53"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformbatch",
+      "label": ".transformBatch()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformbatch()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L379"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformrow",
+      "label": ".transformRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformrow()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L356"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
+      "label": ".transformToPayloadForeign()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformtopayloadforeign()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L485"
+    },
+    {
+      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
+      "label": ".transformToPayloadVn()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".transformtopayloadvn()",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L414"
+    },
+    {
       "id": "src_lib_server_syncpipeline_syncpipeline_processrows",
       "label": ".processRows()",
       "_callable": true,
@@ -1169,198 +1401,12 @@
       "source_location": "L38"
     },
     {
-      "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
-      "label": ".checkCompleteness()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".checkcompleteness()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L236"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
-      "label": ".checkRowCompleteness()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".checkrowcompleteness()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L230"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
-      "label": ".cleanDocNumber()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".cleandocnumber()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L150"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
-      "label": ".cleanRoomNumber()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".cleanroomnumber()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_formatdateonly",
-      "label": ".formatDateOnly()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".formatdateonly()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L49"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_formatdatetime",
-      "label": ".formatDateTime()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".formatdatetime()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L534"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
-      "label": ".isArrivalDateValid()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".isarrivaldatevalid()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L161"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_isguestvn",
-      "label": ".isGuestVN()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".isguestvn()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L196"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_mapgender",
-      "label": ".mapGender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".mapgender()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L143"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
-      "label": ".mapLoaiGiayTo()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".maploaigiayto()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L559"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_mapquoctich",
-      "label": ".mapQuocTich()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".mapquoctich()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L563"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_normalizegender",
-      "label": ".normalizeGender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".normalizegender()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L139"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_parsedatetime",
-      "label": ".parseDateTime()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".parsedatetime()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L53"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformbatch",
-      "label": ".transformBatch()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformbatch()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L379"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformrow",
-      "label": ".transformRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformrow()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L356"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
-      "label": ".transformToPayloadForeign()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformtopayloadforeign()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L485"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
-      "label": ".transformToPayloadVn()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "file_type": "code",
-      "norm_label": ".transformtopayloadvn()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L414"
-    },
-    {
       "id": "test_test_pipeline_runtests",
       "label": "runTests()",
       "_callable": true,
       "_origin": "ast",
       "community": 6,
+      "community_name": "DataTransformer",
       "file_type": "code",
       "norm_label": "runtests()",
       "source_file": "test/test-pipeline.ts",
@@ -1372,6 +1418,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1383,6 +1430,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".fetchpubliccatalog()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1394,6 +1442,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".findloaigiayto()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1405,6 +1454,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".findquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1416,6 +1466,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbackloaigiayto()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1427,6 +1478,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacklydocutru()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1438,6 +1490,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacknoicutru()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1449,6 +1502,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbackquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1460,6 +1514,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacktinhtp()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1471,6 +1526,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getinstance()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1482,6 +1538,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".initaliases()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1493,6 +1550,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".initialize()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1504,6 +1562,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".isvalidquoctichcode()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1515,6 +1574,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".loadstandardquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -1526,6 +1586,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 7,
+      "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/dataTransformer.ts",
@@ -1920,6 +1981,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_lib_server_catalogmanager",
+      "label": "catalogManager.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "catalogmanager.ts",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_lib_server_config",
       "label": "config.ts",
       "_origin": "ast",
@@ -1940,6 +2012,17 @@
       "norm_label": "config",
       "source_file": "src/lib/server/config.ts",
       "source_location": "L29"
+    },
+    {
+      "id": "src_lib_server_datatransformer",
+      "label": "dataTransformer.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "syncPipeline.ts",
+      "file_type": "code",
+      "norm_label": "datatransformer.ts",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L1"
     },
     {
       "id": "src_lib_server_kbttclient",
@@ -2063,23 +2146,14 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_server_catalogmanager",
-      "label": "catalogManager.ts",
+      "id": "test_test_pipeline",
+      "label": "test-pipeline.ts",
       "_origin": "ast",
       "community": 1,
+      "community_name": "syncPipeline.ts",
       "file_type": "code",
-      "norm_label": "catalogmanager.ts",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_server_datatransformer",
-      "label": "dataTransformer.ts",
-      "_origin": "ast",
-      "community": 1,
-      "file_type": "code",
-      "norm_label": "datatransformer.ts",
-      "source_file": "src/lib/server/dataTransformer.ts",
+      "norm_label": "test-pipeline.ts",
+      "source_file": "test/test-pipeline.ts",
       "source_location": "L1"
     },
     {
@@ -2093,13 +2167,13 @@
       "source_location": "L1"
     },
     {
-      "id": "test_test_pipeline",
-      "label": "test-pipeline.ts",
+      "id": "src_routes_api_sheets_delete_row_server",
+      "label": "delete-row/+server.ts",
       "_origin": "ast",
       "community": 1,
       "file_type": "code",
-      "norm_label": "test-pipeline.ts",
-      "source_file": "test/test-pipeline.ts",
+      "norm_label": "delete-row/+server.ts",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
       "source_location": "L1"
     },
     {
@@ -4588,7 +4662,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1052",
+      "source_location": "L1110",
       "weight": 1.0
     },
     {
@@ -4600,7 +4674,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1053",
+      "source_location": "L1111",
       "weight": 1.0
     },
     {
@@ -4612,7 +4686,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1054",
+      "source_location": "L1112",
       "weight": 1.0
     },
     {
@@ -4624,7 +4698,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1071",
+      "source_location": "L1129",
       "weight": 1.0
     },
     {
@@ -4636,7 +4710,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1130",
+      "source_location": "L1188",
       "weight": 1.0
     },
     {
@@ -4648,7 +4722,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1099",
+      "source_location": "L1157",
       "weight": 1.0
     },
     {
@@ -4660,7 +4734,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1104",
+      "source_location": "L1162",
       "weight": 1.0
     },
     {
@@ -4672,7 +4746,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L994",
+      "source_location": "L1052",
       "weight": 1.0
     },
     {
@@ -5672,6 +5746,42 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_syncpipeline_syncpipeline",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_config_config",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_pull_server",
       "target": "src_lib_server_syncpipeline_syncpipeline",
       "relation": "imports",
@@ -6149,6 +6259,42 @@
       "context": "import",
       "source_file": "src/routes/api/logs/+server.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_syncpipeline",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_config",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -7683,6 +7829,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_routes_api_sheets_delete_row_server",
+      "target": "src_routes_api_sheets_delete_row_server_post",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/api/sheets/delete-row/+server.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
       "source": "src_routes_api_sheets_pull_server",
       "target": "src_routes_api_sheets_pull_server_post",
       "relation": "contains",
@@ -7761,13 +7918,24 @@
     },
     {
       "source": "src_routes_page",
+      "target": "src_routes_page_addnewguest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1055",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
       "target": "src_routes_page_executesyncbatch",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1057",
+      "source_location": "L1115",
       "weight": 1.0
     },
     {
@@ -7778,7 +7946,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1084",
+      "source_location": "L1142",
       "weight": 1.0
     },
     {
@@ -7789,7 +7957,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1102",
+      "source_location": "L1160",
       "weight": 1.0
     },
     {
@@ -7800,7 +7968,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1110",
+      "source_location": "L1168",
       "weight": 1.0
     },
     {
@@ -7811,7 +7979,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1121",
+      "source_location": "L1179",
       "weight": 1.0
     },
     {
@@ -7822,7 +7990,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1136",
+      "source_location": "L1194",
       "weight": 1.0
     },
     {
@@ -7833,7 +8001,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1148",
+      "source_location": "L1206",
       "weight": 1.0
     },
     {
@@ -7988,17 +8156,6 @@
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
       "source_location": "L986",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_addnewguest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L997",
       "weight": 1.0
     },
     {
@@ -8627,6 +8784,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_googlesheetservice_googlesheetservice",
+      "target": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L913",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_kbttclient_kbttclient",
       "target": "src_lib_server_kbttclient_kbttclient_constructor",
       "relation": "method",
@@ -8929,5 +9097,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ff64088d17bdf5fe866869219aeffbc82998cfab"
+  "built_at_commit": "e643b9608a8367b82ea787ef3a2f5cb15c6ad969"
 }

@@ -72,10 +72,10 @@
     "semantic_hash": "3e4520eb9e5f4b3e7351fcbb1dc8e745"
   },
   "src/lib/server/googleSheetService.ts": {
-    "mtime": 1789561821.3775496,
-    "seen": 1789561963.7522,
-    "ast_hash": "c2ecb60bf0fc401641a30229ed9f7c47",
-    "semantic_hash": "c2ecb60bf0fc401641a30229ed9f7c47"
+    "mtime": 1789562166.5531301,
+    "seen": 1789562213.0569057,
+    "ast_hash": "4e67752112fd26c86fba991ad3687098",
+    "semantic_hash": "4e67752112fd26c86fba991ad3687098"
   },
   "src/lib/server/kbttClient.ts": {
     "mtime": 1789549541.6676328,
@@ -102,10 +102,10 @@
     "semantic_hash": "1b163c03f3725608db5406d1a4581353"
   },
   "src/routes/+page.svelte": {
-    "mtime": 1789561916.307712,
-    "seen": 1789561963.7524514,
-    "ast_hash": "f87358e57d21156f0977bcdf3d7db7c2",
-    "semantic_hash": "f87358e57d21156f0977bcdf3d7db7c2"
+    "mtime": 1789562187.914011,
+    "seen": 1789562213.0571723,
+    "ast_hash": "639a455f678aa727b71b1ea2416f8c98",
+    "semantic_hash": "639a455f678aa727b71b1ea2416f8c98"
   },
   "src/routes/api/catalogs/+server.ts": {
     "mtime": 1789549541.6637275,
@@ -190,5 +190,11 @@
     "seen": 1789550020.9112172,
     "ast_hash": "9e12f6031d3d187dc6e44d4eb6de529b",
     "semantic_hash": "9e12f6031d3d187dc6e44d4eb6de529b"
+  },
+  "src/routes/api/sheets/delete-row/+server.ts": {
+    "mtime": 1789562157.9384634,
+    "seen": 1789562213.0573657,
+    "ast_hash": "bbb1bb4008b87c347bb156269b5a2d3f",
+    "semantic_hash": "bbb1bb4008b87c347bb156269b5a2d3f"
   }
 }

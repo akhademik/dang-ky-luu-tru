@@ -983,8 +983,66 @@ async function syncRowToGoogleSheet(idx: number) {
 	}
 }
 
-function removeRow(idx: number) {
-	currentRows = currentRows.filter((_, i) => i !== idx);
+async function removeRow(idx: number) {
+	const row = currentRows[idx];
+	if (!row) return;
+
+	const targetSheetRow = Math.max(
+		2,
+		Number(row._sheetRow || row.sheetRowIndex || idx + 2),
+	);
+	const guestName = String(row.hoTen || row["Họ tên"] || `Dòng ${idx + 1}`);
+
+	if (
+		!confirm(
+			`Bạn có chắc chắn muốn xóa khách "${guestName}" (dòng ${targetSheetRow} trên Google Sheet) không?`,
+		)
+	) {
+		return;
+	}
+
+	showToast("XÓA", `Đang xóa dòng ${targetSheetRow} trên Google Sheet...`);
+	const selectedTab = availableTabs.find(
+		(t) => String(t.gid) === String(selectedGid),
+	);
+	const sheetName = selectedTab ? selectedTab.name : "";
+
+	try {
+		const res = await fetch("/api/sheets/delete-row", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				rowIndex: targetSheetRow,
+				sheetRowIndex: targetSheetRow,
+				gid: selectedGid,
+				sheetName,
+			}),
+		});
+		const data = await res.json();
+		if (data.success) {
+			showToast("OK", `Đã xóa dòng ${targetSheetRow} trên Google Sheet!`);
+		} else if (data.notConfigured) {
+			showToast("XÓA", `Đã xóa dòng ${targetSheetRow} trên giao diện.`);
+		} else {
+			showToast("CẢNH BÁO", `Lỗi xóa Sheet: ${data.message}`);
+		}
+	} catch (err) {
+		showToast("LỖI", `Lỗi mạng khi xóa Sheet: ${(err as Error).message}`);
+	}
+
+	// Cập nhật lại UI và điều chỉnh chỉ số sheetRow của các dòng phía sau
+	currentRows = currentRows
+		.filter((_, i) => i !== idx)
+		.map((r, i) => {
+			const oldRow = Number(r._sheetRow || r.sheetRowIndex || i + 2);
+			if (i >= idx && oldRow > targetSheetRow) {
+				const newSheetRow = oldRow - 1;
+				r._sheetRow = newSheetRow;
+				r.sheetRowIndex = newSheetRow;
+			}
+			return r;
+		});
+
 	const nextSel = new Set<number>();
 	selectedIndices.forEach((i) => {
 		if (i < idx) nextSel.add(i);

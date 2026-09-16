@@ -909,4 +909,78 @@ export class GoogleSheetService {
 			};
 		}
 	}
+
+	public async deleteSheetRow(params: {
+		sheetId: string;
+		gid: string;
+		sheetName?: string;
+		rowIndex?: number;
+		sheetRowIndex?: number;
+	}): Promise<{ success: boolean; message: string; notConfigured?: boolean }> {
+		const appsScriptUrl = (
+			process.env.GOOGLE_APPS_SCRIPT_URL ||
+			CONFIG.GOOGLE_APPS_SCRIPT_URL ||
+			""
+		).trim();
+		if (!appsScriptUrl) {
+			return {
+				success: false,
+				notConfigured: true,
+				message:
+					"GOOGLE_APPS_SCRIPT_URL chưa được cấu hình. Dòng đã được xóa trên giao diện.",
+			};
+		}
+
+		const sheetRowIndex =
+			params.sheetRowIndex !== undefined && Number(params.sheetRowIndex) >= 2
+				? Number(params.sheetRowIndex)
+				: params.rowIndex !== undefined && Number(params.rowIndex) >= 0
+					? Number(params.rowIndex) + 2
+					: undefined;
+
+		if (!sheetRowIndex || sheetRowIndex < 2) {
+			return {
+				success: false,
+				message: "Chỉ số dòng không hợp lệ hoặc cố gắng xóa dòng tiêu đề.",
+			};
+		}
+
+		try {
+			const res = await fetch(appsScriptUrl, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					action: "deleteRow",
+					sheetId: params.sheetId || CONFIG.GOOGLE_SHEET_ID,
+					gid: params.gid || "0",
+					sheetName: params.sheetName,
+					rowIndex: params.rowIndex,
+					sheetRowIndex,
+				}),
+			});
+
+			if (!res.ok) {
+				const text = await res.text();
+				return {
+					success: false,
+					message: `Lỗi Webhook (${res.status}): ${text}`,
+				};
+			}
+
+			const data = await res.json();
+			return {
+				success: Boolean(data.success),
+				message:
+					(data.message as string) ||
+					(data.success
+						? `Đã xóa dòng ${sheetRowIndex} trên Google Sheet!`
+						: "Apps Script báo lỗi khi xóa dòng."),
+			};
+		} catch (err) {
+			return {
+				success: false,
+				message: `Lỗi mạng khi xóa dòng trên Sheet: ${(err as Error).message}`,
+			};
+		}
+	}
 }
