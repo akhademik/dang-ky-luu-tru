@@ -240,13 +240,13 @@ export class DataTransformer {
   async transformRow(rawRow) {
     const hoTen = (rawRow.hoTen || rawRow['Họ tên'] || rawRow.fullName || '').trim();
     const gioiTinh = this.normalizeGender(rawRow.gioiTinh || rawRow['Giới tính'] || rawRow.gender);
-    const rawDob = rawRow.ngaySinh || rawRow['Ngày sinh'] || rawRow['D.O.B'] || rawRow.dob || '';
-    const ngaySinhStr = this.formatDateOnly(rawDob);
-    const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDen || rawRow['(từ ngày)'] || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
-    const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDi || rawRow['(đến ngày)'] || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
     const rawRoom = rawRow.soPhong || rawRow['Số phòng'] || rawRow.room || '';
-    const soPhong = this.cleanRoomNumber(rawRoom);
+    const roomNum = this.cleanRoomNumber(rawRoom);
     const rawAddress = (rawRow.diaChi || rawRow['Địa chỉ'] || rawRow['Địa chỉ chi tiết'] || rawRow.address || '').trim();
+
+    const ngaySinhStr = this.formatDateOnly(rawRow.ngaySinh || rawRow.ngayThangNamSinhStr || rawRow['Ngày sinh'] || rawRow.birthDate);
+    const ngayDenCsltStr = this.formatDateTime(rawRow.ngayDenCsltStr || rawRow.ngayDen || rawRow['Ngày đến'] || rawRow.checkIn, '14:00:00');
+    const ngayDiDuKienStr = this.formatDateTime(rawRow.ngayDiDuKienStr || rawRow.ngayDi || rawRow['Ngày đi'] || rawRow.checkOut, '12:00:00');
 
     if (!hoTen) {
       return { validationError: 'Thiếu thông tin Họ tên khách' };
@@ -254,12 +254,14 @@ export class DataTransformer {
     if (!ngaySinhStr) {
       return { validationError: 'Thiếu hoặc sai định dạng Ngày sinh' };
     }
-    if (!soPhong) {
+    if (!roomNum) {
       return { validationError: `Số phòng không hợp lệ hoặc không tìm thấy số từ 1-9 (giá trị hiện tại: "${rawRoom || 'trống'}")` };
     }
     if (!ngayDenCsltStr || !ngayDiDuKienStr) {
       return { validationError: 'Thiếu thông tin Ngày đến hoặc Ngày đi dự kiến' };
     }
+
+    const soPhong = `Phong so ${roomNum}`;
 
     // Chặn khai báo khách từ quá khứ / tương lai xa trước khi gửi API
     const checkInVal = this.validateCheckInDate(ngayDenCsltStr);

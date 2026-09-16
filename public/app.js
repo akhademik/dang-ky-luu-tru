@@ -259,18 +259,18 @@ function renderTable() {
         }
       </td>
 
-      <!-- Giới tính (Required) -->
+      <!-- Giới tính -->
       <td class="p-3">
         ${isEditing
-          ? `<select onchange="updateCell(${idx}, 'gioiTinh', this.value)" class="bg-emerald-50/50 border border-emerald-400 rounded px-1.5 py-1 outline-none text-xs">
-              <option value="Nam" ${(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M' ? 'selected' : ''}>Nam (M)</option>
-              <option value="Nữ" ${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'selected' : ''}>Nữ (F)</option>
+          ? `<select onchange="updateCell(${idx}, 'gioiTinh', this.value)" class="bg-emerald-50/50 border border-emerald-400 rounded px-2 py-1 outline-none text-xs font-medium">
+              <option value="Nam" ${(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M' ? 'selected' : ''}>Nam</option>
+              <option value="Nữ" ${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'selected' : ''}>Nữ</option>
             </select>`
-          : `<span class="px-2 py-0.5 rounded bg-slate-100 font-semibold text-slate-700 text-xs">${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'Nữ (F)' : 'Nam (M)'}</span>`
+          : `<span class="px-2 py-0.5 rounded bg-slate-100 font-semibold text-slate-700 text-xs">${(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F' ? 'Nữ' : 'Nam'}</span>`
         }
       </td>
 
-      <!-- Quốc tịch (Required với NNN) -->
+      <!-- Quốc tịch -->
       <td class="p-3">
         ${isEditing
           ? `<input type="text" value="${row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'}" onchange="updateCell(${idx}, 'quocTich', this.value)" class="w-20 bg-emerald-50/50 border border-emerald-400 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs">`
@@ -278,7 +278,7 @@ function renderTable() {
         }
       </td>
 
-      <!-- Loại giấy tờ (Required) -->
+      <!-- Loại giấy tờ -->
       <td class="p-3">
         ${isEditing
           ? `<select onchange="updateCell(${idx}, 'loaiGiayTo', this.value)" class="bg-emerald-50/50 border border-emerald-400 rounded px-1.5 py-1 outline-none text-xs max-w-[130px]">
@@ -292,7 +292,7 @@ function renderTable() {
         }
       </td>
 
-      <!-- Số giấy tờ (Required) -->
+      <!-- Số giấy tờ -->
       <td class="p-3 font-mono font-bold text-indigo-700">
         ${isEditing
           ? `<input type="text" value="${row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || ''}" onchange="updateCell(${idx}, 'soGiayTo', this.value)" placeholder="Số giấy tờ" class="w-28 rounded px-2 py-1 outline-none font-bold font-mono text-xs transition ${isDocValid ? 'bg-emerald-50/50 border border-emerald-400 text-indigo-700 focus:ring-1 focus:ring-emerald-400' : 'bg-rose-50 border-2 border-rose-400 text-rose-900 focus:ring-1 focus:ring-rose-400'}" title="${isDocValid ? 'Hợp lệ' : docError}">`
@@ -303,13 +303,18 @@ function renderTable() {
         }
       </td>
 
-      <!-- Số phòng (Required) -->
+      <!-- Phòng -->
       <td class="p-3">
         ${isEditing
-          ? `<input type="text" value="${row.soPhong || row['Số phòng'] || ''}" onchange="updateCell(${idx}, 'soPhong', this.value)" placeholder="Phòng" class="w-14 rounded px-2 py-1 outline-none font-medium text-xs transition ${isRoomValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800 focus:ring-1 focus:ring-emerald-400' : 'bg-rose-50 border-2 border-rose-400 text-rose-900 focus:ring-1 focus:ring-rose-400'}">`
+          ? `<select onchange="updateCell(${idx}, 'soPhong', this.value)" class="rounded px-2 py-1 outline-none text-xs font-semibold transition ${isRoomValid ? 'bg-emerald-50/50 border border-emerald-400 text-slate-800' : 'bg-rose-50 border-2 border-rose-400 text-rose-900'}">
+              <option value="">--</option>
+              ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => `
+                <option value="${num}" ${cleanRoomNumber(row.soPhong || row['Số phòng']) === String(num) ? 'selected' : ''}>Phòng ${num}</option>
+              `).join('')}
+            </select>`
           : (isRoomValid 
-              ? `<span class="font-semibold text-slate-800">${row.soPhong || row['Số phòng']}</span>`
-              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs">Thiếu *</span>`
+              ? `<span class="font-semibold text-slate-800 bg-slate-100/90 px-2 py-0.5 rounded text-xs">Phòng ${cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>`
+              : `<span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs cursor-help" title="Thiếu hoặc sai số phòng">Thiếu phòng</span>`
             )
         }
       </td>

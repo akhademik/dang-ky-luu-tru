@@ -62,7 +62,7 @@ async function runTests() {
   assert.equal(vnRes.payload.hoTen, 'NGUYỄN VĂN A');
   assert.equal(vnRes.payload.gioiTinh, 'M');
   assert.equal(vnRes.payload.soGiayTo, '001092000001');
-  assert.equal(vnRes.payload.soPhong, '1');
+  assert.equal(vnRes.payload.soPhong, 'Phong so 1');
   assert.equal(vnRes.payload.ngayThangNamSinhStr, '1992-10-01');
   assert.equal(vnRes.payload.ngayDenCsltStr, `${todayStr} 14:00:00`);
   console.log('✅ DataTransformer (VN & Room 1-9 Cleaning) test passed!');
@@ -83,7 +83,7 @@ async function runTests() {
   assert.equal(foreignRes.branch, 'FOREIGN');
   assert.equal(foreignRes.payload.quocTich, 'USA');
   assert.equal(foreignRes.payload.soHoChieu, 'E98765432');
-  assert.equal(foreignRes.payload.soPhong, '2');
+  assert.equal(foreignRes.payload.soPhong, 'Phong so 2');
   assert.equal(foreignRes.payload.loaiNgayThangNamSinh, 'D');
   console.log('✅ DataTransformer (Foreign) test passed!');
 
@@ -173,12 +173,12 @@ async function runTests() {
     assert.equal(transformed.payload.hoTen, 'TRỊNH NGỌC LINH');
     assert.equal(transformed.payload.gioiTinh, 'F');
     assert.equal(transformed.payload.soGiayTo, '001302011971');
-    assert.equal(transformed.payload.soPhong, '7'); // P.07 stripped to 7
+    assert.equal(transformed.payload.soPhong, 'Phong so 7'); // P.07 stripped to 7 and formatted to Phong so 7
     assert.equal(transformed.payload.ngayThangNamSinhStr, '2002-09-22');
     assert.equal(transformed.payload.noiCuTru, 1);
     assert.equal(transformed.payload.loaiGiayTo, 1);
     assert.equal(transformed.payload.lyDoCuTru, 1);
-    console.log('✅ Chuẩn hóa dòng dữ liệu thực tế từ Google Sheet sang API 5 (v1.4) thành công (Số phòng: 7):');
+    console.log('✅ Chuẩn hóa dòng dữ liệu thực tế từ Google Sheet sang API 5 (v1.4) thành công (Số phòng: Phong so 7):');
     console.log(JSON.stringify(transformed.payload, null, 2));
   } else {
     console.warn('⚠️ Live fetch info:', liveRes.message);
