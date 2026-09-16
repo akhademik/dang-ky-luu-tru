@@ -5,7 +5,7 @@ export const CONFIG = {
   BASE_URL: "https://api-kbtt.ai-vlab.com",
   GOOGLE_SHEET_ID: "16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q",
   GOOGLE_APPS_SCRIPT_URL:
-    "https://script.google.com/macros/s/AKfycbxQUzzsdZzDBPTOPEmu5Zuho9ky3zEEpH8DFcxKgnUcQbKQ9KIOuG18dY-hrTy1KWGLVA/exec",
+    "https://script.google.com/macros/s/AKfycbxpkk4E_60vBgE9KPE1B9RH3XqjOc-gRLW0h1IZPXXotIwb-mr-tH-WeQf3tzjubaVTHg/exec",
   AUTH: {
     USERNAME: "demo_tich_hop",
     PASSWORD: "Demo@#$12345",

@@ -434,33 +434,44 @@ function updateSelectedCountBadge() {
   }
 }
 
-async function toggleEditRow(idx) {
+function toggleEditRow(idx) {
   if (editingRowIndices.has(idx)) {
+    // 1. Phản hồi giao diện tức thì (0ms latency, không để người dùng phải chờ)
     editingRowIndices.delete(idx);
-    
-    // Gửi cập nhật dòng về backend/sheet
+    renderTable();
+    updatePayloadPreview();
+
+    // 2. Hiển thị thông báo tức thì
+    showCopyToast('LƯU', `Đang lưu dòng ${idx + 1} lên Google Sheet...`);
+
+    // 3. Đồng bộ bất đồng bộ với Google Sheet Webhook trong nền
     const sheetId = (document.getElementById('sheetIdInput') ? document.getElementById('sheetIdInput').value : '16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q').trim();
     const select = document.getElementById('sheetTabSelect');
     const gid = select ? select.value : '0';
-    try {
-      const res = await fetch('/api/sheets/update-row', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rowIndex: idx, row: currentRows[idx], sheetId, gid }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        showCopyToast('OK', `Đã cập nhật dòng ${idx + 1} lên Google Sheet!`);
-      } else if (data.notConfigured) {
-        console.info('[GoogleSheetService]', data.message, data.guide);
-        showCopyToast('LƯU', `Đã lưu dòng ${idx + 1} vào hệ thống. (Để ghi trực tiếp lên Sheet cần Google Apps Script Webhook)`);
-      }
-    } catch (err) {
-      console.warn('Lỗi ghi nhận dòng:', err);
-    }
+    const selectedTab = availableTabs.find(t => String(t.gid) === String(gid));
+    const sheetName = selectedTab ? selectedTab.name : '';
 
-    await updatePayloadPreview();
-    renderTable();
+    fetch('/api/sheets/update-row', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rowIndex: idx, row: currentRows[idx], sheetId, gid, sheetName }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showCopyToast('OK', `Đã cập nhật dòng ${idx + 1} lên Google Sheet!`);
+        } else if (data.notConfigured) {
+          console.info('[GoogleSheetService]', data.message, data.guide);
+          showCopyToast('LƯU', `Đã lưu dòng ${idx + 1} vào hệ thống.`);
+        } else {
+          console.warn('[GoogleSheetService]', data.message);
+          showCopyToast('CẢNH BÁO', `Lỗi cập nhật Sheet: ${data.message}`);
+        }
+      })
+      .catch(err => {
+        console.warn('Lỗi ghi nhận dòng:', err);
+        showCopyToast('LỖI', `Lỗi mạng khi cập nhật Sheet: ${err.message}`);
+      });
   } else {
     editingRowIndices.add(idx);
     renderTable();

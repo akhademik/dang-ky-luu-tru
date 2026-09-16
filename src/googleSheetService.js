@@ -6,6 +6,7 @@ import { CONFIG } from './config.js';
 export class GoogleSheetService {
   constructor(defaultSheetId = CONFIG.GOOGLE_SHEET_ID) {
     this.sheetId = defaultSheetId;
+    this.tabsCache = new Map();
   }
 
   /**
@@ -33,11 +34,21 @@ export class GoogleSheetService {
   /**
    * Lấy danh sách các Tab (Sheets) trong Google Spreadsheet và tìm tab theo ngày
    * @param {string} [input] Sheet ID hoặc Full URL
+   * @param {boolean} [forceRefresh]
    * @returns {Promise<{ success: boolean, tabs: Array<{ name: string, gid: string, dateStr?: string, isDateTab: boolean, isDefault: boolean }>, defaultGid?: string }>}
    */
-  async fetchSheetTabs(input = this.sheetId) {
+  async fetchSheetTabs(input = this.sheetId, forceRefresh = false) {
     const { sheetId } = this.parseSheetIdentifier(input);
     if (!sheetId) return { success: false, tabs: [] };
+
+    const cacheKey = sheetId;
+    const now = Date.now();
+    if (!forceRefresh && this.tabsCache.has(cacheKey)) {
+      const cached = this.tabsCache.get(cacheKey);
+      if (now - cached.time < 60000) {
+        return cached.data;
+      }
+    }
 
     const htmlViewUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlview`;
     try {
@@ -93,11 +104,13 @@ export class GoogleSheetService {
         delete t.parsedDate; // Dọn sạch object để trả về JSON
       });
 
-      return {
+      const result = {
         success: true,
         tabs,
         defaultGid: bestTab ? bestTab.gid : tabs[0].gid,
       };
+      this.tabsCache.set(cacheKey, { time: Date.now(), data: result });
+      return result;
     } catch (err) {
       console.warn('[GoogleSheetService] Lỗi khi lấy danh sách tab:', err.message);
       return {
