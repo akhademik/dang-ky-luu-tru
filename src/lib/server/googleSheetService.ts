@@ -687,7 +687,7 @@ export class GoogleSheetService {
 			rowData.quocTich || rowData["Quốc tịch"] || rowData["Quốc gia"] || "VNM",
 		).toUpperCase();
 		const loaiGiayTo = String(
-			rowData.loaiGiayTo || rowData["Loại giấy tờ"] || "Thẻ CCCD",
+			rowData.loaiGiayTo || rowData["Loại giấy tờ"] || "CCCD",
 		);
 		const tenGiayTo = String(
 			rowData.tenGiayTo || rowData["Tên giấy tờ"] || loaiGiayTo,

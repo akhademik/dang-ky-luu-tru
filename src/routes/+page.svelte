@@ -149,6 +149,26 @@ function validateDateString(val: string): boolean {
 	return false;
 }
 
+function formatToDisplayDate(val: string): string {
+	if (!val) return "";
+	const str = String(val).trim();
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	if (dmy) {
+		const d = dmy[1].padStart(2, "0");
+		const m = dmy[2].padStart(2, "0");
+		const y = dmy[3];
+		return `${d}/${m}/${y}`;
+	}
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+	if (ymd) {
+		const y = ymd[1];
+		const m = ymd[2].padStart(2, "0");
+		const d = ymd[3].padStart(2, "0");
+		return `${d}/${m}/${y}`;
+	}
+	return str;
+}
+
 function validateArrivalDate(val: string): { valid: boolean; error?: string } {
 	if (!val || !val.trim())
 		return { valid: false, error: "Vui lòng nhập ngày đến" };
@@ -201,34 +221,38 @@ function isValidAlpha3Country(code: string): boolean {
 	const clean = String(code || "")
 		.trim()
 		.toUpperCase();
-	if (!clean || clean.length !== 3 || !/^[A-Z]{3}$/.test(clean)) return false;
-	const commonValid = [
-		"VNM",
-		"USA",
-		"RUS",
-		"CHN",
-		"KOR",
-		"JPN",
-		"GBR",
-		"FRA",
-		"DEU",
-		"AUS",
-		"THA",
-		"LAO",
-		"KHM",
-		"SGP",
-		"MYS",
-		"IDN",
-		"PHL",
-		"IND",
-		"ITA",
-		"ESP",
-		"CAN",
-		"BRA",
-		"TWN",
-		"VAA",
-	];
-	if (commonValid.includes(clean)) return true;
+	if (!clean) return false;
+	// Đức (Germany) là trường hợp ngoại lệ duy nhất có mã 1 ký tự: "D" trong CSDL KBTT
+	if (clean === "D") return true;
+	if (clean.length === 3 && /^[A-Z]{3}$/.test(clean)) {
+		const commonValid = [
+			"VNM",
+			"USA",
+			"RUS",
+			"CHN",
+			"KOR",
+			"JPN",
+			"GBR",
+			"FRA",
+			"DEU",
+			"AUS",
+			"THA",
+			"LAO",
+			"KHM",
+			"SGP",
+			"MYS",
+			"IDN",
+			"PHL",
+			"IND",
+			"ITA",
+			"ESP",
+			"CAN",
+			"BRA",
+			"TWN",
+			"VAA",
+		];
+		if (commonValid.includes(clean)) return true;
+	}
 	if (catalogs.quocTich.length > 0) {
 		return catalogs.quocTich.some((item) => {
 			const ma = String(item.maQT || item.id || item.code || "")
@@ -237,7 +261,7 @@ function isValidAlpha3Country(code: string): boolean {
 			return ma === clean;
 		});
 	}
-	return /^[A-Z]{3}$/.test(clean);
+	return clean.length === 3 && /^[A-Z]{3}$/.test(clean);
 }
 
 function isNumericDocType(docTypeRaw: unknown): boolean {
@@ -560,6 +584,24 @@ async function pullDataFromGoogleSheet(forcedGid: string | null = null) {
 					row.soPhong = cleaned;
 					row["Số phòng"] = cleaned;
 				}
+				// Chuẩn hóa định dạng ngày sinh dd/MM/yyyy
+				const rawDob = String(
+					row.ngaySinh || row["Ngày sinh"] || row["D.O.B"] || "",
+				);
+				const formattedDob = formatToDisplayDate(rawDob);
+				if (formattedDob) {
+					row.ngaySinh = formattedDob;
+					row["Ngày sinh"] = formattedDob;
+					row["D.O.B"] = formattedDob;
+				}
+				// Chuẩn hóa Loại giấy tờ: Thẻ CCCD -> CCCD
+				if (
+					row.loaiGiayTo === "Thẻ CCCD" ||
+					row["Loại giấy tờ"] === "Thẻ CCCD"
+				) {
+					row.loaiGiayTo = "CCCD";
+					row["Loại giấy tờ"] = "CCCD";
+				}
 				// Gán chính xác số dòng trên Sheet (luôn >= 2)
 				const sheetRow = Math.max(
 					2,
@@ -739,6 +781,12 @@ function openEditModal(idx: number) {
 	const row = currentRows[idx];
 	if (!row) return;
 	modalIndex = idx;
+	const formattedDob = formatToDisplayDate(
+		String(row.ngaySinh || row["Ngày sinh"] || row["D.O.B"] || ""),
+	);
+	const rawDocType = String(row.loaiGiayTo || row["Loại giấy tờ"] || "CCCD");
+	const normalizedDocType = rawDocType === "Thẻ CCCD" ? "CCCD" : rawDocType;
+
 	modalForm = {
 		hoTen: String(row.hoTen || row["Họ tên"] || ""),
 		gioiTinh:
@@ -748,12 +796,12 @@ function openEditModal(idx: number) {
 			row["Giới tính"] === "F"
 				? "Nữ"
 				: "Nam",
-		ngaySinh: String(row.ngaySinh || row["Ngày sinh"] || row["D.O.B"] || ""),
+		ngaySinh: formattedDob,
 		quocTich: String(
 			row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "VNM",
 		).toUpperCase(),
 		soPhong: cleanRoomNumber(row.soPhong || row["Số phòng"]) || "1",
-		loaiGiayTo: String(row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD"),
+		loaiGiayTo: normalizedDocType,
 		soGiayTo: cleanDocNumberInput(
 			String(
 				row.soGiayTo ||
@@ -762,7 +810,7 @@ function openEditModal(idx: number) {
 					row["Số hộ chiếu"] ||
 					"",
 			),
-			row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD",
+			normalizedDocType,
 		),
 		ngayDen: String(row.ngayDen || row["(từ ngày)"] || row["Ngày đến"] || ""),
 		ngayDi: String(row.ngayDi || row["(đến ngày)"] || row["Ngày đi"] || ""),
@@ -784,9 +832,10 @@ function saveModal() {
 	row["Họ tên"] = row.hoTen;
 	row.gioiTinh = modalForm.gioiTinh;
 	row["Giới tính"] = row.gioiTinh;
-	row.ngaySinh = modalForm.ngaySinh.trim();
-	row["Ngày sinh"] = row.ngaySinh;
-	row["D.O.B"] = row.ngaySinh;
+	const savedDob = formatToDisplayDate(modalForm.ngaySinh.trim());
+	row.ngaySinh = savedDob;
+	row["Ngày sinh"] = savedDob;
+	row["D.O.B"] = savedDob;
 	row.quocTich = modalForm.quocTich.trim().toUpperCase();
 	row["Quốc tịch"] = row.quocTich;
 	row.soPhong = modalForm.soPhong;
@@ -819,16 +868,14 @@ function saveModal() {
 function buildOrderedRowValues(row: RowData, idx = 0): string[] {
 	const stt = String(row.stt || row.STT || idx + 1);
 	const hoTen = String(row.hoTen || row["Họ tên"] || "");
-	const ngaySinh = String(
-		row.ngaySinh || row["Ngày sinh"] || row["D.O.B"] || "",
-	);
+	const rawDob = String(row.ngaySinh || row["Ngày sinh"] || row["D.O.B"] || "");
+	const ngaySinh = formatToDisplayDate(rawDob);
 	const gioiTinh = String(row.gioiTinh || row["Giới tính"] || "Nam");
 	const quocTich = String(
 		row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "VNM",
 	).toUpperCase();
-	const loaiGiayTo = String(
-		row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD",
-	);
+	const rawDocType = String(row.loaiGiayTo || row["Loại giấy tờ"] || "CCCD");
+	const loaiGiayTo = rawDocType === "Thẻ CCCD" ? "CCCD" : rawDocType;
 	const tenGiayTo = String(row.tenGiayTo || row["Tên giấy tờ"] || loaiGiayTo);
 	const soGiayTo = String(
 		row.soGiayTo ||
@@ -950,7 +997,7 @@ function removeRow(idx: number) {
 function addNewGuest() {
 	const now = new Date();
 	const pad = (n: number) => String(n).padStart(2, "0");
-	const todayStr = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} 14:00:00`;
+	const todayStr = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 	const next2Days = new Date(now);
 	next2Days.setDate(next2Days.getDate() + 2);
 	const next2DaysStr = `${pad(next2Days.getDate())}/${pad(next2Days.getMonth() + 1)}/${next2Days.getFullYear()} 12:00:00`;
@@ -972,16 +1019,16 @@ function addNewGuest() {
 		STT: String(currentRows.length + 1),
 		hoTen: "KHÁCH MỚI",
 		"Họ tên": "KHÁCH MỚI",
-		ngaySinh: "1995-01-01",
-		"Ngày sinh": "1995-01-01",
-		"D.O.B": "1995-01-01",
+		ngaySinh: "01/01/1995",
+		"Ngày sinh": "01/01/1995",
+		"D.O.B": "01/01/1995",
 		gioiTinh: "Nam",
 		"Giới tính": "Nam",
 		quocTich: "VNM",
 		"Quốc tịch": "VNM",
 		"Quốc gia": "VNM",
-		loaiGiayTo: "Thẻ CCCD",
-		"Loại giấy tờ": "Thẻ CCCD",
+		loaiGiayTo: "CCCD",
+		"Loại giấy tờ": "CCCD",
 		soGiayTo: "",
 		"Số giấy tờ": "",
 		"Số CCCD": "",
@@ -1301,9 +1348,9 @@ onMount(() => {
                   <!-- Ngày sinh -->
                   <td class="p-3 font-mono">
                     {#if isEditing}
-                      <input type="text" value={row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''} onchange={(e) => updateCell(idx, 'ngaySinh', (e.target as HTMLInputElement).value)} placeholder="YYYY-MM-DD" class="w-24 rounded px-2 py-1 outline-none text-xs font-mono transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
+                      <input type="text" value={formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))} onchange={(e) => updateCell(idx, 'ngaySinh', (e.target as HTMLInputElement).value)} placeholder="DD/MM/YYYY" class="w-24 rounded px-2 py-1 outline-none text-xs font-mono transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
                     {:else if fStatus.ngaySinh?.valid ?? (row.ngaySinh || row['D.O.B'] || row['Ngày sinh'])}
-                      <button type="button" class="cursor-pointer hover:text-indigo-600 transition" onclick={() => openEditModal(idx)}>{row.ngaySinh || row['D.O.B'] || row['Ngày sinh']}</button>
+                      <button type="button" class="cursor-pointer hover:text-indigo-600 transition" onclick={() => openEditModal(idx)}>{formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))}</button>
                     {:else}
                       <button type="button" class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-2 py-0.5 rounded text-xs cursor-pointer" onclick={() => openEditModal(idx)}>Thiếu ngày sinh *</button>
                     {/if}
@@ -1346,14 +1393,15 @@ onMount(() => {
                   <td class="p-3">
                     {#if isEditing}
                       <select onchange={(e) => updateCell(idx, 'loaiGiayTo', (e.target as HTMLSelectElement).value)} class="bg-emerald-50/50 border border-emerald-400 rounded px-1.5 py-1 outline-none text-xs max-w-[130px] transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500">
-                        <option value="Thẻ CCCD" selected={row.loaiGiayTo === 'Thẻ CCCD' || row['Loại giấy tờ'] === 'Thẻ CCCD'}>Thẻ CCCD (1)</option>
-                        <option value="Thẻ CMND" selected={row.loaiGiayTo === 'Thẻ CMND' || row['Loại giấy tờ'] === 'Thẻ CMND'}>Thẻ CMND (2)</option>
-                        <option value="Giấy phép lái xe" selected={row.loaiGiayTo === 'Giấy phép lái xe' || row['Loại giấy tờ'] === 'Giấy phép lái xe'}>GPLX (3)</option>
+                        <option value="CCCD" selected={row.loaiGiayTo === 'CCCD' || row.loaiGiayTo === 'Thẻ CCCD' || row['Loại giấy tờ'] === 'CCCD' || row['Loại giấy tờ'] === 'Thẻ CCCD'}>CCCD (1)</option>
+                        <option value="CMND" selected={row.loaiGiayTo === 'CMND' || row.loaiGiayTo === 'Thẻ CMND' || row['Loại giấy tờ'] === 'CMND' || row['Loại giấy tờ'] === 'Thẻ CMND'}>CMND (2)</option>
+                        <option value="GPLX" selected={row.loaiGiayTo === 'GPLX' || row.loaiGiayTo === 'Giấy phép lái xe' || row['Loại giấy tờ'] === 'GPLX' || row['Loại giấy tờ'] === 'Giấy phép lái xe'}>GPLX (3)</option>
                         <option value="Hộ chiếu" selected={row.loaiGiayTo === 'Hộ chiếu' || row['Loại giấy tờ'] === 'Hộ chiếu'}>Hộ chiếu (4)</option>
-                        <option value="Thẻ Căn Cước" selected={row.loaiGiayTo === 'Thẻ Căn Cước' || row['Loại giấy tờ'] === 'Thẻ Căn Cước'}>Thẻ Căn Cước (8)</option>
+                        <option value="Căn Cước" selected={row.loaiGiayTo === 'Căn Cước' || row.loaiGiayTo === 'Thẻ Căn Cước' || row['Loại giấy tờ'] === 'Căn Cước' || row['Loại giấy tờ'] === 'Thẻ Căn Cước'}>Căn Cước (8)</option>
                       </select>
                     {:else}
-                      <span class="text-slate-700 text-xs">{row.loaiGiayTo || row['Loại giấy tờ'] || 'Thẻ CCCD (1)'}</span>
+                      {@const curLt = String(row.loaiGiayTo || row['Loại giấy tờ'] || 'CCCD')}
+                      <span class="text-slate-700 text-xs">{curLt === 'Thẻ CCCD' ? 'CCCD' : curLt}</span>
                     {/if}
                   </td>
 
@@ -1710,11 +1758,11 @@ onMount(() => {
               }}
               class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white transition"
             >
-              <option value="Thẻ CCCD">Thẻ CCCD (1)</option>
-              <option value="Thẻ CMND">Thẻ CMND (2)</option>
-              <option value="Giấy phép lái xe">GPLX (3)</option>
+              <option value="CCCD">CCCD (1)</option>
+              <option value="CMND">CMND (2)</option>
+              <option value="GPLX">GPLX (3)</option>
               <option value="Hộ chiếu">Hộ chiếu (4)</option>
-              <option value="Thẻ Căn Cước">Thẻ Căn Cước (8)</option>
+              <option value="Căn Cước">Căn Cước (8)</option>
             </select>
           </div>
 

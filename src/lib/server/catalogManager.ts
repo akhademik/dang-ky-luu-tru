@@ -100,7 +100,7 @@ export class CatalogManager {
 			],
 			[["AUS", "AU", "UC", "ÚC", "AUSTRALIA"], "AUS"],
 			[["FRA", "FR", "PHAP", "PHÁP", "FRANCE", "FRENCH"], "FRA"],
-			[["DEU", "DE", "DUC", "ĐỨC", "GERMANY", "GERMAN"], "DEU"],
+			[["DEU", "DE", "DUC", "ĐỨC", "GERMANY", "GERMAN", "D"], "D"],
 			[["THA", "TH", "THAI LAN", "THÁI LAN", "THAILAND"], "THA"],
 			[["LAO", "LA", "LAO", "LÀO", "LAOS"], "LAO"],
 			[["KHM", "KH", "CAMPUCHIA", "CAMBODIA"], "KHM"],
@@ -347,7 +347,7 @@ export class CatalogManager {
 
 	private getFallbackLoaiGiayTo(): CatalogItem[] {
 		return [
-			{ id: 1, name: "Thẻ CCCD" },
+			{ id: 1, name: "CCCD" },
 			{ id: 2, name: "Thẻ CMND" },
 			{ id: 3, name: "Giấy phép lái xe" },
 			{ id: 4, name: "Hộ chiếu" },

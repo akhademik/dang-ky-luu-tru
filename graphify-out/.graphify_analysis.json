@@ -118,6 +118,32 @@
       "ref_tam_tru"
     ],
     "3": [
+      "src_routes_page",
+      "src_routes_page_addnewguest",
+      "src_routes_page_buildorderedrowvalues",
+      "src_routes_page_checktoken",
+      "src_routes_page_closeeditmodal",
+      "src_routes_page_copycode",
+      "src_routes_page_executesyncbatch",
+      "src_routes_page_fetchsheettabslist",
+      "src_routes_page_handlemanuallogin",
+      "src_routes_page_handletabchange",
+      "src_routes_page_loadcatalogs",
+      "src_routes_page_openeditmodal",
+      "src_routes_page_parseandapplyaddress",
+      "src_routes_page_pushselectedrows",
+      "src_routes_page_pushsinglerow",
+      "src_routes_page_removerow",
+      "src_routes_page_savemodal",
+      "src_routes_page_syncrowtogooglesheet",
+      "src_routes_page_toggleeditinline",
+      "src_routes_page_togglerowselect",
+      "src_routes_page_toggleselectall",
+      "src_routes_page_updatecell",
+      "src_routes_page_updatepayloadpreview",
+      "svelte"
+    ],
+    "4": [
       "biomejs_biome",
       "jiti",
       "package_devdependencies",
@@ -141,31 +167,6 @@
       "types_node",
       "typescript",
       "vite"
-    ],
-    "4": [
-      "src_routes_page",
-      "src_routes_page_addnewguest",
-      "src_routes_page_buildorderedrowvalues",
-      "src_routes_page_checktoken",
-      "src_routes_page_closeeditmodal",
-      "src_routes_page_copycode",
-      "src_routes_page_executesyncbatch",
-      "src_routes_page_fetchsheettabslist",
-      "src_routes_page_handlemanuallogin",
-      "src_routes_page_handletabchange",
-      "src_routes_page_loadcatalogs",
-      "src_routes_page_openeditmodal",
-      "src_routes_page_parseandapplyaddress",
-      "src_routes_page_pushselectedrows",
-      "src_routes_page_pushsinglerow",
-      "src_routes_page_removerow",
-      "src_routes_page_savemodal",
-      "src_routes_page_syncrowtogooglesheet",
-      "src_routes_page_toggleeditinline",
-      "src_routes_page_togglerowselect",
-      "src_routes_page_toggleselectall",
-      "src_routes_page_updatecell",
-      "src_routes_page_updatepayloadpreview"
     ],
     "5": [
       "ref_node_modules",
@@ -196,7 +197,6 @@
       "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
       "src_lib_server_datatransformer_datatransformer_cleandocnumber",
       "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
-      "src_lib_server_datatransformer_datatransformer_constructor",
       "src_lib_server_datatransformer_datatransformer_formatdateonly",
       "src_lib_server_datatransformer_datatransformer_formatdatetime",
       "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
@@ -214,6 +214,24 @@
       "test_test_pipeline_runtests"
     ],
     "7": [
+      "src_lib_server_catalogmanager_catalogmanager",
+      "src_lib_server_catalogmanager_catalogmanager_constructor",
+      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
+      "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
+      "src_lib_server_catalogmanager_catalogmanager_getinstance",
+      "src_lib_server_catalogmanager_catalogmanager_initaliases",
+      "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
+      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
+      "src_lib_server_datatransformer_datatransformer_constructor"
+    ],
+    "8": [
       "src_lib_server_kbttclient_kbttclient",
       "src_lib_server_kbttclient_kbttclient_constructor",
       "src_lib_server_kbttclient_kbttclient_postpayload",
@@ -230,23 +248,6 @@
       "src_lib_server_tokenmanager_tokenmanager_refresh",
       "src_lib_server_tokenmanager_tokenmanager_revoke",
       "src_lib_server_tokenmanager_tokenmanager_savetoken"
-    ],
-    "8": [
-      "src_lib_server_catalogmanager_catalogmanager",
-      "src_lib_server_catalogmanager_catalogmanager_constructor",
-      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
-      "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
-      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
-      "src_lib_server_catalogmanager_catalogmanager_getinstance",
-      "src_lib_server_catalogmanager_catalogmanager_initaliases",
-      "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
-      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich"
     ],
     "9": [
       "src_lib_server_logger_logger",
@@ -309,12 +310,12 @@
     "0": 0.09797979797979799,
     "1": 0.1214574898785425,
     "2": 0.07407407407407407,
-    "3": 0.08695652173913043,
-    "4": 0.15019762845849802,
+    "3": 0.14130434782608695,
+    "4": 0.08695652173913043,
     "5": 0.09523809523809523,
-    "6": 0.2904761904761905,
-    "7": 0.2,
-    "8": 0.20952380952380953,
+    "6": 0.3157894736842105,
+    "7": 0.19166666666666668,
+    "8": 0.2,
     "9": 0.21794871794871795,
     "10": 0.18181818181818182,
     "11": 0.32727272727272727,
@@ -327,12 +328,12 @@
     {
       "id": "src_lib_server_datatransformer_datatransformer",
       "label": "DataTransformer",
-      "degree": 25
+      "degree": 26
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "CatalogManager",
-      "degree": 20
+      "degree": 22
     },
     {
       "id": "src_lib_server_logger_logger",
@@ -410,17 +411,6 @@
       "why": "connects across different repos/directories"
     },
     {
-      "source": "SyncResult",
-      "target": "RawOcrRow",
-      "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "peripheral node `SyncResult` unexpectedly reaches hub `RawOcrRow`"
-    },
-    {
       "source": "SyncPipeline",
       "target": "CatalogManager",
       "source_files": [
@@ -430,18 +420,29 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "why": "bridges separate communities"
+    },
+    {
+      "source": "SyncPipeline",
+      "target": "DataTransformer",
+      "source_files": [
+        "src/lib/server/syncPipeline.ts",
+        "src/lib/server/dataTransformer.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
     }
   ],
   "questions": [
     {
       "type": "bridge_node",
-      "question": "Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`?",
-      "why": "High betweenness centrality (0.040) - this node is a cross-community bridge."
+      "question": "Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`, `DataTransformer`?",
+      "why": "High betweenness centrality (0.041) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",
-      "question": "Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `TokenManager`?",
-      "why": "High betweenness centrality (0.040) - this node is a cross-community bridge."
+      "question": "Why does `DataTransformer` connect `DataTransformer` to `TokenManager`, `syncPipeline.ts`, `CatalogManager`?",
+      "why": "High betweenness centrality (0.039) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",
@@ -450,7 +451,7 @@
     },
     {
       "type": "isolated_nodes",
-      "question": "What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?",
+      "question": "What connects `ApiResponse`, `LogEntry`, `LogLevel` to the rest of the system?",
       "why": "72 weakly-connected nodes found - possible documentation gaps or missing edges."
     },
     {

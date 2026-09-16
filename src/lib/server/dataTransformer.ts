@@ -271,7 +271,7 @@ export class DataTransformer {
 		if (!arrivalCheck.valid) missing.push(`Ngày đến (${arrivalCheck.error})`);
 
 		const docTypeName = String(
-			row.loaiGiayTo || row["Loại giấy tờ"] || (isVN ? "Thẻ CCCD" : "Hộ chiếu"),
+			row.loaiGiayTo || row["Loại giấy tờ"] || (isVN ? "CCCD" : "Hộ chiếu"),
 		).toLowerCase();
 		const docNumRaw = String(
 			row.soGiayTo ||
@@ -282,7 +282,7 @@ export class DataTransformer {
 				"",
 		).trim();
 
-		// Kiểm tra mã quốc tịch chuẩn Alpha-3 (3 chữ cái ISO, ví dụ VNM, USA, CHN, RUS)
+		// Kiểm tra mã quốc tịch chuẩn Alpha-3 hoặc ngoại lệ D (Đức - Germany)
 		const rawQt = String(
 			row.quocTich ||
 				row["Quốc tịch"] ||
@@ -292,9 +292,11 @@ export class DataTransformer {
 		const mappedQt = this.mapQuocTich(rawQt);
 		const isQtValid = Boolean(
 			mappedQt &&
-				mappedQt.length === 3 &&
-				/^[A-Z]{3}$/.test(mappedQt) &&
-				(mappedQt === "VNM" || catalogManager.isValidQuocTichCode(mappedQt)),
+				(mappedQt === "D" ||
+					(mappedQt.length === 3 && /^[A-Z]{3}$/.test(mappedQt))) &&
+				(mappedQt === "VNM" ||
+					mappedQt === "D" ||
+					catalogManager.isValidQuocTichCode(mappedQt)),
 		);
 		status.quocTich = {
 			valid: isQtValid,
@@ -469,7 +471,7 @@ export class DataTransformer {
 			lyDoCuTru: 1,
 			lyDoChiTiet: "",
 			loaiGiayTo: this.mapLoaiGiayTo(
-				row.loaiGiayTo || row["Loại giấy tờ"] || "Thẻ CCCD",
+				row.loaiGiayTo || row["Loại giấy tờ"] || "CCCD",
 			),
 			soGiayTo: this.cleanDocNumber(
 				row.soGiayTo || row["Số giấy tờ"] || row["Số CCCD"],
@@ -561,9 +563,15 @@ export class DataTransformer {
 	public static mapQuocTich(val: unknown): string {
 		if (!val) return "VNM";
 		const clean = String(val).trim().toUpperCase();
+		if (clean === "VNM" || clean === "VN" || clean === "VIETNAM") return "VNM";
+		if (clean === "D" || clean === "DEU") return "D";
+
 		const mapped = catalogManager.findQuocTich(clean);
 		if (mapped) return mapped;
-		if (clean.length === 3 && catalogManager.isValidQuocTichCode(clean))
+		if (
+			(clean.length === 3 || clean === "D") &&
+			catalogManager.isValidQuocTichCode(clean)
+		)
 			return clean;
 		return clean;
 	}

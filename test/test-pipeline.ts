@@ -25,8 +25,13 @@ async function runTests(): Promise<void> {
 	assert.equal(catalogManager.isValidQuocTichCode("VNM"), true);
 	assert.equal(catalogManager.isValidQuocTichCode("RUS"), true);
 	assert.equal(catalogManager.isValidQuocTichCode("USA"), true);
+	assert.equal(catalogManager.isValidQuocTichCode("D"), true);
+	assert.equal(catalogManager.isValidQuocTichCode("DEU"), true);
+	assert.equal(catalogManager.findQuocTich("Đức"), "D");
+	assert.equal(catalogManager.findQuocTich("Germany"), "D");
 	assert.equal(catalogManager.isValidQuocTichCode("XYZ_NOT_EXIST"), false);
 	assert.equal(catalogManager.lyDoCuTruList.length, 2);
+	assert.equal(catalogManager.findLoaiGiayTo("CCCD"), 1);
 	assert.equal(catalogManager.findLoaiGiayTo("Thẻ CCCD"), 1);
 	assert.equal(catalogManager.findLoaiGiayTo("Hộ chiếu"), 4);
 	assert.equal(catalogManager.findLoaiGiayTo("Thẻ Căn Cước"), 8);
