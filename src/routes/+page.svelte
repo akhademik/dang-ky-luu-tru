@@ -227,8 +227,19 @@ function onSearchInput() {
 	}, 150);
 }
 
+function stripVietnameseAccents(str?: string | null): string {
+	if (!str) return "";
+	return String(str)
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/đ/g, "d")
+		.replace(/Đ/g, "D")
+		.toLowerCase()
+		.trim();
+}
+
 let stays = $derived.by(() => {
-	const term = (debouncedSearchTerm || searchTerm).trim().toLowerCase();
+	const term = stripVietnameseAccents(debouncedSearchTerm || searchTerm);
 	const room = filterRoom.trim();
 
 	return rawStays.filter((stay) => {
@@ -236,15 +247,17 @@ let stays = $derived.by(() => {
 			return false;
 		}
 		if (!term) return true;
-		const hoTen = (stay.ho_ten || "").toLowerCase();
-		const soGiayTo = (stay.so_giay_to || "").toLowerCase();
-		const soPhong = String(stay.so_phong || "").toLowerCase();
-		const quocTich = (stay.quoc_tich || "").toLowerCase();
-		const countryName = getCountryFullName(stay.quoc_tich).toLowerCase();
-		const diaChi = (stay.dia_chi_chi_tiet || "").toLowerCase();
-		const tinh = (stay.tinh_thanh || "").toLowerCase();
-		const phuong = (stay.phuong_xa || "").toLowerCase();
-		const quan = (stay.quan_huyen || "").toLowerCase();
+		const hoTen = stripVietnameseAccents(stay.ho_ten);
+		const soGiayTo = stripVietnameseAccents(stay.so_giay_to);
+		const soPhong = stripVietnameseAccents(String(stay.so_phong || ""));
+		const quocTich = stripVietnameseAccents(stay.quoc_tich);
+		const countryName = stripVietnameseAccents(
+			getCountryFullName(stay.quoc_tich),
+		);
+		const diaChi = stripVietnameseAccents(stay.dia_chi_chi_tiet);
+		const tinh = stripVietnameseAccents(stay.tinh_thanh);
+		const phuong = stripVietnameseAccents(stay.phuong_xa);
+		const quan = stripVietnameseAccents(stay.quan_huyen);
 
 		return (
 			hoTen.includes(term) ||
@@ -579,6 +592,20 @@ async function switchEnv(env: "dev" | "prod") {
 
 // Single Register
 async function registerStay(stayId: string) {
+	const stay = rawStays.find((s) => s.id === stayId);
+	if (stay) {
+		const val = validateStayDetail(stay);
+		if (val.hasErrors) {
+			const errorMsgs = Object.values(val.errors).join(", ");
+			showToast(
+				`⛔ Không thể gửi: Dữ liệu khách "${stay.ho_ten || stayId}" chưa hợp lệ (${errorMsgs}). Vui lòng sửa trước khi khai báo!`,
+				"error",
+			);
+			openEdit(stay);
+			return;
+		}
+	}
+
 	try {
 		showToast("Đang gửi khai báo lên Cổng KBTT Bộ Công An...", "info");
 		const res = await fetch("/api/stays/register", {
@@ -616,6 +643,24 @@ async function registerStay(stayId: string) {
 
 // Batch Register
 async function registerAllReady() {
+	const readyStays = rawStays.filter((s) => s.status === "READY_TO_SYNC");
+	if (readyStays.length === 0) {
+		showToast("Không có khách nào đang chờ đăng ký", "info");
+		return;
+	}
+
+	const invalidStays = readyStays.filter(
+		(s) => validateStayDetail(s).hasErrors,
+	);
+	if (invalidStays.length > 0) {
+		showToast(
+			`⛔ Không thể gửi hàng loạt: Có ${invalidStays.length} khách chưa hợp lệ (ví dụ: "${invalidStays[0].ho_ten}"). Vui lòng chỉnh sửa trước khi khai báo!`,
+			"error",
+		);
+		openEdit(invalidStays[0]);
+		return;
+	}
+
 	try {
 		showToast(
 			"Đang gửi đăng ký hàng loạt cho tất cả khách sẵn sàng...",
@@ -1457,12 +1502,19 @@ function openPayloadViewer(log: KbttLog) {
 	showPayloadModal = true;
 }
 
-function getStatusBadge(status: string) {
+function getStatusBadge(status: string, hasErrors = false) {
+	if (status === "READY_TO_SYNC" && hasErrors) {
+		return {
+			label: "⚠️ Cần sửa lỗi",
+			class: "bg-rose-950/90 text-rose-300 border-rose-600 font-bold",
+		};
+	}
 	switch (status) {
 		case "READY_TO_SYNC":
 			return {
 				label: "Sẵn sàng khai báo",
-				class: "bg-amber-100 text-amber-800 border-amber-300",
+				class:
+					"bg-emerald-950/80 text-emerald-300 border-emerald-600 font-semibold",
 			};
 		case "SYNCED_KBTT":
 			return {
@@ -1915,9 +1967,14 @@ onMount(async () => {
 													<button
 														type="button"
 														onclick={() => registerStay(stay.id)}
-														class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-[11px] shadow transition-all"
+														class="px-2.5 py-1 {val.hasErrors ? 'bg-rose-900/70 hover:bg-rose-800 text-rose-200 border border-rose-600' : 'bg-emerald-600 hover:bg-emerald-500 text-white font-semibold'} rounded text-[11px] shadow transition-all flex items-center gap-1"
+														title={val.hasErrors ? 'Dữ liệu chưa hợp lệ - Bấm để xem và sửa lỗi' : 'Gửi khai báo lên Bộ Công An'}
 													>
-														Khai Báo ⚡
+														{#if val.hasErrors}
+															<span>⚠️ Cần Sửa</span>
+														{:else}
+															<span>Khai Báo ⚡</span>
+														{/if}
 													</button>
 													<button
 														type="button"
@@ -1968,9 +2025,9 @@ onMount(async () => {
 								</tr>
 							{:else}
 								{#each stays as stay (stay.id)}
-									{@const badge = getStatusBadge(stay.status)}
 									{@const isDeleting = deletingIds.has(stay.id)}
 									{@const val = validateStayDetail(stay)}
+									{@const badge = getStatusBadge(stay.status, val.hasErrors)}
 									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
 											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
@@ -2116,9 +2173,9 @@ onMount(async () => {
 								</tr>
 							{:else}
 								{#each stays as stay, idx (stay.id)}
-									{@const badge = getStatusBadge(stay.status)}
 									{@const isDeleting = deletingIds.has(stay.id)}
 									{@const val = validateStayDetail(stay)}
+									{@const badge = getStatusBadge(stay.status, val.hasErrors)}
 									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 text-center font-mono text-slate-500">{idx + 1}</td>
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
