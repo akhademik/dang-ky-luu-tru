@@ -75,9 +75,9 @@ interface CatalogItem {
 }
 
 // Svelte 5 Runes State
-let activeTab = $state<"register" | "inhouse" | "audit" | "catalogs">(
-	"register",
-);
+let activeTab = $state<
+	"register" | "inhouse" | "all_guests" | "audit" | "catalogs"
+>("register");
 let stays = $state<StayDetail[]>([]);
 let auditLogs = $state<KbttLog[]>([]);
 let stats = $state<Stats>({
@@ -140,6 +140,7 @@ let checkoutTargetStay = $state<StayDetail | null>(null);
 
 let showDeleteModal = $state(false);
 let deleteTargetStay = $state<StayDetail | null>(null);
+let deletingIds = $state<Set<string>>(new Set());
 
 let showPayloadModal = $state(false);
 let selectedLog = $state<KbttLog | null>(null);
@@ -185,25 +186,21 @@ async function loadStats() {
 async function loadStays() {
 	loading = true;
 	try {
-		const statusParam =
-			activeTab === "register"
-				? "READY_TO_SYNC"
-				: activeTab === "inhouse"
-					? "ALL"
-					: "ALL";
 		const url = new URL("/api/stays", window.location.origin);
 		if (activeTab === "register") {
 			url.searchParams.set("status", "READY_TO_SYNC");
 		}
-		if (searchTerm) url.searchParams.set("search", searchTerm);
-		if (filterRoom) url.searchParams.set("room", filterRoom);
+		if (activeTab !== "all_guests") {
+			if (searchTerm) url.searchParams.set("search", searchTerm);
+			if (filterRoom) url.searchParams.set("room", filterRoom);
+		}
 
 		const res = await fetch(url.toString());
 		const data = await res.json();
 		if (data.success) {
 			stays = data.data;
 		}
-		await loadStats();
+		loadStats();
 	} catch (err) {
 		showToast("Không thể tải danh sách lưu trú từ CSDL", "error");
 	} finally {
@@ -211,9 +208,11 @@ async function loadStays() {
 	}
 }
 
-async function pullFromGoogleSheets() {
+async function pullFromGoogleSheets(options?: { silent?: boolean }) {
 	loading = true;
-	showToast("Đang kéo dữ liệu trực tiếp từ Google Sheets...", "info");
+	if (!options?.silent) {
+		showToast("Đang đồng bộ dữ liệu mới nhất vào CSDL...", "info");
+	}
 	try {
 		const res = await fetch("/api/sheets/pull", {
 			method: "POST",
@@ -222,16 +221,27 @@ async function pullFromGoogleSheets() {
 		});
 		const data = await res.json();
 		if (data.success) {
-			const count = data.ingested !== undefined ? data.ingested : (data.rows?.length || 0);
-			showToast(`✓ Đã kéo và nạp thành công ${count} khách từ Sheet vào CSDL!`, "success");
-			await loadStays();
-			await loadStats();
-		} else {
-			showToast(`Lỗi kéo Sheet: ${data.message || "Không có dữ liệu"}`, "error");
+			const count =
+				data.ingested !== undefined || data.updated !== undefined
+					? (data.ingested || 0) + (data.updated || 0)
+					: data.rows?.length || 0;
+			const tabMsg = data.tabName ? ` [Tab: ${data.tabName}]` : "";
+			showToast(
+				`✓ Đã đồng bộ thành công ${count} khách vào CSDL!${tabMsg}`,
+				"success",
+			);
+		} else if (!options?.silent) {
+			showToast(
+				`Lỗi kéo dữ liệu: ${data.message || "Không có dữ liệu mới"}`,
+				"error",
+			);
 		}
 	} catch (err) {
-		showToast("Lỗi khi kết nối tới Google Sheets", "error");
+		if (!options?.silent) {
+			showToast("Lỗi khi kết nối đồng bộ dữ liệu", "error");
+		}
 	} finally {
+		await loadStays();
 		loading = false;
 	}
 }
@@ -283,9 +293,9 @@ async function handleLogin() {
 			isAuthenticated = true;
 			authPassword = "";
 			showToast("Đăng nhập thành công!", "success");
-			await loadCatalogs();
+			loadCatalogs();
 			await loadStays();
-			await loadStats();
+			loadStats();
 		} else {
 			authError = data.message || "Mật khẩu không chính xác";
 		}
@@ -358,7 +368,20 @@ async function registerStay(stayId: string) {
 		const data = await res.json();
 		if (data.success) {
 			showToast("✓ Đăng ký lưu trú thành công!", "success");
-			await loadStays();
+			const maHoSo = data.data?.maHoSo || data.maHoSo;
+			stays = stays.map((s) =>
+				s.id === stayId
+					? {
+							...s,
+							status: "SYNCED_KBTT",
+							ma_ho_so_kbtt: maHoSo || s.ma_ho_so_kbtt,
+						}
+					: s,
+			);
+			if (activeTab === "register") {
+				stays = stays.filter((s) => s.id !== stayId);
+			}
+			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message || "Đăng ký thất bại"}`, "error");
 		}
@@ -402,25 +425,38 @@ function openExtendModal(stay: StayDetail) {
 
 async function submitExtend() {
 	if (!extendTargetStay || !extendNewDate) return;
+	const targetId = extendTargetStay.id;
+	const newDate = extendNewDate;
+	showExtendModal = false;
+
+	// Optimistically update
+	stays = stays.map((s) =>
+		s.id === targetId
+			? { ...s, ngay_di_du_kien: newDate, status: "EXTENDED" }
+			: s,
+	);
+	showToast("Đang gia hạn lưu trú...", "info");
+
 	try {
 		const res = await fetch("/api/stays/extend", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
-				stayId: extendTargetStay.id,
-				newNgayDi: extendNewDate,
+				stayId: targetId,
+				newNgayDi: newDate,
 			}),
 		});
 		const data = await res.json();
 		if (data.success) {
-			showToast(data.message || "Gia hạn thành công!", "success");
-			showExtendModal = false;
-			await loadStays();
+			showToast("✓ Gia hạn thành công!", "success");
+			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
+			await loadStays();
 		}
 	} catch {
 		showToast("Lỗi khi gia hạn", "error");
+		await loadStays();
 	}
 }
 
@@ -432,26 +468,40 @@ function openCheckoutModal(stay: StayDetail) {
 
 async function submitCheckout() {
 	if (!checkoutTargetStay) return;
+	const targetId = checkoutTargetStay.id;
+	showCheckoutModal = false;
+
+	// Optimistically update
+	if (activeTab === "inhouse" || activeTab === "register") {
+		stays = stays.filter((s) => s.id !== targetId);
+	} else {
+		stays = stays.map((s) =>
+			s.id === targetId ? { ...s, status: "CHECKED_OUT" } : s,
+		);
+	}
+	showToast("Đang xử lý checkout...", "info");
+
 	try {
 		const res = await fetch("/api/stays/checkout", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ stayId: checkoutTargetStay.id }),
+			body: JSON.stringify({ stayId: targetId }),
 		});
 		const data = await res.json();
 		if (data.success) {
-			showToast(data.message || "Checkout thành công!", "success");
-			showCheckoutModal = false;
-			await loadStays();
+			showToast("✓ Checkout thành công!", "success");
+			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
+			await loadStays();
 		}
 	} catch {
 		showToast("Lỗi khi checkout", "error");
+		await loadStays();
 	}
 }
 
-// Delete Stay
+// Delete Stay with Strikethrough and Non-blocking Async Execution
 function openDeleteModal(stay: StayDetail) {
 	deleteTargetStay = stay;
 	showDeleteModal = true;
@@ -459,24 +509,35 @@ function openDeleteModal(stay: StayDetail) {
 
 async function submitDelete() {
 	if (!deleteTargetStay) return;
+	const deletedId = deleteTargetStay.id;
+	showDeleteModal = false;
+
+	// Immediate visual feedback: strikethrough row & disable function buttons
+	deletingIds = new Set([...deletingIds, deletedId]);
+	showToast("Đang xóa bản ghi khỏi CSDL...", "info");
+
 	try {
-		const res = await fetch(`/api/stays/${deleteTargetStay.id}`, {
+		const res = await fetch(`/api/stays/${deletedId}`, {
 			method: "DELETE",
 		});
 		const data = await res.json();
 		if (data.success) {
-			showToast("Đã xóa lượt lưu trú thành công", "success");
-			showDeleteModal = false;
-			await loadStays();
+			showToast("✓ Đã xóa lượt lưu trú thành công", "success");
+			stays = stays.filter((s) => s.id !== deletedId);
+			loadStats();
 		} else {
-			showToast(`Lỗi: ${data.message}`, "error");
+			showToast(`Lỗi xóa: ${data.message}`, "error");
 		}
 	} catch {
-		showToast("Lỗi khi xóa", "error");
+		showToast("Lỗi kết nối khi xóa", "error");
+	} finally {
+		const next = new Set(deletingIds);
+		next.delete(deletedId);
+		deletingIds = next;
 	}
 }
 
-// Edit Stay
+// Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
 	editStay = { ...stay };
 	editErrors = {};
@@ -500,22 +561,32 @@ function validateEdit() {
 
 async function submitEdit() {
 	if (!editStay || !validateEdit()) return;
+	const updatedItem = { ...editStay };
+	showEditModal = false;
+
+	// Optimistically update local array immediately
+	stays = stays.map((s) =>
+		s.id === updatedItem.id ? { ...s, ...updatedItem } : s,
+	);
+	showToast("Đang cập nhật thay đổi vào CSDL...", "info");
+
 	try {
-		const res = await fetch(`/api/stays/${editStay.id}`, {
+		const res = await fetch(`/api/stays/${updatedItem.id}`, {
 			method: "PUT",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(editStay),
+			body: JSON.stringify(updatedItem),
 		});
 		const data = await res.json();
 		if (data.success) {
-			showToast("Cập nhật thông tin khách thành công!", "success");
-			showEditModal = false;
-			await loadStays();
+			showToast("✓ Cập nhật thông tin khách thành công!", "success");
+			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
+			await loadStays();
 		}
 	} catch {
-		showToast("Lỗi khi lưu thông tin", "error");
+		showToast("Lỗi kết nối khi lưu thông tin", "error");
+		await loadStays();
 	}
 }
 
@@ -542,8 +613,20 @@ async function submitAddGuest() {
 		const data = await res.json();
 		if (data.success) {
 			showToast("Thêm khách mới vào CSDL thành công!", "success");
+			if (data.data?.stay && data.data?.guest) {
+				const newDetail: StayDetail = {
+					...data.data.guest,
+					...data.data.stay,
+				};
+				const existingIdx = stays.findIndex((s) => s.id === newDetail.id);
+				if (existingIdx >= 0) {
+					stays[existingIdx] = newDetail;
+				} else {
+					stays = [newDetail, ...stays];
+				}
+			}
 			showAddModal = false;
-			await loadStays();
+			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
 		}
@@ -602,7 +685,11 @@ function getStatusBadge(status: string) {
 $effect(() => {
 	if (activeTab === "audit") {
 		loadAuditLogs();
-	} else if (activeTab === "register" || activeTab === "inhouse") {
+	} else if (
+		activeTab === "register" ||
+		activeTab === "inhouse" ||
+		activeTab === "all_guests"
+	) {
 		loadStays();
 	}
 });
@@ -618,7 +705,7 @@ onMount(async () => {
 
 	if (isAuthenticated) {
 		loadCatalogs();
-		loadStays();
+		await loadStays();
 		loadStats();
 	}
 });
@@ -726,7 +813,7 @@ onMount(async () => {
 			<!-- Pull From Sheet Button -->
 			<button
 				type="button"
-				onclick={pullFromGoogleSheets}
+				onclick={() => pullFromGoogleSheets()}
 				title="Kéo dữ liệu trực tiếp từ Google Sheet vào CSDL"
 				class="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold rounded-xl border border-emerald-600 transition-all shadow-md active:scale-95"
 			>
@@ -826,6 +913,18 @@ onMount(async () => {
 		>
 			<span>🏨</span>
 			<span>Khách Đang Ở & Gia Hạn / Checkout</span>
+		</button>
+
+		<button
+			type="button"
+			onclick={() => { activeTab = "all_guests"; }}
+			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'all_guests' ? 'border-amber-400 text-amber-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
+		>
+			<span>👥</span>
+			<span>Danh sách guests</span>
+			{#if stats.totalStays > 0}
+				<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-700 text-slate-200">{stats.totalStays}</span>
+			{/if}
 		</button>
 
 		<button
@@ -936,7 +1035,8 @@ onMount(async () => {
 								</tr>
 							{:else}
 								{#each stays as stay (stay.id)}
-									<tr class="hover:bg-slate-700/30 transition-colors">
+									{@const isDeleting = deletingIds.has(stay.id)}
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
 											<span>{stay.ho_ten}</span>
 											<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{stay.gioi_tinh === 'F' ? 'Nữ' : 'Nam'}</span>
@@ -952,29 +1052,33 @@ onMount(async () => {
 										<td class="p-3.5 text-slate-400">{stay.ngay_di_du_kien || '-'}</td>
 										<td class="p-3.5 text-slate-400 truncate max-w-xs">{stay.tinh_thanh || stay.dia_chi_chi_tiet || '-'}</td>
 										<td class="p-3.5 text-center">
-											<div class="flex items-center justify-center gap-1.5">
-												<button
-													type="button"
-													onclick={() => registerStay(stay.id)}
-													class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-[11px] shadow transition-all"
-												>
-													Khai Báo ⚡
-												</button>
-												<button
-													type="button"
-													onclick={() => openEdit(stay)}
-													class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
-												>
-													Sửa ✎
-												</button>
-												<button
-													type="button"
-													onclick={() => openDeleteModal(stay)}
-													class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
-												>
-													Xóa ✕
-												</button>
-											</div>
+											{#if isDeleting}
+												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
+											{:else}
+												<div class="flex items-center justify-center gap-1.5">
+													<button
+														type="button"
+														onclick={() => registerStay(stay.id)}
+														class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-[11px] shadow transition-all"
+													>
+														Khai Báo ⚡
+													</button>
+													<button
+														type="button"
+														onclick={() => openEdit(stay)}
+														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
+													>
+														Sửa ✎
+													</button>
+													<button
+														type="button"
+														onclick={() => openDeleteModal(stay)}
+														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
+													>
+														Xóa ✕
+													</button>
+												</div>
+											{/if}
 										</td>
 									</tr>
 								{/each}
@@ -1010,7 +1114,8 @@ onMount(async () => {
 							{:else}
 								{#each stays as stay (stay.id)}
 									{@const badge = getStatusBadge(stay.status)}
-									<tr class="hover:bg-slate-700/30 transition-colors {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''}">
+									{@const isDeleting = deletingIds.has(stay.id)}
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100">{stay.ho_ten}</td>
 										<td class="p-3.5 font-mono font-bold text-sky-400">{stay.so_phong}</td>
 										<td class="p-3.5">
@@ -1023,31 +1128,157 @@ onMount(async () => {
 										<td class="p-3.5 font-medium text-amber-300">{stay.ngay_di_du_kien || '-'}</td>
 										<td class="p-3.5 font-mono text-[11px] text-slate-400">{stay.ma_ho_so_kbtt || '-'}</td>
 										<td class="p-3.5 text-center">
-											<div class="flex items-center justify-center gap-1.5">
-												{#if stay.status !== 'CHECKED_OUT'}
+											{#if isDeleting}
+												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
+											{:else}
+												<div class="flex items-center justify-center gap-1.5">
+													{#if stay.status !== 'CHECKED_OUT'}
+														<button
+															type="button"
+															onclick={() => openExtendModal(stay)}
+															class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded text-[11px] transition-all"
+														>
+															Gia Hạn ⏱
+														</button>
+														<button
+															type="button"
+															onclick={() => openCheckoutModal(stay)}
+															class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white font-medium rounded text-[11px] transition-all"
+														>
+															Checkout 🚪
+														</button>
+													{/if}
 													<button
 														type="button"
-														onclick={() => openExtendModal(stay)}
-														class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded text-[11px] transition-all"
+														onclick={() => openEdit(stay)}
+														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
 													>
-														Gia Hạn ⏱
+														✎
 													</button>
 													<button
 														type="button"
-														onclick={() => openCheckoutModal(stay)}
-														class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white font-medium rounded text-[11px] transition-all"
+														onclick={() => openDeleteModal(stay)}
+														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
 													>
-														Checkout 🚪
+														✕
 													</button>
-												{/if}
-												<button
-													type="button"
-													onclick={() => openEdit(stay)}
-													class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
-												>
-													✎
-												</button>
-											</div>
+												</div>
+											{/if}
+										</td>
+									</tr>
+								{/each}
+							{/if}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{/if}
+
+		<!-- TAB 3: TẤT CẢ GUESTS (FULL DATABASE) -->
+		{#if activeTab === "all_guests"}
+			<div class="bg-slate-800/80 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
+				<div class="p-3.5 bg-slate-900/70 border-b border-slate-700 flex items-center justify-between">
+					<div class="flex items-center gap-2">
+						<span class="text-amber-400 text-base">👥</span>
+						<span class="text-xs md:text-sm font-semibold text-slate-200">Toàn Bộ Dữ Liệu Khách & Lưu Trú (Cloudflare D1 Remote)</span>
+						<span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">Tổng: {stays.length} bản ghi</span>
+					</div>
+					<div class="text-[11px] text-slate-400">
+						Hiển thị toàn bộ, không qua bộ lọc trạng thái
+					</div>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-xs border-collapse">
+						<thead class="bg-slate-900/90 text-slate-300 uppercase font-semibold border-b border-slate-700">
+							<tr>
+								<th class="p-3.5 w-12 text-center">#</th>
+								<th class="p-3.5">Họ & Tên</th>
+								<th class="p-3.5">Phòng</th>
+								<th class="p-3.5">Trạng Thái</th>
+								<th class="p-3.5">CCCD / Hộ Chiếu</th>
+								<th class="p-3.5">Quốc Tịch</th>
+								<th class="p-3.5">Ngày Đến</th>
+								<th class="p-3.5">Ngày Đi (DK)</th>
+								<th class="p-3.5">Mã Hồ Sơ KBTT</th>
+								<th class="p-3.5">Nguồn Đồng Bộ</th>
+								<th class="p-3.5 text-center">Thao Tác</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-slate-700/60">
+							{#if loading}
+								<tr>
+									<td colspan="11" class="p-8 text-center text-slate-400">Đang tải toàn bộ dữ liệu từ Cloudflare D1...</td>
+								</tr>
+							{:else if stays.length === 0}
+								<tr>
+									<td colspan="11" class="p-12 text-center text-slate-400">
+										<div class="text-3xl mb-2">📭</div>
+										<div class="font-semibold text-slate-300">Chưa có bản ghi nào trong Database.</div>
+										<div class="text-xs text-slate-500 mt-1">Bấm nút "Đồng Bộ Sheets" hoặc "Thêm Khách Mới" để nạp dữ liệu vào CSDL.</div>
+									</td>
+								</tr>
+							{:else}
+								{#each stays as stay, idx (stay.id)}
+									{@const badge = getStatusBadge(stay.status)}
+									{@const isDeleting = deletingIds.has(stay.id)}
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''}">
+										<td class="p-3.5 text-center font-mono text-slate-500">{idx + 1}</td>
+										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
+											<span>{stay.ho_ten}</span>
+											<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{stay.gioi_tinh === 'F' ? 'Nữ' : 'Nam'}</span>
+										</td>
+										<td class="p-3.5 font-mono font-bold text-sky-400">{stay.so_phong}</td>
+										<td class="p-3.5">
+											<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
+												{badge.label}
+											</span>
+										</td>
+										<td class="p-3.5 font-mono text-slate-300">{stay.so_giay_to}</td>
+										<td class="p-3.5">
+											<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
+												{stay.quoc_tich}
+											</span>
+										</td>
+										<td class="p-3.5 text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</td>
+										<td class="p-3.5 text-slate-400">{stay.ngay_di_du_kien || '-'}</td>
+										<td class="p-3.5 font-mono text-[11px] text-slate-300">{stay.ma_ho_so_kbtt || '-'}</td>
+										<td class="p-3.5 text-[11px] text-slate-400 font-mono">
+											{#if stay.source_sheet_tab}
+												<span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-sky-300">Tab:{stay.source_sheet_tab} R{stay.source_sheet_row ?? '-'}</span>
+											{:else}
+												<span class="text-slate-500">Thủ công</span>
+											{/if}
+										</td>
+										<td class="p-3.5 text-center">
+											{#if isDeleting}
+												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
+											{:else}
+												<div class="flex items-center justify-center gap-1.5">
+													{#if stay.status === 'READY_TO_SYNC'}
+														<button
+															type="button"
+															onclick={() => registerStay(stay.id)}
+															class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-[11px] shadow transition-all"
+														>
+															Khai Báo ⚡
+														</button>
+													{/if}
+													<button
+														type="button"
+														onclick={() => openEdit(stay)}
+														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
+													>
+														Sửa ✎
+													</button>
+													<button
+														type="button"
+														onclick={() => openDeleteModal(stay)}
+														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
+													>
+														Xóa ✕
+													</button>
+												</div>
+											{/if}
 										</td>
 									</tr>
 								{/each}

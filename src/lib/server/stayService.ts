@@ -84,6 +84,13 @@ class StayService {
 
 				// Ensure CCCD leading zeros are preserved and clean format
 				const soGiayTo = soGiayToRaw.replace(/\s+/g, "");
+				if (
+					!soGiayTo ||
+					soGiayTo.length < 5 ||
+					/^(hộchiếu|hochie|cccd|cmnd|passport)$/i.test(soGiayTo)
+				) {
+					continue;
+				}
 
 				// Format dates
 				const dob = this.transformer.formatDateOnly(
@@ -142,20 +149,11 @@ class StayService {
 					tinh_thanh: tinh,
 				});
 
-				// 2. Check if already marked as registered on sheet
-				const daDangKy = Boolean(
-					row.daDangKy ||
-						row["Đã đăng ký"] ||
-						String(row["Đã đăng ký"] || "")
-							.toLowerCase()
-							.includes("đã") ||
-						String(row["Đã đăng ký"] || "")
-							.toLowerCase()
-							.includes("true"),
-				);
-				const initialStatus: StayStatus = daDangKy
-					? "SYNCED_KBTT"
-					: "READY_TO_SYNC";
+				// 2. Google Sheets is strictly an OCR input source.
+				// We ignore any 'daDangKy' / 'Đã đăng ký' text on the sheet.
+				// Every new OCR guest entry pulled into the Database is set to READY_TO_SYNC.
+				// The Database manages the registration lifecycle independently.
+				const initialStatus: StayStatus = "READY_TO_SYNC";
 
 				// 3. Upsert stay record
 				const stay = await upsertStay(db, guest.id, {
@@ -167,15 +165,20 @@ class StayService {
 					source_sheet_row: i + 2,
 				});
 
+				const isNew = Boolean(stay.isNew);
 				result.items.push({
 					guestId: guest.id,
 					stayId: stay.id,
 					hoTen: guest.ho_ten,
 					soPhong: stay.so_phong,
 					status: stay.status,
-					isNew: true,
+					isNew,
 				});
-				result.created++;
+				if (isNew) {
+					result.created++;
+				} else {
+					result.updated++;
+				}
 			} catch (err: unknown) {
 				const errMsg = err instanceof Error ? err.message : String(err);
 				result.errors.push(`Row ${i + 1}: ${errMsg}`);

@@ -5,7 +5,9 @@ import { CONFIG } from "$lib/server/config.js";
 export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 	try {
 		const env = (platform?.env || {}) as Record<string, unknown>;
-		const serverPass = String(env.APP_PASSWORD || CONFIG.APP_PASSWORD || "").trim();
+		const serverPass = String(
+			env.APP_PASSWORD || CONFIG.APP_PASSWORD || "",
+		).trim();
 		const body = await request.json().catch(() => ({}));
 		const password = String(body.password || "").trim();
 
@@ -13,8 +15,7 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 			return json(
 				{
 					success: false,
-					message:
-						"Chưa thiết lập biến môi trường APP_PASSWORD trên máy chủ!",
+					message: "Chưa thiết lập biến môi trường APP_PASSWORD trên máy chủ!",
 				},
 				{ status: 500 },
 			);
@@ -48,7 +49,9 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 // Check session status
 export const GET: RequestHandler = async ({ cookies, platform }) => {
 	const env = (platform?.env || {}) as Record<string, unknown>;
-	const kbttEnv = String(env.KBTT_ENV || CONFIG.currentEnv || "dev").toLowerCase();
+	const kbttEnv = String(
+		env.KBTT_ENV || CONFIG.currentEnv || "dev",
+	).toLowerCase();
 	const isProd = kbttEnv === "prod";
 
 	// In dev mode: no password required

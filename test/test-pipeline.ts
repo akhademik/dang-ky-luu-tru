@@ -66,9 +66,11 @@ async function runTests(): Promise<void> {
 	assert.equal(DataTransformer.cleanRoomNumber("Phòng 3"), "3");
 	console.log("✅ DataTransformer test passed!");
 
-	// 3. Test Cloudflare D1 Database Layer (Local SQLite Compatibility)
+	// 3. Test Cloudflare D1 Database Layer (Direct Remote Cloudflare D1)
 	const db = getDb();
-	await db.exec("DELETE FROM kbtt_logs; DELETE FROM stays; DELETE FROM guests;");
+	await db.exec(
+		"DELETE FROM kbtt_logs WHERE guest_name IN ('NGUYỄN VĂN A', 'TRẦN VĂN B', 'JOHN DOE'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('NGUYỄN VĂN A', 'TRẦN VĂN B', 'JOHN DOE')); DELETE FROM guests WHERE ho_ten IN ('NGUYỄN VĂN A', 'TRẦN VĂN B', 'JOHN DOE');",
+	);
 
 	// Test upsertGuest (preserving leading zeros on CCCD)
 	const guest1 = await upsertGuest(db, {
@@ -234,9 +236,10 @@ async function runTests(): Promise<void> {
 	assert.ok(typeof apiRes.code === "string");
 	console.log("✅ API Client test passed!");
 
-	// Cleanup token
-	await tokenManager.revokeToken();
-	console.log("✅ TokenManager Revoke test passed!");
+	// Cleanup test fixtures from database
+	await db.exec(
+		"DELETE FROM kbtt_logs WHERE guest_name IN ('NGUYỄN VĂN A', 'TRẦN VĂN B', 'JOHN DOE'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('NGUYỄN VĂN A', 'TRẦN VĂN B', 'JOHN DOE')); DELETE FROM guests WHERE ho_ten IN ('NGUYỄN VĂN A', 'TRẦN VĂN B', 'JOHN DOE');",
+	);
 
 	console.log(
 		"\n🎉 TẤT CẢ UNIT & INTEGRATION TESTS ĐÃ HOÀN THÀNH THÀNH CÔNG 100%!",

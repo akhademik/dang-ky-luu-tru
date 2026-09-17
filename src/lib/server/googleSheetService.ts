@@ -208,15 +208,10 @@ export class GoogleSheetService {
 	) {
 		const parsed = this.parseSheetIdentifier(input);
 		const sheetId = parsed.sheetId;
-		const gid =
+		let gid =
 			specificGid !== null && specificGid !== undefined
 				? specificGid
 				: parsed.gid;
-
-		logger.info(
-			"GoogleSheetService",
-			`Bắt đầu kéo dữ liệu từ Sheet ID: ${sheetId}, GID: ${gid}`,
-		);
 
 		if (!sheetId) {
 			logger.error("GoogleSheetService", "Thiếu Google Sheet ID");
@@ -227,6 +222,24 @@ export class GoogleSheetService {
 				source: "error",
 			};
 		}
+
+		let tabName: string | undefined;
+		// Auto-resolve latest date tab if gid is "0" or not provided
+		if (!specificGid || gid === "0") {
+			const tabsRes = await this.fetchSheetTabs(sheetId);
+			if (tabsRes.success && tabsRes.defaultGid && tabsRes.defaultGid !== "0") {
+				gid = tabsRes.defaultGid;
+				const matchedTab = tabsRes.tabs.find((t) => t.gid === gid);
+				if (matchedTab) {
+					tabName = matchedTab.name;
+				}
+			}
+		}
+
+		logger.info(
+			"GoogleSheetService",
+			`Bắt đầu kéo dữ liệu từ Sheet ID: ${sheetId}, GID: ${gid}${tabName ? ` (Tab: ${tabName})` : ""}`,
+		);
 
 		// 1. Thử export CSV công khai
 		try {
@@ -262,6 +275,7 @@ export class GoogleSheetService {
 						source: "csv_export",
 						sheetId,
 						gid,
+						tabName,
 					};
 				} else {
 					logger.warn(

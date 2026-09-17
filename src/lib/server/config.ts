@@ -1,5 +1,8 @@
 // Tự động nạp file .env trong môi trường Node.js (không bundle node:fs trên Cloudflare Edge)
-if (typeof process !== "undefined" && typeof process.getBuiltinModule === "function") {
+if (
+	typeof process !== "undefined" &&
+	typeof process.getBuiltinModule === "function"
+) {
 	try {
 		const fs = process.getBuiltinModule("node:fs") as {
 			existsSync: (p: string) => boolean;
@@ -48,8 +51,10 @@ const PROD_BASE_URL =
 		: "https://api-tbltkbtt.bocongan.gov.vn");
 
 let currentEnv: ApiEnvironment =
-	(typeof process !== "undefined" && (process.env?.KBTT_ENV as ApiEnvironment)) ||
-	(typeof process !== "undefined" && process.env?.KBTT_BASE_URL?.includes("bocongan.gov.vn")
+	(typeof process !== "undefined" &&
+		(process.env?.KBTT_ENV as ApiEnvironment)) ||
+	(typeof process !== "undefined" &&
+	process.env?.KBTT_BASE_URL?.includes("bocongan.gov.vn")
 		? "prod"
 		: "dev");
 
@@ -77,7 +82,8 @@ export const CONFIG = {
 	GOOGLE_SHEET_ID:
 		(typeof process !== "undefined" && process.env?.GOOGLE_SHEET_ID) || "",
 	GOOGLE_APPS_SCRIPT_URL:
-		(typeof process !== "undefined" && process.env?.GOOGLE_APPS_SCRIPT_URL) || "",
+		(typeof process !== "undefined" && process.env?.GOOGLE_APPS_SCRIPT_URL) ||
+		"",
 	get AUTH() {
 		if (currentEnv === "prod") {
 			return {
@@ -91,11 +97,13 @@ export const CONFIG = {
 					"Demo@#$12345",
 				BASIC_AUTH:
 					(typeof process !== "undefined" &&
-						(process.env?.PROD_AUTH_BASIC_AUTH || process.env?.AUTH_BASIC_AUTH)) ||
+						(process.env?.PROD_AUTH_BASIC_AUTH ||
+							process.env?.AUTH_BASIC_AUTH)) ||
 					"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
 				GRANT_TYPE:
 					(typeof process !== "undefined" &&
-						(process.env?.PROD_AUTH_GRANT_TYPE || process.env?.AUTH_GRANT_TYPE)) ||
+						(process.env?.PROD_AUTH_GRANT_TYPE ||
+							process.env?.AUTH_GRANT_TYPE)) ||
 					"api_cslt",
 			};
 		}

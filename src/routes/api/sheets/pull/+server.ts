@@ -8,12 +8,32 @@ import { syncPipeline } from "$lib/server/syncPipeline.js";
 export const POST: RequestHandler = async ({ request, platform }) => {
 	const body = await request.json().catch(() => ({}));
 	const sheetId = body.sheetId || CONFIG.GOOGLE_SHEET_ID;
-	const gid = body.gid;
+	let gid = body.gid;
+	let tabName = body.tabName;
 	const apiKey = body.apiKey;
+
+	if (!sheetId) {
+		return json({
+			success: false,
+			message: "Chưa cấu hình GOOGLE_SHEET_ID trong hệ thống",
+		});
+	}
+
+	if (!gid) {
+		const tabsRes =
+			await syncPipeline.googleSheetService.fetchSheetTabs(sheetId);
+		if (tabsRes.success && tabsRes.defaultGid) {
+			gid = tabsRes.defaultGid;
+			const targetTab = tabsRes.tabs.find((t) => t.gid === gid);
+			if (targetTab) {
+				tabName = tabName || targetTab.name;
+			}
+		}
+	}
 
 	logger.info(
 		"API:sheets:pull",
-		`Yêu cầu kéo dữ liệu tab GID: ${gid}, Sheet: ${sheetId}`,
+		`Yêu cầu kéo dữ liệu tab GID: ${gid}, Tab: ${tabName || "default"}, Sheet: ${sheetId}`,
 	);
 
 	const resData = await syncPipeline.googleSheetService.fetchSheetData(
@@ -28,29 +48,44 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	);
 
 	// If successfully pulled rows from Google Sheets, directly ingest them into the Database
-	if (resData.success && Array.isArray(resData.rows) && resData.rows.length > 0) {
+	if (
+		resData.success &&
+		Array.isArray(resData.rows) &&
+		resData.rows.length > 0
+	) {
 		try {
 			const db = getDb(platform);
-			const tabName = (resData as { tabName?: string }).tabName || "GoogleSheet";
+			const resolvedTabName =
+				tabName || (resData as { tabName?: string }).tabName || "GoogleSheet";
 			const ingestRes = await stayService.ingestOcrRows(
 				db,
 				resData.rows,
-				tabName,
+				resolvedTabName,
 			);
 			logger.info(
 				"API:sheets:pull",
-				`Đã nạp ${ingestRes.created} dòng vào Database`,
+				`Đã nạp ${ingestRes.created} dòng mới, cập nhật ${ingestRes.updated} dòng (${ingestRes.total} tổng cộng) vào Database`,
 			);
 			return json({
 				...resData,
+				tabName: resolvedTabName,
 				ingested: ingestRes.created,
+				updated: ingestRes.updated,
+				totalRows: ingestRes.total,
 				ingestResult: ingestRes,
+				message: `Đã đồng bộ ${ingestRes.created + ingestRes.updated} khách (${ingestRes.created} mới, ${ingestRes.updated} cập nhật) từ Sheet vào Database`,
 			});
 		} catch (err) {
 			logger.error(
 				"API:sheets:pull",
 				`Lỗi khi nạp dữ liệu vào Database: ${(err as Error).message}`,
 			);
+			return json({
+				...resData,
+				tabName,
+				ingested: 0,
+				error: (err as Error).message,
+			});
 		}
 	}
 

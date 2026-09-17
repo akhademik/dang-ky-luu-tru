@@ -5,7 +5,9 @@ import { syncPipeline } from "$lib/server/syncPipeline.js";
 
 export const GET: RequestHandler = async ({ platform }) => {
 	const env = (platform?.env || {}) as Record<string, unknown>;
-	const deployEnv = String(env.KBTT_ENV || CONFIG.currentEnv || "dev").toLowerCase();
+	const deployEnv = String(
+		env.KBTT_ENV || CONFIG.currentEnv || "dev",
+	).toLowerCase();
 	const isProd = deployEnv === "prod";
 
 	return json({
@@ -21,14 +23,17 @@ export const GET: RequestHandler = async ({ platform }) => {
 
 export const POST: RequestHandler = async ({ request, platform }) => {
 	const env = (platform?.env || {}) as Record<string, unknown>;
-	const deployEnv = String(env.KBTT_ENV || CONFIG.currentEnv || "dev").toLowerCase();
+	const deployEnv = String(
+		env.KBTT_ENV || CONFIG.currentEnv || "dev",
+	).toLowerCase();
 
 	// If running in PROD mode, prevent switching environment
 	if (deployEnv === "prod") {
 		return json(
 			{
 				success: false,
-				error: "Môi trường PRODUCTION đã được cố định, không thể chuyển đổi môi trường API.",
+				error:
+					"Môi trường PRODUCTION đã được cố định, không thể chuyển đổi môi trường API.",
 			},
 			{ status: 403 },
 		);
