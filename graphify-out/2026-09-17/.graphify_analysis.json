@@ -228,8 +228,7 @@
     "11": [
       "src_routes_page",
       "src_routes_page_has",
-      "src_routes_page_isrowregistered",
-      "svelte"
+      "src_routes_page_isrowregistered"
     ],
     "12": [
       "svelte_config",
@@ -254,7 +253,7 @@
     "8": 0.2222222222222222,
     "9": 0.3333333333333333,
     "10": 0.4666666666666667,
-    "11": 0.5,
+    "11": 0.6666666666666666,
     "12": 1.0,
     "13": 1.0,
     "14": 1.0

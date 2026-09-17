@@ -422,6 +422,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 11,
+      "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "has()",
       "source_file": "src/routes/+page.svelte",
@@ -433,6 +434,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 11,
+      "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "isrowregistered()",
       "source_file": "src/routes/+page.svelte",
@@ -1761,20 +1763,11 @@
       "source_location": "L19"
     },
     {
-      "id": "svelte",
-      "label": "svelte",
-      "_origin": "ast",
-      "community": 11,
-      "confidence": "EXTRACTED",
-      "file_type": "code",
-      "norm_label": "svelte",
-      "source_file": "svelte"
-    },
-    {
       "id": "src_routes_page",
       "label": "+page.svelte",
       "_origin": "ast",
       "community": 11,
+      "community_name": "+page.svelte",
       "file_type": "code",
       "norm_label": "+page.svelte",
       "source_file": "src/routes/+page.svelte",
@@ -6044,15 +6037,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_routes_page",
-      "target": "svelte",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte"
-    },
-    {
       "source": "src_lib_server_catalogmanager_catalogmanager",
       "target": "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
       "relation": "method",
@@ -6828,5 +6812,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b8f020ee49e27272ad0ee7522a2663af94aab620"
+  "built_at_commit": "9236c5277ad8b57a72ea92e7947c2ad6f46ecaf9"
 }
