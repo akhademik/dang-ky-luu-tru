@@ -1,49 +1,57 @@
-import fs from "node:fs";
-import path from "node:path";
-
-// Tự động nạp file .env nếu có
-function loadEnv() {
+// Tự động nạp file .env trong môi trường Node.js (không bundle node:fs trên Cloudflare Edge)
+if (typeof process !== "undefined" && typeof process.getBuiltinModule === "function") {
 	try {
-		const envPath = path.resolve(process.cwd(), ".env");
-		if (fs.existsSync(envPath)) {
-			const content = fs.readFileSync(envPath, "utf8");
-			content.split("\n").forEach((line) => {
-				const trimmed = line.trim();
-				if (trimmed && !trimmed.startsWith("#")) {
-					const eqIdx = trimmed.indexOf("=");
-					if (eqIdx > 0) {
-						const key = trimmed.substring(0, eqIdx).trim();
-						const val = trimmed.substring(eqIdx + 1).trim();
-						if (key && !process.env[key]) {
-							process.env[key] = val;
+		const fs = process.getBuiltinModule("node:fs") as {
+			existsSync: (p: string) => boolean;
+			readFileSync: (p: string, enc: string) => string;
+		};
+		const path = process.getBuiltinModule("node:path") as {
+			resolve: (...args: string[]) => string;
+		};
+		if (fs && path) {
+			const envPath = path.resolve(process.cwd(), ".env");
+			if (fs.existsSync(envPath)) {
+				const content = fs.readFileSync(envPath, "utf8");
+				for (const line of content.split("\n")) {
+					const trimmed = line.trim();
+					if (trimmed && !trimmed.startsWith("#")) {
+						const eqIdx = trimmed.indexOf("=");
+						if (eqIdx > 0) {
+							const key = trimmed.substring(0, eqIdx).trim();
+							const val = trimmed.substring(eqIdx + 1).trim();
+							if (key && !process.env[key]) {
+								process.env[key] = val;
+							}
 						}
 					}
 				}
-			});
+			}
 		}
 	} catch {}
 }
 
-loadEnv();
-
 export type ApiEnvironment = "dev" | "prod";
 
 const DEV_BASE_URL =
-	process.env.KBTT_DEV_BASE_URL ||
-	(process.env.KBTT_BASE_URL &&
+	(typeof process !== "undefined" && process.env?.KBTT_DEV_BASE_URL) ||
+	(typeof process !== "undefined" &&
+	process.env?.KBTT_BASE_URL &&
 	!process.env.KBTT_BASE_URL.includes("bocongan.gov.vn")
 		? process.env.KBTT_BASE_URL
 		: "https://api-kbtt.ai-vlab.com");
 
 const PROD_BASE_URL =
-	process.env.KBTT_PROD_BASE_URL ||
-	(process.env.KBTT_BASE_URL?.includes("bocongan.gov.vn")
+	(typeof process !== "undefined" && process.env?.KBTT_PROD_BASE_URL) ||
+	(typeof process !== "undefined" &&
+	process.env?.KBTT_BASE_URL?.includes("bocongan.gov.vn")
 		? process.env.KBTT_BASE_URL
 		: "https://api-tbltkbtt.bocongan.gov.vn");
 
 let currentEnv: ApiEnvironment =
-	(process.env.KBTT_ENV as ApiEnvironment) ||
-	(process.env.KBTT_BASE_URL?.includes("bocongan.gov.vn") ? "prod" : "dev");
+	(typeof process !== "undefined" && (process.env?.KBTT_ENV as ApiEnvironment)) ||
+	(typeof process !== "undefined" && process.env?.KBTT_BASE_URL?.includes("bocongan.gov.vn")
+		? "prod"
+		: "dev");
 
 export const CONFIG = {
 	DEV_BASE_URL,
@@ -60,46 +68,47 @@ export const CONFIG = {
 		}
 	},
 	GOOGLE_SHEET_ID:
-		process.env.GOOGLE_SHEET_ID ||
+		(typeof process !== "undefined" && process.env?.GOOGLE_SHEET_ID) ||
 		"16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q",
-	GOOGLE_APPS_SCRIPT_URL: process.env.GOOGLE_APPS_SCRIPT_URL || "",
+	GOOGLE_APPS_SCRIPT_URL:
+		(typeof process !== "undefined" && process.env?.GOOGLE_APPS_SCRIPT_URL) || "",
 	get AUTH() {
 		if (currentEnv === "prod") {
 			return {
 				USERNAME:
-					process.env.PROD_AUTH_USERNAME ||
-					process.env.AUTH_USERNAME ||
+					(typeof process !== "undefined" &&
+						(process.env?.PROD_AUTH_USERNAME || process.env?.AUTH_USERNAME)) ||
 					"demo_tich_hop",
 				PASSWORD:
-					process.env.PROD_AUTH_PASSWORD ||
-					process.env.AUTH_PASSWORD ||
+					(typeof process !== "undefined" &&
+						(process.env?.PROD_AUTH_PASSWORD || process.env?.AUTH_PASSWORD)) ||
 					"Demo@#$12345",
 				BASIC_AUTH:
-					process.env.PROD_AUTH_BASIC_AUTH ||
-					process.env.AUTH_BASIC_AUTH ||
+					(typeof process !== "undefined" &&
+						(process.env?.PROD_AUTH_BASIC_AUTH || process.env?.AUTH_BASIC_AUTH)) ||
 					"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
 				GRANT_TYPE:
-					process.env.PROD_AUTH_GRANT_TYPE ||
-					process.env.AUTH_GRANT_TYPE ||
+					(typeof process !== "undefined" &&
+						(process.env?.PROD_AUTH_GRANT_TYPE || process.env?.AUTH_GRANT_TYPE)) ||
 					"api_cslt",
 			};
 		}
 		return {
 			USERNAME:
-				process.env.DEV_AUTH_USERNAME ||
-				process.env.AUTH_USERNAME ||
+				(typeof process !== "undefined" &&
+					(process.env?.DEV_AUTH_USERNAME || process.env?.AUTH_USERNAME)) ||
 				"demo_tich_hop",
 			PASSWORD:
-				process.env.DEV_AUTH_PASSWORD ||
-				process.env.AUTH_PASSWORD ||
+				(typeof process !== "undefined" &&
+					(process.env?.DEV_AUTH_PASSWORD || process.env?.AUTH_PASSWORD)) ||
 				"Demo@#$12345",
 			BASIC_AUTH:
-				process.env.DEV_AUTH_BASIC_AUTH ||
-				process.env.AUTH_BASIC_AUTH ||
+				(typeof process !== "undefined" &&
+					(process.env?.DEV_AUTH_BASIC_AUTH || process.env?.AUTH_BASIC_AUTH)) ||
 				"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
 			GRANT_TYPE:
-				process.env.DEV_AUTH_GRANT_TYPE ||
-				process.env.AUTH_GRANT_TYPE ||
+				(typeof process !== "undefined" &&
+					(process.env?.DEV_AUTH_GRANT_TYPE || process.env?.AUTH_GRANT_TYPE)) ||
 				"api_cslt",
 		};
 	},

@@ -1,6 +1,3 @@
-import crypto from "node:crypto";
-import { createRequire } from "node:module";
-
 export interface Guest {
 	id: string;
 	loai_giay_to: string;
@@ -95,8 +92,16 @@ let localSqliteDb: unknown = null;
 function getLocalSqliteDb(): D1DatabaseLike {
 	if (!localSqliteDb) {
 		try {
-			const requireModule = createRequire(import.meta.url);
-			const { DatabaseSync } = requireModule("node:sqlite");
+			const proc = typeof process !== "undefined" ? process : null;
+			const sqliteMod = proc && "getBuiltinModule" in proc && typeof proc.getBuiltinModule === "function"
+				? (proc.getBuiltinModule("node:sqlite") as { DatabaseSync: new (path: string) => { prepare: (sql: string) => { all: (...args: unknown[]) => unknown[]; get: (...args: unknown[]) => unknown; run: (...args: unknown[]) => { changes?: number; lastInsertRowid?: number } }; exec: (sql: string) => void } })
+				: null;
+			const DatabaseSync = sqliteMod?.DatabaseSync;
+
+			if (!DatabaseSync) {
+				throw new Error("Local SQLite engine (node:sqlite) is not available in this runtime");
+			}
+
 			const dbInstance = new DatabaseSync(":memory:");
 
 			// Initialize initial schema
@@ -171,12 +176,12 @@ function getLocalSqliteDb(): D1DatabaseLike {
 						},
 						async all<T = unknown>() {
 							const stmt = dbInstance.prepare(query);
-							const results = stmt.all(...boundParams) as T[];
+							const results = stmt.all(...(boundParams as [])) as T[];
 							return { results, success: true };
 						},
 						async first<T = unknown>(colName?: string) {
 							const stmt = dbInstance.prepare(query);
-							const row = stmt.get(...boundParams) as
+							const row = stmt.get(...(boundParams as [])) as
 								| Record<string, unknown>
 								| undefined;
 							if (!row) return null;
@@ -187,12 +192,12 @@ function getLocalSqliteDb(): D1DatabaseLike {
 						},
 						async run() {
 							const stmt = dbInstance.prepare(query);
-							const info = stmt.run(...boundParams);
+							const info = stmt.run(...(boundParams as []));
 							return {
 								success: true,
 								meta: {
-									changes: Number(info.changes || 0),
-									last_row_id: Number(info.lastInsertRowid || 0),
+									changes: Number(info?.changes || 0),
+									last_row_id: Number(info?.lastInsertRowid || 0),
 								},
 							};
 						},
@@ -221,8 +226,8 @@ export function getDb(platform?: {
 }
 
 function generateId(): string {
-	return crypto.randomUUID
-		? crypto.randomUUID()
+	return typeof globalThis.crypto !== "undefined" && typeof globalThis.crypto.randomUUID === "function"
+		? globalThis.crypto.randomUUID()
 		: Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
 
