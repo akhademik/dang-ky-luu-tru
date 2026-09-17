@@ -121,16 +121,36 @@ class StayService {
 						? "F"
 						: "M";
 
-				const diaChi = String(
-					row.diaChi || row["Địa chỉ"] || row.address || "",
+				const rawDetail = String(
+					row.diaChi ||
+						row["Địa chỉ"] ||
+						row["Địa chỉ chi tiết"] ||
+						row.address ||
+						"",
 				).trim();
-				const tinh = String(row.tinh || row.Tỉnh || row.province || "").trim();
-				const quanHuyen = String(
-					row.quanHuyen || row["Quận/Huyện"] || row.district || "",
-				).trim();
-				const phuongXa = String(
+				const rawPhuong = String(
 					row.phuongXa || row["Phường/Xã"] || row.ward || "",
 				).trim();
+				const rawQuan = String(
+					row.quanHuyen || row["Quận/Huyện"] || row.district || "",
+				).trim();
+				const rawTinh = String(
+					row.tinh || row.Tỉnh || row.tinhTp || row.province || "",
+				).trim();
+
+				// Combine 4 parts into full address: [Địa chỉ chi tiết], [Phường/Xã], [Quận/Huyện], [Tỉnh/TP]
+				let fullCombinedAddress = rawDetail;
+				const addrParts = [rawDetail, rawPhuong, rawQuan, rawTinh].filter(
+					Boolean,
+				);
+				if (addrParts.length > 1) {
+					if (!rawDetail.includes(rawTinh) && !rawDetail.includes(rawQuan)) {
+						fullCombinedAddress = addrParts.join(", ");
+					}
+				} else if (addrParts.length === 1) {
+					fullCombinedAddress = addrParts[0];
+				}
+
 				const loaiGtNum = this.catalog.findLoaiGiayTo(
 					row.loaiGiayTo || row["Loại giấy tờ"] || 1,
 				);
@@ -144,10 +164,11 @@ class StayService {
 					loai_giay_to: loaiGiayToStr,
 					ngay_sinh: dob,
 					gioi_tinh: gioiTinh,
-					dia_chi_chi_tiet: diaChi,
-					phuong_xa: phuongXa,
-					quan_huyen: quanHuyen,
-					tinh_thanh: tinh,
+					dia_chi_chi_tiet: fullCombinedAddress,
+					phuong_xa: rawPhuong,
+					quan_huyen: rawQuan,
+					tinh_thanh:
+						rawTinh || fullCombinedAddress.split(",").pop()?.trim() || "",
 				});
 
 				// 2. Google Sheets is strictly an OCR input source.

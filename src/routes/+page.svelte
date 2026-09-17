@@ -685,6 +685,40 @@ function formatDateTimeDisplay(dt?: string | null): string {
 	return str.replace("T", " ").substring(0, 16);
 }
 
+function formatDepartureDisplay(dt?: string | null): string {
+	if (!dt) return "-";
+	const str = String(dt).trim();
+	const dmy = str.match(
+		/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/,
+	);
+	if (dmy) {
+		const d = dmy[1].padStart(2, "0");
+		const m = dmy[2].padStart(2, "0");
+		const y = dmy[3];
+		const hasExplicitTime =
+			dmy[4] !== undefined &&
+			(dmy[4] !== "00" || (dmy[5] !== undefined && dmy[5] !== "00"));
+		const hr = (hasExplicitTime ? dmy[4] : "12").padStart(2, "0");
+		const min = (hasExplicitTime ? dmy[5] || "00" : "00").padStart(2, "0");
+		return `${d}/${m}/${y} ${hr}:${min}`;
+	}
+	const ymd = str.match(
+		/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/,
+	);
+	if (ymd) {
+		const y = ymd[1];
+		const m = ymd[2].padStart(2, "0");
+		const d = ymd[3].padStart(2, "0");
+		const hasExplicitTime =
+			ymd[4] !== undefined &&
+			(ymd[4] !== "00" || (ymd[5] !== undefined && ymd[5] !== "00"));
+		const hr = (hasExplicitTime ? ymd[4] : "12").padStart(2, "0");
+		const min = (hasExplicitTime ? ymd[5] || "00" : "00").padStart(2, "0");
+		return `${d}/${m}/${y} ${hr}:${min}`;
+	}
+	return str.replace("T", " ").substring(0, 16);
+}
+
 function validateDateString(val?: string | null): boolean {
 	if (!val) return false;
 	const str = String(val).trim();
@@ -1062,8 +1096,21 @@ function validateStayDetail(stay: StayDetail): {
 
 // Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
+	const rawDetail = (stay.dia_chi_chi_tiet || "").trim();
+	const parts = [
+		rawDetail,
+		(stay.phuong_xa || "").trim(),
+		(stay.quan_huyen || "").trim(),
+		(stay.tinh_thanh || "").trim(),
+	].filter(Boolean);
+	let combinedAddress = rawDetail;
+	if (parts.length > 1 && !rawDetail.includes(stay.tinh_thanh || "---")) {
+		combinedAddress = parts.join(", ");
+	}
+
 	editStay = {
 		...stay,
+		dia_chi_chi_tiet: combinedAddress,
 		so_phong: normalizeSoPhong(stay.so_phong),
 		loai_giay_to: normalizeLoaiGiayTo(stay.loai_giay_to),
 		quoc_tich: normalizeQuocTich(stay.quoc_tich),
@@ -1073,7 +1120,7 @@ function openEdit(stay: StayDetail) {
 		ngay_sinh: formatDateDisplay(stay.ngay_sinh),
 		ngay_den: formatDateTimeDisplay(stay.ngay_den),
 		ngay_di_du_kien: stay.ngay_di_du_kien
-			? formatDateTimeDisplay(stay.ngay_di_du_kien)
+			? formatDepartureDisplay(stay.ngay_di_du_kien)
 			: "",
 	};
 	editErrors = {};
@@ -1416,22 +1463,10 @@ onMount(async () => {
 			<div class="flex items-center gap-2">
 				<span class="text-2xl">⚡</span>
 				<h1 class="text-xl md:text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400">
-					HỆ THỐNG QUẢN LÝ & KHAI BÁO LƯU TRÚ
+					QUẢN LÝ & KHAI BÁO LƯU TRÚ
 				</h1>
 			</div>
-			<p class="text-xs md:text-sm text-slate-400 mt-1 flex items-center gap-2">
-				<span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-				Cloudflare D1 Native Database Core • API KBTT v1.4
-				{#if isProdFixed}
-					<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-600/50 uppercase tracking-wide">
-						PROD MODE
-					</span>
-				{:else}
-					<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-600/50 uppercase tracking-wide">
-						DEV MODE
-					</span>
-				{/if}
-			</p>
+			
 		</div>
 
 		<!-- Action Controls -->
@@ -1638,17 +1673,6 @@ onMount(async () => {
 							<span>Đăng Ký Tất Cả ({stays.length})</span>
 						</button>
 					{/if}
-					<button
-						type="button"
-						onclick={() => {
-							clearLocalCache();
-							if (activeTab === 'audit') loadAuditLogs();
-							else loadStays(true);
-						}}
-						class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs rounded-lg transition-all"
-					>
-						Làm mới ↻
-					</button>
 				</div>
 			</div>
 		{/if}
@@ -1662,7 +1686,7 @@ onMount(async () => {
 							<tr>
 								<th class="p-3.5">Họ & Tên</th>
 								<th class="p-3.5">Phòng</th>
-								<th class="p-3.5">Giấy Tờ / CCCD</th>
+								<th class="p-3.5">Số Giấy Tờ</th>
 								<th class="p-3.5">Quốc Tịch</th>
 								<th class="p-3.5">Ngày Đến</th>
 								<th class="p-3.5">Ngày Đi (DK)</th>
@@ -1687,6 +1711,8 @@ onMount(async () => {
 								{#each stays as stay (stay.id)}
 									{@const isDeleting = deletingIds.has(stay.id)}
 									{@const val = validateStayDetail(stay)}
+									{@const fullAddr = stay.dia_chi_chi_tiet || [stay.phuong_xa, stay.quan_huyen, stay.tinh_thanh].filter(Boolean).join(', ') || '-'}
+									{@const shortAddr = stay.tinh_thanh || (stay.dia_chi_chi_tiet ? stay.dia_chi_chi_tiet.split(',').pop()?.trim() : '-')}
 									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
 											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
@@ -1733,12 +1759,19 @@ onMount(async () => {
 										</td>
 										<td class="p-3.5">
 											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{:else}
-												<span class="text-slate-400">{formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
+												<span class="text-slate-400">{formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
-										<td class="p-3.5 text-slate-400 truncate max-w-xs">{stay.tinh_thanh || stay.dia_chi_chi_tiet || '-'}</td>
+										<td class="p-3.5 text-slate-300 max-w-[150px] truncate group relative cursor-pointer" title={fullAddr}>
+											<span class="border-b border-dotted border-slate-500 hover:border-sky-400 hover:text-sky-300 transition-none">{shortAddr}</span>
+											{#if fullAddr && fullAddr !== '-'}
+												<div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-none duration-0 pointer-events-none bg-slate-950 text-slate-100 text-[11px] font-normal px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-2xl whitespace-nowrap max-w-xs truncate">
+													📍 {fullAddr}
+												</div>
+											{/if}
+										</td>
 										<td class="p-3.5 text-center">
 											{#if isDeleting}
 												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
@@ -1846,9 +1879,9 @@ onMount(async () => {
 										</td>
 										<td class="p-3.5 font-medium">
 											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{:else}
-												<span class="text-amber-300">{formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
+												<span class="text-amber-300">{formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
 										<td class="p-3.5 font-mono text-[11px] text-slate-400">{stay.ma_ho_so_kbtt || '-'}</td>
@@ -1999,9 +2032,9 @@ onMount(async () => {
 										</td>
 										<td class="p-3.5">
 											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{:else}
-												<span class="text-slate-400">{formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
+												<span class="text-slate-400">{formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
 										<td class="p-3.5 font-mono text-[11px] text-slate-300">{stay.ma_ho_so_kbtt || '-'}</td>
