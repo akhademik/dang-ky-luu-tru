@@ -5,13 +5,5 @@
 	"compatibility_date": "2024-09-17",
 	"compatibility_flags": [
 		"nodejs_compat"
-	],
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "dang-ky-luu-tru-db",
-			"database_id": "dang-ky-luu-tru-d1-local",
-			"migrations_dir": "migrations"
-		}
 	]
 }
