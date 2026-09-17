@@ -1300,12 +1300,14 @@ function validateStayDetail(stay: StayDetail): {
 		}
 	}
 
-	if (
-		!isVN &&
-		stay.thoi_han_thi_thuc?.trim() &&
-		!validateDateString(stay.thoi_han_thi_thuc)
-	) {
-		errors.thoi_han_thi_thuc = "Thị thực sai định dạng (DD/MM/YYYY)";
+	if (!isVN) {
+		const visa = (stay.thoi_han_thi_thuc || "").trim();
+		if (!visa) {
+			errors.thoi_han_thi_thuc =
+				"Thiếu thời hạn thị thực (bắt buộc đối với khách quốc tế)";
+		} else if (!validateDateString(visa)) {
+			errors.thoi_han_thi_thuc = "Thị thực sai định dạng (DD/MM/YYYY)";
+		}
 	}
 
 	return {
@@ -1427,13 +1429,15 @@ let editLiveVal = $derived.by(() => {
 			"Ngày đi phải theo định dạng DD/MM/YYYY HH:mm:ss (ví dụ: 19/09/2026 12:00:00)";
 	}
 
-	if (
-		!isVN &&
-		editStay.thoi_han_thi_thuc?.trim() &&
-		!validateDateString(editStay.thoi_han_thi_thuc)
-	) {
-		errors.thoi_han_thi_thuc =
-			"Thời hạn thị thực phải theo định dạng DD/MM/YYYY (ví dụ: 31/12/2026)";
+	if (!isVN) {
+		const visa = (editStay.thoi_han_thi_thuc || "").trim();
+		if (!visa) {
+			errors.thoi_han_thi_thuc =
+				"Thời hạn thị thực là bắt buộc đối với khách quốc tế (DD/MM/YYYY)";
+		} else if (!validateDateString(visa)) {
+			errors.thoi_han_thi_thuc =
+				"Thời hạn thị thực phải theo định dạng DD/MM/YYYY (ví dụ: 31/12/2026)";
+		}
 	}
 
 	return {
@@ -1498,6 +1502,16 @@ async function submitEdit() {
 async function submitAddGuest() {
 	if (!newGuestForm.ho_ten.trim() || !newGuestForm.so_giay_to.trim()) {
 		showToast("Vui lòng điền đủ Họ tên và Số CCCD/Hộ chiếu", "error");
+		return;
+	}
+	const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
+		newGuestForm.quoc_tich?.trim().toUpperCase() || "",
+	);
+	if (!isVN && !newGuestForm.thoi_han_thi_thuc?.trim()) {
+		showToast(
+			"Vui lòng nhập Thời hạn thị thực cho khách quốc tế (DD/MM/YYYY)",
+			"error",
+		);
 		return;
 	}
 	try {
@@ -1982,6 +1996,11 @@ onMount(async () => {
 														</div>
 													{/if}
 												</span>
+											{/if}
+											{#if val.errors.thoi_han_thi_thuc}
+												<div class="text-[10px] text-rose-400 font-medium whitespace-nowrap mt-1 flex items-center gap-1" title={val.errors.thoi_han_thi_thuc}>
+													<span>⚠️ Thiếu Visa</span>
+												</div>
 											{/if}
 										</td>
 										<td class="p-3.5">

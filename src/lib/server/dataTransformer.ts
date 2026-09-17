@@ -372,6 +372,29 @@ export class DataTransformer {
 					: undefined,
 			};
 			if (!isPassportValid) missing.push("Số hộ chiếu (6-12 ký tự)");
+
+			const rawVisa = String(
+				row.thoi_han_thi_thuc ||
+					row.thoiHanTamTru ||
+					row.thoiHanTamTruStr ||
+					row["Thời hạn tạm trú"] ||
+					row["Thời hạn thị thực"] ||
+					"",
+			).trim();
+			const parsedVisa = rawVisa
+				? DataTransformer.parseDateTime(rawVisa)
+				: null;
+			const isVisaValid = Boolean(parsedVisa);
+			status.thoiHanThiThuc = {
+				valid: isVisaValid,
+				value: rawVisa,
+				error: !rawVisa
+					? "Thiếu thời hạn thị thực (bắt buộc đối với khách quốc tế)"
+					: !isVisaValid
+						? "Thời hạn thị thực không hợp lệ (DD/MM/YYYY)"
+						: undefined,
+			};
+			if (!isVisaValid) missing.push("Thời hạn thị thực");
 		}
 
 		const isComplete = missing.length === 0;
@@ -517,8 +540,6 @@ export class DataTransformer {
 		);
 		const roomFormatted = cleanedRoom ? `Phong so ${cleanedRoom}` : "";
 
-		// BCA C06 API 4 requires thoiHanTamTruStr (format: YYYY-MM-DD HH:mm:ss)
-		// Fallback: thoi_han_thi_thuc -> thoiHanTamTru -> ngayDi / ngay_di_du_kien -> +30 days
 		const departureRaw =
 			row.ngayDi || row["(đến ngày)"] || row.ngay_di_du_kien || row["Ngày đi"];
 
@@ -528,10 +549,7 @@ export class DataTransformer {
 			row.thoiHanTamTruStr ||
 			row["Thời hạn tạm trú"] ||
 			row["Thời hạn thị thực"] ||
-			departureRaw ||
-			new Date(Date.now() + 30 * 24 * 3600 * 1000)
-				.toISOString()
-				.substring(0, 10);
+			"";
 
 		return {
 			hoTen: String(row.hoTen || row["Họ tên"] || "")
@@ -555,7 +573,9 @@ export class DataTransformer {
 			),
 			ngayDiDuKienStr: DataTransformer.formatDateTime(departureRaw, "12:00:00"),
 			soPhong: roomFormatted,
-			thoiHanTamTruStr: DataTransformer.formatDateTime(visaRaw, "23:59:59"),
+			thoiHanTamTruStr: visaRaw
+				? DataTransformer.formatDateTime(visaRaw, "23:59:59")
+				: "",
 			loaiGiayTo: 4,
 			soHoChieu: DataTransformer.cleanDocNumber(
 				row.soHoChieu ||
