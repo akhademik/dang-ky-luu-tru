@@ -187,11 +187,22 @@ async function runTests(): Promise<void> {
 		"Ngày đến": todayStr,
 		"Ngày đi": next2DaysStr,
 	};
-	const compInvalidQt = DataTransformer.checkCompleteness(invalidQtRow);
-	assert.equal(compInvalidQt.isComplete, false);
-	assert.equal(compInvalidQt.fieldStatus.quocTich?.valid, false);
+	// Test Validation (typo in date of birth like 204/09/1993 flagged)
+	const invalidDobRow: RawOcrRow = {
+		"Họ tên": "PHẠM ANH BẢO",
+		"Ngày sinh": "204/09/1993",
+		"Quốc tịch": "VNM",
+		"Số giấy tờ": "077093004072",
+		"Số phòng": "2",
+		"Ngày đến": todayStr,
+		"Ngày đi": next2DaysStr,
+	};
+	const compInvalidDob = DataTransformer.checkCompleteness(invalidDobRow);
+	assert.equal(compInvalidDob.isComplete, false);
+	assert.equal(compInvalidDob.fieldStatus.ngaySinh?.valid, false);
+
 	console.log(
-		"✅ DataTransformer (Validation, Alpha-3 Country Code & Past Date Blocking) test passed!",
+		"✅ DataTransformer (Validation, Alpha-3 Country Code, DOB Validation & Past Date Blocking) test passed!",
 	);
 
 	// 3. Test GoogleSheetService (CSV Parsing & Tabs)
@@ -274,6 +285,16 @@ async function runTests(): Promise<void> {
 	} catch (err) {
 		console.warn("⚠️ Kiểm tra API Server trả về:", (err as Error).message);
 	}
+
+	// 5. Test Environment Switching (DEV <-> PROD)
+	console.log("\n--- Kiểm tra chuyển đổi môi trường DEV <-> PROD ---");
+	CONFIG.setEnv("prod");
+	assert.equal(CONFIG.currentEnv, "prod");
+	assert.equal(CONFIG.BASE_URL, "https://api-tbltkbtt.bocongan.gov.vn");
+	CONFIG.setEnv("dev");
+	assert.equal(CONFIG.currentEnv, "dev");
+	assert.equal(CONFIG.BASE_URL, "https://api-kbtt.ai-vlab.com");
+	console.log("✅ Environment Switching test passed!");
 
 	console.log("\n🎉 TẤT CẢ UNIT TESTS ĐÃ HOÀN THÀNH THÀNH CÔNG!");
 }

@@ -133,7 +133,21 @@ export class DataTransformer {
 			const d = String(parsed.day).padStart(2, "0");
 			return `${y}-${m}-${d}`;
 		}
-		return String(dateRaw).trim();
+		const str = String(dateRaw).trim();
+		if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+			const parts = str.split("-").map((n) => parseInt(n, 10));
+			if (
+				parts[0] >= 1900 &&
+				parts[0] <= 2100 &&
+				parts[1] >= 1 &&
+				parts[1] <= 12 &&
+				parts[2] >= 1 &&
+				parts[2] <= 31
+			) {
+				return str;
+			}
+		}
+		return "";
 	}
 
 	public normalizeGender(genderRaw: unknown): "M" | "F" {
@@ -248,9 +262,18 @@ export class DataTransformer {
 		const ngaySinh = String(
 			row.ngaySinh || row["D.O.B"] || row["Ngày sinh"] || "",
 		).trim();
-		const dobValid = Boolean(ngaySinh && this.formatDateOnly(ngaySinh));
-		status.ngaySinh = { valid: dobValid, value: ngaySinh };
-		if (!dobValid) missing.push("Ngày sinh");
+		const formattedDob = this.formatDateOnly(ngaySinh);
+		const dobValid = Boolean(
+			formattedDob && /^\d{4}-\d{2}-\d{2}$/.test(formattedDob),
+		);
+		status.ngaySinh = {
+			valid: dobValid,
+			value: ngaySinh,
+			error: !dobValid
+				? `Ngày sinh không hợp lệ: "${ngaySinh}" (Cần định dạng DD/MM/YYYY, ví dụ: 24/09/1993)`
+				: undefined,
+		};
+		if (!dobValid) missing.push(`Ngày sinh (${ngaySinh || "trống"})`);
 
 		const cleanedRoom = this.cleanRoomNumber(row.soPhong || row["Số phòng"]);
 		const roomValid = Boolean(cleanedRoom);

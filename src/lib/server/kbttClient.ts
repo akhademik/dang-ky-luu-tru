@@ -1,6 +1,6 @@
 import { CONFIG } from "./config.js";
 import { tokenManager, TokenManager } from "./tokenManager.js";
-import { DataTransformer } from "./dataTransformer.js";
+import { logger } from "./logger.js";
 
 export interface ApiResponse<T = unknown> {
 	success: boolean;
@@ -43,34 +43,68 @@ export class KbttClient {
 	): Promise<ApiResponse> {
 		const token = await this.tokenManager.getValidToken();
 		if (!token) {
-			throw new Error("Token không được rỗng");
+			const errMsg = "Không tìm thấy hoặc không thể lấy AccessToken hợp lệ";
+			logger.error("KbttClient", errMsg);
+			throw new Error(errMsg);
 		}
 
 		const url = `${CONFIG.BASE_URL}${endpoint}`;
-		const res = await fetch(url, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-			body: JSON.stringify(payloads),
-		});
+		logger.info(
+			"KbttClient",
+			`[${CONFIG.currentEnv.toUpperCase()}] Gửi ${actionName} tới: ${url} (${payloads.length} bản ghi)`,
+			{ payloads },
+		);
+
+		let res: Response;
+		try {
+			res = await fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(payloads),
+			});
+		} catch (networkErr) {
+			const errMsg = `Lỗi mạng khi kết nối tới KBTT Server: ${(networkErr as Error).message}`;
+			logger.error("KbttClient", errMsg);
+			throw new Error(errMsg);
+		}
 
 		let resData: Record<string, unknown> = {};
+		const rawText = await res.text();
 		try {
-			resData = (await res.json()) as Record<string, unknown>;
+			resData = JSON.parse(rawText) as Record<string, unknown>;
 		} catch {
-			resData = { message: await res.text() };
+			resData = { message: rawText };
 		}
 
 		const isSuccess =
 			res.ok && (resData.code === "200" || resData.code === 200);
+
+		const responseMessage =
+			(resData.message as string) ||
+			(resData.error as string) ||
+			(isSuccess ? "Thành công" : `Lỗi HTTP ${res.status}: ${rawText}`);
+
+		if (isSuccess) {
+			logger.info(
+				"KbttClient",
+				`[${CONFIG.currentEnv.toUpperCase()}] ${actionName} THÀNH CÔNG! (HTTP ${res.status}): ${responseMessage}`,
+				{ resData },
+			);
+		} else {
+			logger.error(
+				"KbttClient",
+				`[${CONFIG.currentEnv.toUpperCase()}] ${actionName} THẤT BẠI (HTTP ${res.status}, code: ${resData.code}): ${responseMessage}`,
+				{ resData, payloads },
+			);
+		}
+
 		return {
 			success: isSuccess,
 			code: (resData.code as string | number) || res.status,
-			message:
-				(resData.message as string) ||
-				(isSuccess ? "Thành công" : `Lỗi ${res.status}`),
+			message: responseMessage,
 			raw: resData,
 		};
 	}

@@ -26,19 +26,83 @@ function loadEnv() {
 
 loadEnv();
 
+export type ApiEnvironment = "dev" | "prod";
+
+const DEV_BASE_URL =
+	process.env.KBTT_DEV_BASE_URL ||
+	(process.env.KBTT_BASE_URL &&
+	!process.env.KBTT_BASE_URL.includes("bocongan.gov.vn")
+		? process.env.KBTT_BASE_URL
+		: "https://api-kbtt.ai-vlab.com");
+
+const PROD_BASE_URL =
+	process.env.KBTT_PROD_BASE_URL ||
+	(process.env.KBTT_BASE_URL &&
+	process.env.KBTT_BASE_URL.includes("bocongan.gov.vn")
+		? process.env.KBTT_BASE_URL
+		: "https://api-tbltkbtt.bocongan.gov.vn");
+
+let currentEnv: ApiEnvironment =
+	(process.env.KBTT_ENV as ApiEnvironment) ||
+	(process.env.KBTT_BASE_URL?.includes("bocongan.gov.vn") ? "prod" : "dev");
+
 export const CONFIG = {
-	BASE_URL: process.env.KBTT_BASE_URL || "https://api-kbtt.ai-vlab.com",
+	DEV_BASE_URL,
+	PROD_BASE_URL,
+	get currentEnv(): ApiEnvironment {
+		return currentEnv;
+	},
+	get BASE_URL(): string {
+		return currentEnv === "prod" ? PROD_BASE_URL : DEV_BASE_URL;
+	},
+	setEnv(env: ApiEnvironment) {
+		if (env === "dev" || env === "prod") {
+			currentEnv = env;
+		}
+	},
 	GOOGLE_SHEET_ID:
 		process.env.GOOGLE_SHEET_ID ||
 		"16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q",
 	GOOGLE_APPS_SCRIPT_URL: process.env.GOOGLE_APPS_SCRIPT_URL || "",
-	AUTH: {
-		USERNAME: process.env.AUTH_USERNAME || "demo_tich_hop",
-		PASSWORD: process.env.AUTH_PASSWORD || "Demo@#$12345",
-		BASIC_AUTH:
-			process.env.AUTH_BASIC_AUTH ||
-			"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
-		GRANT_TYPE: process.env.AUTH_GRANT_TYPE || "api_cslt",
+	get AUTH() {
+		if (currentEnv === "prod") {
+			return {
+				USERNAME:
+					process.env.PROD_AUTH_USERNAME ||
+					process.env.AUTH_USERNAME ||
+					"demo_tich_hop",
+				PASSWORD:
+					process.env.PROD_AUTH_PASSWORD ||
+					process.env.AUTH_PASSWORD ||
+					"Demo@#$12345",
+				BASIC_AUTH:
+					process.env.PROD_AUTH_BASIC_AUTH ||
+					process.env.AUTH_BASIC_AUTH ||
+					"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
+				GRANT_TYPE:
+					process.env.PROD_AUTH_GRANT_TYPE ||
+					process.env.AUTH_GRANT_TYPE ||
+					"api_cslt",
+			};
+		}
+		return {
+			USERNAME:
+				process.env.DEV_AUTH_USERNAME ||
+				process.env.AUTH_USERNAME ||
+				"demo_tich_hop",
+			PASSWORD:
+				process.env.DEV_AUTH_PASSWORD ||
+				process.env.AUTH_PASSWORD ||
+				"Demo@#$12345",
+			BASIC_AUTH:
+				process.env.DEV_AUTH_BASIC_AUTH ||
+				process.env.AUTH_BASIC_AUTH ||
+				"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
+			GRANT_TYPE:
+				process.env.DEV_AUTH_GRANT_TYPE ||
+				process.env.AUTH_GRANT_TYPE ||
+				"api_cslt",
+		};
 	},
 	ENDPOINTS: {
 		TOKEN: "/authorization-service/oauth/token",

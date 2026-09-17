@@ -172,7 +172,7 @@ export class TokenManager {
 			"Bearer";
 	}
 
-	private clear(): void {
+	public clear(): void {
 		this.accessToken = null;
 		this.refreshToken = null;
 		this.expiresAt = 0;

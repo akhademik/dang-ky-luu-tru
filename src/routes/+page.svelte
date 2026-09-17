@@ -90,6 +90,18 @@ let syncResults = $state<SyncResult[]>([]);
 let isSyncing = $state(false);
 let syncActionTitle = $state("");
 
+// Environment State (DEV vs PROD)
+let currentEnv = $state<"dev" | "prod">("dev");
+let currentBaseUrl = $state("https://api-kbtt.ai-vlab.com");
+let activeEnvHost = $derived.by(() => {
+	try {
+		const u = new URL(currentBaseUrl);
+		return u.host;
+	} catch {
+		return currentBaseUrl;
+	}
+});
+
 // Token status
 let tokenStatus = $state<{ hasToken: boolean; expiresInSeconds: number }>({
 	hasToken: false,
@@ -1418,6 +1430,48 @@ function copyCode(code: string | undefined, name: string | undefined) {
 	showToast(code, name || "");
 }
 
+async function fetchEnvInfo() {
+	try {
+		const res = await fetch("/api/env");
+		const data = await res.json();
+		if (data.env) {
+			currentEnv = data.env;
+			currentBaseUrl = data.baseUrl;
+		}
+	} catch (err) {
+		console.warn("Lỗi nạp thông tin môi trường:", err);
+	}
+}
+
+async function switchEnvironment(targetEnv: "dev" | "prod") {
+	if (currentEnv === targetEnv) return;
+	try {
+		const res = await fetch("/api/env", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ env: targetEnv }),
+		});
+		const data = await res.json();
+		if (data.success) {
+			currentEnv = data.env;
+			currentBaseUrl = data.baseUrl;
+			// Reset token status in UI
+			tokenStatus = { hasToken: false, expiresInSeconds: 0 };
+			showToast(
+				targetEnv.toUpperCase(),
+				`Đã chuyển sang môi trường ${targetEnv === "prod" ? "Production (BCA)" : "Sandbox (AI-VLab)"}!`,
+			);
+			// Re-check token & reload catalogs
+			await checkToken();
+			await loadCatalogs();
+		} else {
+			alert(`Không thể chuyển môi trường: ${data.error}`);
+		}
+	} catch (err) {
+		alert(`Lỗi khi chuyển môi trường: ${(err as Error).message}`);
+	}
+}
+
 let filteredTinhList = $derived(
 	catalogs.tinhTp.filter((t) => {
 		const q = normalizeStr(filterTinh);
@@ -1441,6 +1495,7 @@ let filteredQuocTichList = $derived(
 );
 
 onMount(() => {
+	fetchEnvInfo();
 	loadCatalogs();
 	checkToken();
 	fetchSheetTabsList();
@@ -1465,12 +1520,57 @@ onMount(() => {
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Live Sync
           </span>
         </h1>
-        <p class="text-xs text-slate-400">Đồng bộ tự động OCR từ Google Sheets lên api-kbtt.ai-vlab.com</p>
+        <p class="text-xs text-slate-400 flex items-center gap-1.5">
+          <span>Đồng bộ tự động OCR từ Google Sheets lên</span>
+          <span class="font-mono text-slate-300 underline underline-offset-2">{activeEnvHost}</span>
+        </p>
       </div>
     </div>
 
-    <!-- Auth & System Badges -->
-    <div class="flex items-center space-x-3 text-xs">
+    <!-- Auth, Environment Toggle & System Badges -->
+    <div class="flex items-center flex-wrap gap-2.5 sm:gap-3 text-xs">
+      <!-- DEV / PROD Environment Toggle Switch -->
+      <div class="bg-slate-900/80 border border-slate-700/90 rounded-lg p-1 flex items-center gap-1 shadow-inner">
+        <button
+          type="button"
+          onclick={() => switchEnvironment('dev')}
+          class={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+            currentEnv === 'dev'
+              ? 'bg-amber-500 text-slate-950 shadow-sm font-bold'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
+          }`}
+          title="Sandbox / Thử nghiệm (api-kbtt.ai-vlab.com)"
+        >
+          <i class="fa-solid fa-flask text-[11px]"></i>
+          <span>DEV</span>
+        </button>
+        <button
+          type="button"
+          onclick={() => switchEnvironment('prod')}
+          class={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+            currentEnv === 'prod'
+              ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
+          }`}
+          title="Production / Chính thức (api-tbltkbtt.bocongan.gov.vn)"
+        >
+          <i class="fa-solid fa-shield-halved text-[11px]"></i>
+          <span>PROD</span>
+        </button>
+      </div>
+
+      <!-- Environment Active Host Badge -->
+      <div class={`border px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition ${
+        currentEnv === 'prod'
+          ? 'bg-emerald-950/70 border-emerald-600/60 text-emerald-300'
+          : 'bg-amber-950/70 border-amber-600/60 text-amber-300'
+      }`}>
+        <span class={`w-2 h-2 rounded-full ${currentEnv === 'prod' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+        <span class="font-mono text-[11px] font-bold tracking-tight">
+          {currentEnv === 'prod' ? 'PROD (bocongan.gov.vn)' : 'DEV (ai-vlab.com)'}
+        </span>
+      </div>
+
       <div class="bg-slate-900/60 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
         <span class="text-slate-300">Danh mục: <strong class="text-white">{catalogs.quocTich.length > 0 ? 'Đã nạp' : 'Đang nạp...'}</strong></span>

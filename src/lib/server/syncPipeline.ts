@@ -98,6 +98,7 @@ export class SyncPipeline {
 					});
 				});
 			} catch (err) {
+				const errMsg = (err as Error).message;
 				vnBatch.forEach((b) => {
 					results.push({
 						step: "API_5_VN",
@@ -106,7 +107,7 @@ export class SyncPipeline {
 						payload: b.payload,
 						success: false,
 						status: "Lỗi",
-						message: (err as Error).message,
+						message: errMsg,
 					});
 				});
 			}
@@ -130,6 +131,7 @@ export class SyncPipeline {
 					});
 				});
 			} catch (err) {
+				const errMsg = (err as Error).message;
 				foreignBatch.forEach((b) => {
 					results.push({
 						step: "API_4_FOREIGN",
@@ -138,7 +140,7 @@ export class SyncPipeline {
 						payload: b.payload,
 						success: false,
 						status: "Lỗi",
-						message: (err as Error).message,
+						message: errMsg,
 					});
 				});
 			}
