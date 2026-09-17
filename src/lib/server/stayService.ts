@@ -545,12 +545,15 @@ class StayService {
 			so_phong?: string;
 			ngay_den?: string;
 			ngay_di_du_kien?: string;
+			autoSendToKbtt?: boolean;
 		},
 	): Promise<{
 		success: boolean;
 		message: string;
 		stayId?: string;
 		stay?: StayDetail;
+		isRegistered?: boolean;
+		code?: string;
 	}> {
 		const existingStay = await getStayById(db, stayId);
 		if (!existingStay) {
@@ -567,8 +570,33 @@ class StayService {
 		);
 		const defaultNgayDi = `${nextDay.getUTCFullYear()}-${String(nextDay.getUTCMonth() + 1).padStart(2, "0")}-${String(nextDay.getUTCDate()).padStart(2, "0")} 12:00:00`;
 
-		const newNgayDen = options?.ngay_den || vnNow.fullStr;
-		const newNgayDi = options?.ngay_di_du_kien || defaultNgayDi;
+		const newNgayDen = options?.ngay_den
+			? DataTransformer.formatDateTime(options.ngay_den, vnNow.timeStr)
+			: vnNow.fullStr;
+
+		// Format departure date: default to 12:00:00 if no explicit time given
+		let newNgayDi = defaultNgayDi;
+		if (options?.ngay_di_du_kien) {
+			const rawDi = String(options.ngay_di_du_kien).trim();
+			const parsedDi = DataTransformer.parseDateTime(rawDi);
+			if (parsedDi) {
+				const m = String(parsedDi.month).padStart(2, "0");
+				const d = String(parsedDi.day).padStart(2, "0");
+				const hasExplicitTime =
+					rawDi.includes(":") && (parsedDi.hour !== 0 || parsedDi.minute !== 0);
+				const hh = hasExplicitTime
+					? String(parsedDi.hour).padStart(2, "0")
+					: "12";
+				const mm = hasExplicitTime
+					? String(parsedDi.minute).padStart(2, "0")
+					: "00";
+				const ss = hasExplicitTime
+					? String(parsedDi.second).padStart(2, "0")
+					: "00";
+				newNgayDi = `${parsedDi.year}-${m}-${d} ${hh}:${mm}:${ss}`;
+			}
+		}
+
 		const newSoPhong = options?.so_phong
 			? DataTransformer.cleanRoomNumber(options.so_phong)
 			: existingStay.so_phong;
@@ -604,8 +632,6 @@ class StayService {
 			)
 			.run();
 
-		const createdStay = await getStayById(db, newStayId);
-
 		await logKbttAction(db, {
 			stay_id: newStayId,
 			api_endpoint: "RE_REGISTER_STAY",
@@ -625,11 +651,40 @@ class StayService {
 			is_success: 1,
 		});
 
+		// Auto-send to BCA KBTT API unless explicitly disabled
+		const shouldAutoSend = options?.autoSendToKbtt !== false;
+		if (shouldAutoSend) {
+			const registerResult = await this.registerStayToKbtt(db, newStayId);
+			const updatedStay = (await getStayById(db, newStayId)) || undefined;
+
+			if (registerResult.success) {
+				return {
+					success: true,
+					message: `✓ Đã khai báo thành công lên BCA cho khách ${existingStay.ho_ten} (Phòng ${newSoPhong})!`,
+					stayId: newStayId,
+					stay: updatedStay,
+					isRegistered: true,
+					code: registerResult.code,
+				};
+			}
+
+			return {
+				success: false,
+				message: `Đã tạo lượt mới nhưng BCA từ chối: ${registerResult.message}`,
+				stayId: newStayId,
+				stay: updatedStay,
+				isRegistered: false,
+				code: registerResult.code,
+			};
+		}
+
+		const createdStay = (await getStayById(db, newStayId)) || undefined;
 		return {
 			success: true,
-			message: `Đã tạo lượt khai báo mới cho khách ${existingStay.ho_ten}! Bản ghi đã sẵn sàng ở mục Chờ Khai Báo.`,
+			message: `Đã tạo lượt lưu trú mới cho khách ${existingStay.ho_ten}!`,
 			stayId: newStayId,
-			stay: createdStay || undefined,
+			stay: createdStay,
+			isRegistered: false,
 		};
 	}
 }

@@ -291,6 +291,70 @@ let stays = $derived.by(() => {
 	});
 });
 
+interface GuestGroup {
+	guest_id: string;
+	ho_ten: string;
+	so_giay_to: string;
+	quoc_tich: string;
+	gioi_tinh: string;
+	stay_count: number;
+	latestStay: StayDetail;
+	stays: StayDetail[];
+}
+
+let expandedGuestIds = $state<Set<string>>(new Set());
+
+function toggleGuestExpand(guestId: string) {
+	const next = new Set(expandedGuestIds);
+	if (next.has(guestId)) {
+		next.delete(guestId);
+	} else {
+		next.add(guestId);
+	}
+	expandedGuestIds = next;
+}
+
+function expandAllGuests() {
+	expandedGuestIds = new Set(guestGroups.map((g) => g.guest_id));
+}
+
+function collapseAllGuests() {
+	expandedGuestIds = new Set();
+}
+
+let guestGroups = $derived.by(() => {
+	const map = new Map<string, GuestGroup>();
+	for (const s of stays) {
+		const gKey = s.guest_id || s.so_giay_to;
+		if (!map.has(gKey)) {
+			map.set(gKey, {
+				guest_id: s.guest_id || s.id,
+				ho_ten: s.ho_ten || "",
+				so_giay_to: s.so_giay_to || "",
+				quoc_tich: s.quoc_tich || "VNM",
+				gioi_tinh: s.gioi_tinh || "M",
+				stay_count: 0,
+				latestStay: s,
+				stays: [],
+			});
+		}
+		const group = map.get(gKey)!;
+		group.stay_count += 1;
+		group.stays.push(s);
+	}
+
+	for (const group of map.values()) {
+		group.stays.sort((a, b) =>
+			(b.created_at || b.ngay_den || "").localeCompare(
+				a.created_at || a.ngay_den || "",
+			),
+		);
+		group.latestStay = group.stays[0];
+	}
+
+	return Array.from(map.values());
+});
+
 let currentEnv = $state<"dev" | "prod">("dev");
 let isProdFixed = $state(false);
 let isAuthenticated = $state(true);
@@ -798,7 +862,7 @@ async function submitCheckout() {
 	}
 }
 
-// Re-Register Stay (Lượt mới / Khách quay lại / Chuyển sang PROD)
+// Re-Register Stay (Lượt mới / Khách quay lại / Tự động gửi BCA ngay)
 function openReRegisterModal(stay: StayDetail) {
 	reRegisterTargetStay = stay;
 	reRegisterRoom = stay.so_phong || "1";
@@ -808,10 +872,10 @@ function openReRegisterModal(stay: StayDetail) {
 
 	const pad = (n: number) => String(n).padStart(2, "0");
 	const nowStr = `${pad(now.getUTCDate())}/${pad(now.getUTCMonth() + 1)}/${now.getUTCFullYear()} ${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
-	const nextDayStr = `${pad(nextDay.getUTCDate())}/${pad(nextDay.getUTCMonth() + 1)}/${nextDay.getUTCFullYear()} 12:00`;
+	const nextDayDateInput = `${nextDay.getUTCFullYear()}-${pad(nextDay.getUTCMonth() + 1)}-${pad(nextDay.getUTCDate())}`;
 
 	reRegisterArrivalDate = nowStr;
-	reRegisterDepartureDate = nextDayStr;
+	reRegisterDepartureDate = nextDayDateInput;
 	showReRegisterModal = true;
 }
 
@@ -819,7 +883,7 @@ async function submitReRegister() {
 	if (!reRegisterTargetStay) return;
 	const targetId = reRegisterTargetStay.id;
 	showReRegisterModal = false;
-	showToast("Đang tạo lượt khai báo mới...", "info");
+	showToast("⚡ Đang tạo lượt lưu trú mới và gửi báo cáo Công An...", "info");
 
 	try {
 		const res = await fetch("/api/stays/re-register", {
@@ -830,23 +894,31 @@ async function submitReRegister() {
 				so_phong: reRegisterRoom,
 				ngay_den: reRegisterArrivalDate,
 				ngay_di_du_kien: reRegisterDepartureDate,
+				autoSendToKbtt: true,
 			}),
 		});
 		const data = await res.json();
+		clearLocalCache();
 		if (data.success) {
 			showToast(
-				"✓ Đã tạo lượt khai báo mới! Bản ghi đã chuyển vào Chờ Khai Báo.",
+				data.message || "✓ Đã khai báo lưu trú thành công lên Bộ Công An!",
 				"success",
 			);
-			clearLocalCache();
-			activeTab = "register";
+			activeTab = "inhouse";
 			await loadStays(true);
 			await loadStats(true);
 		} else {
-			showToast(`Lỗi: ${data.message || data.error}`, "error");
+			showToast(
+				`Thông báo: ${data.message || data.error || "Gửi BCA chưa thành công"}`,
+				"error",
+			);
+			activeTab = "register";
+			await loadStays(true);
+			await loadStats(true);
 		}
 	} catch {
-		showToast("Lỗi khi tạo lượt khai báo mới", "error");
+		showToast("Lỗi kết nối khi gửi khai báo lại", "error");
+		await loadStays(true);
 	}
 }
 
@@ -2254,167 +2326,240 @@ onMount(async () => {
 			</div>
 		{/if}
 
-		<!-- TAB 3: TẤT CẢ GUESTS (FULL DATABASE) -->
+		<!-- TAB 3: TẤT CẢ GUESTS (GUEST-CENTRIC ACCORDION & LỊCH SỬ LƯU TRÚ) -->
 		{#if activeTab === "all_guests"}
 			<div class="bg-slate-800/80 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
-				<div class="p-3.5 bg-slate-900/70 border-b border-slate-700 flex items-center justify-between">
+				<div class="p-3.5 bg-slate-900/70 border-b border-slate-700 flex flex-wrap items-center justify-between gap-3">
 					<div class="flex items-center gap-2">
 						<span class="text-amber-400 text-base">👥</span>
-						<span class="text-xs md:text-sm font-semibold text-slate-200">Toàn Bộ Dữ Liệu Khách & Lưu Trú (Cloudflare D1 Remote)</span>
-						<span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">Tổng: {stays.length} bản ghi</span>
+						<span class="text-xs md:text-sm font-semibold text-slate-200">Lịch Sử Khách & Các Lượt Lưu Trú (Cloudflare D1 Remote)</span>
+						<span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">
+							{guestGroups.length} Khách ({stays.length} lượt lưu trú)
+						</span>
 					</div>
-					<div class="text-[11px] text-slate-400">
-						Hiển thị toàn bộ, không qua bộ lọc trạng thái
+					<div class="flex items-center gap-2 text-xs">
+						<button
+							type="button"
+							onclick={expandAllGuests}
+							class="px-2.5 py-1 bg-slate-700/80 hover:bg-slate-600 text-slate-200 rounded-lg transition-all"
+						>
+							▼ Mở rộng tất cả
+						</button>
+						<button
+							type="button"
+							onclick={collapseAllGuests}
+							class="px-2.5 py-1 bg-slate-700/80 hover:bg-slate-600 text-slate-200 rounded-lg transition-all"
+						>
+							▲ Thu gọn tất cả
+						</button>
 					</div>
 				</div>
-				<div class="overflow-x-auto">
-					<table class="w-full text-left text-xs border-collapse">
-						<thead class="bg-slate-900/90 text-slate-300 uppercase font-semibold border-b border-slate-700">
-							<tr>
-								<th class="p-3.5 w-12 text-center">#</th>
-								<th class="p-3.5">Họ & Tên</th>
-								<th class="p-3.5">Phòng</th>
-								<th class="p-3.5">Trạng Thái</th>
-								<th class="p-3.5">CCCD / Hộ Chiếu</th>
-								<th class="p-3.5">Quốc Tịch</th>
-								<th class="p-3.5">Ngày Đến</th>
-								<th class="p-3.5">Ngày Đi (DK)</th>
-								<th class="p-3.5 text-center">Thao Tác</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-slate-700/60">
-							{#if loading}
-								<tr>
-									<td colspan="9" class="p-8 text-center text-slate-400">Đang tải toàn bộ dữ liệu từ Cloudflare D1...</td>
-								</tr>
-							{:else if stays.length === 0}
-								<tr>
-									<td colspan="9" class="p-12 text-center text-slate-400">
-										<div class="text-3xl mb-2">📭</div>
-										<div class="font-semibold text-slate-300">Chưa có bản ghi nào trong Database.</div>
-										<div class="text-xs text-slate-500 mt-1">Bấm nút "Đồng Bộ Sheets" hoặc "Thêm Khách Mới" để nạp dữ liệu vào CSDL.</div>
-									</td>
-								</tr>
-							{:else}
-								{#each stays as stay, idx (stay.id)}
-									{@const isDeleting = deletingIds.has(stay.id)}
-									{@const val = validateStayDetail(stay)}
-									{@const badge = getStatusBadge(stay.status, val.hasErrors)}
-									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
-										<td class="p-3.5 text-center font-mono text-slate-500">{idx + 1}</td>
-										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
-											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
-											{#if val.errors.ho_ten}
-												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️ {val.errors.ho_ten}</span>
-											{/if}
-											{#if stay.gioi_tinh === 'F'}
-												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40">Nữ ♀</span>
+
+				<div class="p-4 space-y-3">
+					{#if loading}
+						<div class="p-10 text-center text-slate-400 text-xs">
+							Đang tải dữ liệu hồ sơ khách từ Cloudflare D1...
+						</div>
+					{:else if guestGroups.length === 0}
+						<div class="p-12 text-center text-slate-400">
+							<div class="text-3xl mb-2">📭</div>
+							<div class="font-semibold text-slate-300">Chưa có bản ghi nào trong Database.</div>
+							<div class="text-xs text-slate-500 mt-1">Bấm nút "Đồng Bộ Sheets" hoặc "Thêm Khách Mới" để nạp dữ liệu vào CSDL.</div>
+						</div>
+					{:else}
+						{#each guestGroups as group, gIdx (group.guest_id)}
+							{@const isExpanded = expandedGuestIds.has(group.guest_id)}
+							{@const latestVal = validateStayDetail(group.latestStay)}
+							{@const latestBadge = getStatusBadge(group.latestStay.status, latestVal.hasErrors)}
+							{@const countryFullName = getCountryFullName(group.quoc_tich)}
+
+							<div class="border border-slate-700/80 rounded-xl bg-slate-900/60 overflow-hidden transition-all duration-200 hover:border-slate-600 shadow-md">
+								<!-- Header Accordion Row -->
+								<div
+									role="button"
+									tabindex="0"
+									onclick={() => toggleGuestExpand(group.guest_id)}
+									onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleGuestExpand(group.guest_id); }}
+									class="p-3.5 flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none bg-slate-900/90 hover:bg-slate-800/80 transition-colors"
+								>
+									<!-- Left: Name, Gender, Stay Count Badge -->
+									<div class="flex items-center gap-2.5 min-w-[240px]">
+										<span class="text-slate-400 text-xs font-mono transition-transform duration-200 {isExpanded ? 'rotate-90 text-amber-400' : ''}">
+											▶
+										</span>
+										<span class="text-xs font-mono text-slate-500">#{gIdx + 1}</span>
+										<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5">
+											<span>{group.ho_ten}</span>
+											{#if group.gioi_tinh === 'F'}
+												<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40">Nữ ♀</span>
 											{:else}
-												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40">Nam ♂</span>
+												<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40">Nam ♂</span>
 											{/if}
-										</td>
-										<td class="p-3.5 font-mono font-bold">
-											{#if val.errors.so_phong}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.so_phong}>⚠️ {stay.so_phong || 'Trống'}</span>
-											{:else}
-												<span class="text-sky-400">{stay.so_phong}</span>
-											{/if}
-										</td>
-										<td class="p-3.5">
-											<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
-												{badge.label}
+										</div>
+
+										<!-- Stay Count Badge -->
+										{#if group.stay_count > 1}
+											<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
+												🏨 {group.stay_count} lượt ở
 											</span>
-										</td>
-										<td class="p-3.5 font-mono">
-											{#if val.errors.so_giay_to}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.so_giay_to}>⚠️ {stay.so_giay_to || 'Trống'}</span>
-											{:else}
-												<span class="text-slate-300">{stay.so_giay_to}</span>
-											{/if}
-										</td>
-										<td class="p-3.5">
-											{#if val.errors.quoc_tich}
-												<span class="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-rose-900/80 border border-rose-700 text-rose-200" title={val.errors.quoc_tich}>
-													⚠️ {stay.quoc_tich || 'Trống'}
-												</span>
-											{:else}
-												{@const countryFullName = getCountryFullName(stay.quoc_tich)}
-												<span class="group relative inline-block cursor-pointer">
-													<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
-														{stay.quoc_tich}
-													</span>
-													{#if countryFullName}
-														<div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-none duration-0 pointer-events-none bg-slate-950 text-slate-100 text-[11px] font-normal px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-2xl whitespace-nowrap max-w-xs truncate">
-															🌐 {countryFullName}
-														</div>
-													{/if}
-												</span>
-											{/if}
-										</td>
-										<td class="p-3.5">
-											{#if val.errors.ngay_den}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_den}>⚠️ {formatDateDisplay(stay.ngay_den)}</span>
-											{:else}
-												<span class="text-slate-300">{formatDateDisplay(stay.ngay_den)}</span>
-											{/if}
-										</td>
-										<td class="p-3.5">
-											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateDisplay(stay.ngay_di_du_kien)}</span>
-											{:else}
-												<span class="text-slate-400">{formatDateDisplay(stay.ngay_di_du_kien)}</span>
-											{/if}
-										</td>
-										<td class="p-3.5 text-center">
-											{#if isDeleting}
-												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
-											{:else}
-												<div class="flex items-center justify-center gap-1.5">
-													{#if stay.status === 'READY_TO_SYNC'}
-														<button
-															type="button"
-															onclick={() => registerStay(stay.id)}
-															class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-[11px] shadow transition-all"
-														>
-															Khai Báo ⚡
-														</button>
-													{:else}
-														<button
-															type="button"
-															onclick={() => openReRegisterModal(stay)}
-															class="px-2 py-1 bg-purple-700 hover:bg-purple-600 text-white font-semibold rounded text-[11px] shadow transition-all"
-															title="Khách quay lại lưu trú / Tạo lượt khai báo mới"
-														>
-															🔄 Khai Báo Lại
-														</button>
-													{/if}
-													<button
-														type="button"
-														onclick={() => openEdit(stay)}
-														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
-													>
-														Sửa ✎
-													</button>
-													<button
-														type="button"
-														onclick={() => openDeleteModal(stay)}
-														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
-													>
-														Xóa ✕
-													</button>
-												</div>
-											{/if}
-										</td>
-									</tr>
-								{/each}
-							{/if}
-						</tbody>
-					</table>
+										{:else}
+											<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-800 text-slate-400 border border-slate-700">
+												🏨 1 lượt ở
+											</span>
+										{/if}
+									</div>
+
+									<!-- Middle: Doc, Nat, Latest Stay Pair -->
+									<div class="flex flex-wrap items-center gap-3 text-xs">
+										<div class="font-mono text-slate-300">
+											<span>{group.so_giay_to}</span>
+											<span class="text-[11px] font-semibold ml-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 {group.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}" title={countryFullName || ''}>
+												{group.quoc_tich}
+											</span>
+										</div>
+
+										<!-- Latest Pair Snippet -->
+										<div class="hidden lg:flex items-center gap-1.5 text-[11px] font-mono px-2 py-0.5 rounded bg-slate-950/70 border border-slate-800">
+											<span class="text-slate-400">Lượt gần nhất:</span>
+											<span class="text-sky-300 font-bold">P.{group.latestStay.so_phong}</span>
+											<span class="text-slate-400">|</span>
+											<span class="text-emerald-400">{formatDateTimeDisplay(group.latestStay.ngay_den)}</span>
+											<span class="text-slate-500">➔</span>
+											<span class="text-amber-400">{group.latestStay.ngay_di_thuc_te ? formatDateTimeDisplay(group.latestStay.ngay_di_thuc_te) : formatDepartureDisplay(group.latestStay.ngay_di_du_kien)}</span>
+										</div>
+
+										<!-- Latest Status Badge -->
+										<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {latestBadge.class}">
+											{latestBadge.label}
+										</span>
+									</div>
+
+									<!-- Right Action Buttons -->
+									<div class="flex items-center gap-1.5" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="toolbar" tabindex="-1">
+										<button
+											type="button"
+											onclick={() => openReRegisterModal(group.latestStay)}
+											class="px-2.5 py-1 bg-purple-700 hover:bg-purple-600 text-white font-semibold rounded text-[11px] shadow transition-all flex items-center gap-1"
+											title="Khai báo lại lượt mới và tự động gửi BCA ngay"
+										>
+											<span>🔄</span> Khai Báo Lại
+										</button>
+										<button
+											type="button"
+											onclick={() => toggleGuestExpand(group.guest_id)}
+											class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-all border border-slate-700"
+										>
+											{isExpanded ? 'Thu gọn ▲' : `Lịch sử (${group.stay_count}) ▼`}
+										</button>
+									</div>
+								</div>
+
+								<!-- Expanded Stay Pairs Detail Table -->
+								{#if isExpanded}
+									<div class="border-t border-slate-700/60 bg-slate-950/40 p-3">
+										<div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+											<span>Danh Sách Các Lượt Lưu Trú Của Khách ({group.stay_count} lượt)</span>
+											<span class="text-slate-500 text-[10px] lowercase">Sắp xếp theo thứ tự mới nhất</span>
+										</div>
+
+										<div class="overflow-x-auto">
+											<table class="w-full text-left text-xs border-collapse">
+												<thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-semibold border-b border-slate-800">
+													<tr>
+														<th class="p-2.5 w-16 text-center">Lượt</th>
+														<th class="p-2.5">Phòng</th>
+														<th class="p-2.5">Cặp Thời Gian Lưu Trú [Check-In ➔ Check-Out]</th>
+														<th class="p-2.5">Trạng Thái</th>
+														<th class="p-2.5">Mã Hồ Sơ BCA</th>
+														<th class="p-2.5">Ghi Chú</th>
+														<th class="p-2.5 text-center">Thao Tác</th>
+													</tr>
+												</thead>
+												<tbody class="divide-y divide-slate-800/80 font-mono">
+													{#each group.stays as stay, sIdx (stay.id)}
+														{@const isDeleting = deletingIds.has(stay.id)}
+														{@const val = validateStayDetail(stay)}
+														{@const badge = getStatusBadge(stay.status, val.hasErrors)}
+														<tr class="hover:bg-slate-800/40 transition-colors {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
+															<td class="p-2.5 text-center text-slate-500 font-bold">
+																#{group.stays.length - sIdx}
+																{#if sIdx === 0}
+																	<span class="ml-1 text-[9px] px-1 py-0.2 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-sans">Mới nhất</span>
+																{/if}
+															</td>
+															<td class="p-2.5 font-bold text-sky-400">
+																Phòng {stay.so_phong}
+															</td>
+															<td class="p-2.5">
+																<div class="flex items-center gap-1.5 flex-wrap">
+																	<span class="px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800 text-[11px]">
+																		In: {formatDateTimeDisplay(stay.ngay_den)}
+																	</span>
+																	<span class="text-slate-500 font-bold">➔</span>
+																	{#if stay.ngay_di_thuc_te}
+																		<span class="px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700 text-[11px]">
+																			Out: {formatDateTimeDisplay(stay.ngay_di_thuc_te)}
+																		</span>
+																	{:else}
+																		<span class="px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800 text-[11px]">
+																			Dự kiến: {formatDepartureDisplay(stay.ngay_di_du_kien)}
+																		</span>
+																	{/if}
+																</div>
+															</td>
+															<td class="p-2.5 font-sans">
+																<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
+																	{badge.label}
+																</span>
+															</td>
+															<td class="p-2.5 text-slate-300">
+																{stay.ma_ho_so_kbtt || '-'}
+															</td>
+															<td class="p-2.5 text-slate-400 max-w-xs truncate font-sans">
+																{stay.ghi_chu || '-'}
+															</td>
+															<td class="p-2.5 text-center font-sans">
+																<div class="flex items-center justify-center gap-1">
+																	{#if stay.status === 'SYNCED_KBTT' || stay.status === 'EXTENDED'}
+																		<button
+																			type="button"
+																			onclick={() => openCheckoutModal(stay)}
+																			class="px-2 py-0.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-[10px] transition-all"
+																		>
+																			Checkout 🚪
+																		</button>
+																	{/if}
+																	<button
+																		type="button"
+																		onclick={() => openEdit(stay)}
+																		class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[10px] transition-all"
+																	>
+																		Sửa ✎
+																	</button>
+																	<button
+																		type="button"
+																		onclick={() => openDeleteModal(stay)}
+																		class="px-2 py-0.5 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[10px] transition-all"
+																	>
+																		Xóa ✕
+																	</button>
+																</div>
+															</td>
+														</tr>
+													{/each}
+												</tbody>
+											</table>
+										</div>
+									</div>
+								{/if}
+							</div>
+						{/each}
+					{/if}
 				</div>
 			</div>
 		{/if}
 
-		<!-- TAB 3: AUDIT TRAIL & LOGS -->
+		<!-- TAB 4: AUDIT TRAIL & LOGS -->
 		{#if activeTab === "audit"}
 			<div class="bg-slate-800/80 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
 				<div class="overflow-x-auto">
@@ -2847,7 +2992,7 @@ onMount(async () => {
 			<div class="bg-slate-800 border border-slate-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl">
 				<div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
 					<h3 class="text-base font-bold text-purple-400 flex items-center gap-2">
-						<span>🔄</span> Khai Báo Lại Lưu Trú (Lượt Mới)
+						<span>🔄</span> Khai Báo Lại Cho Khách (Báo Cáo BCA Ngay)
 					</h3>
 					<button type="button" onclick={() => { showReRegisterModal = false; }} class="text-slate-400 hover:text-white text-xl">✕</button>
 				</div>
@@ -2864,7 +3009,7 @@ onMount(async () => {
 					</div>
 
 					<p class="text-slate-300 leading-relaxed">
-						Hệ thống sẽ tạo <strong>lượt lưu trú mới (Sẵn sàng khai báo)</strong> cho khách này với thời gian đến là <strong>thời điểm hiện tại</strong>, để bạn gửi khai báo lại lên BCA (ví dụ chuyển sang môi trường PROD hoặc khách quay lại).
+						Hệ thống sẽ tạo <strong>lượt lưu trú mới</strong> với giờ đến là <strong>thời điểm hiện tại (GMT+7)</strong> và <strong>tự động gửi báo cáo ngay lên Cổng Bộ Công An</strong>.
 					</p>
 
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
@@ -2878,13 +3023,13 @@ onMount(async () => {
 						</div>
 
 						<div>
-							<label for="rereg_arrival" class="block text-slate-400 mb-1 font-medium">Ngày Đến (Mặc định: Hiện Tại)</label>
-							<input id="rereg_arrival" type="text" bind:value={reRegisterArrivalDate} placeholder="DD/MM/YYYY HH:mm" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500" />
+							<label for="rereg_arrival" class="block text-slate-400 mb-1 font-medium">Ngày Giờ Đến (Hiện Tại)</label>
+							<input id="rereg_arrival" type="text" bind:value={reRegisterArrivalDate} class="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2 text-slate-300 font-mono focus:outline-none cursor-not-allowed" readonly />
 						</div>
 
 						<div class="sm:col-span-2">
-							<label for="rereg_departure" class="block text-slate-400 mb-1 font-medium">Ngày Đi Dự Kiến (+1 ngày, 12:00)</label>
-							<input id="rereg_departure" type="text" bind:value={reRegisterDepartureDate} placeholder="DD/MM/YYYY 12:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500" />
+							<label for="rereg_departure" class="block text-slate-400 mb-1 font-medium">Ngày Đi Dự Kiến <span class="text-slate-500 font-normal">(Giờ trả phòng tự động là 12:00:00)</span></label>
+							<input id="rereg_departure" type="date" bind:value={reRegisterDepartureDate} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500" />
 						</div>
 					</div>
 				</div>
@@ -2892,7 +3037,7 @@ onMount(async () => {
 				<div class="mt-6 pt-3 border-t border-slate-700 flex items-center justify-end gap-2">
 					<button type="button" onclick={() => { showReRegisterModal = false; }} class="px-3.5 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs">Hủy</button>
 					<button type="button" onclick={() => submitReRegister()} class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-lg shadow-purple-900/30">
-						<span>⚡</span> Xác Nhận & Chuyển Sang Chờ Khai Báo
+						<span>⚡</span> Gửi Khai Báo Lên BCA Ngay
 					</button>
 				</div>
 			</div>
