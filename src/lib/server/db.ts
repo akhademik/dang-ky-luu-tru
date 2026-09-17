@@ -117,55 +117,81 @@ class RemoteD1Database implements D1DatabaseLike {
 		meta: { changes: number; last_row_id: number };
 	} {
 		const formattedSql = this.escapeSql(query, params);
+		const wranglerBin = path.resolve(
+			process.cwd(),
+			"node_modules/wrangler/bin/wrangler.js",
+		);
+		const isDirectBin = fs.existsSync(wranglerBin);
+		const execCmd = isDirectBin ? process.execPath : "pnpm";
+		const execArgs = isDirectBin
+			? [
+					wranglerBin,
+					"d1",
+					"execute",
+					this.dbName,
+					"--remote",
+					"--command",
+					formattedSql,
+					"--json",
+				]
+			: [
+					"wrangler",
+					"d1",
+					"execute",
+					this.dbName,
+					"--remote",
+					"--command",
+					formattedSql,
+					"--json",
+				];
 
-		try {
-			const wranglerBin = path.resolve(
-				process.cwd(),
-				"node_modules/wrangler/bin/wrangler.js",
-			);
-			const isDirectBin = fs.existsSync(wranglerBin);
-			const execCmd = isDirectBin ? process.execPath : "pnpm";
-			const execArgs = isDirectBin
-				? [
-						wranglerBin,
-						"d1",
-						"execute",
-						this.dbName,
-						"--remote",
-						"--command",
-						formattedSql,
-						"--json",
-					]
-				: [
-						"wrangler",
-						"d1",
-						"execute",
-						this.dbName,
-						"--remote",
-						"--command",
-						formattedSql,
-						"--json",
-					];
+		let lastError: unknown = null;
+		const maxRetries = 3;
 
-			const stdout = cp.execFileSync(execCmd, execArgs, {
-				encoding: "utf8",
-				stdio: ["pipe", "pipe", "ignore"],
-			});
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				const stdout = cp.execFileSync(execCmd, execArgs, {
+					encoding: "utf8",
+					stdio: ["pipe", "pipe", "ignore"],
+					timeout: 25000,
+				});
 
-			const parsed = JSON.parse(stdout);
-			const firstResult = parsed[0] || {};
-			return {
-				results: (firstResult.results || []) as T[],
-				success: Boolean(firstResult.success !== false),
-				meta: {
-					changes: Number(firstResult.meta?.changes || 0),
-					last_row_id: Number(firstResult.meta?.last_row_id || 0),
-				},
-			};
-		} catch (err) {
-			console.error("Cloudflare D1 Remote query failed:", err);
-			throw err;
+				const parsed = JSON.parse(stdout);
+				if (
+					parsed &&
+					typeof parsed === "object" &&
+					!Array.isArray(parsed) &&
+					"error" in parsed &&
+					parsed.error
+				) {
+					const errText =
+						typeof parsed.error === "object" && parsed.error !== null && "text" in parsed.error
+							? String(parsed.error.text)
+							: JSON.stringify(parsed.error);
+					throw new Error(errText);
+				}
+				const firstResult = Array.isArray(parsed) ? parsed[0] || {} : parsed;
+				return {
+					results: (firstResult.results || []) as T[],
+					success: Boolean(firstResult.success !== false),
+					meta: {
+						changes: Number(firstResult.meta?.changes || 0),
+						last_row_id: Number(firstResult.meta?.last_row_id || 0),
+					},
+				};
+			} catch (err: unknown) {
+				lastError = err;
+				if (attempt < maxRetries) {
+					const sleepUntil = Date.now() + attempt * 300;
+					while (Date.now() < sleepUntil) {
+						// brief sync backoff
+					}
+				}
+			}
 		}
+
+		console.error("Cloudflare D1 Remote query failed after retries:", lastError);
+		throw lastError;
 	}
 
 	public prepare(query: string): D1PreparedStatement {
@@ -447,9 +473,17 @@ export async function upsertStay(
 	}
 }
 
+let lastAutoCheckoutTimestamp = 0;
+
 export async function autoCheckoutExpiredStays(
 	db: D1DatabaseLike,
 ): Promise<number> {
+	const now = Date.now();
+	if (now - lastAutoCheckoutTimestamp < 60_000) {
+		return 0;
+	}
+	lastAutoCheckoutTimestamp = now;
+
 	try {
 		const nowStr = new Date(Date.now() + 7 * 3600 * 1000)
 			.toISOString()
