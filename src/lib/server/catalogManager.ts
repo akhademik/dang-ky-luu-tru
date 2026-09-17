@@ -3,7 +3,6 @@ import {
 	LY_DO_CU_TRU_DATA,
 	QUOC_TICH_DATA,
 	type StandardCatalogItem,
-	TINH_TP_DATA,
 } from "../data/catalogs.js";
 import { CONFIG } from "./config.js";
 
@@ -12,7 +11,6 @@ export type CatalogItem = StandardCatalogItem;
 export class CatalogManager {
 	private static instance: CatalogManager;
 	public quocTichList: CatalogItem[] = [];
-	public tinhTpList: CatalogItem[] = [];
 	public lyDoCuTruList: CatalogItem[] = [];
 	public loaiGiayToList: CatalogItem[] = [];
 	public noiCuTruList: CatalogItem[] = [];
@@ -147,7 +145,6 @@ export class CatalogManager {
 
 	private loadInitialCatalogs(): void {
 		this.quocTichList = [...QUOC_TICH_DATA];
-		this.tinhTpList = [...TINH_TP_DATA];
 		this.lyDoCuTruList = [...LY_DO_CU_TRU_DATA];
 		this.loaiGiayToList = [...LOAI_GIAY_TO_DATA];
 		this.noiCuTruList = this.getFallbackNoiCuTru();
@@ -175,10 +172,6 @@ export class CatalogManager {
 
 	public getFallbackQuocTich(): CatalogItem[] {
 		return [...QUOC_TICH_DATA];
-	}
-
-	public getFallbackTinhTp(): CatalogItem[] {
-		return [...TINH_TP_DATA];
 	}
 
 	public getFallbackLyDoCuTru(): CatalogItem[] {
@@ -239,18 +232,6 @@ export class CatalogManager {
 
 	public isValidQuocTichCode(code: string): boolean {
 		return this.isValidQuocTich(code);
-	}
-
-	public findTinhTp(raw: string): CatalogItem | null {
-		if (!raw) return null;
-		const cleaned = raw.trim().toLowerCase();
-		return (
-			this.tinhTpList.find((item) => {
-				const ten = (item.tenTT || item.name || "").toLowerCase();
-				const ma = String(item.maTT || item.code || "").toLowerCase();
-				return ten.includes(cleaned) || cleaned.includes(ten) || ma === cleaned;
-			}) || null
-		);
 	}
 
 	public findLoaiGiayTo(raw: string | number): number {

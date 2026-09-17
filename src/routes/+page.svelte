@@ -121,12 +121,10 @@ let stats = $state<Stats>({
 });
 let catalogs = $state<{
 	quocTich: CatalogItem[];
-	tinhTp: CatalogItem[];
 	loaiGiayTo: CatalogItem[];
 	lyDoCuTru: CatalogItem[];
 }>({
 	quocTich: [],
-	tinhTp: [],
 	loaiGiayTo: [],
 	lyDoCuTru: [],
 });
@@ -141,7 +139,6 @@ let authPassword = $state("");
 let authError = $state("");
 let authLoading = $state(false);
 
-let filterTinh = $state("");
 let filterQuocTich = $state("");
 
 function copyCode(code?: string, name?: string) {
@@ -1088,12 +1085,6 @@ function openEdit(stay: StayDetail) {
 	editErrors = {};
 	showEditModal = true;
 }
-
-let editCountryInfo = $derived.by(() => {
-	if (!editStay) return null;
-	const qt = editStay.quoc_tich?.trim().toUpperCase() || "";
-	return getCountryInfo(qt);
-});
 
 let editLiveVal = $derived.by(() => {
 	if (!editStay)
@@ -2114,53 +2105,8 @@ onMount(async () => {
 
 		<!-- TAB 4: DANH MỤC CHUẨN -->
 		{#if activeTab === "catalogs"}
-			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-				<!-- 1. Tỉnh / TP (API 7) -->
-				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl flex flex-col">
-					<div class="flex items-center justify-between mb-2">
-						<h3 class="font-bold text-xs uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
-							<span>📍</span> Tỉnh / TP (API 7)
-						</h3>
-						<span class="text-xs font-mono font-bold bg-teal-950 text-teal-300 border border-teal-700/50 px-2 py-0.5 rounded-full">
-							{catalogs.tinhTp.length}
-						</span>
-					</div>
-					<input
-						type="text"
-						bind:value={filterTinh}
-						placeholder="Tìm tỉnh (vd: Ha Noi, HN, 101)..."
-						class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 mb-2 focus:outline-none focus:border-teal-500 transition-colors"
-					/>
-					<div class="overflow-y-auto max-h-80 divide-y divide-slate-700/50 text-xs pr-1">
-						{#each catalogs.tinhTp.filter(t => {
-							const q = (filterTinh || "").trim().toLowerCase();
-							if (!q) return true;
-							const ten = String(t.tenTT || "").toLowerCase();
-							const ma = String(t.maTT || "").toLowerCase();
-							const maChu = String(t.maTTChu || "").toLowerCase();
-							return ten.includes(q) || ma.includes(q) || maChu.includes(q);
-						}) as tt}
-							<div class="py-2 flex items-center justify-between hover:bg-slate-700/30 px-1 rounded transition-colors">
-								<div>
-									<div class="font-semibold text-slate-200">{tt.tenTT}</div>
-									{#if tt.tenTTEn}
-										<div class="text-[10px] text-slate-400">{tt.tenTTEn}</div>
-									{/if}
-								</div>
-								<button
-									type="button"
-									onclick={() => copyCode(String(tt.maTT || ""), String(tt.tenTT || ""))}
-									title="Sao chép mã"
-									class="font-mono text-[11px] font-bold text-teal-300 bg-slate-900 hover:bg-teal-900/60 px-2 py-0.5 rounded border border-slate-700 hover:border-teal-600 transition-colors"
-								>
-									{tt.maTT}{tt.maTTChu ? ` (${tt.maTTChu})` : ""}
-								</button>
-							</div>
-						{/each}
-					</div>
-				</div>
-
-				<!-- 2. Quốc Tịch (API 6) -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<!-- 1. Quốc Tịch (API 6) -->
 				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl flex flex-col">
 					<div class="flex items-center justify-between mb-2">
 						<h3 class="font-bold text-xs uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
@@ -2341,11 +2287,6 @@ onMount(async () => {
 								<option value={c.maQT}>{c.label}</option>
 							{/each}
 						</select>
-						{#if editCountryInfo}
-							<div class="mt-1 px-2 py-0.5 rounded bg-sky-950/80 border border-sky-700/50 text-[10px] text-sky-300 font-medium inline-block">
-								🌐 {editCountryInfo.tenQT}
-							</div>
-						{/if}
 						{#if editLiveVal.errors.quoc_tich}
 							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.quoc_tich}</p>
 						{/if}
