@@ -54,8 +54,7 @@ let currentEnv: ApiEnvironment =
 		: "dev");
 
 const APP_PASSWORD =
-	(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
-	"@@Abc123";
+	(typeof process !== "undefined" && process.env?.APP_PASSWORD) || "";
 
 export const CONFIG = {
 	DEV_BASE_URL,
@@ -76,8 +75,7 @@ export const CONFIG = {
 		}
 	},
 	GOOGLE_SHEET_ID:
-		(typeof process !== "undefined" && process.env?.GOOGLE_SHEET_ID) ||
-		"16jL7SkIkxrL4SAg6Xncuk55WVQaaQunVMOj0eLz3B9Q",
+		(typeof process !== "undefined" && process.env?.GOOGLE_SHEET_ID) || "",
 	GOOGLE_APPS_SCRIPT_URL:
 		(typeof process !== "undefined" && process.env?.GOOGLE_APPS_SCRIPT_URL) || "",
 	get AUTH() {

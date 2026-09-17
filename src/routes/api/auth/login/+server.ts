@@ -5,9 +5,20 @@ import { CONFIG } from "$lib/server/config.js";
 export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 	try {
 		const env = (platform?.env || {}) as Record<string, unknown>;
-		const serverPass = String(env.APP_PASSWORD || CONFIG.APP_PASSWORD || "@@Abc123");
+		const serverPass = String(env.APP_PASSWORD || CONFIG.APP_PASSWORD || "").trim();
 		const body = await request.json().catch(() => ({}));
 		const password = String(body.password || "").trim();
+
+		if (!serverPass) {
+			return json(
+				{
+					success: false,
+					message:
+						"Chưa thiết lập biến môi trường APP_PASSWORD trên máy chủ!",
+				},
+				{ status: 500 },
+			);
+		}
 
 		if (!password || password !== serverPass) {
 			return json(
