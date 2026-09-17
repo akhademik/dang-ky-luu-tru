@@ -96,13 +96,28 @@ function getLocalSqliteDb(): D1DatabaseLike {
 			const sqliteMod = proc && "getBuiltinModule" in proc && typeof proc.getBuiltinModule === "function"
 				? (proc.getBuiltinModule("node:sqlite") as { DatabaseSync: new (path: string) => { prepare: (sql: string) => { all: (...args: unknown[]) => unknown[]; get: (...args: unknown[]) => unknown; run: (...args: unknown[]) => { changes?: number; lastInsertRowid?: number } }; exec: (sql: string) => void } })
 				: null;
+			const pathMod = proc && "getBuiltinModule" in proc && typeof proc.getBuiltinModule === "function"
+				? (proc.getBuiltinModule("node:path") as { resolve: (...args: string[]) => string })
+				: null;
+			const fsMod = proc && "getBuiltinModule" in proc && typeof proc.getBuiltinModule === "function"
+				? (proc.getBuiltinModule("node:fs") as { existsSync: (p: string) => boolean; mkdirSync: (p: string, opts?: unknown) => void })
+				: null;
 			const DatabaseSync = sqliteMod?.DatabaseSync;
 
 			if (!DatabaseSync) {
 				throw new Error("Local SQLite engine (node:sqlite) is not available in this runtime");
 			}
 
-			const dbInstance = new DatabaseSync(":memory:");
+			let dbPath = ":memory:";
+			if (proc && pathMod && fsMod) {
+				const dataDir = pathMod.resolve(proc.cwd(), "data");
+				if (!fsMod.existsSync(dataDir)) {
+					fsMod.mkdirSync(dataDir, { recursive: true });
+				}
+				dbPath = pathMod.resolve(dataDir, "local_dev.db");
+			}
+
+			const dbInstance = new DatabaseSync(dbPath);
 
 			// Initialize initial schema
 			dbInstance.exec(`
