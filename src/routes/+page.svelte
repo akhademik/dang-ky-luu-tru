@@ -30,7 +30,6 @@ interface RowData {
 	ngaySinh?: string;
 	quocTich?: string;
 	loaiGiayTo?: string;
-	tenGiayTo?: string;
 	soGiayTo?: string;
 	soHoChieu?: string;
 	soPhong?: string;
@@ -996,9 +995,14 @@ function buildOrderedRowValues(row: RowData, idx = 0): string[] {
 	const quocTich = String(
 		row.quocTich || row["Quốc tịch"] || row["Quốc gia"] || "VNM",
 	).toUpperCase();
-	const rawDocType = String(row.loaiGiayTo || row["Loại giấy tờ"] || "CCCD");
+	const rawDocType = String(
+		row.loaiGiayTo ||
+			row["Loại giấy tờ"] ||
+			row.tenGiayTo ||
+			row["Tên giấy tờ"] ||
+			"CCCD",
+	);
 	const loaiGiayTo = rawDocType === "Thẻ CCCD" ? "CCCD" : rawDocType;
-	const tenGiayTo = String(row.tenGiayTo || row["Tên giấy tờ"] || loaiGiayTo);
 	const soGiayTo = String(
 		row.soGiayTo ||
 			row["Số giấy tờ"] ||
@@ -1047,7 +1051,6 @@ function buildOrderedRowValues(row: RowData, idx = 0): string[] {
 		gioiTinh,
 		quocTich,
 		loaiGiayTo,
-		tenGiayTo,
 		soGiayTo,
 		tinhTp,
 		quanHuyen,
@@ -1515,15 +1518,10 @@ onMount(() => {
       </div>
       <div>
         <h1 class="text-base font-bold tracking-tight flex items-center gap-2 text-slate-100">
-          Hệ Thống Tích Hợp KBTT v1.4
-          <span class="text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded-full font-mono flex items-center gap-1 font-semibold">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Live Sync
-          </span>
+          Hệ Thống KBLT qua API      
         </h1>
-        <p class="text-xs text-slate-400 flex items-center gap-1.5">
-          <span>Đồng bộ tự động OCR từ Google Sheets lên</span>
-          <span class="font-mono text-slate-300 underline underline-offset-2">{activeEnvHost}</span>
-        </p>
+       
+     
       </div>
     </div>
 
@@ -1594,8 +1592,7 @@ onMount(() => {
   <!-- Navigation Tabs -->
   <div class="flex border-b border-slate-300 gap-2 overflow-x-auto text-sm font-medium">
     <button onclick={() => activeTab = 'dataTab'} class={`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 ${activeTab === 'dataTab' ? 'border-indigo-600 text-indigo-800 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
-      <i class="fa-solid fa-table-list"></i> Dữ Liệu Google Sheets / OCR
-    </button>
+      <i class="fa-solid fa-table-list"></i> Dữ Liệu Google Sheets</button>
     <button onclick={() => activeTab = 'syncTab'} class={`tab-btn px-4 py-2.5 border-b-2 flex items-center gap-2 ${activeTab === 'syncTab' ? 'border-indigo-600 text-indigo-800 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
       <i class="fa-solid fa-cloud-arrow-up"></i> Thực Thi Đồng Bộ & Log Phản Hồi
     </button>

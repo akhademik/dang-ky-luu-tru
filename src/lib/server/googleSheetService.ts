@@ -377,9 +377,9 @@ export class GoogleSheetService {
 			},
 		);
 
-		// Quy chuẩn chuẩn 16 cột theo Google Sheet (Thứ tự từ cột 0 đến 15)
-		// 0: STT | 1: Họ tên | 2: D.O.B | 3: Giới tính | 4: Quốc tịch | 5: Loại giấy tờ | 6: Tên giấy tờ | 7: Số giấy tờ
-		// 8: Tỉnh | 9: Quận/Huyện | 10: Phường/Xã | 11: Địa chỉ | 12: (từ ngày) | 13: (đến ngày) | 14: Số phòng | 15: Đã đăng ký
+		// Quy chuẩn chuẩn 15 cột theo Google Sheet (Thứ tự từ cột 0 đến 14)
+		// 0: STT | 1: Họ tên | 2: D.O.B | 3: Giới tính | 4: Quốc tịch | 5: Loại giấy tờ | 6: Số giấy tờ
+		// 7: Tỉnh | 8: Quận/Huyện | 9: Phường/Xã | 10: Địa chỉ | 11: (từ ngày) | 12: (đến ngày) | 13: Số phòng | 14: Đã đăng ký
 		const standardCols = [
 			"stt", // 0: STT
 			"hoTen", // 1: Họ tên
@@ -387,16 +387,15 @@ export class GoogleSheetService {
 			"gioiTinh", // 3: Giới tính
 			"quocTich", // 4: Quốc tịch
 			"loaiGiayTo", // 5: Loại giấy tờ
-			"tenGiayTo", // 6: Tên giấy tờ
-			"soGiayTo", // 7: Số giấy tờ
-			"tinhTp", // 8: Tỉnh
-			"quanHuyen", // 9: Quận/Huyện
-			"phuongXa", // 10: Phường/Xã
-			"diaChi", // 11: Địa chỉ
-			"ngayDen", // 12: (từ ngày)
-			"ngayDi", // 13: (đến ngày)
-			"soPhong", // 14: Số phòng
-			"daDangKy", // 15: Đã đăng ký
+			"soGiayTo", // 6: Số giấy tờ
+			"tinhTp", // 7: Tỉnh
+			"quanHuyen", // 8: Quận/Huyện
+			"phuongXa", // 9: Phường/Xã
+			"diaChi", // 10: Địa chỉ
+			"ngayDen", // 11: (từ ngày)
+			"ngayDi", // 12: (đến ngày)
+			"soPhong", // 13: Số phòng
+			"daDangKy", // 14: Đã đăng ký
 		];
 
 		// Dòng 1 luôn luôn là header cột, dữ liệu khách bắt đầu từ dòng 2 (index 1)
@@ -408,7 +407,7 @@ export class GoogleSheetService {
 			const obj: Record<string, string> = {};
 			let hasData = false;
 
-			// 1. Ánh xạ ưu tiên theo vị trí 16 cột chuẩn
+			// 1. Ánh xạ ưu tiên theo vị trí 15 cột chuẩn
 			standardCols.forEach((colKey, colIdx) => {
 				const val = (row[colIdx] || "").trim();
 				if (val) hasData = true;
@@ -431,8 +430,8 @@ export class GoogleSheetService {
 			});
 
 			// 3. Đảm bảo các trường khóa chính được điền đầy đủ
-			if (!obj.soPhong && row[14]) {
-				obj.soPhong = row[14].trim();
+			if (!obj.soPhong && row[13]) {
+				obj.soPhong = row[13].trim();
 			}
 			if (!obj.hoTen && row[1]) {
 				obj.hoTen = row[1].trim();
@@ -449,32 +448,29 @@ export class GoogleSheetService {
 			if (!obj.loaiGiayTo && row[5]) {
 				obj.loaiGiayTo = row[5].trim();
 			}
-			if (!obj.tenGiayTo && row[6]) {
-				obj.tenGiayTo = row[6].trim();
+			if (!obj.soGiayTo && row[6]) {
+				obj.soGiayTo = row[6].trim();
 			}
-			if (!obj.soGiayTo && row[7]) {
-				obj.soGiayTo = row[7].trim();
+			if (!obj.tinhTp && row[7]) {
+				obj.tinhTp = row[7].trim();
 			}
-			if (!obj.tinhTp && row[8]) {
-				obj.tinhTp = row[8].trim();
+			if (!obj.quanHuyen && row[8]) {
+				obj.quanHuyen = row[8].trim();
 			}
-			if (!obj.quanHuyen && row[9]) {
-				obj.quanHuyen = row[9].trim();
+			if (!obj.phuongXa && row[9]) {
+				obj.phuongXa = row[9].trim();
 			}
-			if (!obj.phuongXa && row[10]) {
-				obj.phuongXa = row[10].trim();
+			if (!obj.diaChi && row[10]) {
+				obj.diaChi = row[10].trim();
 			}
-			if (!obj.diaChi && row[11]) {
-				obj.diaChi = row[11].trim();
+			if (!obj.ngayDen && row[11]) {
+				obj.ngayDen = row[11].trim();
 			}
-			if (!obj.ngayDen && row[12]) {
-				obj.ngayDen = row[12].trim();
+			if (!obj.ngayDi && row[12]) {
+				obj.ngayDi = row[12].trim();
 			}
-			if (!obj.ngayDi && row[13]) {
-				obj.ngayDi = row[13].trim();
-			}
-			if (!obj.daDangKy && row[15]) {
-				obj.daDangKy = row[15].trim();
+			if (!obj.daDangKy && row[14]) {
+				obj.daDangKy = row[14].trim();
 			}
 
 			// Gán số dòng chính xác trên Google Sheet (1-based, dòng 1 là header, data từ dòng 2)
@@ -515,7 +511,6 @@ export class GoogleSheetService {
 			"gioiTinh",
 			"quocTich",
 			"loaiGiayTo",
-			"tenGiayTo",
 			"soGiayTo",
 			"tinhTp",
 			"quanHuyen",
@@ -593,10 +588,13 @@ export class GoogleSheetService {
 			clean === "country"
 		)
 			return "quocTich";
-		if (clean.includes("loại giấy tờ") || clean === "loai giay to")
+		if (
+			clean.includes("loại giấy tờ") ||
+			clean.includes("tên giấy tờ") ||
+			clean === "loai giay to" ||
+			clean === "ten giay to"
+		)
 			return "loaiGiayTo";
-		if (clean.includes("tên giấy tờ") || clean === "ten giay to")
-			return "tenGiayTo";
 		if (
 			clean.includes("số cccd") ||
 			clean.includes("số cmnd") ||
@@ -687,10 +685,11 @@ export class GoogleSheetService {
 			rowData.quocTich || rowData["Quốc tịch"] || rowData["Quốc gia"] || "VNM",
 		).toUpperCase();
 		const loaiGiayTo = String(
-			rowData.loaiGiayTo || rowData["Loại giấy tờ"] || "CCCD",
-		);
-		const tenGiayTo = String(
-			rowData.tenGiayTo || rowData["Tên giấy tờ"] || loaiGiayTo,
+			rowData.loaiGiayTo ||
+				rowData["Loại giấy tờ"] ||
+				rowData.tenGiayTo ||
+				rowData["Tên giấy tờ"] ||
+				"CCCD",
 		);
 		const soGiayTo = String(
 			rowData.soGiayTo ||
@@ -755,7 +754,6 @@ export class GoogleSheetService {
 			gioiTinh,
 			quocTich,
 			loaiGiayTo,
-			tenGiayTo,
 			soGiayTo,
 			tinhTp,
 			quanHuyen,
@@ -825,39 +823,37 @@ export class GoogleSheetService {
 			quocTich: orderedValues[4],
 			"Loại giấy tờ": orderedValues[5],
 			loaiGiayTo: orderedValues[5],
-			"Tên giấy tờ": orderedValues[6],
-			tenGiayTo: orderedValues[6],
-			"Số giấy tờ": orderedValues[7],
-			"Số CCCD": orderedValues[7],
-			"Số hộ chiếu": orderedValues[7],
-			soGiayTo: orderedValues[7],
-			Tỉnh: orderedValues[8],
-			"Tỉnh/TP": orderedValues[8],
-			tinhTp: orderedValues[8],
-			"Quận/Huyện": orderedValues[9],
-			Quận: orderedValues[9],
-			Huyện: orderedValues[9],
-			quanHuyen: orderedValues[9],
-			"Phường/Xã": orderedValues[10],
-			Phường: orderedValues[10],
-			Xã: orderedValues[10],
-			phuongXa: orderedValues[10],
-			"Địa chỉ": orderedValues[11],
-			"Địa chỉ chi tiết": orderedValues[11],
-			diaChi: orderedValues[11],
-			"(từ ngày)": orderedValues[12],
-			"Ngày đến": orderedValues[12],
-			"Từ ngày": orderedValues[12],
-			ngayDen: orderedValues[12],
-			"(đến ngày)": orderedValues[13],
-			"Ngày đi": orderedValues[13],
-			"Đến ngày": orderedValues[13],
-			ngayDi: orderedValues[13],
-			"Số phòng": orderedValues[14],
-			Phòng: orderedValues[14],
-			soPhong: orderedValues[14],
-			"Đã đăng ký": orderedValues[15],
-			daDangKy: orderedValues[15],
+			"Số giấy tờ": orderedValues[6],
+			"Số CCCD": orderedValues[6],
+			"Số hộ chiếu": orderedValues[6],
+			soGiayTo: orderedValues[6],
+			Tỉnh: orderedValues[7],
+			"Tỉnh/TP": orderedValues[7],
+			tinhTp: orderedValues[7],
+			"Quận/Huyện": orderedValues[8],
+			Quận: orderedValues[8],
+			Huyện: orderedValues[8],
+			quanHuyen: orderedValues[8],
+			"Phường/Xã": orderedValues[9],
+			Phường: orderedValues[9],
+			Xã: orderedValues[9],
+			phuongXa: orderedValues[9],
+			"Địa chỉ": orderedValues[10],
+			"Địa chỉ chi tiết": orderedValues[10],
+			diaChi: orderedValues[10],
+			"(từ ngày)": orderedValues[11],
+			"Ngày đến": orderedValues[11],
+			"Từ ngày": orderedValues[11],
+			ngayDen: orderedValues[11],
+			"(đến ngày)": orderedValues[12],
+			"Ngày đi": orderedValues[12],
+			"Đến ngày": orderedValues[12],
+			ngayDi: orderedValues[12],
+			"Số phòng": orderedValues[13],
+			Phòng: orderedValues[13],
+			soPhong: orderedValues[13],
+			"Đã đăng ký": orderedValues[14],
+			daDangKy: orderedValues[14],
 		};
 
 		// Ánh xạ mọi header thực tế đang tồn tại trên Sheet dòng 1
@@ -966,7 +962,6 @@ export class GoogleSheetService {
 						"Giới tính": "",
 						"Quốc tịch": "",
 						"Loại giấy tờ": "",
-						"Tên giấy tờ": "",
 						"Số giấy tờ": "",
 						Tỉnh: "",
 						"Quận/Huyện": "",
@@ -983,7 +978,6 @@ export class GoogleSheetService {
 						gioiTinh: "",
 						quocTich: "",
 						loaiGiayTo: "",
-						tenGiayTo: "",
 						soGiayTo: "",
 						tinhTp: "",
 						quanHuyen: "",

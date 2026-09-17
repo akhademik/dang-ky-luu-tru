@@ -426,7 +426,7 @@
       "file_type": "code",
       "norm_label": "has()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1700"
+      "source_location": "L1697"
     },
     {
       "id": "src_routes_page_isrowregistered",
@@ -438,7 +438,7 @@
       "file_type": "code",
       "norm_label": "isrowregistered()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1703"
+      "source_location": "L1700"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
@@ -1014,7 +1014,7 @@
       "file_type": "code",
       "norm_label": ".buildorderedrowvalues()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L676"
+      "source_location": "L674"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
@@ -1038,7 +1038,7 @@
       "file_type": "code",
       "norm_label": ".deletesheetrow()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L913"
+      "source_location": "L909"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
@@ -1074,7 +1074,7 @@
       "file_type": "code",
       "norm_label": "._mapheadertokey()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L561"
+      "source_location": "L556"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
@@ -1086,7 +1086,7 @@
       "file_type": "code",
       "norm_label": "._parseapivalues()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L508"
+      "source_location": "L504"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
@@ -1134,7 +1134,7 @@
       "file_type": "code",
       "norm_label": ".updatesheetrow()",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L771"
+      "source_location": "L769"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_clear",
@@ -1749,6 +1749,17 @@
       "norm_label": "tam-tru",
       "source_file": "package.json",
       "source_location": "L19"
+    },
+    {
+      "id": "svelte",
+      "label": "svelte",
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "+page.svelte",
+      "confidence": "EXTRACTED",
+      "file_type": "code",
+      "norm_label": "svelte",
+      "source_file": "svelte"
     },
     {
       "id": "src_routes_page",
@@ -2972,7 +2983,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L548",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -2984,7 +2995,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L426",
+      "source_location": "L425",
       "weight": 1.0
     },
     {
@@ -2996,7 +3007,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L807",
+      "source_location": "L805",
       "weight": 1.0
     },
     {
@@ -5833,7 +5844,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1700",
+      "source_location": "L1697",
       "weight": 1.0
     },
     {
@@ -5844,7 +5855,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1703",
+      "source_location": "L1700",
       "weight": 1.0
     },
     {
@@ -6011,6 +6022,15 @@
       "source_file": "tsconfig.json",
       "source_location": "L9",
       "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "svelte",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte"
     },
     {
       "source": "src_lib_server_catalogmanager_catalogmanager",
@@ -6427,7 +6447,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L508",
+      "source_location": "L504",
       "weight": 1.0
     },
     {
@@ -6438,7 +6458,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L561",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -6449,7 +6469,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L676",
+      "source_location": "L674",
       "weight": 1.0
     },
     {
@@ -6460,7 +6480,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L771",
+      "source_location": "L769",
       "weight": 1.0
     },
     {
@@ -6471,7 +6491,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L913",
+      "source_location": "L909",
       "weight": 1.0
     },
     {
@@ -6777,5 +6797,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0c4eeb56195171990c0dd4feb8a8d61dc56825d1"
+  "built_at_commit": "a27ce5dc9bb03b6aa98afeccb89a9fa9e2f88147"
 }

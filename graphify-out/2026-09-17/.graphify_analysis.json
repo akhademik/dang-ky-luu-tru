@@ -227,7 +227,8 @@
     "11": [
       "src_routes_page",
       "src_routes_page_has",
-      "src_routes_page_isrowregistered"
+      "src_routes_page_isrowregistered",
+      "svelte"
     ],
     "12": [
       "svelte_config",
@@ -252,7 +253,7 @@
     "8": 0.2222222222222222,
     "9": 0.3333333333333333,
     "10": 0.4666666666666667,
-    "11": 0.6666666666666666,
+    "11": 0.5,
     "12": 1.0,
     "13": 1.0,
     "14": 1.0
@@ -279,11 +280,6 @@
       "degree": 17
     },
     {
-      "id": "test_test_pipeline_runtests",
-      "label": "runTests()",
-      "degree": 15
-    },
-    {
       "id": "src_lib_server_syncpipeline_syncpipeline",
       "label": "SyncPipeline",
       "degree": 15
@@ -291,6 +287,11 @@
     {
       "id": "src_lib_server_tokenmanager_tokenmanager",
       "label": "TokenManager",
+      "degree": 15
+    },
+    {
+      "id": "test_test_pipeline_runtests",
+      "label": "runTests()",
       "degree": 15
     },
     {

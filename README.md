@@ -81,7 +81,7 @@ Hệ thống tự động hóa đồng bộ dữ liệu khách lưu trú từ **
 | **Chặn Ngày đến Quá khứ & Giờ Thực tế** | Bắt buộc ngày đến là hôm nay hoặc hôm qua. Khi tạo mới khách, tự động lấy giờ phút thực tế của thời điểm tạo. | ✅ Sẵn sàng |
 | **Quick-Edit Modal với Live Check** | Modal chỉnh sửa toàn diện; kiểm tra tính hợp lệ từng trường ngay khi gõ phím, tự động xóa viền đỏ khi nhập đúng. | ✅ Sẵn sàng |
 | **Xóa Khách & Xóa Dòng trên Sheet** | Modal xác nhận hiện đại, hiệu ứng strikethrough báo hiệu xóa, gửi lệnh xóa toàn bộ hàng trên Google Sheet qua Apps Script. | ✅ Sẵn sàng |
-| **Tự Động Cập Nhật Trạng Thái Đăng Ký** | Sau khi gửi KBTT thành công, tự động cập nhật `Đã đăng ký` lên Cột 16 của Google Sheet. | ✅ Sẵn sàng |
+| **Tự Động Cập Nhật Trạng Thái Đăng Ký** | Sau khi gửi KBTT thành công, tự động cập nhật `Đã đăng ký` lên Cột 15 của Google Sheet. | ✅ Sẵn sàng |
 | **Khóa Bản Ghi Đã Đăng Ký (Anti-duplicate)** | Dữ liệu kéo về nếu đã đăng ký sẽ tự động gray out, vô hiệu hóa checkbox, ngăn chỉnh sửa để tránh lỗi trùng lặp tại CSLT. | ✅ Sẵn sàng |
 | **Biên tập Full Địa chỉ có Dấu phẩy** | Hiển thị chuỗi địa chỉ đầy đủ; khi sửa sẽ tự động phân tách về `Địa chỉ chi tiết`, `Phường/Xã`, `Quận/Huyện`, `Tỉnh/TP` và map lên Google Sheet. | ✅ Sẵn sàng |
 | **Đồng bộ 2 Chiều Google Sheets (0ms)** | Khi sửa trên UI hoặc Thêm khách, áp dụng Optimistic UI tức thì (0ms) và gọi Google Apps Script Webhook trong nền để cập nhật dòng trên Sheet. | ✅ Sẵn sàng |
@@ -95,8 +95,8 @@ Hệ thống tự động hóa đồng bộ dữ liệu khách lưu trú từ **
 ```mermaid
 flowchart TD
     A[Google Sheets công khai] -->|Quét Tab Ngày & Kéo CSV| B[GoogleSheetService]
-    B -->|Parse CSV & Chuẩn hóa 16 Cột| C[DataTransformer & Validator]
-    C -->|Kiểm tra Cột 16: Đã đăng ký?| C0{Đã đăng ký?}
+    B -->|Parse CSV & Chuẩn hóa 15 Cột| C[DataTransformer & Validator]
+    C -->|Kiểm tra Cột 15: Đã đăng ký?| C0{Đã đăng ký?}
     C0 -->|Đúng| C_LOCKED[Gray out + Khóa Checkbox + Badge Đã đăng ký]
     C0 -->|Chưa| C1{Hợp lệ thông tin?}
     
@@ -107,7 +107,7 @@ flowchart TD
     E -->|Khách Nước ngoài| G[API 4: /client-service/kbtt-nn/kbtt-3th]
     F & G -->|TokenManager đính kèm Bearer Token| H[Hệ Thống KBTT Server]
     
-    H -->|Phản hồi Thành công| SYNC_OK[Đánh dấu Cột 16: Đã đăng ký]
+    H -->|Phản hồi Thành công| SYNC_OK[Đánh dấu Cột 15: Đã đăng ký]
     SYNC_OK -->|Gửi Apps Script Webhook| A
     SYNC_OK -->|Cập nhật UI| C_LOCKED
     
@@ -129,7 +129,7 @@ flowchart TD
   - Giao diện Svelte 5 Runes reactivity với Live Validation, Modal chỉnh sửa nhanh, Live hint tên quốc gia.
   - Tích hợp Type-safe API endpoints (`/api/sheets`, `/api/sync`, `/api/catalogs`, `/api/transform`, `/api/token`, `/api/logs`).
   - Xóa dòng 2 chiều với Custom Modal xác nhận và hiệu ứng strikethrough.
-  - Tự động cập nhật trạng thái `Đã đăng ký` lên Google Sheet cột 16 và vô hiệu hóa các bản ghi đã đăng ký để chống trùng lặp.
+  - Tự động cập nhật trạng thái `Đã đăng ký` lên Google Sheet cột 15 và vô hiệu hóa các bản ghi đã đăng ký để chống trùng lặp.
 - [ ] **Giai đoạn 6**: Bổ sung cơ chế auto-polling định kỳ theo cron job, thông báo trạng thái qua Telegram Bot / Webhook.
 
 ---
