@@ -427,7 +427,7 @@
       "file_type": "code",
       "norm_label": "checkoutstay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L609"
+      "source_location": "L616"
     },
     {
       "id": "src_lib_server_db_d1databaselike_exec",
@@ -511,7 +511,7 @@
       "file_type": "code",
       "norm_label": "deletestay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L631"
+      "source_location": "L638"
     },
     {
       "id": "src_lib_server_db_extendstay",
@@ -523,7 +523,7 @@
       "file_type": "code",
       "norm_label": "extendstay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L593"
+      "source_location": "L600"
     },
     {
       "id": "src_lib_server_db_generateid",
@@ -547,7 +547,7 @@
       "file_type": "code",
       "norm_label": "getauditlogs()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L671"
+      "source_location": "L678"
     },
     {
       "id": "src_lib_server_db_getdashboardstats",
@@ -559,7 +559,7 @@
       "file_type": "code",
       "norm_label": "getdashboardstats()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L703"
+      "source_location": "L710"
     },
     {
       "id": "src_lib_server_db_getdb",
@@ -583,7 +583,7 @@
       "file_type": "code",
       "norm_label": "getstaybyid()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L526"
+      "source_location": "L533"
     },
     {
       "id": "src_lib_server_db_getstays",
@@ -607,7 +607,7 @@
       "file_type": "code",
       "norm_label": "logkbttaction()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L642"
+      "source_location": "L649"
     },
     {
       "id": "src_lib_server_db_remoted1database_escapesql",
@@ -667,7 +667,7 @@
       "file_type": "code",
       "norm_label": "updateguest()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L565"
+      "source_location": "L572"
     },
     {
       "id": "src_lib_server_db_updatestay",
@@ -679,7 +679,7 @@
       "file_type": "code",
       "norm_label": "updatestay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L541"
+      "source_location": "L548"
     },
     {
       "id": "src_lib_server_db_upsertguest",
@@ -2143,7 +2143,7 @@
       "file_type": "code",
       "norm_label": "showtoast()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L486"
+      "source_location": "L485"
     },
     {
       "id": "src_app_d",
@@ -4459,7 +4459,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L620",
+      "source_location": "L627",
       "weight": 1.0
     },
     {
@@ -4471,7 +4471,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L620",
+      "source_location": "L627",
       "weight": 1.0
     },
     {
@@ -4483,7 +4483,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L620",
+      "source_location": "L627",
       "weight": 1.0
     },
     {
@@ -4495,7 +4495,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L635",
+      "source_location": "L642",
       "weight": 1.0
     },
     {
@@ -4507,7 +4507,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L635",
+      "source_location": "L642",
       "weight": 1.0
     },
     {
@@ -4519,7 +4519,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L635",
+      "source_location": "L642",
       "weight": 1.0
     },
     {
@@ -4531,7 +4531,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L598",
+      "source_location": "L605",
       "weight": 1.0
     },
     {
@@ -4543,7 +4543,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L598",
+      "source_location": "L605",
       "weight": 1.0
     },
     {
@@ -4555,7 +4555,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L598",
+      "source_location": "L605",
       "weight": 1.0
     },
     {
@@ -4567,7 +4567,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L696",
+      "source_location": "L703",
       "weight": 1.0
     },
     {
@@ -4579,7 +4579,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L696",
+      "source_location": "L703",
       "weight": 1.0
     },
     {
@@ -4591,7 +4591,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L711",
+      "source_location": "L718",
       "weight": 1.0
     },
     {
@@ -4603,7 +4603,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L722",
+      "source_location": "L729",
       "weight": 1.0
     },
     {
@@ -4627,7 +4627,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L538",
+      "source_location": "L545",
       "weight": 1.0
     },
     {
@@ -4639,7 +4639,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L538",
+      "source_location": "L545",
       "weight": 1.0
     },
     {
@@ -4651,7 +4651,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L538",
+      "source_location": "L545",
       "weight": 1.0
     },
     {
@@ -4675,7 +4675,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L521",
+      "source_location": "L528",
       "weight": 1.0
     },
     {
@@ -4687,7 +4687,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L521",
+      "source_location": "L528",
       "weight": 1.0
     },
     {
@@ -4699,7 +4699,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L646",
+      "source_location": "L653",
       "weight": 1.0
     },
     {
@@ -4711,7 +4711,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L647",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4723,7 +4723,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L647",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4735,7 +4735,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L647",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -4771,7 +4771,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L586",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -4783,7 +4783,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L586",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -4795,7 +4795,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L586",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -4807,7 +4807,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L558",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -4819,7 +4819,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L558",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -4831,7 +4831,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L558",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -9918,7 +9918,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L526",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -9929,7 +9929,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L541",
+      "source_location": "L548",
       "weight": 1.0
     },
     {
@@ -9940,7 +9940,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L565",
+      "source_location": "L572",
       "weight": 1.0
     },
     {
@@ -9951,7 +9951,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L593",
+      "source_location": "L600",
       "weight": 1.0
     },
     {
@@ -9962,7 +9962,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L609",
+      "source_location": "L616",
       "weight": 1.0
     },
     {
@@ -9984,7 +9984,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L631",
+      "source_location": "L638",
       "weight": 1.0
     },
     {
@@ -9995,7 +9995,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L642",
+      "source_location": "L649",
       "weight": 1.0
     },
     {
@@ -10006,7 +10006,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L671",
+      "source_location": "L678",
       "weight": 1.0
     },
     {
@@ -10017,7 +10017,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L703",
+      "source_location": "L710",
       "weight": 1.0
     },
     {
@@ -10501,7 +10501,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L628",
+      "source_location": "L629",
       "weight": 1.0
     },
     {
@@ -11801,5 +11801,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "9336ace41cad781772c9c8aff35a4cf72d109b66"
+  "built_at_commit": "9f0da25003fbb64816c4aef354fbeca5003a2b38"
 }

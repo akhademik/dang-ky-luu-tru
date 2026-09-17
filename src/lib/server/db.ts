@@ -489,6 +489,13 @@ export async function getStays(
 	if (filter?.status && filter.status !== "ALL") {
 		if (filter.status === "IN_HOUSE" || filter.status === "inhouse") {
 			query += " AND s.status IN ('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED')";
+		} else if (
+			filter.status === "READY_TO_SYNC" ||
+			filter.status === "register" ||
+			filter.status === "NOT_CHECKED_IN"
+		) {
+			query +=
+				" AND s.status IN ('READY_TO_SYNC', 'NOT_CHECKED_IN', 'ERROR', 'PENDING_VALIDATION')";
 		} else {
 			query += " AND s.status = ?";
 			params.push(filter.status);

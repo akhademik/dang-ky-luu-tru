@@ -414,7 +414,6 @@ async function loadStats(force = false) {
 		const cached = getLocalCache<Stats>("stats");
 		if (cached) {
 			stats = cached;
-			return;
 		}
 	}
 	try {
@@ -452,7 +451,7 @@ async function loadStays(force = false) {
 			rawStays = data.data;
 			setLocalCache(cacheKey, rawStays);
 		}
-		loadStats(force);
+		loadStats(true);
 	} catch (err) {
 		showToast("Không thể tải danh sách lưu trú từ CSDL", "error");
 	} finally {
@@ -493,7 +492,9 @@ async function pullFromGoogleSheets(options?: { silent?: boolean }) {
 			showToast("Lỗi khi kết nối đồng bộ dữ liệu", "error");
 		}
 	} finally {
-		await loadStays();
+		clearLocalCache();
+		await loadStays(true);
+		await loadStats(true);
 		loading = false;
 	}
 }
