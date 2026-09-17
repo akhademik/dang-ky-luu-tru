@@ -211,6 +211,31 @@ async function loadStays() {
 	}
 }
 
+async function pullFromGoogleSheets() {
+	loading = true;
+	showToast("Đang kéo dữ liệu trực tiếp từ Google Sheets...", "info");
+	try {
+		const res = await fetch("/api/sheets/pull", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({}),
+		});
+		const data = await res.json();
+		if (data.success) {
+			const count = data.ingested !== undefined ? data.ingested : (data.rows?.length || 0);
+			showToast(`✓ Đã kéo và nạp thành công ${count} khách từ Sheet vào CSDL!`, "success");
+			await loadStays();
+			await loadStats();
+		} else {
+			showToast(`Lỗi kéo Sheet: ${data.message || "Không có dữ liệu"}`, "error");
+		}
+	} catch (err) {
+		showToast("Lỗi khi kết nối tới Google Sheets", "error");
+	} finally {
+		loading = false;
+	}
+}
+
 async function loadAuditLogs() {
 	try {
 		const url = new URL("/api/stays/audit", window.location.origin);
@@ -663,7 +688,7 @@ onMount(async () => {
 			</div>
 			<p class="text-xs md:text-sm text-slate-400 mt-1 flex items-center gap-2">
 				<span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-				Cloudflare D1 Native Database Core • API KBTT v1.4 Chuẩn Bộ Công An
+				Cloudflare D1 Native Database Core • API KBTT v1.4
 				{#if isProdFixed}
 					<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-600/50 uppercase tracking-wide">
 						PROD MODE
@@ -698,12 +723,23 @@ onMount(async () => {
 				</div>
 			{/if}
 
+			<!-- Pull From Sheet Button -->
+			<button
+				type="button"
+				onclick={pullFromGoogleSheets}
+				title="Kéo dữ liệu trực tiếp từ Google Sheet vào CSDL"
+				class="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold rounded-xl border border-emerald-600 transition-all shadow-md active:scale-95"
+			>
+				<span class="{loading ? 'animate-spin' : ''}">📥</span>
+				<span>Kéo từ Sheet vào DB</span>
+			</button>
+
 			<!-- Refresh Data Button -->
 			<button
 				type="button"
 				onclick={async () => {
 					loading = true;
-					showToast("Đang làm mới dữ liệu từ Cloudflare D1...", "info");
+					showToast("Đang làm mới dữ liệu từ CSDL...", "info");
 					await loadStays();
 					await loadStats();
 					if (activeTab === "audit") await loadAuditLogs();
@@ -715,7 +751,7 @@ onMount(async () => {
 				class="flex items-center gap-1.5 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl border border-slate-600 transition-all active:scale-95"
 			>
 				<span class="{loading ? 'animate-spin' : ''}">🔄</span>
-				<span>Làm mới</span>
+				<span>Làm mới DB</span>
 			</button>
 
 			<!-- Add Guest Button -->

@@ -68,6 +68,7 @@ async function runTests(): Promise<void> {
 
 	// 3. Test Cloudflare D1 Database Layer (Local SQLite Compatibility)
 	const db = getDb();
+	await db.exec("DELETE FROM kbtt_logs; DELETE FROM stays; DELETE FROM guests;");
 
 	// Test upsertGuest (preserving leading zeros on CCCD)
 	const guest1 = await upsertGuest(db, {
