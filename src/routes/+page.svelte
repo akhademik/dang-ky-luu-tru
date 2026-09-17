@@ -12,20 +12,99 @@ const LOAI_GIAY_TO_OPTIONS = [
 	{ id: "8", name: "8 - Thẻ Căn Cước (8)" },
 ];
 
-const COUNTRY_OPTIONS = [...QUOC_TICH_DATA]
-	.map((c) => {
-		const code = String(c.maQT || "")
-			.trim()
-			.toUpperCase();
-		const rawName = String(c.tenQTEn || c.name || c.tenQT || "").trim();
-		const name = code === "VNM" ? "Vietnam" : rawName;
-		return {
-			maQT: code,
-			name,
-			label: `${code} - ${name}`,
-		};
-	})
-	.sort((a, b) => a.label.localeCompare(b.label, "en"));
+const COUNTRY_OPTIONS = [...QUOC_TICH_DATA].map((c) => {
+	const code = String(c.maQT || "")
+		.trim()
+		.toUpperCase();
+	const rawName = String(c.tenQTEn || c.name || c.tenQT || "").trim();
+	const name = code === "VNM" ? "Vietnam" : rawName;
+	return {
+		maQT: code,
+		name,
+		label: `${code} - ${name}`,
+	};
+});
+const countryNameMap = new Map<string, string>();
+for (const opt of COUNTRY_OPTIONS) {
+	countryNameMap.set(opt.maQT, opt.name);
+}
+
+function getCountryFullName(code?: string | null): string {
+	if (!code) return "";
+	const upper = code.trim().toUpperCase();
+	if (upper === "USA" || upper === "MỸ" || upper === "HOA KỲ")
+		return "United States of America";
+	if (
+		upper === "VNM" ||
+		upper === "VN" ||
+		upper === "VIỆT NAM" ||
+		upper === "VIETNAM"
+	)
+		return "Vietnam";
+	return countryNameMap.get(upper) || upper;
+}
+
+function getFullAddress(
+	stay:
+		| {
+				dia_chi_chi_tiet?: string;
+				phuong_xa?: string;
+				quan_huyen?: string;
+				tinh_thanh?: string;
+		  }
+		| null
+		| undefined,
+): string {
+	if (!stay) return "-";
+	const detail = (stay.dia_chi_chi_tiet || "").trim();
+	const phuong = (stay.phuong_xa || "").trim();
+	const quan = (stay.quan_huyen || "").trim();
+	const tinh = (stay.tinh_thanh || "").trim();
+
+	if (!detail) {
+		const combined = [phuong, quan, tinh].filter(Boolean).join(", ");
+		return combined || "-";
+	}
+
+	const lower = detail.toLowerCase();
+	const hasTinh = Boolean(tinh && lower.includes(tinh.toLowerCase()));
+	const hasQuan = Boolean(quan && lower.includes(quan.toLowerCase()));
+	const hasPhuong = Boolean(phuong && lower.includes(phuong.toLowerCase()));
+
+	if (hasTinh && (hasQuan || !quan) && (hasPhuong || !phuong)) {
+		return detail;
+	}
+
+	const parts = [detail];
+	if (phuong && !hasPhuong) parts.push(phuong);
+	if (quan && !hasQuan) parts.push(quan);
+	if (tinh && !hasTinh) parts.push(tinh);
+
+	return parts.filter(Boolean).join(", ") || "-";
+}
+
+function getShortAddress(
+	stay:
+		| {
+				dia_chi_chi_tiet?: string;
+				phuong_xa?: string;
+				quan_huyen?: string;
+				tinh_thanh?: string;
+		  }
+		| null
+		| undefined,
+): string {
+	if (!stay) return "-";
+	if (stay.tinh_thanh && stay.tinh_thanh.trim()) {
+		return stay.tinh_thanh.trim();
+	}
+	const full = getFullAddress(stay);
+	if (full && full !== "-") {
+		const lastPart = full.split(",").pop()?.trim();
+		if (lastPart) return lastPart;
+	}
+	return "-";
+}
 
 interface StayDetail {
 	id: string;
@@ -1096,21 +1175,11 @@ function validateStayDetail(stay: StayDetail): {
 
 // Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
-	const rawDetail = (stay.dia_chi_chi_tiet || "").trim();
-	const parts = [
-		rawDetail,
-		(stay.phuong_xa || "").trim(),
-		(stay.quan_huyen || "").trim(),
-		(stay.tinh_thanh || "").trim(),
-	].filter(Boolean);
-	let combinedAddress = rawDetail;
-	if (parts.length > 1 && !rawDetail.includes(stay.tinh_thanh || "---")) {
-		combinedAddress = parts.join(", ");
-	}
+	const fullAddr = getFullAddress(stay);
 
 	editStay = {
 		...stay,
-		dia_chi_chi_tiet: combinedAddress,
+		dia_chi_chi_tiet: fullAddr === "-" ? "" : fullAddr,
 		so_phong: normalizeSoPhong(stay.so_phong),
 		loai_giay_to: normalizeLoaiGiayTo(stay.loai_giay_to),
 		quoc_tich: normalizeQuocTich(stay.quoc_tich),
@@ -1529,7 +1598,7 @@ onMount(async () => {
 				class="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs font-semibold rounded-xl shadow-lg transition-all transform active:scale-95"
 			>
 				<span>+</span>
-				<span>Thêm Khách Thủ Công</span>
+				<span>Thêm Khách</span>
 			</button>
 
 			<!-- Logout Button (for Prod mode) -->
@@ -1690,7 +1759,7 @@ onMount(async () => {
 								<th class="p-3.5">Quốc Tịch</th>
 								<th class="p-3.5">Ngày Đến</th>
 								<th class="p-3.5">Ngày Đi (DK)</th>
-								<th class="p-3.5">Địa Chỉ / Tỉnh</th>
+								<th class="p-3.5">Địa Chỉ</th>
 								<th class="p-3.5 text-center">Thao Tác</th>
 							</tr>
 						</thead>
@@ -1711,8 +1780,9 @@ onMount(async () => {
 								{#each stays as stay (stay.id)}
 									{@const isDeleting = deletingIds.has(stay.id)}
 									{@const val = validateStayDetail(stay)}
-									{@const fullAddr = stay.dia_chi_chi_tiet || [stay.phuong_xa, stay.quan_huyen, stay.tinh_thanh].filter(Boolean).join(', ') || '-'}
-									{@const shortAddr = stay.tinh_thanh || (stay.dia_chi_chi_tiet ? stay.dia_chi_chi_tiet.split(',').pop()?.trim() : '-')}
+									{@const fullAddr = getFullAddress(stay)}
+									{@const shortAddr = getShortAddress(stay)}
+									{@const countryFullName = getCountryFullName(stay.quoc_tich)}
 									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
 											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
@@ -1745,8 +1815,15 @@ onMount(async () => {
 													⚠️ {stay.quoc_tich || 'Trống'}
 												</span>
 											{:else}
-												<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
-													{stay.quoc_tich}
+												<span class="group relative inline-block cursor-pointer">
+													<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
+														{stay.quoc_tich}
+													</span>
+													{#if countryFullName}
+														<div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-none duration-0 pointer-events-none bg-slate-950 text-slate-100 text-[11px] font-normal px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-2xl whitespace-nowrap max-w-xs truncate">
+															🌐 {countryFullName}
+														</div>
+													{/if}
 												</span>
 											{/if}
 										</td>
@@ -1867,7 +1944,15 @@ onMount(async () => {
 													⚠️ {stay.so_giay_to || 'Trống'} ({stay.quoc_tich})
 												</span>
 											{:else}
-												<span class="text-slate-300">{stay.so_giay_to} ({stay.quoc_tich})</span>
+												{@const countryFullName = getCountryFullName(stay.quoc_tich)}
+												<span class="text-slate-300 group relative inline-block cursor-pointer">
+													<span>{stay.so_giay_to} ({stay.quoc_tich})</span>
+													{#if countryFullName}
+														<div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-none duration-0 pointer-events-none bg-slate-950 text-slate-100 text-[11px] font-normal px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-2xl whitespace-nowrap max-w-xs truncate font-sans">
+															🌐 {countryFullName}
+														</div>
+													{/if}
+												</span>
 											{/if}
 										</td>
 										<td class="p-3.5">
@@ -2018,8 +2103,16 @@ onMount(async () => {
 													⚠️ {stay.quoc_tich || 'Trống'}
 												</span>
 											{:else}
-												<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
-													{stay.quoc_tich}
+												{@const countryFullName = getCountryFullName(stay.quoc_tich)}
+												<span class="group relative inline-block cursor-pointer">
+													<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
+														{stay.quoc_tich}
+													</span>
+													{#if countryFullName}
+														<div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-none duration-0 pointer-events-none bg-slate-950 text-slate-100 text-[11px] font-normal px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-2xl whitespace-nowrap max-w-xs truncate">
+															🌐 {countryFullName}
+														</div>
+													{/if}
 												</span>
 											{/if}
 										</td>
