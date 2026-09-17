@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS guests (
 	phuong_xa TEXT,
 	quan_huyen TEXT,
 	tinh_thanh TEXT,
-	so_dien_thoai TEXT,
 	created_at TEXT DEFAULT (datetime('now', '+7 hours')),
 	updated_at TEXT DEFAULT (datetime('now', '+7 hours'))
 );
@@ -24,8 +23,8 @@ CREATE TABLE IF NOT EXISTS stays (
 	ngay_den TEXT NOT NULL,
 	ngay_di_du_kien TEXT,
 	ngay_di_thuc_te TEXT,
+	thoi_han_thi_thuc TEXT,
 	ly_do_luu_tru INTEGER DEFAULT 1,
-	ly_do_chi_tiet TEXT,
 	status TEXT NOT NULL DEFAULT 'READY_TO_SYNC',
 	ma_ho_so_kbtt TEXT,
 	ghi_chu TEXT,

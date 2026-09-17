@@ -104,10 +104,10 @@ async function runTests(): Promise<void> {
 	assert.equal(staysList[0].so_giay_to, "001092000001");
 
 	// Test updateGuest & updateStay
-	await updateGuest(db, guest1.id, { so_dien_thoai: "0912345678" });
+	await updateGuest(db, guest1.id, { dia_chi_chi_tiet: "123 Phố Huế" });
 	await updateStay(db, stay1.id, { ghi_chu: "VIP Guest" });
 	const fetchedStay = await getStayById(db, stay1.id);
-	assert.equal(fetchedStay?.so_dien_thoai, "0912345678");
+	assert.equal(fetchedStay?.dia_chi_chi_tiet, "123 Phố Huế");
 	assert.equal(fetchedStay?.ghi_chu, "VIP Guest");
 
 	// Test extendStay

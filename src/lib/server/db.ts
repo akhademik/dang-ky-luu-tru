@@ -1,3 +1,5 @@
+import cp from "node:child_process";
+
 export interface Guest {
 	id: string;
 	loai_giay_to: string;
@@ -10,7 +12,6 @@ export interface Guest {
 	phuong_xa?: string;
 	quan_huyen?: string;
 	tinh_thanh?: string;
-	so_dien_thoai?: string;
 	created_at?: string;
 	updated_at?: string;
 }
@@ -18,9 +19,12 @@ export interface Guest {
 export type StayStatus =
 	| "PENDING_VALIDATION"
 	| "READY_TO_SYNC"
+	| "NOT_CHECKED_IN"
 	| "SYNCED_KBTT"
+	| "CHECKED_IN"
 	| "EXTENDED"
 	| "CHECKED_OUT"
+	| "ERROR"
 	| "CANCELLED";
 
 export interface Stay {
@@ -32,7 +36,6 @@ export interface Stay {
 	ngay_di_thuc_te?: string;
 	thoi_han_thi_thuc?: string;
 	ly_do_luu_tru?: number;
-	ly_do_chi_tiet?: string;
 	status: StayStatus;
 	ma_ho_so_kbtt?: string;
 	ghi_chu?: string;
@@ -53,7 +56,6 @@ export interface StayDetail extends Stay {
 	phuong_xa?: string;
 	quan_huyen?: string;
 	tinh_thanh?: string;
-	so_dien_thoai?: string;
 	thoi_han_thi_thuc?: string;
 }
 
@@ -73,39 +75,38 @@ export interface KbttLog {
 	created_at?: string;
 }
 
-interface D1PreparedStatement {
-	bind(...params: unknown[]): D1PreparedStatement;
-	all<T = unknown>(): Promise<{ results: T[]; success: boolean }>;
-	first<T = unknown>(colName?: string): Promise<T | null>;
-	run(): Promise<{
-		success: boolean;
-		meta: { changes: number; last_row_id: number };
-	}>;
-}
-
 export interface D1DatabaseLike {
 	prepare(query: string): D1PreparedStatement;
 	exec(query: string): Promise<unknown>;
 }
 
-// Direct Cloudflare D1 Remote Engine for Dev & Local Execution
+export interface D1PreparedStatement {
+	bind(...params: unknown[]): D1PreparedStatement;
+	all<T = unknown>(): Promise<{ results: T[]; success: boolean }>;
+	first<T = unknown>(colName?: string): Promise<T | null>;
+	run(): Promise<{
+		success: boolean;
+		meta: { changes: number; last_row_id?: number };
+	}>;
+}
+
 class RemoteD1Database implements D1DatabaseLike {
 	private dbName = "dang-ky-luu-tru-db";
 
-	private formatSql(query: string, params: unknown[]): string {
-		if (!params || params.length === 0) return query;
-		let idx = 0;
+	private escapeSql(query: string, params: unknown[] = []): string {
+		let pIndex = 0;
 		return query.replace(/\?/g, () => {
-			const p = params[idx++];
-			if (p === null || p === undefined) return "NULL";
-			if (typeof p === "number") return String(p);
-			if (typeof p === "boolean") return p ? "1" : "0";
-			const str = String(p).replace(/'/g, "''");
+			if (pIndex >= params.length) return "NULL";
+			const val = params[pIndex++];
+			if (val === null || val === undefined) return "NULL";
+			if (typeof val === "number") return String(val);
+			if (typeof val === "boolean") return val ? "1" : "0";
+			const str = String(val).replace(/'/g, "''");
 			return `'${str}'`;
 		});
 	}
 
-	private executeQuery<T = unknown>(
+	public executeQuery<T = unknown>(
 		query: string,
 		params: unknown[] = [],
 	): {
@@ -113,20 +114,7 @@ class RemoteD1Database implements D1DatabaseLike {
 		success: boolean;
 		meta: { changes: number; last_row_id: number };
 	} {
-		const formattedSql = this.formatSql(query, params);
-		const proc = typeof process !== "undefined" ? process : null;
-		if (!proc) {
-			throw new Error("Cannot execute remote D1 outside of Node environment");
-		}
-		const cp =
-			proc.getBuiltinModule && typeof proc.getBuiltinModule === "function"
-				? (proc.getBuiltinModule(
-						"node:child_process",
-					) as typeof import("node:child_process"))
-				: null;
-		if (!cp || typeof cp.execFileSync !== "function") {
-			throw new Error("node:child_process is not available");
-		}
+		const formattedSql = this.escapeSql(query, params);
 
 		try {
 			const stdout = cp.execFileSync(
@@ -218,7 +206,8 @@ function generateId(): string {
 	return typeof globalThis.crypto !== "undefined" &&
 		typeof globalThis.crypto.randomUUID === "function"
 		? globalThis.crypto.randomUUID()
-		: Math.random().toString(36).substring(2) + Date.now().toString(36);
+		: Math.random().toString(36).substring(2, 15) +
+				Math.random().toString(36).substring(2, 15);
 }
 
 export async function upsertGuest(
@@ -244,7 +233,7 @@ export async function upsertGuest(
 				UPDATE guests
 				SET ho_ten = ?, loai_giay_to = ?, ngay_sinh = ?, gioi_tinh = ?,
 				    quoc_tich = ?, dia_chi_chi_tiet = ?, phuong_xa = ?, quan_huyen = ?, tinh_thanh = ?,
-				    so_dien_thoai = ?, updated_at = datetime('now', '+7 hours')
+				    updated_at = datetime('now', '+7 hours')
 				WHERE id = ?
 			`)
 			.bind(
@@ -257,7 +246,6 @@ export async function upsertGuest(
 				guest.phuong_xa ?? existing.phuong_xa,
 				guest.quan_huyen ?? existing.quan_huyen,
 				guest.tinh_thanh ?? existing.tinh_thanh,
-				guest.so_dien_thoai ?? existing.so_dien_thoai,
 				existing.id,
 			)
 			.run();
@@ -277,8 +265,8 @@ export async function upsertGuest(
 		.prepare(`
 			INSERT INTO guests (
 				id, loai_giay_to, so_giay_to, ho_ten, ngay_sinh, gioi_tinh,
-				quoc_tich, dia_chi_chi_tiet, phuong_xa, quan_huyen, tinh_thanh, so_dien_thoai
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				quoc_tich, dia_chi_chi_tiet, phuong_xa, quan_huyen, tinh_thanh
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`)
 		.bind(
 			id,
@@ -292,7 +280,6 @@ export async function upsertGuest(
 			guest.phuong_xa || "",
 			guest.quan_huyen || "",
 			guest.tinh_thanh || "",
-			guest.so_dien_thoai || "",
 		)
 		.run();
 
@@ -313,8 +300,8 @@ export async function upsertStay(
 		ngay_den: string;
 		ngay_di_du_kien?: string;
 		ngay_di_thuc_te?: string;
+		thoi_han_thi_thuc?: string;
 		ly_do_luu_tru?: number;
-		ly_do_chi_tiet?: string;
 		status?: StayStatus;
 		ma_ho_so_kbtt?: string;
 		ghi_chu?: string;
@@ -344,8 +331,8 @@ export async function upsertStay(
 		await db
 			.prepare(`
 				UPDATE stays
-				SET so_phong = ?, ngay_di_du_kien = ?, ly_do_luu_tru = ?,
-				    ly_do_chi_tiet = ?, ghi_chu = ?, status = ?,
+				SET so_phong = ?, ngay_di_du_kien = ?, thoi_han_thi_thuc = ?, ly_do_luu_tru = ?,
+				    ghi_chu = ?, status = ?,
 				    source_sheet_tab = COALESCE(?, source_sheet_tab),
 				    source_sheet_row = COALESCE(?, source_sheet_row),
 				    updated_at = datetime('now', '+7 hours')
@@ -354,8 +341,8 @@ export async function upsertStay(
 			.bind(
 				soPhong || existing.so_phong,
 				stayData.ngay_di_du_kien ?? existing.ngay_di_du_kien,
+				stayData.thoi_han_thi_thuc ?? existing.thoi_han_thi_thuc,
 				stayData.ly_do_luu_tru ?? existing.ly_do_luu_tru,
-				stayData.ly_do_chi_tiet ?? existing.ly_do_chi_tiet,
 				stayData.ghi_chu ?? existing.ghi_chu,
 				targetStatus,
 				stayData.source_sheet_tab ?? null,
@@ -383,7 +370,7 @@ export async function upsertStay(
 			.prepare(`
 				INSERT INTO stays (
 					id, guest_id, so_phong, ngay_den, ngay_di_du_kien, ngay_di_thuc_te,
-					ly_do_luu_tru, ly_do_chi_tiet, status, ma_ho_so_kbtt, ghi_chu,
+					thoi_han_thi_thuc, ly_do_luu_tru, status, ma_ho_so_kbtt, ghi_chu,
 					source_sheet_tab, source_sheet_row
 				) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`)
@@ -394,8 +381,8 @@ export async function upsertStay(
 				ngayDen,
 				stayData.ngay_di_du_kien || "",
 				stayData.ngay_di_thuc_te || null,
+				stayData.thoi_han_thi_thuc || null,
 				stayData.ly_do_luu_tru || 1,
-				stayData.ly_do_chi_tiet || "",
 				initialStatus,
 				stayData.ma_ho_so_kbtt || "",
 				stayData.ghi_chu || "",
@@ -411,8 +398,8 @@ export async function upsertStay(
 			ngay_den: ngayDen,
 			ngay_di_du_kien: stayData.ngay_di_du_kien,
 			ngay_di_thuc_te: stayData.ngay_di_thuc_te,
+			thoi_han_thi_thuc: stayData.thoi_han_thi_thuc,
 			ly_do_luu_tru: stayData.ly_do_luu_tru || 1,
-			ly_do_chi_tiet: stayData.ly_do_chi_tiet,
 			status: initialStatus,
 			ma_ho_so_kbtt: stayData.ma_ho_so_kbtt,
 			ghi_chu: stayData.ghi_chu,
@@ -457,7 +444,7 @@ export async function autoCheckoutExpiredStays(
 				SET status = 'CHECKED_OUT',
 				    ngay_di_thuc_te = coalesce(nullif(ngay_di_du_kien, ''), ?),
 				    updated_at = ?
-				WHERE status IN ('SYNCED_KBTT', 'EXTENDED')
+				WHERE status IN ('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED')
 				  AND ngay_di_du_kien IS NOT NULL
 				  AND trim(ngay_di_du_kien) != ''
 				  AND datetime(
@@ -489,10 +476,10 @@ export async function getStays(
 
 	let query = `
 		SELECT s.id, s.guest_id, s.so_phong, s.ngay_den, s.ngay_di_du_kien, s.ngay_di_thuc_te,
-		       s.ly_do_luu_tru, s.ly_do_chi_tiet, s.status, s.ma_ho_so_kbtt, s.ghi_chu,
+		       s.thoi_han_thi_thuc, s.ly_do_luu_tru, s.status, s.ma_ho_so_kbtt, s.ghi_chu,
 		       s.source_sheet_tab, s.source_sheet_row, s.created_at, s.updated_at,
 		       g.loai_giay_to, g.so_giay_to, g.ho_ten, g.ngay_sinh, g.gioi_tinh,
-		       g.quoc_tich, g.dia_chi_chi_tiet, g.phuong_xa, g.quan_huyen, g.tinh_thanh, g.so_dien_thoai
+		       g.quoc_tich, g.dia_chi_chi_tiet, g.phuong_xa, g.quan_huyen, g.tinh_thanh
 		FROM stays s
 		JOIN guests g ON s.guest_id = g.id
 		WHERE 1=1
@@ -501,7 +488,7 @@ export async function getStays(
 
 	if (filter?.status && filter.status !== "ALL") {
 		if (filter.status === "IN_HOUSE" || filter.status === "inhouse") {
-			query += " AND s.status IN ('SYNCED_KBTT', 'EXTENDED')";
+			query += " AND s.status IN ('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED')";
 		} else {
 			query += " AND s.status = ?";
 			params.push(filter.status);
@@ -542,7 +529,7 @@ export async function getStayById(
 ): Promise<StayDetail | null> {
 	const query = `
 		SELECT s.*, g.loai_giay_to, g.so_giay_to, g.ho_ten, g.ngay_sinh, g.gioi_tinh,
-		       g.quoc_tich, g.dia_chi_chi_tiet, g.phuong_xa, g.quan_huyen, g.tinh_thanh, g.so_dien_thoai
+		       g.quoc_tich, g.dia_chi_chi_tiet, g.phuong_xa, g.quan_huyen, g.tinh_thanh
 		FROM stays s
 		JOIN guests g ON s.guest_id = g.id
 		WHERE s.id = ?
@@ -727,9 +714,9 @@ export async function getDashboardStats(db: D1DatabaseLike): Promise<{
 		SELECT 
 			(SELECT COUNT(*) FROM guests) as totalGuests,
 			(SELECT COUNT(*) FROM stays) as totalStays,
-			(SELECT COUNT(*) FROM stays WHERE status = 'READY_TO_SYNC') as readyToSync,
-			(SELECT COUNT(*) FROM stays WHERE status = 'SYNCED_KBTT') as syncedKbtt,
-			(SELECT COUNT(*) FROM stays WHERE status IN ('SYNCED_KBTT', 'EXTENDED')) as inHouse,
+			(SELECT COUNT(*) FROM stays WHERE status IN ('READY_TO_SYNC', 'NOT_CHECKED_IN')) as readyToSync,
+			(SELECT COUNT(*) FROM stays WHERE status IN ('SYNCED_KBTT', 'CHECKED_IN')) as syncedKbtt,
+			(SELECT COUNT(*) FROM stays WHERE status IN ('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED')) as inHouse,
 			(SELECT COUNT(*) FROM stays WHERE status = 'CHECKED_OUT') as checkedOut
 	`;
 	const row = await db.prepare(query).first<Record<string, number>>();

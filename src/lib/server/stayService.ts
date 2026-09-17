@@ -177,11 +177,24 @@ class StayService {
 				// The Database manages the registration lifecycle independently.
 				const initialStatus: StayStatus = "READY_TO_SYNC";
 
+				const rawVisa = String(
+					row.thoi_han_thi_thuc ||
+						row.thoiHanTamTru ||
+						row["Thời hạn tạm trú"] ||
+						row["Thời hạn thị thực"] ||
+						"",
+				).trim();
+				const thoiHanThiThuc =
+					quocTich !== "VNM" && rawVisa
+						? DataTransformer.formatDateOnly(rawVisa) || rawVisa
+						: "";
+
 				// 3. Upsert stay record
 				const stay = await upsertStay(db, guest.id, {
 					so_phong: soPhongClean,
 					ngay_den: ngayDen,
 					ngay_di_du_kien: ngayDi,
+					thoi_han_thi_thuc: thoiHanThiThuc,
 					status: initialStatus,
 					source_sheet_tab: tabName,
 					source_sheet_row: i + 2,
@@ -476,7 +489,6 @@ class StayService {
 			phuong_xa?: string;
 			quan_huyen?: string;
 			tinh_thanh?: string;
-			so_dien_thoai?: string;
 			so_phong?: string;
 			ngay_den?: string;
 			ngay_di_du_kien?: string;
@@ -499,8 +511,16 @@ class StayService {
 			phuong_xa: payload.phuong_xa,
 			quan_huyen: payload.quan_huyen,
 			tinh_thanh: payload.tinh_thanh,
-			so_dien_thoai: payload.so_dien_thoai,
 		});
+
+		const currentQuocTich = (
+			payload.quoc_tich ||
+			stay.quoc_tich ||
+			"VNM"
+		).toUpperCase();
+		const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM"].includes(
+			currentQuocTich,
+		);
 
 		await dbUpdateStay(db, stayId, {
 			so_phong: payload.so_phong
@@ -508,7 +528,7 @@ class StayService {
 				: stay.so_phong,
 			ngay_den: payload.ngay_den,
 			ngay_di_du_kien: payload.ngay_di_du_kien,
-			thoi_han_thi_thuc: payload.thoi_han_thi_thuc,
+			thoi_han_thi_thuc: isVN ? "" : payload.thoi_han_thi_thuc,
 			ly_do_luu_tru: payload.ly_do_luu_tru,
 			ghi_chu: payload.ghi_chu,
 		});

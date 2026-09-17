@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 333 nodes · 682 edges · 18 communities (8 shown, 6 thin omitted)
+- 333 nodes · 683 edges · 17 communities (8 shown, 5 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8488fa79`
+- Built from commit: `085f47b1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -26,7 +26,6 @@
 - GoogleSheetService
 - catalogManager.ts
 - apps_script_onedit.js
-- RemoteD1Database
 - svelte.config.js
 
 ## God Nodes (most connected - your core abstractions)
@@ -56,11 +55,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (18 total, 6 thin omitted)
+## Communities (17 total, 5 thin omitted)
 
 ### Community 0 - "db.ts"
-Cohesion: 0.10
-Nodes (40): App, Platform, autoCheckoutExpiredStays(), checkoutStay(), D1DatabaseLike, D1PreparedStatement, deleteStay(), extendStay() (+32 more)
+Cohesion: 0.09
+Nodes (41): App, Platform, autoCheckoutExpiredStays(), checkoutStay(), D1DatabaseLike, D1PreparedStatement, deleteStay(), extendStay() (+33 more)
 
 ### Community 1 - "syncPipeline.ts"
 Cohesion: 0.08
@@ -93,7 +92,7 @@ Nodes (3): handleSheetChange(), handleSheetEdit(), syncRowToCloudflare()
 ## Knowledge Gaps
 - **79 isolated node(s):** `Guest`, `KbttLog`, `IngestResult`, `IngestResultItem`, `CompletenessResult` (+74 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 127 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -109,6 +108,6 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `Guest`, `KbttLog`, `IngestResult` to the rest of the system?**
   _79 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0965034965034965 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09036658141517477 - nodes in this community are weakly interconnected._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.07922077922077922 - nodes in this community are weakly interconnected._

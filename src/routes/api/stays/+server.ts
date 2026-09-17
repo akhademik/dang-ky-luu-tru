@@ -46,18 +46,23 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			);
 		}
 
+		const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM"].includes(
+			String(body.quoc_tich || "VNM")
+				.trim()
+				.toUpperCase(),
+		);
+
 		const guest = await upsertGuest(db, {
 			ho_ten: hoTen,
 			so_giay_to: soGiayTo,
 			quoc_tich: body.quoc_tich || "VNM",
-			loai_giay_to: body.loai_giay_to || "CCCD",
+			loai_giay_to: body.loai_giay_to || (isVN ? "CCCD" : "HO_CHIEU"),
 			ngay_sinh: body.ngay_sinh || "",
 			gioi_tinh: body.gioi_tinh || "M",
 			dia_chi_chi_tiet: body.dia_chi_chi_tiet || "",
 			phuong_xa: body.phuong_xa || "",
 			quan_huyen: body.quan_huyen || "",
 			tinh_thanh: body.tinh_thanh || "",
-			so_dien_thoai: body.so_dien_thoai || "",
 		});
 
 		const stay = await upsertStay(db, guest.id, {
@@ -69,6 +74,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 					.replace("T", " ")
 					.substring(0, 19),
 			ngay_di_du_kien: body.ngay_di_du_kien || "",
+			thoi_han_thi_thuc: isVN ? "" : body.thoi_han_thi_thuc || "",
 			ly_do_luu_tru: Number(body.ly_do_luu_tru || 1),
 			status: body.status || "READY_TO_SYNC",
 			ghi_chu: body.ghi_chu || "",

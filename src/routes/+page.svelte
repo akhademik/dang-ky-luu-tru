@@ -115,13 +115,15 @@ interface StayDetail {
 	ngay_di_thuc_te?: string;
 	thoi_han_thi_thuc?: string;
 	ly_do_luu_tru?: number;
-	ly_do_chi_tiet?: string;
 	status:
 		| "PENDING_VALIDATION"
 		| "READY_TO_SYNC"
+		| "NOT_CHECKED_IN"
 		| "SYNCED_KBTT"
+		| "CHECKED_IN"
 		| "EXTENDED"
 		| "CHECKED_OUT"
+		| "ERROR"
 		| "CANCELLED";
 	ma_ho_so_kbtt?: string;
 	ghi_chu?: string;
@@ -139,7 +141,6 @@ interface StayDetail {
 	phuong_xa?: string;
 	quan_huyen?: string;
 	tinh_thanh?: string;
-	so_dien_thoai?: string;
 }
 
 interface KbttLog {
@@ -344,6 +345,7 @@ let newGuestForm = $state({
 	phuong_xa: "",
 	quan_huyen: "",
 	tinh_thanh: "",
+	ghi_chu: "",
 });
 
 const CACHE_KEY_PREFIX = "kbtt_stays_cache_v2_";
@@ -2660,6 +2662,17 @@ onMount(async () => {
 							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
 						/>
 					</div>
+
+					<div class="sm:col-span-2">
+						<label for="edit_ghi_chu" class="block text-slate-400 mb-1 font-medium">Ghi chú</label>
+						<input
+							id="edit_ghi_chu"
+							type="text"
+							bind:value={editStay.ghi_chu}
+							placeholder="Ghi chú thêm về lượt lưu trú..."
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+					</div>
 				</div>
 
 				<div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 border-t border-slate-700 pt-4">
@@ -2900,6 +2913,11 @@ onMount(async () => {
 					<div class="sm:col-span-2">
 						<label for="add_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ</label>
 						<input id="add_dia_chi_chi_tiet" type="text" bind:value={newGuestForm.dia_chi_chi_tiet} placeholder="Số nhà, đường phố, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500" />
+					</div>
+
+					<div class="sm:col-span-2">
+						<label for="add_ghi_chu" class="block text-slate-400 mb-1 font-medium">Ghi chú</label>
+						<input id="add_ghi_chu" type="text" bind:value={newGuestForm.ghi_chu} placeholder="Ghi chú thêm về lượt lưu trú..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500" />
 					</div>
 				</div>
 
