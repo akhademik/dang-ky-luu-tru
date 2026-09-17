@@ -1683,7 +1683,7 @@ onMount(async () => {
 			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'audit' ? 'border-indigo-400 text-indigo-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
 		>
 			<span>🔍</span>
-			<span>Tra Soát Hồ Sơ & Audit Logs</span>
+			<span>Dev Logs</span>
 		</button>
 
 		<button
@@ -2042,19 +2042,17 @@ onMount(async () => {
 								<th class="p-3.5">Quốc Tịch</th>
 								<th class="p-3.5">Ngày Đến</th>
 								<th class="p-3.5">Ngày Đi (DK)</th>
-								<th class="p-3.5">Mã Hồ Sơ KBTT</th>
-								<th class="p-3.5">Nguồn Đồng Bộ</th>
 								<th class="p-3.5 text-center">Thao Tác</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-slate-700/60">
 							{#if loading}
 								<tr>
-									<td colspan="11" class="p-8 text-center text-slate-400">Đang tải toàn bộ dữ liệu từ Cloudflare D1...</td>
+									<td colspan="9" class="p-8 text-center text-slate-400">Đang tải toàn bộ dữ liệu từ Cloudflare D1...</td>
 								</tr>
 							{:else if stays.length === 0}
 								<tr>
-									<td colspan="11" class="p-12 text-center text-slate-400">
+									<td colspan="9" class="p-12 text-center text-slate-400">
 										<div class="text-3xl mb-2">📭</div>
 										<div class="font-semibold text-slate-300">Chưa có bản ghi nào trong Database.</div>
 										<div class="text-xs text-slate-500 mt-1">Bấm nút "Đồng Bộ Sheets" hoặc "Thêm Khách Mới" để nạp dữ liệu vào CSDL.</div>
@@ -2118,24 +2116,16 @@ onMount(async () => {
 										</td>
 										<td class="p-3.5">
 											{#if val.errors.ngay_den}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_den}>⚠️ {formatDateTimeDisplay(stay.ngay_den)}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_den}>⚠️ {formatDateDisplay(stay.ngay_den)}</span>
 											{:else}
-												<span class="text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</span>
+												<span class="text-slate-300">{formatDateDisplay(stay.ngay_den)}</span>
 											{/if}
 										</td>
 										<td class="p-3.5">
 											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateDisplay(stay.ngay_di_du_kien)}</span>
 											{:else}
-												<span class="text-slate-400">{formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
-											{/if}
-										</td>
-										<td class="p-3.5 font-mono text-[11px] text-slate-300">{stay.ma_ho_so_kbtt || '-'}</td>
-										<td class="p-3.5 text-[11px] text-slate-400 font-mono">
-											{#if stay.source_sheet_tab}
-												<span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-sky-300">Tab:{stay.source_sheet_tab} R{stay.source_sheet_row ?? '-'}</span>
-											{:else}
-												<span class="text-slate-500">Thủ công</span>
+												<span class="text-slate-400">{formatDateDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
 										<td class="p-3.5 text-center">
