@@ -30,6 +30,7 @@ export interface Stay {
 	ngay_den: string;
 	ngay_di_du_kien?: string;
 	ngay_di_thuc_te?: string;
+	thoi_han_thi_thuc?: string;
 	ly_do_luu_tru?: number;
 	ly_do_chi_tiet?: string;
 	status: StayStatus;
@@ -53,6 +54,7 @@ export interface StayDetail extends Stay {
 	quan_huyen?: string;
 	tinh_thanh?: string;
 	so_dien_thoai?: string;
+	thoi_han_thi_thuc?: string;
 }
 
 export interface KbttLog {

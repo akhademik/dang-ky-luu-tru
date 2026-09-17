@@ -223,6 +223,9 @@ class StayService {
 			"(từ ngày)": stay.ngay_den,
 			"(đến ngày)": stay.ngay_di_du_kien,
 			"Số phòng": stay.so_phong,
+			thoi_han_thi_thuc: stay.thoi_han_thi_thuc,
+			thoiHanTamTru: stay.thoi_han_thi_thuc,
+			"Thời hạn thị thực": stay.thoi_han_thi_thuc,
 		};
 
 		const transformed = await this.transformer.transformRow(mockRow);
@@ -441,6 +444,7 @@ class StayService {
 			so_phong?: string;
 			ngay_den?: string;
 			ngay_di_du_kien?: string;
+			thoi_han_thi_thuc?: string;
 			ly_do_luu_tru?: number;
 			ghi_chu?: string;
 		},
@@ -468,6 +472,7 @@ class StayService {
 				: stay.so_phong,
 			ngay_den: payload.ngay_den,
 			ngay_di_du_kien: payload.ngay_di_du_kien,
+			thoi_han_thi_thuc: payload.thoi_han_thi_thuc,
 			ly_do_luu_tru: payload.ly_do_luu_tru,
 			ghi_chu: payload.ghi_chu,
 		});

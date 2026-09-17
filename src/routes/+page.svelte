@@ -12,11 +12,24 @@ const LOAI_GIAY_TO_OPTIONS = [
 	{ id: "8", name: "8 - Thẻ Căn Cước (8)" },
 ];
 
-const COUNTRY_OPTIONS = [...QUOC_TICH_DATA].sort((a, b) => {
-	if (a.maQT === "VNM") return -1;
-	if (b.maQT === "VNM") return 1;
-	return (a.tenQT || a.maQT || "").localeCompare(b.tenQT || b.maQT || "", "vi");
-});
+const COUNTRY_OPTIONS = [...QUOC_TICH_DATA]
+	.map((c) => {
+		const code = String(c.maQT || "")
+			.trim()
+			.toUpperCase();
+		const rawName = String(c.tenQTEn || c.name || c.tenQT || "").trim();
+		const name = code === "VNM" ? "Vietnam" : rawName;
+		return {
+			maQT: code,
+			name,
+			label: `${code} - ${name}`,
+		};
+	})
+	.sort((a, b) => {
+		if (a.maQT === "VNM") return -1;
+		if (b.maQT === "VNM") return 1;
+		return a.name.localeCompare(b.name, "en");
+	});
 
 interface StayDetail {
 	id: string;
@@ -25,6 +38,7 @@ interface StayDetail {
 	ngay_den: string;
 	ngay_di_du_kien?: string;
 	ngay_di_thuc_te?: string;
+	thoi_han_thi_thuc?: string;
 	ly_do_luu_tru?: number;
 	ly_do_chi_tiet?: string;
 	status:
@@ -173,10 +187,11 @@ let newGuestForm = $state({
 	so_phong: "1",
 	ngay_den: "",
 	ngay_di_du_kien: "",
+	thoi_han_thi_thuc: "",
 	dia_chi_chi_tiet: "",
 	phuong_xa: "",
 	quan_huyen: "",
-	tinh_thanh: "TP. Hà Nội",
+	tinh_thanh: "",
 });
 
 const CACHE_KEY_PREFIX = "kbtt_stays_cache_v2_";
@@ -899,17 +914,12 @@ function getCountryInfo(
 		.trim()
 		.toUpperCase();
 	if (!code) return null;
-	const found = COUNTRY_OPTIONS.find((item) => {
-		const ma = String(item.maQT || item.id || item.code || "")
-			.trim()
-			.toUpperCase();
-		return ma === code;
-	});
+	const found = COUNTRY_OPTIONS.find((item) => item.maQT === code);
 	if (found) {
 		return {
-			maQT: String(found.maQT || code).toUpperCase(),
-			tenQT: String(found.tenQT || found.name || ""),
-			tenQTEn: String(found.tenQTEn || found.name || found.tenQT || ""),
+			maQT: found.maQT,
+			tenQT: found.name,
+			tenQTEn: found.name,
 		};
 	}
 	return null;
@@ -947,6 +957,118 @@ function onAddQuocTichChange() {
 	}
 }
 
+interface ValidationErrors {
+	ho_ten?: string;
+	so_phong?: string;
+	so_giay_to?: string;
+	quoc_tich?: string;
+	ngay_sinh?: string;
+	ngay_den?: string;
+	ngay_di_du_kien?: string;
+	thoi_han_thi_thuc?: string;
+}
+
+function validateStayDetail(stay: StayDetail): {
+	hasErrors: boolean;
+	errors: ValidationErrors;
+} {
+	const errors: ValidationErrors = {};
+	const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
+		(stay.quoc_tich || "").trim().toUpperCase(),
+	);
+
+	if (!stay.ho_ten?.trim()) {
+		errors.ho_ten = "Thiếu họ tên";
+	}
+
+	const roomStr = String(stay.so_phong || "").trim();
+	if (!roomStr || !ROOM_OPTIONS.includes(roomStr)) {
+		errors.so_phong = "Phòng không hợp lệ (1-9)";
+	}
+
+	const docNum = String(stay.so_giay_to || "").trim();
+	const docType = String(stay.loai_giay_to || "").toLowerCase();
+	if (!docNum) {
+		errors.so_giay_to = "Thiếu số giấy tờ";
+	} else if (
+		docType === "1" ||
+		docType.includes("cccd") ||
+		docType === "8" ||
+		docType.includes("căn cước") ||
+		(isVN &&
+			docType !== "4" &&
+			!docType.includes("hộ chiếu") &&
+			!docType.includes("cmnd") &&
+			!docType.includes("3") &&
+			!docType.includes("lái xe"))
+	) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 12) {
+			errors.so_giay_to = "Số CCCD phải đủ 12 số";
+		}
+	} else if (docType === "2" || docType.includes("cmnd")) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 9 && digits.length !== 12) {
+			errors.so_giay_to = "Số CMND phải 9 hoặc 12 số";
+		}
+	} else if (
+		docType === "3" ||
+		docType.includes("lái xe") ||
+		docType.includes("gplx")
+	) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 12) {
+			errors.so_giay_to = "Số GPLX phải đủ 12 số";
+		}
+	} else if (
+		docType === "4" ||
+		docType.includes("hộ chiếu") ||
+		docType.includes("passport") ||
+		!isVN
+	) {
+		const clean = docNum.replace(/[^a-zA-Z0-9]/g, "");
+		if (clean.length < 6 || clean.length > 12) {
+			errors.so_giay_to = "Hộ chiếu phải từ 6-12 ký tự";
+		}
+	}
+
+	const qt = (stay.quoc_tich || "").trim().toUpperCase();
+	if (!qt) {
+		errors.quoc_tich = "Thiếu quốc tịch";
+	} else if (!isValidAlpha3Country(qt)) {
+		errors.quoc_tich = `Mã QT sai: "${qt}"`;
+	}
+
+	if (stay.ngay_sinh?.trim() && !validateDateString(stay.ngay_sinh)) {
+		errors.ngay_sinh = "Ngày sinh sai định dạng (DD/MM/YYYY)";
+	}
+
+	const arrCheck = validateArrivalDate(stay.ngay_den);
+	if (!arrCheck.valid) {
+		errors.ngay_den = arrCheck.error || "Ngày đến không hợp lệ";
+	}
+
+	if (stay.ngay_di_du_kien?.trim()) {
+		const depCheck = validateDepartureDate(stay.ngay_di_du_kien);
+		if (!depCheck.valid) {
+			errors.ngay_di_du_kien = depCheck.error || "Ngày đi không hợp lệ";
+		}
+	}
+
+	if (
+		!isVN &&
+		stay.thoi_han_thi_thuc?.trim() &&
+		!validateDateString(stay.thoi_han_thi_thuc)
+	) {
+		errors.thoi_han_thi_thuc = "Thị thực sai định dạng (DD/MM/YYYY)";
+	}
+
+	return {
+		hasErrors: Object.keys(errors).length > 0,
+		errors,
+	};
+}
+
 // Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
 	editStay = {
@@ -954,6 +1076,9 @@ function openEdit(stay: StayDetail) {
 		so_phong: normalizeSoPhong(stay.so_phong),
 		loai_giay_to: normalizeLoaiGiayTo(stay.loai_giay_to),
 		quoc_tich: normalizeQuocTich(stay.quoc_tich),
+		thoi_han_thi_thuc: stay.thoi_han_thi_thuc
+			? formatDateDisplay(stay.thoi_han_thi_thuc)
+			: "",
 		ngay_sinh: formatDateDisplay(stay.ngay_sinh),
 		ngay_den: formatDateTimeDisplay(stay.ngay_den),
 		ngay_di_du_kien: stay.ngay_di_du_kien
@@ -1060,6 +1185,15 @@ let editLiveVal = $derived.by(() => {
 			"Ngày đi phải theo định dạng DD/MM/YYYY HH:mm:ss (ví dụ: 19/09/2026 12:00:00)";
 	}
 
+	if (
+		!isVN &&
+		editStay.thoi_han_thi_thuc?.trim() &&
+		!validateDateString(editStay.thoi_han_thi_thuc)
+	) {
+		errors.thoi_han_thi_thuc =
+			"Thời hạn thị thực phải theo định dạng DD/MM/YYYY (ví dụ: 31/12/2026)";
+	}
+
 	return {
 		allValid: Object.keys(errors).length === 0,
 		errors,
@@ -1084,6 +1218,10 @@ async function submitEdit() {
 		ngay_di_du_kien: editStay.ngay_di_du_kien
 			? formatDateTimeDisplay(editStay.ngay_di_du_kien)
 			: "",
+		thoi_han_thi_thuc:
+			editStay.quoc_tich !== "VNM" && editStay.thoi_han_thi_thuc
+				? formatDateDisplay(editStay.thoi_han_thi_thuc)
+				: "",
 	};
 	showEditModal = false;
 
@@ -1128,6 +1266,10 @@ async function submitAddGuest() {
 			ngay_di_du_kien: newGuestForm.ngay_di_du_kien
 				? formatDateTimeDisplay(newGuestForm.ngay_di_du_kien)
 				: "",
+			thoi_han_thi_thuc:
+				newGuestForm.quoc_tich !== "VNM" && newGuestForm.thoi_han_thi_thuc
+					? formatDateDisplay(newGuestForm.thoi_han_thi_thuc)
+					: "",
 		};
 		const res = await fetch("/api/stays", {
 			method: "POST",
@@ -1559,20 +1701,54 @@ onMount(async () => {
 							{:else}
 								{#each stays as stay (stay.id)}
 									{@const isDeleting = deletingIds.has(stay.id)}
-									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''}">
+									{@const val = validateStayDetail(stay)}
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
-											<span>{stay.ho_ten}</span>
+											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
+											{#if val.errors.ho_ten}
+												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️ {val.errors.ho_ten}</span>
+											{/if}
 											<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{stay.gioi_tinh === 'F' ? 'Nữ' : 'Nam'}</span>
 										</td>
-										<td class="p-3.5 font-mono font-bold text-sky-400">{stay.so_phong}</td>
-										<td class="p-3.5 font-mono text-slate-300">{stay.so_giay_to}</td>
-										<td class="p-3.5">
-											<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
-												{stay.quoc_tich}
-											</span>
+										<td class="p-3.5 font-mono font-bold">
+											{#if val.errors.so_phong}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.so_phong}>⚠️ {stay.so_phong || 'Trống'}</span>
+											{:else}
+												<span class="text-sky-400">{stay.so_phong}</span>
+											{/if}
 										</td>
-										<td class="p-3.5 text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</td>
-										<td class="p-3.5 text-slate-400">{stay.ngay_di_du_kien || '-'}</td>
+										<td class="p-3.5 font-mono">
+											{#if val.errors.so_giay_to}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.so_giay_to}>⚠️ {stay.so_giay_to || 'Trống'}</span>
+											{:else}
+												<span class="text-slate-300">{stay.so_giay_to}</span>
+											{/if}
+										</td>
+										<td class="p-3.5">
+											{#if val.errors.quoc_tich}
+												<span class="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-rose-900/80 border border-rose-700 text-rose-200" title={val.errors.quoc_tich}>
+													⚠️ {stay.quoc_tich || 'Trống'}
+												</span>
+											{:else}
+												<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
+													{stay.quoc_tich}
+												</span>
+											{/if}
+										</td>
+										<td class="p-3.5">
+											{#if val.errors.ngay_den}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_den}>⚠️ {formatDateTimeDisplay(stay.ngay_den) || 'Trống'}</span>
+											{:else}
+												<span class="text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</span>
+											{/if}
+										</td>
+										<td class="p-3.5">
+											{#if val.errors.ngay_di_du_kien}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {stay.ngay_di_du_kien}</span>
+											{:else}
+												<span class="text-slate-400">{stay.ngay_di_du_kien || '-'}</span>
+											{/if}
+										</td>
 										<td class="p-3.5 text-slate-400 truncate max-w-xs">{stay.tinh_thanh || stay.dia_chi_chi_tiet || '-'}</td>
 										<td class="p-3.5 text-center">
 											{#if isDeleting}
@@ -1638,17 +1814,49 @@ onMount(async () => {
 								{#each stays as stay (stay.id)}
 									{@const badge = getStatusBadge(stay.status)}
 									{@const isDeleting = deletingIds.has(stay.id)}
-									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''}">
-										<td class="p-3.5 font-semibold text-slate-100">{stay.ho_ten}</td>
-										<td class="p-3.5 font-mono font-bold text-sky-400">{stay.so_phong}</td>
+									{@const val = validateStayDetail(stay)}
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
+										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
+											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
+											{#if val.errors.ho_ten}
+												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️</span>
+											{/if}
+										</td>
+										<td class="p-3.5 font-mono font-bold">
+											{#if val.errors.so_phong}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.so_phong}>⚠️ {stay.so_phong || 'Trống'}</span>
+											{:else}
+												<span class="text-sky-400">{stay.so_phong}</span>
+											{/if}
+										</td>
 										<td class="p-3.5">
 											<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
 												{badge.label}
 											</span>
 										</td>
-										<td class="p-3.5 font-mono text-slate-300">{stay.so_giay_to} ({stay.quoc_tich})</td>
-										<td class="p-3.5 text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</td>
-										<td class="p-3.5 font-medium text-amber-300">{stay.ngay_di_du_kien || '-'}</td>
+										<td class="p-3.5 font-mono">
+											{#if val.errors.so_giay_to || val.errors.quoc_tich}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title="{val.errors.so_giay_to || ''} {val.errors.quoc_tich || ''}">
+													⚠️ {stay.so_giay_to || 'Trống'} ({stay.quoc_tich})
+												</span>
+											{:else}
+												<span class="text-slate-300">{stay.so_giay_to} ({stay.quoc_tich})</span>
+											{/if}
+										</td>
+										<td class="p-3.5">
+											{#if val.errors.ngay_den}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_den}>⚠️ {formatDateTimeDisplay(stay.ngay_den)}</span>
+											{:else}
+												<span class="text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</span>
+											{/if}
+										</td>
+										<td class="p-3.5 font-medium">
+											{#if val.errors.ngay_di_du_kien}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {stay.ngay_di_du_kien}</span>
+											{:else}
+												<span class="text-amber-300">{stay.ngay_di_du_kien || '-'}</span>
+											{/if}
+										</td>
 										<td class="p-3.5 font-mono text-[11px] text-slate-400">{stay.ma_ho_so_kbtt || '-'}</td>
 										<td class="p-3.5 text-center">
 											{#if isDeleting}
@@ -1744,26 +1952,60 @@ onMount(async () => {
 								{#each stays as stay, idx (stay.id)}
 									{@const badge = getStatusBadge(stay.status)}
 									{@const isDeleting = deletingIds.has(stay.id)}
-									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''}">
+									{@const val = validateStayDetail(stay)}
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 text-center font-mono text-slate-500">{idx + 1}</td>
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
-											<span>{stay.ho_ten}</span>
+											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
+											{#if val.errors.ho_ten}
+												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️ {val.errors.ho_ten}</span>
+											{/if}
 											<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{stay.gioi_tinh === 'F' ? 'Nữ' : 'Nam'}</span>
 										</td>
-										<td class="p-3.5 font-mono font-bold text-sky-400">{stay.so_phong}</td>
+										<td class="p-3.5 font-mono font-bold">
+											{#if val.errors.so_phong}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.so_phong}>⚠️ {stay.so_phong || 'Trống'}</span>
+											{:else}
+												<span class="text-sky-400">{stay.so_phong}</span>
+											{/if}
+										</td>
 										<td class="p-3.5">
 											<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
 												{badge.label}
 											</span>
 										</td>
-										<td class="p-3.5 font-mono text-slate-300">{stay.so_giay_to}</td>
-										<td class="p-3.5">
-											<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
-												{stay.quoc_tich}
-											</span>
+										<td class="p-3.5 font-mono">
+											{#if val.errors.so_giay_to}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.so_giay_to}>⚠️ {stay.so_giay_to || 'Trống'}</span>
+											{:else}
+												<span class="text-slate-300">{stay.so_giay_to}</span>
+											{/if}
 										</td>
-										<td class="p-3.5 text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</td>
-										<td class="p-3.5 text-slate-400">{stay.ngay_di_du_kien || '-'}</td>
+										<td class="p-3.5">
+											{#if val.errors.quoc_tich}
+												<span class="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-rose-900/80 border border-rose-700 text-rose-200" title={val.errors.quoc_tich}>
+													⚠️ {stay.quoc_tich || 'Trống'}
+												</span>
+											{:else}
+												<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-900 border border-slate-700 {stay.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}">
+													{stay.quoc_tich}
+												</span>
+											{/if}
+										</td>
+										<td class="p-3.5">
+											{#if val.errors.ngay_den}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_den}>⚠️ {formatDateTimeDisplay(stay.ngay_den)}</span>
+											{:else}
+												<span class="text-slate-300">{formatDateTimeDisplay(stay.ngay_den)}</span>
+											{/if}
+										</td>
+										<td class="p-3.5">
+											{#if val.errors.ngay_di_du_kien}
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {stay.ngay_di_du_kien}</span>
+											{:else}
+												<span class="text-slate-400">{stay.ngay_di_du_kien || '-'}</span>
+											{/if}
+										</td>
 										<td class="p-3.5 font-mono text-[11px] text-slate-300">{stay.ma_ho_so_kbtt || '-'}</td>
 										<td class="p-3.5 text-[11px] text-slate-400 font-mono">
 											{#if stay.source_sheet_tab}
@@ -2053,7 +2295,7 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="edit_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ (API 10) <span class="text-rose-400">*</span></label>
+						<label for="edit_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ <span class="text-rose-400">*</span></label>
 						<select
 							id="edit_loai_giay_to"
 							bind:value={editStay.loai_giay_to}
@@ -2088,7 +2330,7 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="edit_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch (252 Quốc Gia) <span class="text-rose-400">*</span></label>
+						<label for="edit_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch <span class="text-rose-400">*</span></label>
 						<select
 							id="edit_quoc_tich"
 							bind:value={editStay.quoc_tich}
@@ -2096,14 +2338,12 @@ onMount(async () => {
 							class="w-full bg-slate-900 border {editLiveVal.errors.quoc_tich ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
 						>
 							{#each COUNTRY_OPTIONS as c}
-								<option value={c.maQT}>
-									{c.maQT} - {c.tenQT} ({c.tenQTEn})
-								</option>
+								<option value={c.maQT}>{c.label}</option>
 							{/each}
 						</select>
 						{#if editCountryInfo}
 							<div class="mt-1 px-2 py-0.5 rounded bg-sky-950/80 border border-sky-700/50 text-[10px] text-sky-300 font-medium inline-block">
-								🌐 {editCountryInfo.tenQT} ({editCountryInfo.tenQTEn})
+								🌐 {editCountryInfo.tenQT}
 							</div>
 						{/if}
 						{#if editLiveVal.errors.quoc_tich}
@@ -2138,6 +2378,21 @@ onMount(async () => {
 					</div>
 
 					<div>
+						<label for="edit_thoi_han_thi_thuc" class="block text-slate-400 mb-1 font-medium">Thời hạn thị thực (DD/MM/YYYY)</label>
+						<input
+							id="edit_thoi_han_thi_thuc"
+							type="text"
+							bind:value={editStay.thoi_han_thi_thuc}
+							disabled={editStay.quoc_tich === 'VNM'}
+							placeholder={editStay.quoc_tich === 'VNM' ? 'Không áp dụng (Việt Nam)' : '31/12/2026'}
+							class="w-full bg-slate-900 border {editLiveVal.errors.thoi_han_thi_thuc ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono {editStay.quoc_tich === 'VNM' ? 'opacity-40 cursor-not-allowed bg-slate-950/60' : ''} focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editLiveVal.errors.thoi_han_thi_thuc}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.thoi_han_thi_thuc}</p>
+						{/if}
+					</div>
+
+					<div>
 						<label for="edit_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY HH:mm:ss) <span class="text-rose-400">*</span></label>
 						<input
 							id="edit_ngay_den"
@@ -2166,23 +2421,12 @@ onMount(async () => {
 					</div>
 
 					<div class="sm:col-span-2">
-						<label for="edit_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ chi tiết</label>
+						<label for="edit_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ</label>
 						<input
 							id="edit_dia_chi_chi_tiet"
 							type="text"
 							bind:value={editStay.dia_chi_chi_tiet}
-							placeholder="Số nhà, đường phố..."
-							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
-						/>
-					</div>
-
-					<div class="sm:col-span-2">
-						<label for="edit_tinh_thanh" class="block text-slate-400 mb-1 font-medium">Tỉnh / Thành phố</label>
-						<input
-							id="edit_tinh_thanh"
-							type="text"
-							bind:value={editStay.tinh_thanh}
-							placeholder="TP. Hà Nội"
+							placeholder="Số nhà, đường phố, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố..."
 							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
 						/>
 					</div>
@@ -2344,7 +2588,7 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="add_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ (API 10) <span class="text-rose-400">*</span></label>
+						<label for="add_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ <span class="text-rose-400">*</span></label>
 						<select id="add_loai_giay_to" bind:value={newGuestForm.loai_giay_to} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500">
 							{#each LOAI_GIAY_TO_OPTIONS as opt}
 								<option value={opt.id}>{opt.name}</option>
@@ -2368,12 +2612,10 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="add_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch (252 Quốc Gia) <span class="text-rose-400">*</span></label>
+						<label for="add_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch <span class="text-rose-400">*</span></label>
 						<select id="add_quoc_tich" bind:value={newGuestForm.quoc_tich} onchange={onAddQuocTichChange} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500">
 							{#each COUNTRY_OPTIONS as c}
-								<option value={c.maQT}>
-									{c.maQT} - {c.tenQT} ({c.tenQTEn})
-								</option>
+								<option value={c.maQT}>{c.label}</option>
 							{/each}
 						</select>
 					</div>
@@ -2392,6 +2634,18 @@ onMount(async () => {
 					</div>
 
 					<div>
+						<label for="add_thoi_han_thi_thuc" class="block text-slate-400 mb-1 font-medium">Thời hạn thị thực (DD/MM/YYYY)</label>
+						<input
+							id="add_thoi_han_thi_thuc"
+							type="text"
+							bind:value={newGuestForm.thoi_han_thi_thuc}
+							disabled={newGuestForm.quoc_tich === 'VNM'}
+							placeholder={newGuestForm.quoc_tich === 'VNM' ? 'Không áp dụng (Việt Nam)' : '31/12/2026'}
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono {newGuestForm.quoc_tich === 'VNM' ? 'opacity-40 cursor-not-allowed bg-slate-950/60' : ''} focus:outline-none focus:border-sky-500"
+						/>
+					</div>
+
+					<div>
 						<label for="add_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY HH:mm:ss)</label>
 						<input id="add_ngay_den" type="text" bind:value={newGuestForm.ngay_den} placeholder="17/09/2026 14:00:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500" />
 					</div>
@@ -2402,13 +2656,8 @@ onMount(async () => {
 					</div>
 
 					<div class="sm:col-span-2">
-						<label for="add_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ chi tiết</label>
-						<input id="add_dia_chi_chi_tiet" type="text" bind:value={newGuestForm.dia_chi_chi_tiet} placeholder="Số nhà, đường phố..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500" />
-					</div>
-
-					<div class="sm:col-span-2">
-						<label for="add_tinh_thanh" class="block text-slate-400 mb-1 font-medium">Tỉnh / Thành phố</label>
-						<input id="add_tinh_thanh" type="text" bind:value={newGuestForm.tinh_thanh} placeholder="TP. Hà Nội" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500" />
+						<label for="add_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ</label>
+						<input id="add_dia_chi_chi_tiet" type="text" bind:value={newGuestForm.dia_chi_chi_tiet} placeholder="Số nhà, đường phố, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500" />
 					</div>
 				</div>
 
