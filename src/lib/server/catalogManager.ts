@@ -1,19 +1,13 @@
-import fs from "node:fs";
-import path from "node:path";
+import {
+	LOAI_GIAY_TO_DATA,
+	LY_DO_CU_TRU_DATA,
+	QUOC_TICH_DATA,
+	type StandardCatalogItem,
+	TINH_TP_DATA,
+} from "../data/catalogs.js";
 import { CONFIG } from "./config.js";
 
-export interface CatalogItem {
-	id?: number | string;
-	name?: string;
-	tenTT?: string;
-	maTT?: string | number;
-	tenTTEn?: string;
-	maTTChu?: string;
-	tenQT?: string;
-	maQT?: string;
-	tenQTEn?: string;
-	[key: string]: unknown;
-}
+export type CatalogItem = StandardCatalogItem;
 
 export class CatalogManager {
 	private static instance: CatalogManager;
@@ -32,6 +26,7 @@ export class CatalogManager {
 	public constructor() {
 		this.initAliases();
 		this.loadStandardQuocTich();
+		this.loadInitialCatalogs();
 	}
 
 	public static getInstance(): CatalogManager {
@@ -69,32 +64,43 @@ export class CatalogManager {
 				],
 				"RUS",
 			],
-			[["CHN", "CN", "TRUNG QUOC", "TRUNG QUỐC", "CHINA", "CHINESE"], "CHN"],
-			[["KOR", "KR", "HAN QUOC", "HÀN QUỐC", "KOREA", "SOUTH KOREA"], "KOR"],
 			[
 				[
-					"JPN",
-					"JP",
-					"NHAT BAN",
-					"NHẬT BẢN",
-					"NHAT",
-					"NHẬT",
-					"JAPAN",
-					"JAPANESE",
+					"KOR",
+					"KR",
+					"HAN QUOC",
+					"HÀN QUỐC",
+					"KOREA",
+					"SOUTH KOREA",
+					"DAI HAN",
 				],
-				"JPN",
+				"KOR",
 			],
-			[["TWN", "TW", "DAI LOAN", "ĐÀI LOAN", "TAIWAN"], "TWN"],
+			[["JPN", "JP", "NHAT BAN", "NHẬT BẢN", "JAPAN", "JAPANESE"], "JPN"],
+			[["CHN", "CN", "TRUNG QUOC", "TRUNG QUỐC", "CHINA", "CHINESE"], "CHN"],
+			[
+				[
+					"TWN",
+					"TW",
+					"DAI LOAN",
+					"ĐÀI LOAN",
+					"TAIWAN",
+					"TRUNG QUOC (DAI LOAN)",
+					"TRUNG QUỐC (ĐÀI LOAN)",
+				],
+				"TWN",
+			],
 			[
 				[
 					"GBR",
-					"GB",
 					"UK",
+					"GB",
 					"ANH",
 					"VUONG QUOC ANH",
 					"VƯƠNG QUỐC ANH",
 					"UNITED KINGDOM",
-					"ENGLAND",
+					"BRITAIN",
+					"BRITISH",
 				],
 				"GBR",
 			],
@@ -124,67 +130,28 @@ export class CatalogManager {
 	}
 
 	private loadStandardQuocTich(): void {
-		try {
-			const candidates = [
-				path.resolve(process.cwd(), "data/catalogs/quoc_tich.json"),
-				path.resolve(process.cwd(), "quoc_tich.json"),
-				path.resolve(process.cwd(), "src/lib/server/quoc_tich.json"),
-			];
-			for (const jsonPath of candidates) {
-				if (fs.existsSync(jsonPath)) {
-					const raw = fs.readFileSync(jsonPath, "utf8");
-					const parsed = JSON.parse(raw);
-					const list = Array.isArray(parsed) ? parsed : parsed.data || [];
-					if (Array.isArray(list) && list.length > 0) {
-						list.forEach((item) => {
-							const code = String(
-								item.maQT || item.ma_alpha3 || item.code || "",
-							)
-								.trim()
-								.toUpperCase();
-							const nameVi = String(
-								item.tenQT || item.ten_quoc_gia || item.name || "",
-							).trim();
-							const nameEn = String(
-								item.tenQTEn || item.ten_tieng_anh || item.nameEn || "",
-							).trim();
-							if (code) {
-								this.standardQuocTichMap.set(code, {
-									ten_quoc_gia: nameVi,
-									ten_tieng_anh: nameEn,
-								});
-							}
-						});
-						break;
-					}
-				}
+		for (const item of QUOC_TICH_DATA) {
+			const code = String(item.maQT || "")
+				.trim()
+				.toUpperCase();
+			const nameVi = String(item.tenQT || "").trim();
+			const nameEn = String(item.tenQTEn || "").trim();
+			if (code) {
+				this.standardQuocTichMap.set(code, {
+					ten_quoc_gia: nameVi,
+					ten_tieng_anh: nameEn,
+				});
 			}
-		} catch (err) {
-			console.warn("[CatalogManager] Không thể nạp quoc_tich.json:", err);
 		}
 	}
 
-	private loadLocalCatalogJson(filename: string): CatalogItem[] {
-		try {
-			const candidates = [
-				path.resolve(process.cwd(), `data/catalogs/${filename}`),
-				path.resolve(process.cwd(), filename),
-				path.resolve(process.cwd(), `src/lib/server/${filename}`),
-			];
-			for (const jsonPath of candidates) {
-				if (fs.existsSync(jsonPath)) {
-					const raw = fs.readFileSync(jsonPath, "utf8");
-					const parsed = JSON.parse(raw);
-					const list = Array.isArray(parsed) ? parsed : parsed.data || [];
-					if (Array.isArray(list) && list.length > 0) {
-						return list as CatalogItem[];
-					}
-				}
-			}
-		} catch (err) {
-			console.warn(`[CatalogManager] Không thể nạp ${filename}:`, err);
-		}
-		return [];
+	private loadInitialCatalogs(): void {
+		this.quocTichList = [...QUOC_TICH_DATA];
+		this.tinhTpList = [...TINH_TP_DATA];
+		this.lyDoCuTruList = [...LY_DO_CU_TRU_DATA];
+		this.loaiGiayToList = [...LOAI_GIAY_TO_DATA];
+		this.noiCuTruList = this.getFallbackNoiCuTru();
+		this.isLoaded = true;
 	}
 
 	public async fetchPublicCatalog(endpoint: string): Promise<CatalogItem[]> {
@@ -202,208 +169,118 @@ export class CatalogManager {
 	}
 
 	public async initialize(): Promise<void> {
-		if (this.isLoaded) return;
-		try {
-			// 1. Ưu tiên nạp danh mục từ Database cục bộ data/catalogs/*.json
-			const localQt = this.loadLocalCatalogJson("quoc_tich.json");
-			const localTinh = this.loadLocalCatalogJson("tinh_tp.json");
-			const localLyDo = this.loadLocalCatalogJson("ly_do_cu_tru.json");
-			const localLoaiGt = this.loadLocalCatalogJson("loai_giay_to.json");
-
-			this.quocTichList =
-				localQt.length > 0
-					? localQt
-					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_QUOC_TICH);
-			if (this.quocTichList.length === 0)
-				this.quocTichList = this.getFallbackQuocTich();
-
-			this.tinhTpList =
-				localTinh.length > 0
-					? localTinh
-					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_TINH_TP);
-			if (this.tinhTpList.length === 0)
-				this.tinhTpList = this.getFallbackTinhTp();
-
-			const lyDoRaw =
-				localLyDo.length > 0
-					? localLyDo
-					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_LY_DO_CU_TRU);
-			if (lyDoRaw.length > 0) {
-				const filtered = lyDoRaw.filter((item) => {
-					const id = Number(item.id);
-					const name = String(item.name || item.ten || "").toLowerCase();
-					return (
-						id === 1 ||
-						id === 20 ||
-						name.includes("du lịch") ||
-						name.includes("du lich") ||
-						name.includes("mục đích khác") ||
-						name.includes("muc dich khac")
-					);
-				});
-				this.lyDoCuTruList =
-					filtered.length > 0 ? filtered : this.getFallbackLyDoCuTru();
-			} else {
-				this.lyDoCuTruList = this.getFallbackLyDoCuTru();
-			}
-
-			const loaiGtRaw =
-				localLoaiGt.length > 0
-					? localLoaiGt
-					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_LOAI_GIAY_TO);
-			this.loaiGiayToList =
-				loaiGtRaw.length > 0 ? loaiGtRaw : this.getFallbackLoaiGiayTo();
-
-			const noiCtRaw = await this.fetchPublicCatalog(
-				CONFIG.ENDPOINTS.DM_NOI_CU_TRU,
-			);
-			this.noiCuTruList =
-				noiCtRaw.length > 0 ? noiCtRaw : this.getFallbackNoiCuTru();
-
-			this.isLoaded = true;
-		} catch (err) {
-			console.error("[CatalogManager] Lỗi khởi tạo danh mục:", err);
-		}
+		if (this.isLoaded && this.quocTichList.length > 0) return;
+		this.loadInitialCatalogs();
 	}
 
-	public isValidQuocTichCode(code: string): boolean {
-		if (!code) return false;
-		const clean = String(code).trim().toUpperCase();
-		if (this.aliasMap.has(clean)) return true;
-		if (
-			this.standardQuocTichMap.size > 0 &&
-			this.standardQuocTichMap.has(clean)
-		) {
-			return true;
-		}
-		return this.quocTichList.some((item) => {
-			const ma = String(item.maQT || item.id || item.code || "")
-				.trim()
-				.toUpperCase();
-			return ma === clean;
-		});
+	public getFallbackQuocTich(): CatalogItem[] {
+		return [...QUOC_TICH_DATA];
 	}
 
-	public findQuocTich(keyword: string): string | null {
-		if (!keyword) return null;
-		const clean = String(keyword).trim().toUpperCase();
+	public getFallbackTinhTp(): CatalogItem[] {
+		return [...TINH_TP_DATA];
+	}
 
-		// 1. Check alias map
-		if (this.aliasMap.has(clean)) {
-			return this.aliasMap.get(clean)!;
+	public getFallbackLyDoCuTru(): CatalogItem[] {
+		return [...LY_DO_CU_TRU_DATA];
+	}
+
+	public getFallbackLoaiGiayTo(): CatalogItem[] {
+		return [...LOAI_GIAY_TO_DATA];
+	}
+
+	public getFallbackNoiCuTru(): CatalogItem[] {
+		return [
+			{ id: 1, name: "Thường trú (1)" },
+			{ id: 2, name: "Tạm trú (2)" },
+			{ id: 3, name: "Nơi ở hiện tại (3)" },
+		];
+	}
+
+	public normalizeQuocTich(raw: string): string {
+		if (!raw) return "VNM";
+		const cleaned = raw.trim().toUpperCase();
+
+		if (this.aliasMap.has(cleaned)) {
+			return this.aliasMap.get(cleaned) || cleaned;
 		}
 
-		// 2. Check direct standard alpha-3 codes
-		if (this.standardQuocTichMap.has(clean)) {
-			return clean;
+		if (this.standardQuocTichMap.has(cleaned)) {
+			return cleaned;
 		}
 
-		// 3. Check loaded quocTichList
-		const item = this.quocTichList.find((i) => {
-			const ma = String(i.maQT || i.id || i.code || "")
-				.trim()
-				.toUpperCase();
-			const ten = String(i.tenQT || i.name || "")
-				.trim()
-				.toUpperCase();
-			const tenEn = String(i.tenQTEn || "")
-				.trim()
-				.toUpperCase();
-			return (
-				ma === clean ||
-				ten === clean ||
-				tenEn === clean ||
-				ten.includes(clean) ||
-				tenEn.includes(clean)
-			);
-		});
-		if (item && item.maQT) return String(item.maQT).toUpperCase();
-
-		// 4. Check standard map values
 		for (const [code, info] of this.standardQuocTichMap.entries()) {
-			const vi = info.ten_quoc_gia.toUpperCase();
-			const en = info.ten_tieng_anh.toUpperCase();
 			if (
-				vi === clean ||
-				en === clean ||
-				vi.includes(clean) ||
-				en.includes(clean)
+				info.ten_quoc_gia.toUpperCase() === cleaned ||
+				info.ten_tieng_anh.toUpperCase() === cleaned
 			) {
 				return code;
 			}
 		}
 
-		return null;
+		return cleaned;
 	}
 
-	public findLoaiGiayTo(name: string): number {
-		if (!name) return 1;
-		const clean = String(name).toLowerCase();
-		if (clean.includes("căn cước") && !clean.includes("thẻ cccd")) return 8;
-		if (clean.includes("cccd")) return 1;
-		if (clean.includes("cmnd")) return 2;
-		if (clean.includes("lái xe") || clean.includes("gplx")) return 3;
-		if (clean.includes("hộ chiếu") || clean.includes("passport")) return 4;
+	public getQuocTichInfo(
+		code: string,
+	): { ten_quoc_gia: string; ten_tieng_anh: string } | null {
+		const norm = this.normalizeQuocTich(code);
+		return this.standardQuocTichMap.get(norm) || null;
+	}
+
+	public isValidQuocTich(code: string): boolean {
+		const norm = this.normalizeQuocTich(code);
+		return this.standardQuocTichMap.has(norm);
+	}
+
+	public findQuocTich(raw: string): string {
+		return this.normalizeQuocTich(raw);
+	}
+
+	public isValidQuocTichCode(code: string): boolean {
+		return this.isValidQuocTich(code);
+	}
+
+	public findTinhTp(raw: string): CatalogItem | null {
+		if (!raw) return null;
+		const cleaned = raw.trim().toLowerCase();
+		return (
+			this.tinhTpList.find((item) => {
+				const ten = (item.tenTT || item.name || "").toLowerCase();
+				const ma = String(item.maTT || item.code || "").toLowerCase();
+				return ten.includes(cleaned) || cleaned.includes(ten) || ma === cleaned;
+			}) || null
+		);
+	}
+
+	public findLoaiGiayTo(raw: string | number): number {
+		if (!raw) return 1;
+		const num = Number(raw);
+		if (!Number.isNaN(num) && [1, 2, 3, 4, 8].includes(num)) {
+			return num;
+		}
+		const str = String(raw).toLowerCase().trim();
+		if (str.includes("hộ chiếu") || str.includes("passport")) return 4;
+		if (
+			str.includes("thẻ căn cước") ||
+			str === "căn cước" ||
+			str === "can cuoc"
+		)
+			return 8;
+		if (str.includes("cccd") || str.includes("căn cước công dân")) return 1;
+		if (str.includes("cmnd")) return 2;
+		if (str.includes("bằng lái") || str.includes("gplx")) return 3;
 		return 1;
 	}
 
-	private getFallbackQuocTich(): CatalogItem[] {
-		if (this.standardQuocTichMap.size > 0) {
-			return Array.from(this.standardQuocTichMap.entries()).map(
-				([ma, val]) => ({
-					maQT: ma,
-					tenQT: val.ten_quoc_gia,
-					tenQTEn: val.ten_tieng_anh,
-				}),
-			);
-		}
-		return [
-			{ maQT: "VNM", tenQT: "Việt Nam", tenQTEn: "Vietnam" },
-			{ maQT: "RUS", tenQT: "Liên bang Nga", tenQTEn: "Russian Federation" },
-			{ maQT: "USA", tenQT: "Hoa Kỳ", tenQTEn: "United States" },
-			{ maQT: "CHN", tenQT: "Trung Quốc", tenQTEn: "China" },
-			{ maQT: "KOR", tenQT: "Hàn Quốc", tenQTEn: "Korea, Republic of" },
-			{ maQT: "JPN", tenQT: "Nhật Bản", tenQTEn: "Japan" },
-			{
-				maQT: "VAA",
-				tenQT: "Cơ quan ngoại giao VAA",
-				tenQTEn: "VAA Diplomatic",
-			},
-		];
-	}
-
-	private getFallbackTinhTp(): CatalogItem[] {
-		return [
-			{ maTT: 101, maTTChu: "HN", tenTT: "Hà Nội" },
-			{ maTT: 103, maTTChu: "HP", tenTT: "Hải Phòng" },
-			{ maTT: 201, maTTChu: "DN", tenTT: "Đà Nẵng" },
-			{ maTT: 701, maTTChu: "HCM", tenTT: "Hồ Chí Minh" },
-			{ maTT: 606, maTTChu: "DL", tenTT: "Đắk Lắk" },
-		];
-	}
-
-	private getFallbackLyDoCuTru(): CatalogItem[] {
-		return [
-			{ id: 1, name: "Du lịch" },
-			{ id: 20, name: "Mục đích khác" },
-		];
-	}
-
-	private getFallbackLoaiGiayTo(): CatalogItem[] {
-		return [
-			{ id: 1, name: "CCCD" },
-			{ id: 2, name: "Thẻ CMND" },
-			{ id: 3, name: "Giấy phép lái xe" },
-			{ id: 4, name: "Hộ chiếu" },
-			{ id: 8, name: "Thẻ Căn Cước" },
-		];
-	}
-
-	private getFallbackNoiCuTru(): CatalogItem[] {
-		return [
-			{ id: 1, name: "Thường trú" },
-			{ id: 2, name: "Tạm trú" },
-		];
+	public findLyDoCuTru(raw: string | number): number {
+		if (!raw) return 1;
+		const num = Number(raw);
+		if (num === 20) return 20;
+		if (num === 1) return 1;
+		const str = String(raw).toLowerCase();
+		if (str.includes("khác") || str.includes("khac")) return 20;
+		return 1;
 	}
 }
 

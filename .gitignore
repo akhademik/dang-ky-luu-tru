@@ -33,3 +33,8 @@ pnpm-debug.log*
 # Graphify temporary caches & sidecars (preserve public outputs)
 graphify-out/.graphify_*
 graphify-out/cache/
+
+# Cloudflare Wrangler & Local DB
+.wrangler/
+*.sqlite*
+*.db

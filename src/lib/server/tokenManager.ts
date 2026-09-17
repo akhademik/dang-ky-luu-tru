@@ -8,8 +8,6 @@ export class TokenManager {
 	public expiresAt: number = 0; // Milliseconds Unix timestamp
 	public tokenType: string = "Bearer";
 
-	public constructor() {}
-
 	public static getInstance(): TokenManager {
 		if (!TokenManager.instance) {
 			TokenManager.instance = new TokenManager();
@@ -123,6 +121,10 @@ export class TokenManager {
 			this.clear();
 			return false;
 		}
+	}
+
+	public async revokeToken(): Promise<boolean> {
+		return this.revoke();
 	}
 
 	private saveToken(resData: Record<string, unknown>): void {

@@ -85,9 +85,9 @@ export class GoogleSheetService {
 			const itemsRegex =
 				/items\.push\(\{\s*name:\s*"([^"]+)",\s*pageUrl:[^}]+gid:\s*"([^"]+)"/g;
 			const tabs: Array<TabInfo & { parsedDate?: Date | null }> = [];
-			let match: RegExpExecArray | null;
+			let match: RegExpExecArray | null = itemsRegex.exec(html);
 
-			while ((match = itemsRegex.exec(html)) !== null) {
+			while (match !== null) {
 				const name = match[1];
 				const gid = match[2];
 				const parsedDate = this._parseDateFromTabName(name);
@@ -99,15 +99,17 @@ export class GoogleSheetService {
 					isDateTab: !!parsedDate,
 					parsedDate,
 				});
+				match = itemsRegex.exec(html);
 			}
 
 			if (tabs.length === 0) {
 				// Fallback quét li tab hoặc thẻ a
 				const fallbackRegex =
 					/<li\s+id="sheet-button-([0-9]+)"[^>]*>[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/gi;
-				while ((match = fallbackRegex.exec(html)) !== null) {
-					const gid = match[1];
-					const name = match[2].trim().replace(/<[^>]+>/g, "");
+				let fallbackMatch = fallbackRegex.exec(html);
+				while (fallbackMatch !== null) {
+					const gid = fallbackMatch[1];
+					const name = fallbackMatch[2].trim().replace(/<[^>]+>/g, "");
 					const parsedDate = this._parseDateFromTabName(name);
 					tabs.push({
 						name,
@@ -116,6 +118,7 @@ export class GoogleSheetService {
 						isDateTab: !!parsedDate,
 						parsedDate,
 					});
+					fallbackMatch = fallbackRegex.exec(html);
 				}
 			}
 
@@ -186,14 +189,14 @@ export class GoogleSheetService {
 			.toLowerCase()
 			.replace(/ngày|ngay/g, "")
 			.trim();
-		const match = clean.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+		const match = clean.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
 		if (match) {
 			const day = parseInt(match[1], 10);
 			const month = parseInt(match[2], 10) - 1;
 			let year = parseInt(match[3], 10);
 			if (year < 100) year += 2000;
 			const d = new Date(year, month, day);
-			if (!isNaN(d.getTime())) return d;
+			if (!Number.isNaN(d.getTime())) return d;
 		}
 		return null;
 	}
@@ -316,7 +319,7 @@ export class GoogleSheetService {
 		csvText: string,
 		cacheKey?: string,
 	): Record<string, string>[] {
-		if (!csvText || !csvText.trim()) {
+		if (!csvText?.trim()) {
 			logger.warn("GoogleSheetService", "Nội dung CSV rỗng");
 			return [];
 		}
@@ -702,7 +705,7 @@ export class GoogleSheetService {
 		const tinhTp = String(
 			rowData.tinhTp ||
 				rowData.tinh ||
-				rowData["Tỉnh"] ||
+				rowData.Tỉnh ||
 				rowData["Tỉnh/TP"] ||
 				"",
 		);
@@ -710,16 +713,16 @@ export class GoogleSheetService {
 			rowData.quanHuyen ||
 				rowData.huyen ||
 				rowData["Quận/Huyện"] ||
-				rowData["Quận"] ||
-				rowData["Huyện"] ||
+				rowData.Quận ||
+				rowData.Huyện ||
 				"",
 		);
 		const phuongXa = String(
 			rowData.phuongXa ||
 				rowData.xa ||
 				rowData["Phường/Xã"] ||
-				rowData["Phường"] ||
-				rowData["Xã"] ||
+				rowData.Phường ||
+				rowData.Xã ||
 				"",
 		);
 		const diaChi = String(

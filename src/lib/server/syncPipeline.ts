@@ -1,9 +1,8 @@
-import { CONFIG } from "./config.js";
-import { CatalogManager, catalogManager } from "./catalogManager.js";
-import { TokenManager, tokenManager } from "./tokenManager.js";
+import { type CatalogManager, catalogManager } from "./catalogManager.js";
 import { DataTransformer, type RawOcrRow } from "./dataTransformer.js";
 import { GoogleSheetService } from "./googleSheetService.js";
 import { KbttClient } from "./kbttClient.js";
+import { type TokenManager, tokenManager } from "./tokenManager.js";
 
 interface SyncResult {
 	step: string;

@@ -37,8 +37,7 @@ const DEV_BASE_URL =
 
 const PROD_BASE_URL =
 	process.env.KBTT_PROD_BASE_URL ||
-	(process.env.KBTT_BASE_URL &&
-	process.env.KBTT_BASE_URL.includes("bocongan.gov.vn")
+	(process.env.KBTT_BASE_URL?.includes("bocongan.gov.vn")
 		? process.env.KBTT_BASE_URL
 		: "https://api-tbltkbtt.bocongan.gov.vn");
 

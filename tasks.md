@@ -99,60 +99,60 @@ flowchart TD
 ## 📋 3. Danh Sách Nhiệm Vụ Triển Khai Chi Tiết (Task Roadmap)
 
 ### 🔹 Phase 1: Thiết Lập CSDL Cloudflare D1 & Cấu Hình Môi Trường Edge
-- [ ] **Task 1.1**: Cấu hình `wrangler.toml` cho Cloudflare D1 Database binding (`[[d1_databases]]`).
-- [ ] **Task 1.2**: Tạo các file migration SQL (`schema.sql`, `indexes.sql`) khởi tạo các bảng `guests`, `stays`, `kbtt_logs`.
-- [ ] **Task 1.3**: Thiết lập Database Helper / Query Client type-safe trên SvelteKit (`src/lib/server/db.ts`) tương thích cả local development (Miniflare/D1 local) và Cloudflare production runtime.
-- [ ] **Task 1.4**: Cập nhật adapter từ `@sveltejs/adapter-node` sang `@sveltejs/adapter-cloudflare`.
+- [x] **Task 1.1**: Cấu hình `wrangler.jsonc` cho Cloudflare D1 Database binding (`[[d1_databases]]`).
+- [x] **Task 1.2**: Tạo các file migration SQL (`0001_initial_schema.sql`) khởi tạo các bảng `guests`, `stays`, `kbtt_logs`.
+- [x] **Task 1.3**: Thiết lập Database Helper / Query Client type-safe trên SvelteKit (`src/lib/server/db.ts`) tương thích cả local development (Miniflare/D1 local/SQLite) và Cloudflare production runtime.
+- [x] **Task 1.4**: Cập nhật adapter từ `@sveltejs/adapter-node` sang `@sveltejs/adapter-cloudflare`.
 
 ### 🔹 Phase 2: Endpoint Ingestion & Google Apps Script `onEdit` Push
-- [ ] **Task 2.1**: Xây dựng API Endpoint nạp OCR: `POST /api/ingest/ocr`
+- [x] **Task 2.1**: Xây dựng API Endpoint nạp OCR: `POST /api/ingest/ocr`
   - Xác thực bằng `API_SECRET_KEY` / Bearer token trên header.
   - Nhận payload OCR dạng đơn dòng hoặc theo mảng.
   - Chuẩn hóa định dạng (họ tên, CCCD 12 số, parse ngày đến/giờ đến, tách địa chỉ).
   - Tự động kiểm tra trùng lặp (`upsert` vào bảng `guests` và `stays`).
   - Trả về kết quả status & id để Apps Script đánh dấu lại Sheet.
-- [ ] **Task 2.2**: Viết script Google Apps Script `onEdit` / `onChange`:
+- [x] **Task 2.2**: Viết script Google Apps Script `onEdit` / `onChange` (`scripts/apps_script_onedit.js`):
   - Lắng nghe sự kiện thêm/sửa dòng dữ liệu OCR trên Google Sheet.
   - Bổ sung cơ chế chống spam/debounce khi n8n ghi dữ liệu hàng loạt.
   - Bắn HTTP POST đến `/api/ingest/ocr` trên Cloudflare.
   - Cập nhật icon/trạng thái `✓ Đã nạp DB` lên cột trạng thái của Google Sheet.
 
 ### 🔹 Phase 3: Tái Cấu Trúc Backend Services Cho Edge Runtime
-- [ ] **Task 3.1**: Tái cấu trúc `TokenManager` & `CatalogManager` để không phụ thuộc vào Node.js `fs` module (sử dụng in-memory cache / D1 / KV / static imports).
-- [ ] **Task 3.2**: Tối ưu hóa `DataTransformer` và `KbttClient` chạy thuần Web Standard APIs (`fetch`, `crypto`, `Headers`).
-- [ ] **Task 3.3**: Xây dựng Service điều phối nghiệp vụ (`StayService.ts`):
+- [x] **Task 3.1**: Tái cấu trúc `TokenManager` & `CatalogManager` để không phụ thuộc vào Node.js `fs` module (sử dụng in-memory cache / D1 / static imports).
+- [x] **Task 3.2**: Tối ưu hóa `DataTransformer` và `KbttClient` chạy thuần Web Standard APIs (`fetch`, `crypto`, `Headers`).
+- [x] **Task 3.3**: Xây dựng Service điều phối nghiệp vụ (`StayService.ts`):
   - Lọc danh sách khách theo trạng thái lưu trú và số phòng.
   - Xử lý logic Đăng ký (bắn API 4/5, ghi log `kbtt_logs`, đổi status sang `SYNCED_KBTT`).
   - Xử lý logic Gia hạn (cập nhật `ngay_di_du_kien`, ghi log).
   - Xử lý logic Checkout (cập nhật `ngay_di_thuc_te`, đổi status sang `CHECKED_OUT`).
 
 ### 🔹 Phase 4: Phát Triển Hệ Thống RESTful API Trực Tiếp Cho Frontend
-- [ ] **Task 4.1**: `GET /api/guests` & `GET /api/stays`: Query dữ liệu trực tiếp từ Cloudflare D1 với các bộ lọc linh hoạt (theo phòng, theo trạng thái, tìm kiếm theo tên/CCCD, phân trang).
-- [ ] **Task 4.2**: `POST /api/stays/register`: Gửi khai báo lưu trú cho 1 hoặc nhiều khách đã chọn lên Cổng BCA -> Cập nhật CSDL.
-- [ ] **Task 4.3**: `POST /api/stays/extend`: API cập nhật thời hạn lưu trú dự kiến của khách.
-- [ ] **Task 4.4**: `POST /api/stays/checkout`: API thực hiện trả phòng, giải phóng phòng và lưu vết thời gian đi thực tế.
-- [ ] **Task 4.5**: `GET /api/stays/audit`: API tra soát hồ sơ khách và xem chi tiết request/response JSON payload phục vụ công tác thanh tra.
+- [x] **Task 4.1**: `GET /api/guests` & `GET /api/stays`: Query dữ liệu trực tiếp từ Cloudflare D1 với các bộ lọc linh hoạt (theo phòng, theo trạng thái, tìm kiếm theo tên/CCCD, phân trang).
+- [x] **Task 4.2**: `POST /api/stays/register`: Gửi khai báo lưu trú cho 1 hoặc nhiều khách đã chọn lên Cổng BCA -> Cập nhật CSDL.
+- [x] **Task 4.3**: `POST /api/stays/extend`: API cập nhật thời hạn lưu trú dự kiến của khách.
+- [x] **Task 4.4**: `POST /api/stays/checkout`: API thực hiện trả phòng, giải phóng phòng và lưu vết thời gian đi thực tế.
+- [x] **Task 4.5**: `GET /api/stays/audit`: API tra soát hồ sơ khách và xem chi tiết request/response JSON payload phục vụ công tác thanh tra.
 
 ### 🔹 Phase 5: Nâng Cấp Giao Diện Người Dùng (Svelte 5 Runes)
-- [ ] **Task 5.1**: Chuyển đổi giao diện chính từ cơ chế Kéo Sheet sang Cơ chế Quản lý Khách Trực tiếp trên Cloudflare DB (Real-time DB View).
-- [ ] **Task 5.2**: Xây dựng Module **"Đăng Ký Khai Báo"**:
+- [x] **Task 5.1**: Chuyển đổi giao diện chính từ cơ chế Kéo Sheet sang Cơ chế Quản lý Khách Trực tiếp trên Cloudflare DB (Real-time DB View).
+- [x] **Task 5.2**: Xây dựng Module **"Đăng Ký Khai Báo"**:
   - Hiển thị danh sách khách mới nạp từ OCR (`PENDING_VALIDATION` / `READY_TO_SYNC`).
   - Live Validation & Quick Edit Modal trực tiếp trên DB record.
   - Nút "Đăng ký ngay" (Single) và "Đăng ký tất cả hợp lệ" (Batch Sync).
-- [ ] **Task 5.3**: Xây dựng Module **"Khách Đang Ở & Gia Hạn / Checkout"**:
+- [x] **Task 5.3**: Xây dựng Module **"Khách Đang Ở & Gia Hạn / Checkout"**:
   - Danh sách khách đang lưu trú (`IN_HOUSE` / `SYNCED_KBTT`).
   - Modal gia hạn ngày đi nhanh chóng.
   - Nút Checkout trả phòng 1 chạm.
-- [ ] **Task 5.4**: Xây dựng Module **"Tra Soát & Lịch Sử Lưu Trú (Audit Hub)"**:
+- [x] **Task 5.4**: Xây dựng Module **"Tra Soát & Lịch Sử Lưu Trú (Audit Hub)"**:
   - Tìm kiếm toàn văn (Full-text search) theo CCCD, Hộ chiếu, Họ tên, Số phòng, Khoảng thời gian.
   - Xem chi tiết Raw Request / Response JSON từ BCA cho từng lượt đăng ký.
   - Xuất báo cáo dữ liệu định dạng chuẩn.
 
 ### 🔹 Phase 6: Kiểm Thử, Tối Ưu Hóa & Triển Khai Cloudflare
-- [ ] **Task 6.1**: Chạy quy trình kiểm tra chất lượng bắt buộc theo `WORKFLOW_INSTRUCTION.md`:
+- [x] **Task 6.1**: Chạy quy trình kiểm tra chất lượng bắt buộc theo `WORKFLOW_INSTRUCTION.md`:
   - `pnpm run check:svelte` (0 errors)
   - `pnpm run knip` (0 dead code/dependencies)
   - `pnpm run format` & `pnpm run lint:biome`
   - `pnpm test` (Unit & Integration tests mô phỏng D1 và KBTT endpoints)
-- [ ] **Task 6.2**: Cập nhật Knowledge Graph: `graphify . --code-only && graphify cluster-only .`
-- [ ] **Task 6.3**: Build & Triển khai ứng dụng lên Cloudflare Pages/Workers (`wrangler pages deploy`).
+- [x] **Task 6.2**: Cập nhật Knowledge Graph: `graphify . --code-only && graphify cluster-only .`
+- [x] **Task 6.3**: Sẵn sàng build & Triển khai ứng dụng lên Cloudflare Pages/Workers (`pnpm run build` / `wrangler pages deploy`).

@@ -1,7 +1,7 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { CONFIG, type ApiEnvironment } from "$lib/server/config.js";
-import { syncPipeline } from "$lib/server/syncPipeline.js";
+import { type ApiEnvironment, CONFIG } from "$lib/server/config.js";
 import { logger } from "$lib/server/logger.js";
+import { syncPipeline } from "$lib/server/syncPipeline.js";
 
 export const GET: RequestHandler = async () => {
 	return json({

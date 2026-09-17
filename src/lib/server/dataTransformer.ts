@@ -1,4 +1,4 @@
-import { CatalogManager, catalogManager } from "./catalogManager.js";
+import { type CatalogManager, catalogManager } from "./catalogManager.js";
 
 export interface RawOcrRow {
 	[key: string]: string | number | undefined;
@@ -76,7 +76,7 @@ export class DataTransformer {
 			const second = dmyMatch[6] ? parseInt(dmyMatch[6], 10) : 0;
 			const date = new Date(year, month - 1, day, hour, minute, second);
 			if (
-				!isNaN(date.getTime()) &&
+				!Number.isNaN(date.getTime()) &&
 				date.getFullYear() === year &&
 				date.getMonth() === month - 1 &&
 				date.getDate() === day
@@ -98,7 +98,7 @@ export class DataTransformer {
 			const second = ymdMatch[6] ? parseInt(ymdMatch[6], 10) : 0;
 			const date = new Date(year, month - 1, day, hour, minute, second);
 			if (
-				!isNaN(date.getTime()) &&
+				!Number.isNaN(date.getTime()) &&
 				date.getFullYear() === year &&
 				date.getMonth() === month - 1 &&
 				date.getDate() === day
@@ -109,7 +109,7 @@ export class DataTransformer {
 
 		// Fallback standard Date
 		const fallback = new Date(str.includes("T") ? str : str.replace(" ", "T"));
-		if (!isNaN(fallback.getTime())) {
+		if (!Number.isNaN(fallback.getTime())) {
 			return {
 				year: fallback.getFullYear(),
 				month: fallback.getMonth() + 1,
@@ -126,7 +126,7 @@ export class DataTransformer {
 
 	public static formatDateOnly(dateRaw: unknown): string {
 		if (!dateRaw) return "";
-		const parsed = this.parseDateTime(dateRaw);
+		const parsed = DataTransformer.parseDateTime(dateRaw);
 		if (parsed) {
 			const y = parsed.year;
 			const m = String(parsed.month).padStart(2, "0");
@@ -177,7 +177,7 @@ export class DataTransformer {
 		error?: string;
 	} {
 		if (!dateStr) return { valid: false, error: "Thiếu ngày đến" };
-		const parsed = this.parseDateTime(dateStr);
+		const parsed = DataTransformer.parseDateTime(dateStr);
 		if (!parsed) {
 			return { valid: false, error: "Định dạng ngày đến không hợp lệ" };
 		}
@@ -248,7 +248,7 @@ export class DataTransformer {
 	}
 
 	public static checkCompleteness(row: RawOcrRow): CompletenessResult {
-		const isVN = this.isGuestVN(row);
+		const isVN = DataTransformer.isGuestVN(row);
 		const missing: string[] = [];
 		const status: Record<
 			string,
@@ -262,7 +262,7 @@ export class DataTransformer {
 		const ngaySinh = String(
 			row.ngaySinh || row["D.O.B"] || row["Ngày sinh"] || "",
 		).trim();
-		const formattedDob = this.formatDateOnly(ngaySinh);
+		const formattedDob = DataTransformer.formatDateOnly(ngaySinh);
 		const dobValid = Boolean(
 			formattedDob && /^\d{4}-\d{2}-\d{2}$/.test(formattedDob),
 		);
@@ -275,7 +275,9 @@ export class DataTransformer {
 		};
 		if (!dobValid) missing.push(`Ngày sinh (${ngaySinh || "trống"})`);
 
-		const cleanedRoom = this.cleanRoomNumber(row.soPhong || row["Số phòng"]);
+		const cleanedRoom = DataTransformer.cleanRoomNumber(
+			row.soPhong || row["Số phòng"],
+		);
 		const roomValid = Boolean(cleanedRoom);
 		status.soPhong = {
 			valid: roomValid,
@@ -285,7 +287,7 @@ export class DataTransformer {
 		if (!roomValid) missing.push("Số phòng (1-9)");
 
 		const ngayDenRaw = row.ngayDen || row["(từ ngày)"] || row["Ngày đến"];
-		const arrivalCheck = this.isArrivalDateValid(ngayDenRaw);
+		const arrivalCheck = DataTransformer.isArrivalDateValid(ngayDenRaw);
 		status.ngayDen = {
 			valid: arrivalCheck.valid,
 			value: ngayDenRaw,
@@ -312,7 +314,7 @@ export class DataTransformer {
 				row["Quốc gia"] ||
 				(isVN ? "VNM" : ""),
 		).trim();
-		const mappedQt = this.mapQuocTich(rawQt);
+		const mappedQt = DataTransformer.mapQuocTich(rawQt);
 		const isQtValid = Boolean(
 			mappedQt &&
 				(mappedQt === "D" ||
@@ -359,7 +361,7 @@ export class DataTransformer {
 				if (!valid) missing.push("Số giấy tờ");
 			}
 		} else {
-			const cleanPassport = this.cleanDocNumber(docNumRaw);
+			const cleanPassport = DataTransformer.cleanDocNumber(docNumRaw);
 			const isPassportValid =
 				cleanPassport.length >= 6 && cleanPassport.length <= 12;
 			status.soHoChieu = {
@@ -439,7 +441,7 @@ export class DataTransformer {
 			row.diaChi || row["Địa chỉ"] || row["Địa chỉ chi tiết"] || "",
 		).trim();
 		const tinhRaw = String(
-			row.tinhTp || row["Tỉnh"] || row["Tỉnh/TP"] || "",
+			row.tinhTp || row.Tỉnh || row["Tỉnh/TP"] || "",
 		).trim();
 		const phuongXaRaw = String(row.phuongXa || row["Phường/Xã"] || "").trim();
 		const quanHuyenRaw = String(
@@ -464,39 +466,41 @@ export class DataTransformer {
 				addressParts.length > 0 ? addressParts.join(", ") : rawAddress;
 		}
 
-		const cleanedRoom = this.cleanRoomNumber(row.soPhong || row["Số phòng"]);
+		const cleanedRoom = DataTransformer.cleanRoomNumber(
+			row.soPhong || row["Số phòng"],
+		);
 		const roomFormatted = cleanedRoom ? `Phong so ${cleanedRoom}` : "";
 
 		return {
 			hoTen: String(row.hoTen || row["Họ tên"] || "")
 				.trim()
 				.toUpperCase(),
-			gioiTinh: this.mapGender(row.gioiTinh || row["Giới tính"]),
+			gioiTinh: DataTransformer.mapGender(row.gioiTinh || row["Giới tính"]),
 			soDienThoai: String(
 				row.soDienThoai || row["Số điện thoại"] || "",
 			).replace(/[^\d+]/g, ""),
-			ngayThangNamSinhStr: this.formatDateOnly(
+			ngayThangNamSinhStr: DataTransformer.formatDateOnly(
 				row.ngaySinh || row["D.O.B"] || row["Ngày sinh"],
 			),
 			noiCuTru: 1,
 			maTT: "",
 			maPX: "",
 			diaChi: fullAddress,
-			ngayDenCsltStr: this.formatDateTime(
+			ngayDenCsltStr: DataTransformer.formatDateTime(
 				row.ngayDen || row["(từ ngày)"] || row["Ngày đến"],
 				"14:00:00",
 			),
-			ngayDiDuKienStr: this.formatDateTime(
+			ngayDiDuKienStr: DataTransformer.formatDateTime(
 				row.ngayDi || row["(đến ngày)"] || row["Ngày đi"],
 				"12:00:00",
 			),
 			soPhong: roomFormatted,
 			lyDoCuTru: 1,
 			lyDoChiTiet: "",
-			loaiGiayTo: this.mapLoaiGiayTo(
+			loaiGiayTo: DataTransformer.mapLoaiGiayTo(
 				row.loaiGiayTo || row["Loại giấy tờ"] || "CCCD",
 			),
-			soGiayTo: this.cleanDocNumber(
+			soGiayTo: DataTransformer.cleanDocNumber(
 				row.soGiayTo || row["Số giấy tờ"] || row["Số CCCD"],
 			),
 			anhTruocB64: "",
@@ -508,42 +512,44 @@ export class DataTransformer {
 	public static transformToPayloadForeign(
 		row: RawOcrRow,
 	): Record<string, unknown> {
-		const cleanedRoom = this.cleanRoomNumber(row.soPhong || row["Số phòng"]);
+		const cleanedRoom = DataTransformer.cleanRoomNumber(
+			row.soPhong || row["Số phòng"],
+		);
 		const roomFormatted = cleanedRoom ? `Phong so ${cleanedRoom}` : "";
 
 		return {
 			hoTen: String(row.hoTen || row["Họ tên"] || "")
 				.trim()
 				.toUpperCase(),
-			gioiTinh: this.mapGender(row.gioiTinh || row["Giới tính"]),
+			gioiTinh: DataTransformer.mapGender(row.gioiTinh || row["Giới tính"]),
 			soDienThoai: String(
 				row.soDienThoai || row["Số điện thoại"] || "",
 			).replace(/[^\d+]/g, ""),
-			ngayThangNamSinhStr: this.formatDateOnly(
+			ngayThangNamSinhStr: DataTransformer.formatDateOnly(
 				row.ngaySinh || row["D.O.B"] || row["Ngày sinh"],
 			),
 			loaiNgayThangNamSinh: "D",
-			quocTich: this.mapQuocTich(
+			quocTich: DataTransformer.mapQuocTich(
 				row.quocTich || row["Quốc tịch"] || row["Quốc gia"],
 			),
-			maQuocTich: this.mapQuocTich(
+			maQuocTich: DataTransformer.mapQuocTich(
 				row.quocTich || row["Quốc tịch"] || row["Quốc gia"],
 			),
-			ngayDenCsltStr: this.formatDateTime(
+			ngayDenCsltStr: DataTransformer.formatDateTime(
 				row.ngayDen || row["(từ ngày)"] || row["Ngày đến"],
 				"14:00:00",
 			),
-			ngayDiDuKienStr: this.formatDateTime(
+			ngayDiDuKienStr: DataTransformer.formatDateTime(
 				row.ngayDi || row["(đến ngày)"] || row["Ngày đi"],
 				"12:00:00",
 			),
 			soPhong: roomFormatted,
-			thoiHanTamTruStr: this.formatDateTime(
+			thoiHanTamTruStr: DataTransformer.formatDateTime(
 				row.thoiHanTamTru || row.thoiHanTamTruStr || row["Thời hạn tạm trú"],
 				"23:59:59",
 			),
 			loaiGiayTo: 4,
-			soHoChieu: this.cleanDocNumber(
+			soHoChieu: DataTransformer.cleanDocNumber(
 				row.soHoChieu ||
 					row.soGiayTo ||
 					row["Số hộ chiếu"] ||
@@ -562,7 +568,7 @@ export class DataTransformer {
 		const str = String(dateRaw).trim();
 		if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(str)) return str;
 
-		const parsed = this.parseDateTime(dateRaw);
+		const parsed = DataTransformer.parseDateTime(dateRaw);
 		if (parsed) {
 			const y = parsed.year;
 			const m = String(parsed.month).padStart(2, "0");
@@ -594,8 +600,13 @@ export class DataTransformer {
 		if (
 			(clean.length === 3 || clean === "D") &&
 			catalogManager.isValidQuocTichCode(clean)
-		)
+		) {
 			return clean;
+		}
 		return clean;
+	}
+
+	public formatDateTime(dateRaw: unknown, defaultTime = "12:00:00"): string {
+		return DataTransformer.formatDateTime(dateRaw, defaultTime);
 	}
 }

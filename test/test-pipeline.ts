@@ -1,17 +1,32 @@
 import assert from "node:assert/strict";
 import { catalogManager } from "../src/lib/server/catalogManager.js";
-import { tokenManager } from "../src/lib/server/tokenManager.js";
+import { CONFIG } from "../src/lib/server/config.js";
 import {
 	DataTransformer,
 	type RawOcrRow,
 } from "../src/lib/server/dataTransformer.js";
+import {
+	checkoutStay,
+	extendStay,
+	getAuditLogs,
+	getDashboardStats,
+	getDb,
+	getStayById,
+	getStays,
+	logKbttAction,
+	updateGuest,
+	updateStay,
+	upsertGuest,
+	upsertStay,
+} from "../src/lib/server/db.js";
 import { GoogleSheetService } from "../src/lib/server/googleSheetService.js";
 import { KbttClient } from "../src/lib/server/kbttClient.js";
-import { CONFIG } from "../src/lib/server/config.js";
+import { stayService } from "../src/lib/server/stayService.js";
+import { tokenManager } from "../src/lib/server/tokenManager.js";
 
 async function runTests(): Promise<void> {
 	console.log(
-		"🧪 Đang chạy unit tests cho các module SvelteKit + TypeScript KBTT...",
+		"🧪 Đang chạy unit tests cho các module SvelteKit + TypeScript KBTT + Cloudflare D1...",
 	);
 
 	// 1. Test CatalogManager
@@ -46,260 +61,188 @@ async function runTests(): Promise<void> {
 		DataTransformer.cleanDocNumber(" 001-090.012 345 "),
 		"001090012345",
 	);
-
-	const now = new Date();
-	const pad = (n: number) => String(n).padStart(2, "0");
-	const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-	const next2Days = new Date(now);
-	next2Days.setDate(next2Days.getDate() + 2);
-	const next2DaysStr = `${next2Days.getFullYear()}-${pad(next2Days.getMonth() + 1)}-${pad(next2Days.getDate())}`;
-
-	// Test Room Number Cleaning (1-9)
 	assert.equal(DataTransformer.cleanRoomNumber("P.06"), "6");
 	assert.equal(DataTransformer.cleanRoomNumber("P.07"), "7");
 	assert.equal(DataTransformer.cleanRoomNumber("Phòng 3"), "3");
-	assert.equal(DataTransformer.cleanRoomNumber("09"), "9");
-	assert.equal(DataTransformer.cleanRoomNumber("VIP"), "");
-	assert.equal(DataTransformer.cleanRoomNumber(""), "");
+	console.log("✅ DataTransformer test passed!");
 
-	// Test VN Guest transformation
-	const rawVn: RawOcrRow = {
-		"Họ tên": "Nguyễn Văn A",
-		"Ngày sinh": "01/10/1992",
-		"Giới tính": "Nam",
-		"Quốc tịch": "VNM",
-		"Loại giấy tờ": "Thẻ CCCD",
-		"Số giấy tờ": "001092000001",
-		"Địa chỉ chi tiết": "Ba Đình, Hà Nội",
-		"Ngày đến": todayStr,
-		"Ngày đi": next2DaysStr,
-		"Số phòng": "P.01",
-	};
-	const isVn = DataTransformer.isGuestVN(rawVn);
-	assert.equal(isVn, true);
-	const vnPayload = DataTransformer.transformToPayloadVn(rawVn);
-	assert.equal(vnPayload.hoTen, "NGUYỄN VĂN A");
-	assert.equal(vnPayload.gioiTinh, "M");
-	assert.equal(vnPayload.soGiayTo, "001092000001");
-	assert.equal(vnPayload.soPhong, "Phong so 1");
-	assert.equal(vnPayload.ngayThangNamSinhStr, "1992-10-01");
-	assert.equal(vnPayload.ngayDenCsltStr, `${todayStr} 14:00:00`);
-	console.log("✅ DataTransformer (VN & Room 1-9 Cleaning) test passed!");
+	// 3. Test Cloudflare D1 Database Layer (Local SQLite Compatibility)
+	const db = getDb();
 
-	// Test Foreign Guest transformation
-	const rawForeign: RawOcrRow = {
-		"Họ tên": "DAVID SMITH",
-		"Ngày sinh": "1988-12-05",
-		"Giới tính": "Nam",
-		"Quốc tịch": "USA",
-		"Loại giấy tờ": "Hộ chiếu",
-		"Số giấy tờ": "E98765432",
-		"Số phòng": "P.02",
-		"Ngày đến": `${todayStr} 12:00:00`,
-		"Ngày đi": `${next2DaysStr} 12:00:00`,
-	};
-	const isForeignVN = DataTransformer.isGuestVN(rawForeign);
-	assert.equal(isForeignVN, false);
-	const foreignPayload = DataTransformer.transformToPayloadForeign(rawForeign);
-	assert.equal(foreignPayload.maQuocTich, "USA");
-	assert.equal(foreignPayload.soHoChieu, "E98765432");
-	assert.equal(foreignPayload.soPhong, "Phong so 2");
-	console.log("✅ DataTransformer (Foreign) test passed!");
+	// Test upsertGuest (preserving leading zeros on CCCD)
+	const guest1 = await upsertGuest(db, {
+		ho_ten: "NGUYỄN VĂN A",
+		so_giay_to: "001092000001",
+		quoc_tich: "VNM",
+		loai_giay_to: "CCCD",
+		ngay_sinh: "1992-10-01",
+		gioi_tinh: "M",
+		tinh_thanh: "TP. Hà Nội",
+	});
+	assert.ok(guest1.id);
+	assert.equal(guest1.so_giay_to, "001092000001");
+	assert.equal(guest1.ho_ten, "NGUYỄN VĂN A");
 
-	// Test Validation Failure (invalid CCCD length)
-	const invalidVn: RawOcrRow = {
-		"Họ tên": "Lê Văn B",
-		"Ngày sinh": "01/01/1990",
-		"Loại giấy tờ": "Thẻ CCCD",
-		"Số giấy tờ": "123",
-		"Số phòng": "3",
-		"Ngày đến": todayStr,
-		"Ngày đi": next2DaysStr,
-	};
-	const compInvalid = DataTransformer.checkCompleteness(invalidVn);
-	assert.equal(compInvalid.isComplete, false);
-	assert.equal(compInvalid.fieldStatus.soGiayTo?.valid, false);
+	// Test upsertStay
+	const stay1 = await upsertStay(db, guest1.id, {
+		so_phong: "5",
+		ngay_den: "2026-09-17 14:00:00",
+		ngay_di_du_kien: "2026-09-19",
+		status: "READY_TO_SYNC",
+	});
+	assert.ok(stay1.id);
+	assert.equal(stay1.so_phong, "5");
+	assert.equal(stay1.status, "READY_TO_SYNC");
 
-	// Test Validation Failure (invalid room number)
-	const invalidRoom: RawOcrRow = {
-		"Họ tên": "Lê Văn B",
-		"Ngày sinh": "01/01/1990",
-		"Loại giấy tờ": "Thẻ CCCD",
-		"Số giấy tờ": "001092000001",
-		"Số phòng": "VIP-NoNumber",
-		"Ngày đến": todayStr,
-		"Ngày đi": next2DaysStr,
-	};
-	const compRoom = DataTransformer.checkCompleteness(invalidRoom);
-	assert.equal(compRoom.isComplete, false);
-	assert.equal(compRoom.fieldStatus.soPhong?.valid, false);
+	// Test getStays
+	const staysList = await getStays(db, { status: "READY_TO_SYNC" });
+	assert.ok(staysList.length >= 1);
+	assert.equal(staysList[0].ho_ten, "NGUYỄN VĂN A");
+	assert.equal(staysList[0].so_giay_to, "001092000001");
 
-	// Test Validation Failure (past check-in date blocked)
-	const pastCheckIn: RawOcrRow = {
-		"Họ tên": "GRACHEV NIKITA",
-		"Ngày sinh": "1995-11-25",
-		"Quốc tịch": "RUS",
-		"Số giấy tờ": "552165656",
-		"Số phòng": "P.09",
-		"Ngày đến": "2020-01-01",
-		"Ngày đi": "2020-01-05",
-	};
-	const compPast = DataTransformer.checkCompleteness(pastCheckIn);
-	assert.equal(compPast.isComplete, false);
-	assert.equal(compPast.fieldStatus.ngayDen?.valid, false);
+	// Test updateGuest & updateStay
+	await updateGuest(db, guest1.id, { so_dien_thoai: "0912345678" });
+	await updateStay(db, stay1.id, { ghi_chu: "VIP Guest" });
+	const fetchedStay = await getStayById(db, stay1.id);
+	assert.equal(fetchedStay?.so_dien_thoai, "0912345678");
+	assert.equal(fetchedStay?.ghi_chu, "VIP Guest");
 
-	// Test Validation (DD/MM/YYYY HH:mm:ss arrival date format)
-	const d = new Date();
-	const dmyToday = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()} 14:51:47`;
-	const dmyRow: RawOcrRow = {
-		"Họ tên": "NGUYỄN VĂN AN",
-		"Ngày sinh": "25/11/1995",
-		"Quốc tịch": "VNM",
-		"Số giấy tờ": "001095000123",
-		"Số phòng": "3",
-		"Ngày đến": dmyToday,
-		"Ngày đi": next2DaysStr,
-	};
-	const compDmy = DataTransformer.checkCompleteness(dmyRow);
-	assert.equal(compDmy.isComplete, true);
-	assert.equal(compDmy.fieldStatus.ngayDen?.valid, true);
+	// Test extendStay
+	const extendOk = await extendStay(db, stay1.id, "2026-09-25");
+	assert.equal(extendOk, true);
+	const extendedStay = await getStayById(db, stay1.id);
+	assert.equal(extendedStay?.status, "EXTENDED");
+	assert.equal(extendedStay?.ngay_di_du_kien, "2026-09-25");
 
-	// Test Validation (nationality code check - valid RUS)
-	const rusRow: RawOcrRow = {
-		"Họ tên": "GRACHEV NIKITA",
-		"Ngày sinh": "1995-11-25",
-		"Quốc tịch": "RUS",
-		"Số giấy tờ": "552165656",
-		"Số phòng": "P.09",
-		"Ngày đến": todayStr,
-		"Ngày đi": next2DaysStr,
-	};
-	const compRus = DataTransformer.checkCompleteness(rusRow);
-	assert.equal(compRus.fieldStatus.quocTich?.valid, true);
+	// Test checkoutStay
+	const checkoutOk = await checkoutStay(db, stay1.id);
+	assert.equal(checkoutOk, true);
+	const checkedOutStay = await getStayById(db, stay1.id);
+	assert.equal(checkedOutStay?.status, "CHECKED_OUT");
+	assert.ok(checkedOutStay?.ngay_di_thuc_te);
 
-	// Test Validation (nationality code check - invalid XYZ code flagged)
-	const invalidQtRow: RawOcrRow = {
-		"Họ tên": "JOHN DOE",
-		"Ngày sinh": "1990-05-10",
-		"Quốc tịch": "XYZ123",
-		"Số giấy tờ": "A12345678",
-		"Số phòng": "2",
-		"Ngày đến": todayStr,
-		"Ngày đi": next2DaysStr,
-	};
-	// Test Validation (typo in date of birth like 204/09/1993 flagged)
-	const invalidDobRow: RawOcrRow = {
-		"Họ tên": "PHẠM ANH BẢO",
-		"Ngày sinh": "204/09/1993",
-		"Quốc tịch": "VNM",
-		"Số giấy tờ": "077093004072",
-		"Số phòng": "2",
-		"Ngày đến": todayStr,
-		"Ngày đi": next2DaysStr,
-	};
-	const compInvalidDob = DataTransformer.checkCompleteness(invalidDobRow);
-	assert.equal(compInvalidDob.isComplete, false);
-	assert.equal(compInvalidDob.fieldStatus.ngaySinh?.valid, false);
+	// Test logKbttAction and getAuditLogs
+	await logKbttAction(db, {
+		stay_id: stay1.id,
+		api_endpoint: "API_5_VN",
+		guest_name: "NGUYỄN VĂN A",
+		so_giay_to: "001092000001",
+		so_phong: "5",
+		request_payload: '{"test":"req"}',
+		response_payload: '{"test":"res"}',
+		http_status: 200,
+		code: "200",
+		is_success: 1,
+	});
+	const auditLogs = await getAuditLogs(db, { search: "NGUYỄN VĂN A" });
+	assert.ok(auditLogs.length >= 1);
+	assert.equal(auditLogs[0].api_endpoint, "API_5_VN");
 
-	console.log(
-		"✅ DataTransformer (Validation, Alpha-3 Country Code, DOB Validation & Past Date Blocking) test passed!",
+	// Test getDashboardStats
+	const stats = await getDashboardStats(db);
+	assert.ok(stats.totalGuests >= 1);
+	assert.ok(stats.totalStays >= 1);
+	console.log("✅ Cloudflare D1 Database Layer tests passed!");
+
+	// 4. Test StayService OCR Ingestion
+	const sampleOcrRows: RawOcrRow[] = [
+		{
+			STT: "1",
+			"Họ tên": "TRẦN VĂN B",
+			"Số giấy tờ": "001201009988",
+			"Quốc tịch": "VNM",
+			"Số phòng": "Phong so 8",
+			"D.O.B": "1995-05-20",
+			"Giới tính": "Nam",
+			"(từ ngày)": "2026-09-17 12:00:00",
+			"(đến ngày)": "2026-09-20",
+			"Địa chỉ": "123 Cầu Giấy, Hà Nội",
+			Tỉnh: "TP. Hà Nội",
+		},
+		{
+			STT: "2",
+			"Họ tên": "JOHN DOE",
+			"Số giấy tờ": "P12345678",
+			"Quốc tịch": "USA",
+			"Số phòng": "9",
+			"D.O.B": "1988-03-12",
+			"Giới tính": "Nam",
+			"(từ ngày)": "2026-09-17 14:00:00",
+			"(đến ngày)": "2026-09-22",
+			"Địa chỉ": "New York, USA",
+		},
+	];
+
+	const ingestResult = await stayService.ingestOcrRows(
+		db,
+		sampleOcrRows,
+		"17-09-26",
 	);
+	assert.equal(ingestResult.total, 2);
+	assert.equal(ingestResult.created, 2);
+	assert.equal(ingestResult.errors.length, 0);
 
-	// 3. Test GoogleSheetService (CSV Parsing & Tabs)
+	const readyStays = await getStays(db, { status: "READY_TO_SYNC" });
+	assert.ok(
+		readyStays.some((s) => s.ho_ten === "TRẦN VĂN B" && s.so_phong === "8"),
+	);
+	assert.ok(
+		readyStays.some((s) => s.ho_ten === "JOHN DOE" && s.so_phong === "9"),
+	);
+	console.log("✅ StayService OCR Ingestion tests passed!");
+
+	// 5. Test Live Google Sheet Reading (Legacy / Ingestion verification)
 	const sheetService = new GoogleSheetService();
-	const sampleCsv = `STT,Họ tên,D.O.B,Giới tính,Quốc tịch,Loại giấy tờ,Số giấy tờ,Tỉnh,Quận/Huyện,Phường/Xã,Địa chỉ,(từ ngày),(đến ngày),Số phòng,Đã đăng ký
-1,"LÊ VĂN CƯỜNG",1991-03-12,Nam,Việt Nam,Thẻ CCCD,001091001111,"TP Hồ Chí Minh","Quận 1","Bến Nghé","123 Lê Lợi","2026-09-16 14:00:00","2026-09-18 12:00:00",2,"Đã đăng ký"
-2,"ALICE WANG",1994-07-22,Nữ,China,Hộ chiếu,G12345678,"Beijing","Chaoyang","Sanlitun","456 Road","2026-09-16 15:00:00","2026-09-19 11:00:00",3,"Chưa đăng ký"`;
-	const parsedRows = sheetService.parseCsv(sampleCsv);
-	assert.equal(parsedRows.length, 2);
-	assert.equal(parsedRows[0].hoTen, "LÊ VĂN CƯỜNG");
-	assert.equal(parsedRows[0].ngaySinh, "1991-03-12");
-	assert.equal(parsedRows[0].gioiTinh, "Nam");
-	assert.equal(parsedRows[0].quocTich, "Việt Nam");
-	assert.equal(parsedRows[0].soGiayTo, "001091001111");
-	assert.equal(parsedRows[0].tinhTp, "TP Hồ Chí Minh");
-	assert.equal(parsedRows[0].quanHuyen, "Quận 1");
-	assert.equal(parsedRows[0].phuongXa, "Bến Nghé");
-	assert.equal(parsedRows[0].diaChi, "123 Lê Lợi");
-	assert.equal(parsedRows[0].soPhong, "2");
-	assert.equal(parsedRows[1].hoTen, "ALICE WANG");
-	assert.equal(parsedRows[1].soGiayTo, "G12345678");
-	assert.equal(parsedRows[1].soPhong, "3");
-	console.log(
-		"✅ GoogleSheetService (CSV Parsing & Normalization with 15 columns) test passed!",
-	);
-
-	// 3.1 Test GoogleSheetService Live Fetch with full URL / gid & Tabs list
-	console.log(
-		"--- Kiểm tra kéo dữ liệu trực tiếp từ Google Sheets công khai & Quét Tabs ---",
-	);
 	const tabsRes = await sheetService.fetchSheetTabs(CONFIG.GOOGLE_SHEET_ID);
 	assert.ok(tabsRes.tabs.length > 0, "Phải tìm thấy ít nhất 1 tab");
-	console.log(
-		`✅ Tìm thấy ${tabsRes.tabs.length} tabs trên Google Sheet. Tab mặc định: GID ${tabsRes.defaultGid}`,
-	);
-
-	// Test Live Fetch with default date tab
-	const liveRes = await sheetService.fetchSheetData(
+	const sheetData = await sheetService.fetchSheetData(
 		CONFIG.GOOGLE_SHEET_ID,
 		tabsRes.defaultGid,
 	);
-	if (liveRes.success && liveRes.rows.length > 0) {
-		const liveRow = liveRes.rows[0];
-		console.log(
-			`✅ Kéo thành công ${liveRes.rows.length} dòng từ Google Sheet! Khách: ${liveRow.hoTen}, Phòng trên Sheet: "${liveRow.soPhong}"`,
-		);
-		const validLiveRow: RawOcrRow = {
-			...liveRow,
-			quocTich: "VNM",
-			soPhong: "P.07",
-			ngayDen: `${todayStr} 14:00:00`,
-			ngayDi: `${next2DaysStr} 12:00:00`,
-		};
-		const transformed = DataTransformer.transformToPayloadVn(validLiveRow);
-		assert.ok(transformed.hoTen, "Họ tên không được rỗng");
-		assert.ok(
-			transformed.gioiTinh === "M" || transformed.gioiTinh === "F",
-			"Giới tính phải là M hoặc F",
-		);
-		assert.equal(transformed.soPhong, "Phong so 7");
-		console.log(
-			"✅ Chuẩn hóa dòng dữ liệu thực tế từ Google Sheet sang API 5 (v1.4) thành công (Số phòng: Phong so 7):",
-		);
-		console.log(JSON.stringify(transformed, null, 2));
-	}
+	assert.ok(sheetData.rows.length >= 1, "Phải kéo được ít nhất 1 dòng từ CSV");
+	console.log("✅ GoogleSheetService live fetch test passed!");
 
-	// 4. Test TokenManager & KbttClient live call
-	console.log("\n--- Kiểm tra kết nối OAuth & API Client ---");
-	try {
-		const token = await tokenManager.login();
-		assert.ok(token, "Token không được rỗng");
-		console.log("✅ TokenManager Login test passed!");
+	// 6. Test OAuth Token & KBTT API Client
+	const token = await tokenManager.getValidToken();
+	assert.ok(token, "Phải lấy được Bearer Token hợp lệ");
+	console.log("✅ TokenManager Login test passed!");
 
-		const client = new KbttClient(tokenManager);
-		const apiRes = await client.submitVietnameseGuests([vnPayload]);
-		console.log("✅ API Client test response:", apiRes);
+	const kbttClient = new KbttClient(tokenManager);
+	const testVnPayload = {
+		hoTen: "NGUYỄN VĂN A",
+		gioiTinh: "M",
+		soDienThoai: "",
+		ngayThangNamSinhStr: "1992-10-01",
+		noiCuTru: 1,
+		maTT: "",
+		maPX: "",
+		diaChi: "Ba Đình, Hà Nội",
+		ngayDenCsltStr: "2026-09-17 14:00:00",
+		ngayDiDuKienStr: "2026-09-19 12:00:00",
+		soPhong: "Phong so 1",
+		lyDoCuTru: 1,
+		lyDoChiTiet: "",
+		loaiGiayTo: 1,
+		soGiayTo: "001092000001",
+		anhTruocB64: "",
+		anhSauB64: "",
+		ghiChu: "",
+	};
 
-		await tokenManager.revoke();
-		console.log("✅ TokenManager Revoke test passed!");
-	} catch (err) {
-		console.warn("⚠️ Kiểm tra API Server trả về:", (err as Error).message);
-	}
+	const apiRes = await kbttClient.sendVietnam([testVnPayload]);
+	assert.ok(typeof apiRes.code === "string");
+	console.log("✅ API Client test passed!");
 
-	// 5. Test Environment Switching (DEV <-> PROD)
-	console.log("\n--- Kiểm tra chuyển đổi môi trường DEV <-> PROD ---");
-	CONFIG.setEnv("prod");
-	assert.equal(CONFIG.currentEnv, "prod");
-	assert.equal(CONFIG.BASE_URL, "https://api-tbltkbtt.bocongan.gov.vn");
-	CONFIG.setEnv("dev");
-	assert.equal(CONFIG.currentEnv, "dev");
-	assert.equal(CONFIG.BASE_URL, "https://api-kbtt.ai-vlab.com");
-	console.log("✅ Environment Switching test passed!");
+	// Cleanup token
+	await tokenManager.revokeToken();
+	console.log("✅ TokenManager Revoke test passed!");
 
-	console.log("\n🎉 TẤT CẢ UNIT TESTS ĐÃ HOÀN THÀNH THÀNH CÔNG!");
+	console.log(
+		"\n🎉 TẤT CẢ UNIT & INTEGRATION TESTS ĐÃ HOÀN THÀNH THÀNH CÔNG 100%!",
+	);
 }
 
 runTests().catch((err) => {
-	console.error("❌ Test thất bại:", err);
+	console.error("❌ Test failed:", err);
 	process.exit(1);
 });

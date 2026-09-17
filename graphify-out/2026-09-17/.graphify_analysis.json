@@ -1,23 +1,88 @@
 {
   "communities": {
     "0": [
+      "src_lib_server_db",
+      "src_lib_server_db_checkoutstay",
+      "src_lib_server_db_d1databaselike",
+      "src_lib_server_db_d1databaselike_exec",
+      "src_lib_server_db_d1databaselike_prepare",
+      "src_lib_server_db_d1preparedstatement",
+      "src_lib_server_db_d1preparedstatement_all",
+      "src_lib_server_db_d1preparedstatement_bind",
+      "src_lib_server_db_d1preparedstatement_first",
+      "src_lib_server_db_d1preparedstatement_run",
+      "src_lib_server_db_deletestay",
+      "src_lib_server_db_extendstay",
+      "src_lib_server_db_generateid",
+      "src_lib_server_db_getauditlogs",
+      "src_lib_server_db_getdashboardstats",
+      "src_lib_server_db_getdb",
+      "src_lib_server_db_getlocalsqlitedb",
+      "src_lib_server_db_getstaybyid",
+      "src_lib_server_db_getstays",
+      "src_lib_server_db_guest",
+      "src_lib_server_db_kbttlog",
+      "src_lib_server_db_logkbttaction",
+      "src_lib_server_db_stay",
+      "src_lib_server_db_staydetail",
+      "src_lib_server_db_staystatus",
+      "src_lib_server_db_updateguest",
+      "src_lib_server_db_updatestay",
+      "src_lib_server_db_upsertguest",
+      "src_lib_server_db_upsertstay",
+      "src_lib_server_stayservice",
+      "src_lib_server_stayservice_ingestresult",
+      "src_lib_server_stayservice_ingestresultitem",
+      "src_lib_server_stayservice_stayservice",
+      "src_lib_server_stayservice_stayservice_batchregisterstays",
+      "src_lib_server_stayservice_stayservice_checkoutstay",
+      "src_lib_server_stayservice_stayservice_extendstay",
+      "src_lib_server_stayservice_stayservice_ingestocrrows",
+      "src_lib_server_stayservice_stayservice_registerstaytokbtt",
+      "src_lib_server_stayservice_stayservice_updateguestandstay",
+      "src_routes_api_stats_server",
+      "src_routes_api_stats_server_get",
+      "src_routes_api_stays_audit_server",
+      "src_routes_api_stays_audit_server_get",
+      "src_routes_api_stays_checkout_server",
+      "src_routes_api_stays_checkout_server_post",
+      "src_routes_api_stays_extend_server",
+      "src_routes_api_stays_extend_server_post",
+      "src_routes_api_stays_id_server",
+      "src_routes_api_stays_id_server_delete",
+      "src_routes_api_stays_id_server_get",
+      "src_routes_api_stays_id_server_put",
+      "src_routes_api_stays_register_server",
+      "src_routes_api_stays_register_server_post",
+      "src_routes_api_stays_server",
+      "src_routes_api_stays_server_get",
+      "src_routes_api_stays_server_post",
+      "test_test_pipeline",
+      "test_test_pipeline_runtests"
+    ],
+    "1": [
       "src_index",
-      "src_lib_server_catalogmanager",
-      "src_lib_server_catalogmanager_catalogitem",
       "src_lib_server_config",
       "src_lib_server_config_apienvironment",
       "src_lib_server_config_config",
       "src_lib_server_config_loadenv",
-      "src_lib_server_datatransformer",
-      "src_lib_server_datatransformer_completenessresult",
       "src_lib_server_datatransformer_rawocrrow",
-      "src_lib_server_datatransformer_transformedrowresult",
       "src_lib_server_googlesheetservice",
       "src_lib_server_googlesheetservice_tabinfo",
       "src_lib_server_kbttclient",
       "src_lib_server_kbttclient_apiresponse",
       "src_lib_server_logger",
       "src_lib_server_logger_logentry",
+      "src_lib_server_logger_logger",
+      "src_lib_server_logger_logger_clear",
+      "src_lib_server_logger_logger_debug",
+      "src_lib_server_logger_logger_error",
+      "src_lib_server_logger_logger_formattime",
+      "src_lib_server_logger_logger_getinstance",
+      "src_lib_server_logger_logger_getrecentlogs",
+      "src_lib_server_logger_logger_info",
+      "src_lib_server_logger_logger_log",
+      "src_lib_server_logger_logger_warn",
       "src_lib_server_logger_loglevel",
       "src_lib_server_syncpipeline",
       "src_lib_server_syncpipeline_syncpipeline",
@@ -29,6 +94,9 @@
       "src_routes_api_env_server",
       "src_routes_api_env_server_get",
       "src_routes_api_env_server_post",
+      "src_routes_api_logs_server",
+      "src_routes_api_logs_server_delete",
+      "src_routes_api_logs_server_get",
       "src_routes_api_sheets_delete_row_server",
       "src_routes_api_sheets_delete_row_server_post",
       "src_routes_api_sheets_pull_server",
@@ -39,11 +107,83 @@
       "src_routes_api_sheets_update_row_server_post",
       "src_routes_api_sync_server",
       "src_routes_api_sync_server_post",
+      "src_routes_api_token_server",
+      "src_routes_api_token_server_get",
+      "src_routes_api_token_server_post",
       "src_routes_api_transform_server",
-      "src_routes_api_transform_server_post",
-      "test_test_pipeline"
+      "src_routes_api_transform_server_post"
     ],
-    "1": [
+    "2": [
+      "src_lib_data_catalogs",
+      "src_lib_data_catalogs_loai_giay_to_data",
+      "src_lib_data_catalogs_ly_do_cu_tru_data",
+      "src_lib_data_catalogs_quoc_tich_data",
+      "src_lib_data_catalogs_standardcatalogitem",
+      "src_lib_data_catalogs_tinh_tp_data",
+      "src_lib_server_catalogmanager",
+      "src_lib_server_catalogmanager_catalogitem",
+      "src_lib_server_catalogmanager_catalogmanager",
+      "src_lib_server_catalogmanager_catalogmanager_constructor",
+      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
+      "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_findlydocutru",
+      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_findtinhtp",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
+      "src_lib_server_catalogmanager_catalogmanager_getquoctichinfo",
+      "src_lib_server_catalogmanager_catalogmanager_initaliases",
+      "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
+      "src_lib_server_catalogmanager_catalogmanager_loadinitialcatalogs",
+      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_normalizequoctich",
+      "src_lib_server_datatransformer",
+      "src_lib_server_datatransformer_completenessresult",
+      "src_lib_server_datatransformer_datatransformer_constructor",
+      "src_lib_server_datatransformer_transformedrowresult",
+      "src_routes_api_ingest_ocr_server",
+      "src_routes_api_ingest_ocr_server_post"
+    ],
+    "3": [
+      "biome_files_includes",
+      "knip",
+      "knip_entry",
+      "knip_ignoredependencies",
+      "knip_project",
+      "knip_schema",
+      "package_devdependencies_tailwindcss",
+      "ref_node_modules",
+      "ref_public",
+      "ref_src_js",
+      "ref_src_js_ts_svelte",
+      "ref_src_routes_js_ts_svelte",
+      "ref_src_svelte",
+      "ref_src_ts",
+      "ref_svelte_kit_tsconfig_json",
+      "ref_test_ts",
+      "tailwindcss",
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_checkjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_forceconsistentcasinginfilenames",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_sourcemap",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_exclude",
+      "tsconfig_extends",
+      "tsconfig_include",
+      "tsconfig_json_ref_test_ts"
+    ],
+    "4": [
       "package",
       "package_author",
       "package_description",
@@ -72,7 +212,7 @@
       "ref_pnpm",
       "ref_tam_tru"
     ],
-    "2": [
+    "5": [
       "biomejs_biome",
       "jiti",
       "package_devdependencies",
@@ -80,53 +220,53 @@
       "package_devdependencies_jiti",
       "package_devdependencies_svelte",
       "package_devdependencies_svelte_check",
-      "package_devdependencies_sveltejs_adapter_node",
+      "package_devdependencies_sveltejs_adapter_cloudflare",
       "package_devdependencies_sveltejs_kit",
       "package_devdependencies_sveltejs_vite_plugin_svelte",
       "package_devdependencies_tailwindcss_vite",
       "package_devdependencies_types_node",
       "package_devdependencies_typescript",
       "package_devdependencies_vite",
+      "package_devdependencies_wrangler",
       "package_json_svelte",
       "svelte_check",
-      "sveltejs_adapter_node",
+      "sveltejs_adapter_cloudflare",
       "sveltejs_kit",
       "sveltejs_vite_plugin_svelte",
       "tailwindcss_vite",
       "types_node",
       "typescript",
-      "vite"
+      "vite",
+      "wrangler"
     ],
-    "3": [
-      "ref_node_modules",
-      "ref_public",
-      "ref_src_js",
-      "ref_src_svelte",
-      "ref_src_ts",
-      "ref_svelte_kit_tsconfig_json",
-      "tsconfig",
-      "tsconfig_compileroptions",
-      "tsconfig_compileroptions_allowjs",
-      "tsconfig_compileroptions_checkjs",
-      "tsconfig_compileroptions_esmoduleinterop",
-      "tsconfig_compileroptions_forceconsistentcasinginfilenames",
-      "tsconfig_compileroptions_moduleresolution",
-      "tsconfig_compileroptions_resolvejsonmodule",
-      "tsconfig_compileroptions_skiplibcheck",
-      "tsconfig_compileroptions_sourcemap",
-      "tsconfig_compileroptions_strict",
-      "tsconfig_exclude",
-      "tsconfig_extends",
-      "tsconfig_include",
-      "tsconfig_json_ref_test_ts"
+    "6": [
+      "src_lib_server_catalogmanager_catalogmanager_getinstance",
+      "src_lib_server_kbttclient_kbttclient",
+      "src_lib_server_kbttclient_kbttclient_constructor",
+      "src_lib_server_kbttclient_kbttclient_postpayload",
+      "src_lib_server_kbttclient_kbttclient_sendforeign",
+      "src_lib_server_kbttclient_kbttclient_sendvietnam",
+      "src_lib_server_kbttclient_kbttclient_submitforeignguests",
+      "src_lib_server_kbttclient_kbttclient_submitvietnameseguests",
+      "src_lib_server_stayservice_stayservice_constructor",
+      "src_lib_server_syncpipeline_syncpipeline_constructor",
+      "src_lib_server_tokenmanager_tokenmanager",
+      "src_lib_server_tokenmanager_tokenmanager_clear",
+      "src_lib_server_tokenmanager_tokenmanager_getinstance",
+      "src_lib_server_tokenmanager_tokenmanager_getstatus",
+      "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
+      "src_lib_server_tokenmanager_tokenmanager_login",
+      "src_lib_server_tokenmanager_tokenmanager_refresh",
+      "src_lib_server_tokenmanager_tokenmanager_revoke",
+      "src_lib_server_tokenmanager_tokenmanager_revoketoken",
+      "src_lib_server_tokenmanager_tokenmanager_savetoken"
     ],
-    "4": [
+    "7": [
       "src_lib_server_datatransformer_datatransformer",
       "src_lib_server_datatransformer_datatransformer_checkcompleteness",
       "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
       "src_lib_server_datatransformer_datatransformer_cleandocnumber",
       "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
-      "src_lib_server_datatransformer_datatransformer_constructor",
       "src_lib_server_datatransformer_datatransformer_formatdateonly",
       "src_lib_server_datatransformer_datatransformer_formatdatetime",
       "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
@@ -140,46 +280,29 @@
       "src_lib_server_datatransformer_datatransformer_transformrow",
       "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
       "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
-      "src_lib_server_syncpipeline_syncpipeline_processrows",
-      "test_test_pipeline_runtests"
+      "src_lib_server_syncpipeline_syncpipeline_processrows"
     ],
-    "5": [
-      "src_lib_server_catalogmanager_catalogmanager",
-      "src_lib_server_catalogmanager_catalogmanager_constructor",
-      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
-      "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
-      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
-      "src_lib_server_catalogmanager_catalogmanager_getinstance",
-      "src_lib_server_catalogmanager_catalogmanager_initaliases",
-      "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
-      "src_lib_server_catalogmanager_catalogmanager_loadlocalcatalogjson",
-      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich"
+    "8": [
+      "biome",
+      "biome_actions_source",
+      "biome_assist",
+      "biome_assist_actions",
+      "biome_correctness_nounusedvariables",
+      "biome_files",
+      "biome_formatter",
+      "biome_formatter_enabled",
+      "biome_formatter_indentstyle",
+      "biome_formatter_quotestyle",
+      "biome_javascript",
+      "biome_javascript_formatter",
+      "biome_linter",
+      "biome_linter_enabled",
+      "biome_linter_rules",
+      "biome_rules_correctness",
+      "biome_schema",
+      "biome_source_organizeimports"
     ],
-    "6": [
-      "src_lib_server_logger_logger",
-      "src_lib_server_logger_logger_clear",
-      "src_lib_server_logger_logger_debug",
-      "src_lib_server_logger_logger_error",
-      "src_lib_server_logger_logger_formattime",
-      "src_lib_server_logger_logger_getinstance",
-      "src_lib_server_logger_logger_getrecentlogs",
-      "src_lib_server_logger_logger_info",
-      "src_lib_server_logger_logger_log",
-      "src_lib_server_logger_logger_warn",
-      "src_routes_api_logs_server",
-      "src_routes_api_logs_server_delete",
-      "src_routes_api_logs_server_get",
-      "src_routes_api_token_server",
-      "src_routes_api_token_server_get",
-      "src_routes_api_token_server_post"
-    ],
-    "7": [
+    "9": [
       "src_lib_server_googlesheetservice_googlesheetservice",
       "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
       "src_lib_server_googlesheetservice_googlesheetservice_constructor",
@@ -193,75 +316,65 @@
       "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
       "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow"
     ],
-    "8": [
-      "knip",
-      "knip_entry",
-      "knip_ignoredependencies",
-      "knip_project",
-      "knip_schema",
-      "package_devdependencies_tailwindcss",
-      "ref_src_js_ts_svelte",
-      "ref_src_routes_js_ts_svelte",
-      "ref_test_ts",
-      "tailwindcss"
-    ],
-    "9": [
-      "src_lib_server_tokenmanager_tokenmanager",
-      "src_lib_server_tokenmanager_tokenmanager_clear",
-      "src_lib_server_tokenmanager_tokenmanager_constructor",
-      "src_lib_server_tokenmanager_tokenmanager_getinstance",
-      "src_lib_server_tokenmanager_tokenmanager_getstatus",
-      "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
-      "src_lib_server_tokenmanager_tokenmanager_login",
-      "src_lib_server_tokenmanager_tokenmanager_refresh",
-      "src_lib_server_tokenmanager_tokenmanager_revoke",
-      "src_lib_server_tokenmanager_tokenmanager_savetoken"
-    ],
     "10": [
-      "src_lib_server_kbttclient_kbttclient",
-      "src_lib_server_kbttclient_kbttclient_constructor",
-      "src_lib_server_kbttclient_kbttclient_postpayload",
-      "src_lib_server_kbttclient_kbttclient_submitforeignguests",
-      "src_lib_server_kbttclient_kbttclient_submitvietnameseguests",
-      "src_lib_server_syncpipeline_syncpipeline_constructor"
+      "scripts_apps_script_onedit",
+      "scripts_apps_script_onedit_installtrigger",
+      "scripts_apps_script_onedit_onedit",
+      "scripts_apps_script_onedit_onopen",
+      "scripts_apps_script_onedit_synccurrentsheettocloudflare",
+      "scripts_apps_script_onedit_syncrowtocloudflare"
     ],
     "11": [
-      "src_routes_page",
-      "src_routes_page_has",
-      "src_routes_page_isrowregistered"
-    ],
-    "12": [
+      "kit",
       "svelte_config",
       "svelte_config_config"
+    ],
+    "12": [
+      "src_routes_page",
+      "src_routes_page_loadauditlogs"
     ],
     "13": [
       "src_routes_layout"
     ],
     "14": [
+      "svelte_svelte"
+    ],
+    "15": [
       "vite_config"
     ]
   },
   "cohesion": {
-    "0": 0.12073170731707317,
-    "1": 0.07407407407407407,
-    "2": 0.08695652173913043,
-    "3": 0.09523809523809523,
-    "4": 0.2904761904761905,
-    "5": 0.2,
-    "6": 0.16666666666666666,
-    "7": 0.2878787878787879,
-    "8": 0.2222222222222222,
-    "9": 0.3333333333333333,
+    "0": 0.11554748941318814,
+    "1": 0.08784313725490196,
+    "2": 0.0873440285204991,
+    "3": 0.06854838709677419,
+    "4": 0.07407407407407407,
+    "5": 0.08,
+    "6": 0.1631578947368421,
+    "7": 0.30409356725146197,
+    "8": 0.1111111111111111,
+    "9": 0.2878787878787879,
     "10": 0.4666666666666667,
     "11": 0.6666666666666666,
     "12": 1.0,
     "13": 1.0,
-    "14": 1.0
+    "14": 1.0,
+    "15": 1.0
   },
   "gods": [
     {
+      "id": "src_lib_server_catalogmanager_catalogmanager",
+      "label": "CatalogManager",
+      "degree": 30
+    },
+    {
       "id": "src_lib_server_datatransformer_datatransformer",
       "label": "DataTransformer",
+      "degree": 28
+    },
+    {
+      "id": "src_lib_server_db_getdb",
+      "label": "getDb()",
       "degree": 23
     },
     {
@@ -270,57 +383,69 @@
       "degree": 22
     },
     {
-      "id": "src_lib_server_catalogmanager_catalogmanager",
-      "label": "CatalogManager",
-      "degree": 20
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
-      "degree": 17
+      "id": "test_test_pipeline_runtests",
+      "label": "runTests()",
+      "degree": 22
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline",
       "label": "SyncPipeline",
-      "degree": 15
+      "degree": 19
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice",
+      "label": "GoogleSheetService",
+      "degree": 18
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager",
       "label": "TokenManager",
-      "degree": 15
-    },
-    {
-      "id": "test_test_pipeline_runtests",
-      "label": "runTests()",
-      "degree": 15
-    },
-    {
-      "id": "src_lib_server_config_config",
-      "label": "CONFIG",
-      "degree": 13
-    },
-    {
-      "id": "package_scripts",
-      "label": "scripts",
-      "degree": 11
+      "degree": 18
     },
     {
       "id": "src_lib_server_kbttclient_kbttclient",
       "label": "KbttClient",
-      "degree": 10
+      "degree": 17
+    },
+    {
+      "id": "src_lib_server_stayservice_stayservice",
+      "label": "StayService",
+      "degree": 17
     }
   ],
   "surprises": [
     {
-      "source": "runTests()",
-      "target": "KbttClient",
+      "source": "include",
+      "target": "src/**/*.js",
       "source_files": [
-        "test/test-pipeline.ts",
-        "src/lib/server/kbttClient.ts"
+        "tsconfig.json",
+        "biome.json"
       ],
       "confidence": "EXTRACTED",
-      "relation": "calls",
-      "why": "connects across different repos/directories; bridges separate communities"
+      "relation": "extends",
+      "why": "connects across different repos/directories; peripheral node `src/**/*.js` unexpectedly reaches hub `include`"
+    },
+    {
+      "source": "include",
+      "target": "src/**/*.svelte",
+      "source_files": [
+        "tsconfig.json",
+        "biome.json"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "extends",
+      "why": "connects across different repos/directories; peripheral node `src/**/*.svelte` unexpectedly reaches hub `include`"
+    },
+    {
+      "source": "include",
+      "target": "src/**/*.ts",
+      "source_files": [
+        "tsconfig.json",
+        "biome.json"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "extends",
+      "why": "connects across different repos/directories; peripheral node `src/**/*.ts` unexpectedly reaches hub `include`"
     },
     {
       "source": "runTests()",
@@ -334,26 +459,15 @@
       "why": "connects across different repos/directories; bridges separate communities"
     },
     {
-      "source": "ignoreDependencies",
-      "target": "tailwindcss",
+      "source": "runTests()",
+      "target": "KbttClient",
       "source_files": [
-        "knip.json",
-        "package.json"
+        "test/test-pipeline.ts",
+        "src/lib/server/kbttClient.ts"
       ],
       "confidence": "EXTRACTED",
-      "relation": "extends",
-      "why": "connects across different repos/directories"
-    },
-    {
-      "source": "SyncPipeline",
-      "target": "TokenManager",
-      "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/tokenManager.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "bridges separate communities"
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
     }
   ],
   "tokens": {

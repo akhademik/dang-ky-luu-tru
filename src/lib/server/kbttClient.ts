@@ -1,6 +1,6 @@
 import { CONFIG } from "./config.js";
-import { tokenManager, TokenManager } from "./tokenManager.js";
 import { logger } from "./logger.js";
+import { type TokenManager, tokenManager } from "./tokenManager.js";
 
 export interface ApiResponse<T = unknown> {
 	success: boolean;
@@ -26,6 +26,12 @@ export class KbttClient {
 		);
 	}
 
+	public async sendVietnam(
+		payloads: Record<string, unknown>[],
+	): Promise<ApiResponse> {
+		return this.submitVietnameseGuests(payloads);
+	}
+
 	public async submitForeignGuests(
 		payloads: Record<string, unknown>[],
 	): Promise<ApiResponse> {
@@ -34,6 +40,12 @@ export class KbttClient {
 			payloads,
 			"Thông báo lưu trú (Nước ngoài)",
 		);
+	}
+
+	public async sendForeign(
+		payloads: Record<string, unknown>[],
+	): Promise<ApiResponse> {
+		return this.submitForeignGuests(payloads);
 	}
 
 	private async _postPayload(
