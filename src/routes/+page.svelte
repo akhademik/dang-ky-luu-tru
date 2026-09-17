@@ -247,14 +247,17 @@ let stays = $derived.by(() => {
 		if (
 			activeTab === "inhouse" &&
 			stay.status !== "SYNCED_KBTT" &&
-			stay.status !== "EXTENDED"
+			stay.status !== "EXTENDED" &&
+			stay.status !== "CHECKED_IN"
 		) {
 			return false;
 		}
 		if (
 			activeTab === "register" &&
 			stay.status !== "READY_TO_SYNC" &&
-			stay.status !== "PENDING_VALIDATION"
+			stay.status !== "PENDING_VALIDATION" &&
+			stay.status !== "NOT_CHECKED_IN" &&
+			stay.status !== "ERROR"
 		) {
 			return false;
 		}
@@ -409,34 +412,17 @@ function showToast(
 	}, 4000);
 }
 
-async function loadStats(force = false) {
-	if (!force) {
-		const cached = getLocalCache<Stats>("stats");
-		if (cached) {
-			stats = cached;
-		}
-	}
+async function loadStats(_force = false) {
 	try {
 		const res = await fetch("/api/stats");
 		const data = await res.json();
 		if (data.success && data.data) {
 			stats = data.data;
-			setLocalCache("stats", stats);
 		}
 	} catch {}
 }
 
-async function loadStays(force = false) {
-	const cacheKey = `stays_master_${activeTab}`;
-	if (!force) {
-		const cached = getLocalCache<StayDetail[]>(cacheKey);
-		if (cached) {
-			rawStays = cached;
-			loadStats(false);
-			return;
-		}
-	}
-
+async function loadStays(_force = false) {
 	loading = true;
 	try {
 		const url = new URL("/api/stays", window.location.origin);
@@ -448,8 +434,7 @@ async function loadStays(force = false) {
 		const res = await fetch(url.toString());
 		const data = await res.json();
 		if (data.success) {
-			rawStays = data.data;
-			setLocalCache(cacheKey, rawStays);
+			rawStays = data.data || [];
 		}
 		loadStats(true);
 	} catch (err) {
@@ -1620,6 +1605,7 @@ $effect(() => {
 });
 
 onMount(async () => {
+	clearLocalCache();
 	const now = new Date(Date.now() + 7 * 3600 * 1000);
 	newGuestForm.ngay_den = now.toISOString().replace("T", " ").substring(0, 19);
 	const future = new Date(now.getTime() + 2 * 24 * 3600 * 1000);
