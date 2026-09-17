@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 209 nodes · 375 edges · 15 communities (5 shown, 7 thin omitted)
+- 211 nodes · 378 edges · 15 communities (5 shown, 7 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0c4eeb56`
+- Built from commit: `b8f020ee`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,8 +19,8 @@
 - devDependencies
 - compilerOptions
 - DataTransformer
-- Logger
 - CatalogManager
+- Logger
 - GoogleSheetService
 - knip.json
 - TokenManager
@@ -30,7 +30,7 @@
 ## God Nodes (most connected - your core abstractions)
 1. `DataTransformer` - 23 edges
 2. `Logger` - 22 edges
-3. `CatalogManager` - 19 edges
+3. `CatalogManager` - 20 edges
 4. `GoogleSheetService` - 17 edges
 5. `SyncPipeline` - 15 edges
 6. `TokenManager` - 15 edges
@@ -76,18 +76,18 @@ Nodes (9): entry, ignoreDependencies, project, $schema, tailwindcss, src/**/*.{j
 
 ## Knowledge Gaps
 - **64 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `TabInfo`, `ApiResponse` (+59 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 98 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 99 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`?**
-  _High betweenness centrality (0.072) - this node is a cross-community bridge._
+  _High betweenness centrality (0.076) - this node is a cross-community bridge._
 - **Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `KbttClient`?**
-  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+  _High betweenness centrality (0.069) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `knip.json`, `scripts`?**
-  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?**
   _64 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**

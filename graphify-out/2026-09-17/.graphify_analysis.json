@@ -144,6 +144,24 @@
       "test_test_pipeline_runtests"
     ],
     "5": [
+      "src_lib_server_catalogmanager_catalogmanager",
+      "src_lib_server_catalogmanager_catalogmanager_constructor",
+      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
+      "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
+      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
+      "src_lib_server_catalogmanager_catalogmanager_getinstance",
+      "src_lib_server_catalogmanager_catalogmanager_initaliases",
+      "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
+      "src_lib_server_catalogmanager_catalogmanager_loadlocalcatalogjson",
+      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich"
+    ],
+    "6": [
       "src_lib_server_logger_logger",
       "src_lib_server_logger_logger_clear",
       "src_lib_server_logger_logger_debug",
@@ -160,23 +178,6 @@
       "src_routes_api_token_server",
       "src_routes_api_token_server_get",
       "src_routes_api_token_server_post"
-    ],
-    "6": [
-      "src_lib_server_catalogmanager_catalogmanager",
-      "src_lib_server_catalogmanager_catalogmanager_constructor",
-      "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
-      "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
-      "src_lib_server_catalogmanager_catalogmanager_findquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
-      "src_lib_server_catalogmanager_catalogmanager_getinstance",
-      "src_lib_server_catalogmanager_catalogmanager_initaliases",
-      "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
-      "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich"
     ],
     "7": [
       "src_lib_server_googlesheetservice_googlesheetservice",
@@ -247,8 +248,8 @@
     "2": 0.08695652173913043,
     "3": 0.09523809523809523,
     "4": 0.2904761904761905,
-    "5": 0.16666666666666666,
-    "6": 0.20952380952380953,
+    "5": 0.2,
+    "6": 0.16666666666666666,
     "7": 0.2878787878787879,
     "8": 0.2222222222222222,
     "9": 0.3333333333333333,
@@ -272,7 +273,7 @@
     {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "CatalogManager",
-      "degree": 19
+      "degree": 20
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice",

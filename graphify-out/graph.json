@@ -173,30 +173,30 @@
       "source_location": "L24"
     },
     {
-      "id": "src_lib_server_logger_logger",
-      "label": "Logger",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": "logger",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L12"
-    },
-    {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "CatalogManager",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": "catalogmanager",
       "source_file": "src/lib/server/catalogManager.ts",
       "source_location": "L18"
+    },
+    {
+      "id": "src_lib_server_logger_logger",
+      "label": "Logger",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": "logger",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L12"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice",
@@ -426,7 +426,7 @@
       "file_type": "code",
       "norm_label": "has()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1697"
+      "source_location": "L1699"
     },
     {
       "id": "src_routes_page_isrowregistered",
@@ -438,7 +438,7 @@
       "file_type": "code",
       "norm_label": "isrowregistered()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1700"
+      "source_location": "L1702"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
@@ -681,167 +681,11 @@
       "source_location": "L12"
     },
     {
-      "id": "src_lib_server_logger_logger_clear",
-      "label": ".clear()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".clear()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L97"
-    },
-    {
-      "id": "src_lib_server_logger_logger_debug",
-      "label": ".debug()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".debug()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L75"
-    },
-    {
-      "id": "src_lib_server_logger_logger_error",
-      "label": ".error()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".error()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L89"
-    },
-    {
-      "id": "src_lib_server_logger_logger_formattime",
-      "label": ".formatTime()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".formattime()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L25"
-    },
-    {
-      "id": "src_lib_server_logger_logger_getinstance",
-      "label": ".getInstance()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".getinstance()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L18"
-    },
-    {
-      "id": "src_lib_server_logger_logger_getrecentlogs",
-      "label": ".getRecentLogs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".getrecentlogs()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L93"
-    },
-    {
-      "id": "src_lib_server_logger_logger_info",
-      "label": ".info()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".info()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L81"
-    },
-    {
-      "id": "src_lib_server_logger_logger_log",
-      "label": ".log()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".log()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_lib_server_logger_logger_warn",
-      "label": ".warn()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": ".warn()",
-      "source_file": "src/lib/server/logger.ts",
-      "source_location": "L85"
-    },
-    {
-      "id": "src_routes_api_logs_server_delete",
-      "label": "DELETE()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": "delete()",
-      "source_file": "src/routes/api/logs/+server.ts",
-      "source_location": "L14"
-    },
-    {
-      "id": "src_routes_api_logs_server_get",
-      "label": "GET()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "src/routes/api/logs/+server.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_routes_api_token_server_get",
-      "label": "GET()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "src/routes/api/token/+server.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_routes_api_token_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Logger",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/token/+server.ts",
-      "source_location": "L9"
-    },
-    {
       "id": "src_lib_server_catalogmanager_catalogmanager_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".constructor()",
@@ -853,103 +697,103 @@
       "label": ".fetchPublicCatalog()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".fetchpubliccatalog()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L167"
+      "source_location": "L190"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
       "label": ".findLoaiGiayTo()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".findloaigiayto()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L295"
+      "source_location": "L339"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_findquoctich",
       "label": ".findQuocTich()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".findquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L243"
+      "source_location": "L287"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
       "label": ".getFallbackLoaiGiayTo()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbackloaigiayto()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L348"
+      "source_location": "L392"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
       "label": ".getFallbackLyDoCuTru()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacklydocutru()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L341"
+      "source_location": "L385"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
       "label": ".getFallbackNoiCuTru()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacknoicutru()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L358"
+      "source_location": "L402"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
       "label": ".getFallbackQuocTich()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbackquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L306"
+      "source_location": "L350"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
       "label": ".getFallbackTinhTp()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getfallbacktinhtp()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L331"
+      "source_location": "L375"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getinstance",
       "label": ".getInstance()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".getinstance()",
@@ -961,7 +805,7 @@
       "label": ".initAliases()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".initaliases()",
@@ -973,36 +817,204 @@
       "label": ".initialize()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".initialize()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L181"
+      "source_location": "L204"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
       "label": ".isValidQuocTichCode()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".isvalidquoctichcode()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L225"
+      "source_location": "L269"
+    },
+    {
+      "id": "src_lib_server_catalogmanager_catalogmanager_loadlocalcatalogjson",
+      "label": ".loadLocalCatalogJson()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "CatalogManager",
+      "file_type": "code",
+      "norm_label": ".loadlocalcatalogjson()",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L167"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
       "label": ".loadStandardQuocTich()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 5,
       "community_name": "CatalogManager",
       "file_type": "code",
       "norm_label": ".loadstandardquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
       "source_location": "L126"
+    },
+    {
+      "id": "src_lib_server_logger_logger_clear",
+      "label": ".clear()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".clear()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L97"
+    },
+    {
+      "id": "src_lib_server_logger_logger_debug",
+      "label": ".debug()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".debug()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L75"
+    },
+    {
+      "id": "src_lib_server_logger_logger_error",
+      "label": ".error()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".error()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L89"
+    },
+    {
+      "id": "src_lib_server_logger_logger_formattime",
+      "label": ".formatTime()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".formattime()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L25"
+    },
+    {
+      "id": "src_lib_server_logger_logger_getinstance",
+      "label": ".getInstance()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".getinstance()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_lib_server_logger_logger_getrecentlogs",
+      "label": ".getRecentLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".getrecentlogs()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L93"
+    },
+    {
+      "id": "src_lib_server_logger_logger_info",
+      "label": ".info()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".info()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L81"
+    },
+    {
+      "id": "src_lib_server_logger_logger_log",
+      "label": ".log()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".log()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_lib_server_logger_logger_warn",
+      "label": ".warn()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": ".warn()",
+      "source_file": "src/lib/server/logger.ts",
+      "source_location": "L85"
+    },
+    {
+      "id": "src_routes_api_logs_server_delete",
+      "label": "DELETE()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": "delete()",
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_routes_api_logs_server_get",
+      "label": "GET()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "src/routes/api/logs/+server.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_routes_api_token_server_get",
+      "label": "GET()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "src/routes/api/token/+server.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_routes_api_token_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Logger",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/token/+server.ts",
+      "source_location": "L9"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
@@ -2304,7 +2316,7 @@
       "id": "src_routes_api_logs_server",
       "label": "logs/+server.ts",
       "_origin": "ast",
-      "community": 5,
+      "community": 6,
       "community_name": "Logger",
       "file_type": "code",
       "norm_label": "logs/+server.ts",
@@ -2315,7 +2327,7 @@
       "id": "src_routes_api_token_server",
       "label": "token/+server.ts",
       "_origin": "ast",
-      "community": 5,
+      "community": 6,
       "community_name": "Logger",
       "file_type": "code",
       "norm_label": "token/+server.ts",
@@ -2472,55 +2484,19 @@
     },
     {
       "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "target": "src_lib_server_catalogmanager_catalogmanager_loadlocalcatalogjson",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L208",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
       "target": "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L185",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L192",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L193",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L210",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -2532,6 +2508,54 @@
     },
     {
       "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L245",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
+      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L255",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager_initialize",
       "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
       "relation": "calls",
       "_origin": "ast",
@@ -2539,7 +2563,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L217",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -5492,7 +5516,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L366",
+      "source_location": "L410",
       "weight": 1.0
     },
     {
@@ -5844,7 +5868,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1697",
+      "source_location": "L1699",
       "weight": 1.0
     },
     {
@@ -5855,7 +5879,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1700",
+      "source_location": "L1702",
       "weight": 1.0
     },
     {
@@ -6045,7 +6069,7 @@
     },
     {
       "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
+      "target": "src_lib_server_catalogmanager_catalogmanager_loadlocalcatalogjson",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6056,13 +6080,24 @@
     },
     {
       "source": "src_lib_server_catalogmanager_catalogmanager",
+      "target": "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager",
       "target": "src_lib_server_catalogmanager_catalogmanager_initialize",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L181",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -6073,7 +6108,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L225",
+      "source_location": "L269",
       "weight": 1.0
     },
     {
@@ -6084,29 +6119,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L243",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L295",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L306",
+      "source_location": "L287",
       "weight": 1.0
     },
     {
@@ -6122,13 +6135,35 @@
     },
     {
       "source": "src_lib_server_catalogmanager_catalogmanager",
+      "target": "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L339",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager",
+      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L350",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager",
       "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacktinhtp",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L331",
+      "source_location": "L375",
       "weight": 1.0
     },
     {
@@ -6139,7 +6174,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L341",
+      "source_location": "L385",
       "weight": 1.0
     },
     {
@@ -6150,7 +6185,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L348",
+      "source_location": "L392",
       "weight": 1.0
     },
     {
@@ -6161,7 +6196,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L358",
+      "source_location": "L402",
       "weight": 1.0
     },
     {
@@ -6797,5 +6832,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a27ce5dc9bb03b6aa98afeccb89a9fa9e2f88147"
+  "built_at_commit": "b8f020ee49e27272ad0ee7522a2663af94aab620"
 }

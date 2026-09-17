@@ -164,6 +164,29 @@ export class CatalogManager {
 		}
 	}
 
+	private loadLocalCatalogJson(filename: string): CatalogItem[] {
+		try {
+			const candidates = [
+				path.resolve(process.cwd(), `data/catalogs/${filename}`),
+				path.resolve(process.cwd(), filename),
+				path.resolve(process.cwd(), `src/lib/server/${filename}`),
+			];
+			for (const jsonPath of candidates) {
+				if (fs.existsSync(jsonPath)) {
+					const raw = fs.readFileSync(jsonPath, "utf8");
+					const parsed = JSON.parse(raw);
+					const list = Array.isArray(parsed) ? parsed : parsed.data || [];
+					if (Array.isArray(list) && list.length > 0) {
+						return list as CatalogItem[];
+					}
+				}
+			}
+		} catch (err) {
+			console.warn(`[CatalogManager] Không thể nạp ${filename}:`, err);
+		}
+		return [];
+	}
+
 	public async fetchPublicCatalog(endpoint: string): Promise<CatalogItem[]> {
 		try {
 			const res = await fetch(`${CONFIG.BASE_URL}${endpoint}`, {
@@ -181,20 +204,32 @@ export class CatalogManager {
 	public async initialize(): Promise<void> {
 		if (this.isLoaded) return;
 		try {
-			const [qt, tinh, lyDo, loaiGt, noiCt] = await Promise.all([
-				this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_QUOC_TICH),
-				this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_TINH_TP),
-				this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_LY_DO_CU_TRU),
-				this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_LOAI_GIAY_TO),
-				this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_NOI_CU_TRU),
-			]);
+			// 1. Ưu tiên nạp danh mục từ Database cục bộ data/catalogs/*.json
+			const localQt = this.loadLocalCatalogJson("quoc_tich.json");
+			const localTinh = this.loadLocalCatalogJson("tinh_tp.json");
+			const localLyDo = this.loadLocalCatalogJson("ly_do_cu_tru.json");
+			const localLoaiGt = this.loadLocalCatalogJson("loai_giay_to.json");
 
-			this.quocTichList = qt.length > 0 ? qt : this.getFallbackQuocTich();
-			this.tinhTpList = tinh.length > 0 ? tinh : this.getFallbackTinhTp();
+			this.quocTichList =
+				localQt.length > 0
+					? localQt
+					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_QUOC_TICH);
+			if (this.quocTichList.length === 0)
+				this.quocTichList = this.getFallbackQuocTich();
 
-			// Show only 2 reasons: Du lịch (1) and Mục đích khác (20)
-			if (lyDo.length > 0) {
-				const filtered = lyDo.filter((item) => {
+			this.tinhTpList =
+				localTinh.length > 0
+					? localTinh
+					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_TINH_TP);
+			if (this.tinhTpList.length === 0)
+				this.tinhTpList = this.getFallbackTinhTp();
+
+			const lyDoRaw =
+				localLyDo.length > 0
+					? localLyDo
+					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_LY_DO_CU_TRU);
+			if (lyDoRaw.length > 0) {
+				const filtered = lyDoRaw.filter((item) => {
 					const id = Number(item.id);
 					const name = String(item.name || item.ten || "").toLowerCase();
 					return (
@@ -212,9 +247,18 @@ export class CatalogManager {
 				this.lyDoCuTruList = this.getFallbackLyDoCuTru();
 			}
 
+			const loaiGtRaw =
+				localLoaiGt.length > 0
+					? localLoaiGt
+					: await this.fetchPublicCatalog(CONFIG.ENDPOINTS.DM_LOAI_GIAY_TO);
 			this.loaiGiayToList =
-				loaiGt.length > 0 ? loaiGt : this.getFallbackLoaiGiayTo();
-			this.noiCuTruList = noiCt.length > 0 ? noiCt : this.getFallbackNoiCuTru();
+				loaiGtRaw.length > 0 ? loaiGtRaw : this.getFallbackLoaiGiayTo();
+
+			const noiCtRaw = await this.fetchPublicCatalog(
+				CONFIG.ENDPOINTS.DM_NOI_CU_TRU,
+			);
+			this.noiCuTruList =
+				noiCtRaw.length > 0 ? noiCtRaw : this.getFallbackNoiCuTru();
 
 			this.isLoaded = true;
 		} catch (err) {

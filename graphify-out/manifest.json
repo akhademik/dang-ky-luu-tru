@@ -11,12 +11,6 @@
     "ast_hash": "bbd8a8728eb57a8d3f90f5809508cdb7",
     "semantic_hash": "bbd8a8728eb57a8d3f90f5809508cdb7"
   },
-  "data/catalogs/noi_cu_tru.json": {
-    "mtime": 1789528449.9140642,
-    "seen": 1789541817.069009,
-    "ast_hash": "3193b9caea9b91c9f62ba42a4a614073",
-    "semantic_hash": "3193b9caea9b91c9f62ba42a4a614073"
-  },
   "data/catalogs/quoc_tich.json": {
     "mtime": 1789528481.1106813,
     "seen": 1789541817.0690103,
@@ -24,10 +18,10 @@
     "semantic_hash": "245e9debd4a3e24510941300d5ba67a8"
   },
   "data/catalogs/tinh_tp.json": {
-    "mtime": 1789528457.661483,
-    "seen": 1789541817.0690112,
-    "ast_hash": "6b2fe1b52de8f7aa75de51999dfb286e",
-    "semantic_hash": "6b2fe1b52de8f7aa75de51999dfb286e"
+    "mtime": 1789607894.669514,
+    "seen": 1789607938.7196612,
+    "ast_hash": "9b0b868c8c7dada508761d791e3d8483",
+    "semantic_hash": "9b0b868c8c7dada508761d791e3d8483"
   },
   "knip.json": {
     "mtime": 1789607128.665268,
@@ -48,10 +42,10 @@
     "semantic_hash": "42c76aa2d5751713b8d2bd95fcfd2bb7"
   },
   "src/lib/server/catalogManager.ts": {
-    "mtime": 1789561752.2282224,
-    "seen": 1789561963.7521439,
-    "ast_hash": "91add166224e14426d1878cde7165334",
-    "semantic_hash": "91add166224e14426d1878cde7165334"
+    "mtime": 1789607918.1135163,
+    "seen": 1789607938.7197948,
+    "ast_hash": "caedbe1e2f905511774b774096cf31d7",
+    "semantic_hash": "caedbe1e2f905511774b774096cf31d7"
   },
   "src/lib/server/config.ts": {
     "mtime": 1789605239.9967008,
@@ -96,10 +90,10 @@
     "semantic_hash": "1b163c03f3725608db5406d1a4581353"
   },
   "src/routes/+page.svelte": {
-    "mtime": 1789607536.5342705,
-    "seen": 1789607551.5948896,
-    "ast_hash": "56947433598398191ff2bb7b7865aa63",
-    "semantic_hash": "56947433598398191ff2bb7b7865aa63"
+    "mtime": 1789608381.1574762,
+    "seen": 1789608398.6743312,
+    "ast_hash": "a813c8d9ea58e4b835b4d92c001cd9bf",
+    "semantic_hash": "a813c8d9ea58e4b835b4d92c001cd9bf"
   },
   "src/routes/api/catalogs/+server.ts": {
     "mtime": 1789549541.6637275,

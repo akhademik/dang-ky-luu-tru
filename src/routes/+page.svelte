@@ -1537,7 +1537,8 @@ onMount(() => {
               ? 'bg-amber-500 text-slate-950 shadow-sm font-bold'
               : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
           }`}
-          title="Sandbox / Thử nghiệm (api-kbtt.ai-vlab.com)"
+          data-tooltip="Sandbox / Thử nghiệm (api-kbtt.ai-vlab.com)"
+          data-tooltip-pos="bottom"
         >
           <i class="fa-solid fa-flask text-[11px]"></i>
           <span>DEV</span>
@@ -1550,7 +1551,8 @@ onMount(() => {
               ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold'
               : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
           }`}
-          title="Production / Chính thức (api-tbltkbtt.bocongan.gov.vn)"
+          data-tooltip="Production / Chính thức (api-tbltkbtt.bocongan.gov.vn)"
+          data-tooltip-pos="bottom"
         >
           <i class="fa-solid fa-shield-halved text-[11px]"></i>
           <span>PROD</span>
@@ -1618,7 +1620,7 @@ onMount(() => {
           </div>
           <div class="flex items-center gap-2 text-xs">
             <span class="text-emerald-300 font-mono">{tabFetchStatus}</span>
-            <button onclick={fetchSheetTabsList} class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg border border-slate-600 transition shadow-sm flex items-center gap-1.5 text-slate-200" title="Làm mới danh sách Tab ngày">
+            <button onclick={fetchSheetTabsList} class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg border border-slate-600 transition shadow-sm flex items-center gap-1.5 text-slate-200 cursor-pointer" data-tooltip="Làm mới danh sách Tab ngày">
               <i class={`fa-solid fa-arrows-rotate ${isLoadingSheet ? 'fa-spin' : ''}`}></i> Nạp lại Tabs
             </button>
           </div>
@@ -1637,7 +1639,7 @@ onMount(() => {
 
           <!-- Action Buttons -->
           <div class="flex items-center gap-2">
-            <button onclick={() => pullDataFromGoogleSheet()} disabled={isLoadingSheet} class="px-4 py-2 text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg transition shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50" title="Lấy dữ liệu từ Google Sheets về bảng">
+            <button onclick={() => pullDataFromGoogleSheet()} disabled={isLoadingSheet} class="px-4 py-2 text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg transition shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer" data-tooltip="Lấy dữ liệu từ Google Sheets về bảng">
               <i class="fa-solid fa-cloud-arrow-down"></i> Lấy thông tin từ sheet
             </button>
           </div>
@@ -1651,10 +1653,10 @@ onMount(() => {
           <p class="text-xs text-slate-500">{currentSourceLabel}</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick={addNewGuest} class="px-3.5 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm" title="Thêm khách mới vào danh sách và đồng bộ Google Sheets">
+          <button onclick={addNewGuest} class="px-3.5 py-1.5 text-xs bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" data-tooltip="Thêm khách mới vào danh sách và đồng bộ Google Sheets">
             <i class="fa-solid fa-user-plus"></i> Thêm khách
           </button>
-          <button onclick={pushSelectedRows} class="px-4 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm" title="Đăng ký các khách chưa đăng ký lên hệ thống KBTT">
+          <button onclick={pushSelectedRows} class="px-4 py-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" data-tooltip="Đăng ký các khách chưa đăng ký lên hệ thống KBTT">
             <i class="fa-solid fa-paper-plane"></i> Đăng ký ({selectedIndices.size > 0 ? `${selectedIndices.size}` : `${currentRows.filter(r => !isRowRegistered(r)).length}`} khách)
           </button>
         </div>
@@ -1673,7 +1675,7 @@ onMount(() => {
                     disabled={eligibleRowsCount === 0}
                     onchange={(e) => toggleSelectAll((e.target as HTMLInputElement).checked)}
                     class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                    title={eligibleRowsCount === 0 ? "Tất cả khách đều đã hoàn tất đăng ký lưu trú" : "Chọn tất cả khách chưa đăng ký"}
+                    data-tooltip={eligibleRowsCount === 0 ? "Tất cả khách đều đã hoàn tất đăng ký lưu trú" : "Chọn tất cả khách chưa đăng ký"}
                   >
                 </th>
                 <th class="p-3 w-8 text-center">#</th>
@@ -1702,7 +1704,7 @@ onMount(() => {
 
                 <tr ondblclick={() => !isDeleting && !isRegistered && openEditModal(idx)} class={`transition-all duration-200 ${isDeleting ? 'line-through opacity-40 bg-rose-100/70 pointer-events-none select-none grayscale' : isRegistered ? 'bg-slate-100/75 text-slate-500 hover:bg-slate-200/50' : 'hover:bg-slate-100/80'} ${!isComplete && !isDeleting && !isRegistered ? 'bg-rose-50/30' : ''} ${isChecked && !isDeleting && !isRegistered ? 'bg-indigo-50/30' : ''}`}>
                   <td class="p-3 text-center">
-                    <input type="checkbox" checked={isChecked} disabled={isDeleting || isRegistered} onchange={(e) => toggleRowSelect(idx, (e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed" title={isRegistered ? "Khách này đã được đăng ký lưu trú thành công" : "Chọn khách"}>
+                    <input type="checkbox" checked={isChecked} disabled={isDeleting || isRegistered} onchange={(e) => toggleRowSelect(idx, (e.target as HTMLInputElement).checked)} class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed" data-tooltip={isRegistered ? "Khách này đã được đăng ký lưu trú thành công" : "Chọn khách"}>
                   </td>
 
                   <td class="p-3 text-center font-mono text-slate-400">{idx + 1}</td>
@@ -1710,7 +1712,7 @@ onMount(() => {
                   <!-- Họ tên -->
                   <td class="p-3 font-medium {isRegistered ? 'text-slate-600' : 'text-slate-900'}">
                     {#if isRegistered}
-                      <span class="uppercase font-bold text-slate-600 select-none cursor-default" title="Khách này đã hoàn tất đăng ký lưu trú">{row.hoTen || row['Họ tên']}</span>
+                      <span class="uppercase font-bold text-slate-600 select-none cursor-default" data-tooltip="Khách này đã hoàn tất đăng ký lưu trú">{row.hoTen || row['Họ tên']}</span>
                     {:else if isEditing}
                       <input type="text" value={row.hoTen || row['Họ tên'] || ''} onchange={(e) => updateCell(idx, 'hoTen', (e.target as HTMLInputElement).value)} class="w-full rounded px-2 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
                     {:else if fStatus.hoTen?.valid ?? (row.hoTen || row['Họ tên'])}
@@ -1721,22 +1723,20 @@ onMount(() => {
                   </td>
 
                   <!-- Ngày sinh -->
-                  <td class="p-3 font-mono">
-                    {#if isRegistered}
-                      <span class="text-slate-500">{formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))}</span>
-                    {:else if isEditing}
-                      <input type="text" value={formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))} onchange={(e) => updateCell(idx, 'ngaySinh', (e.target as HTMLInputElement).value)} placeholder="DD/MM/YYYY" class="w-24 rounded px-2 py-1 outline-none text-xs font-mono transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
+                  <td class="p-3 whitespace-nowrap">
+                    {#if isEditing}
+                      <input type="text" value={row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''} onchange={(e) => updateCell(idx, 'ngaySinh', (e.target as HTMLInputElement).value)} placeholder="DD/MM/YYYY" class="w-24 rounded px-1.5 py-1 outline-none text-xs font-medium transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
                     {:else if fStatus.ngaySinh?.valid ?? (row.ngaySinh || row['D.O.B'] || row['Ngày sinh'])}
-                      <button type="button" class="cursor-pointer hover:text-indigo-600 transition" onclick={() => openEditModal(idx)}>{formatToDisplayDate(String(row.ngaySinh || row['D.O.B'] || row['Ngày sinh'] || ''))}</button>
+                      <span class={`font-medium ${isRegistered ? 'text-slate-400' : 'text-slate-600'}`}>{row.ngaySinh || row['D.O.B'] || row['Ngày sinh']}</span>
                     {:else}
-                      <button type="button" class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-2 py-0.5 rounded text-xs cursor-pointer" onclick={() => openEditModal(idx)}>Thiếu ngày sinh *</button>
+                      <button type="button" class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-semibold px-1.5 py-0.5 rounded text-xs cursor-pointer" onclick={() => openEditModal(idx)}>{fStatus.ngaySinh?.error || 'Thiếu ngày sinh *'}</button>
                     {/if}
                   </td>
 
                   <!-- Giới tính -->
-                  <td class="p-3">
+                  <td class="p-3 text-center whitespace-nowrap">
                     {#if isEditing}
-                      <select onchange={(e) => updateCell(idx, 'gioiTinh', (e.target as HTMLSelectElement).value)} class="bg-emerald-50/50 border border-emerald-400 rounded px-2 py-1 outline-none text-xs font-medium transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500">
+                      <select onchange={(e) => updateCell(idx, 'gioiTinh', (e.target as HTMLSelectElement).value)} class="bg-emerald-50/50 border border-emerald-400 rounded px-1 py-1 outline-none text-xs font-semibold transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500">
                         <option value="Nam" selected={(row.gioiTinh || row['Giới tính']) === 'Nam' || (row.gioiTinh || row['Giới tính']) === 'M'}>Nam</option>
                         <option value="Nữ" selected={(row.gioiTinh || row['Giới tính']) === 'Nữ' || (row.gioiTinh || row['Giới tính']) === 'F'}>Nữ</option>
                       </select>
@@ -1760,9 +1760,16 @@ onMount(() => {
                         class="w-20 rounded px-1.5 py-1 outline-none uppercase font-bold text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800"
                       >
                     {:else if fStatus.quocTich?.valid ?? isValidAlpha3Country(String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'))}
-                      <span class={`font-bold text-xs ${isRegistered ? 'text-slate-500' : 'text-slate-700'}`}>{String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>
+                      {@const qInfo = getCountryInfo(String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM'))}
+                      {#if qInfo}
+                        <span class={`font-bold text-xs cursor-default ${isRegistered ? 'text-slate-500' : 'text-slate-700'}`} data-tooltip={qInfo.tenQT}>
+                          {qInfo.maQT}
+                        </span>
+                      {:else}
+                        <span class={`font-bold text-xs ${isRegistered ? 'text-slate-500' : 'text-slate-700'}`}>{String(row.quocTich || row['Quốc tịch'] || row['Quốc gia'] || 'VNM').toUpperCase()}</span>
+                      {/if}
                     {:else}
-                      <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-bold px-1.5 py-0.5 rounded text-xs cursor-help" title={fStatus.quocTich?.error || 'Mã quốc tịch Alpha-3 không hợp lệ'}>{String(row.quocTich || 'LỖI').toUpperCase()} <i class="fa-solid fa-circle-exclamation"></i></span>
+                      <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-bold px-1.5 py-0.5 rounded text-xs cursor-help" data-tooltip={fStatus.quocTich?.error || 'Mã quốc tịch Alpha-3 không hợp lệ'}>{String(row.quocTich || 'LỖI').toUpperCase()} <i class="fa-solid fa-circle-exclamation"></i></span>
                     {/if}
                   </td>
 
@@ -1783,20 +1790,13 @@ onMount(() => {
                   </td>
 
                   <!-- Số giấy tờ -->
-                  <td class="p-3 font-mono font-bold {isRegistered ? 'text-slate-500' : 'text-indigo-700'}">
-                    {#if isRegistered}
-                      <span class="font-mono font-bold text-slate-500 select-none">{row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu']}</span>
-                    {:else if isEditing}
-                      {@const curDocType = row.loaiGiayTo || row['Loại giấy tờ'] || 'Thẻ CCCD'}
+                  <td class="p-3">
+                    {#if isEditing}
+                      {@const curDocType = String(row.loaiGiayTo || row['Loại giấy tờ'] || 'CCCD')}
                       <input
                         type="text"
                         value={row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu'] || ''}
-                        onkeydown={(e) => handleDocNumberKeyDown(e, curDocType)}
-                        oninput={(e) => {
-                          const cleaned = cleanDocNumberInput((e.target as HTMLInputElement).value, curDocType);
-                          (e.target as HTMLInputElement).value = cleaned;
-                          updateCell(idx, 'soGiayTo', cleaned);
-                        }}
+                        onchange={(e) => updateCell(idx, 'soGiayTo', (e.target as HTMLInputElement).value)}
                         placeholder={isNumericDocType(curDocType) ? "Chỉ nhập số" : "Số hộ chiếu (chữ & số)"}
                         maxlength="12"
                         class="w-28 rounded px-2 py-1 outline-none font-bold font-mono text-xs transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-indigo-700"
@@ -1804,7 +1804,7 @@ onMount(() => {
                     {:else if fStatus.soGiayTo?.valid ?? (fStatus.soHoChieu?.valid ?? true)}
                       <button type="button" class="cursor-pointer hover:underline font-mono font-bold text-indigo-700" onclick={() => openEditModal(idx)}>{row.soGiayTo || row['Số giấy tờ'] || row.soHoChieu || row['Số hộ chiếu']}</button>
                     {:else}
-                      <button type="button" class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-mono font-bold px-2 py-0.5 rounded text-xs cursor-pointer" onclick={() => openEditModal(idx)} title={fStatus.soGiayTo?.error || fStatus.soHoChieu?.error}>{row.soGiayTo || row['Số giấy tờ'] || 'Thiếu số *'}</button>
+                      <button type="button" class="inline-block bg-rose-100 border border-rose-300 text-rose-700 font-mono font-bold px-2 py-0.5 rounded text-xs cursor-pointer" onclick={() => openEditModal(idx)} data-tooltip={fStatus.soGiayTo?.error || fStatus.soHoChieu?.error}>{row.soGiayTo || row['Số giấy tờ'] || 'Thiếu số *'}</button>
                     {/if}
                   </td>
 
@@ -1820,7 +1820,7 @@ onMount(() => {
                     {:else if fStatus.soPhong?.valid ?? (row.soPhong || row['Số phòng'])}
                       <span class={`font-bold px-2 py-0.5 rounded text-xs ${isRegistered ? 'text-slate-500 bg-slate-200' : 'text-slate-800 bg-slate-200/80'}`}>{cleanRoomNumber(row.soPhong || row['Số phòng'])}</span>
                     {:else}
-                      <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs cursor-help" title="Thiếu hoặc sai số phòng">Thiếu</span>
+                      <span class="inline-block bg-rose-100 border border-rose-300 text-rose-700 px-1.5 py-0.5 rounded text-xs cursor-help" data-tooltip="Thiếu hoặc sai số phòng">Thiếu</span>
                     {/if}
                   </td>
 
@@ -1837,11 +1837,11 @@ onMount(() => {
                         <input type="text" value={row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || ''} onchange={(e) => updateCell(idx, 'ngayDi', (e.target as HTMLInputElement).value)} placeholder="Đi" class="w-28 rounded px-1.5 py-0.5 outline-none text-[11px] transition-all duration-150 focus:scale-105 focus:shadow-lg focus:ring-2 focus:ring-indigo-500 bg-emerald-50/50 border border-emerald-400 text-slate-800">
                       </div>
                     {:else}
-                      <button type="button" class="space-y-0.5 cursor-pointer text-left" onclick={() => openEditModal(idx)} title="Bấm để chỉnh sửa">
+                      <button type="button" class="space-y-0.5 cursor-pointer text-left" onclick={() => openEditModal(idx)} data-tooltip="Bấm để chỉnh sửa">
                         {#if fStatus.ngayDen?.valid ?? true}
                           <div>Đến: <strong>{row.ngayDen || row['(từ ngày)'] || row['Ngày đến'] || 'N/A'}</strong></div>
                         {:else}
-                          <div class="bg-rose-100 border border-rose-300 text-rose-800 px-1.5 py-0.5 rounded cursor-help font-semibold text-[10px]" title={fStatus.ngayDen?.error}>Đến: {row.ngayDen || 'Thiếu'} <i class="fa-solid fa-triangle-exclamation"></i></div>
+                          <div class="bg-rose-100 border border-rose-300 text-rose-800 px-1.5 py-0.5 rounded cursor-help font-semibold text-[10px]" data-tooltip={fStatus.ngayDen?.error}>Đến: {row.ngayDen || 'Thiếu'} <i class="fa-solid fa-triangle-exclamation"></i></div>
                         {/if}
                         <div>Đi: <strong>{row.ngayDi || row['(đến ngày)'] || row['Ngày đi'] || 'N/A'}</strong></div>
                       </button>
@@ -1851,11 +1851,11 @@ onMount(() => {
                   <!-- Địa chỉ -->
                   <td class="p-3 text-[11px] max-w-[150px] {isRegistered ? 'text-slate-400' : 'text-slate-700'}">
                     {#if isRegistered}
-                      <span class="font-medium truncate inline-block max-w-[130px]" title={addrInfo.fullText}>{addrInfo.shortText}</span>
+                      <span class="font-medium truncate inline-block max-w-[130px]" data-tooltip={addrInfo.fullText}>{addrInfo.shortText}</span>
                     {:else if isEditing}
                       <input type="text" value={getCombinedAddress(row) || row.diaChi || row['Địa chỉ'] || ''} onchange={(e) => updateCell(idx, 'diaChi', (e.target as HTMLInputElement).value)} placeholder="Chi tiết, Xã, Huyện, Tỉnh" class="w-32 rounded px-1.5 py-0.5 outline-none text-[11px] bg-emerald-50/50 border border-emerald-400 text-slate-800 transition-all duration-150 focus:scale-110 focus:shadow-xl focus:ring-2 focus:ring-indigo-500">
                     {:else}
-                      <button type="button" onclick={() => openEditModal(idx)} class="cursor-pointer hover:text-indigo-600 transition underline decoration-dotted decoration-slate-400 font-medium truncate inline-block max-w-[130px] text-left" title={`Bấm để chỉnh sửa: ${addrInfo.fullText}`}>
+                      <button type="button" onclick={() => openEditModal(idx)} class="cursor-pointer hover:text-indigo-600 transition underline decoration-dotted decoration-slate-400 font-medium truncate inline-block max-w-[130px] text-left" data-tooltip={`Bấm để chỉnh sửa: ${addrInfo.fullText}`}>
                         {addrInfo.shortText}
                       </button>
                     {/if}
@@ -1869,22 +1869,22 @@ onMount(() => {
                       </span>
                     {:else if isRegistered}
                       <div class="inline-flex items-center gap-1.5 justify-center">
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300" title="Khách này đã được đăng ký lưu trú thành công">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300" data-tooltip="Khách này đã được đăng ký lưu trú thành công">
                           <i class="fa-solid fa-circle-check text-emerald-600"></i> Đã đăng ký
                         </span>
-                        <button onclick={() => promptDeleteRow(idx)} class="text-rose-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition cursor-pointer" title="Xóa dòng khỏi bảng & Google Sheet">
+                        <button onclick={() => promptDeleteRow(idx)} class="text-rose-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition cursor-pointer" data-tooltip="Xóa dòng khỏi bảng & Google Sheet" aria-label="Xóa dòng">
                           <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                       </div>
                     {:else}
                       <div class="inline-flex items-center gap-1">
-                        <button onclick={() => openEditModal(idx)} class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition cursor-pointer" title="Chỉnh sửa chi tiết">
+                        <button onclick={() => openEditModal(idx)} class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-100 transition cursor-pointer" data-tooltip="Chỉnh sửa chi tiết" aria-label="Chỉnh sửa chi tiết">
                           <i class="fa-solid fa-pen"></i>
                         </button>
-                        <button onclick={() => pushSingleRow(idx)} class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition cursor-pointer" title="Đăng ký riêng dòng này">
+                        <button onclick={() => pushSingleRow(idx)} class="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition cursor-pointer" data-tooltip="Đăng ký riêng dòng này" aria-label="Đăng ký riêng dòng này">
                           <i class="fa-solid fa-paper-plane"></i>
                         </button>
-                        <button onclick={() => promptDeleteRow(idx)} class="text-rose-500 hover:text-rose-700 p-1.5 rounded hover:bg-rose-50 transition cursor-pointer" title="Xóa dòng khỏi bảng & Google Sheet">
+                        <button onclick={() => promptDeleteRow(idx)} class="text-rose-500 hover:text-rose-700 p-1.5 rounded hover:bg-rose-50 transition cursor-pointer" data-tooltip="Xóa dòng khỏi bảng & Google Sheet" aria-label="Xóa dòng">
                           <i class="fa-solid fa-trash-can"></i>
                         </button>
                       </div>
@@ -1974,16 +1974,18 @@ onMount(() => {
           <span>Quốc Tịch (API 6)</span>
           <span class="text-indigo-700 font-mono font-bold">{catalogs.quocTich.length} quốc gia</span>
         </h4>
-        <input type="text" bind:value={filterQuocTich} placeholder="Tìm quốc gia (vd: viet nam, rus)..." class="text-xs bg-white border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
+        <input type="text" bind:value={filterQuocTich} placeholder="Tìm quốc gia (vd: Germany, D, Viet Nam, VNM)..." class="text-xs bg-white border border-slate-300 rounded px-2.5 py-1.5 mb-2 focus:ring-1 focus:ring-indigo-500 outline-none">
         <ul class="text-xs space-y-1 overflow-y-auto max-h-72 divide-y divide-slate-200">
           {#each filteredQuocTichList as q}
             <li class="border-b border-slate-100 last:border-0">
-              <button type="button" onclick={() => copyCode(q.maQT, q.tenQT)} class="w-full text-left py-1.5 px-2 flex items-center justify-between hover:bg-indigo-50/80 cursor-pointer rounded transition group" title={`Bấm để copy mã: ${q.maQT}`}>
+              <button
+                type="button"
+                onclick={() => copyCode(q.maQT, q.tenQTEn || q.tenQT)}
+                class="w-full text-left py-1.5 px-2 flex items-center justify-between hover:bg-indigo-50/80 cursor-pointer rounded transition group"
+                data-tooltip={q.tenQT}
+              >
                 <div class="flex items-center gap-1.5">
-                  <span class="font-semibold text-slate-800 group-hover:text-indigo-700 transition">{q.tenQT}</span>
-                  {#if q.tenQTEn}
-                    <span class="text-slate-400 font-normal text-[11px]">({q.tenQTEn})</span>
-                  {/if}
+                  <span class="font-semibold text-slate-800 group-hover:text-indigo-700 transition">{q.tenQTEn || q.tenQT}</span>
                 </div>
                 <span class="font-mono text-indigo-600 font-bold bg-indigo-50 group-hover:bg-indigo-600 group-hover:text-white px-2 py-0.5 rounded text-[11px] transition shadow-xs flex items-center gap-1">
                   <i class="fa-regular fa-copy text-[10px] opacity-70"></i> {q.maQT}
@@ -2106,8 +2108,8 @@ onMount(() => {
             <label for="modalQuocTich" class="block font-semibold text-slate-700 mb-1 flex items-center justify-between">
               <span>Mã Quốc gia <span class="text-rose-500">*</span></span>
               {#if countryInfoHint}
-                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 whitespace-nowrap" title={countryInfoHint.tenQTEn || countryInfoHint.tenQT}>
-                  <i class="fa-solid fa-earth-americas text-emerald-600"></i> {countryInfoHint.tenQTEn || countryInfoHint.tenQT}
+                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 whitespace-nowrap cursor-help" data-tooltip={countryInfoHint.tenQT}>
+                  <i class="fa-solid fa-earth-americas text-emerald-600"></i> {countryInfoHint.tenQTEn || countryInfoHint.tenQT} ({countryInfoHint.maQT})
                 </span>
               {/if}
             </label>
@@ -2128,8 +2130,8 @@ onMount(() => {
                 <i class="fa-solid fa-circle-exclamation"></i> {liveVal.quocTich.error}
               </p>
             {:else if countryInfoHint}
-              <p class="text-emerald-700 text-[11px] font-medium mt-1 flex items-center gap-1">
-                <i class="fa-solid fa-circle-check"></i> Quốc gia: <strong>{countryInfoHint.tenQTEn || countryInfoHint.tenQT}</strong>
+              <p class="text-emerald-700 text-[11px] font-medium mt-1 flex items-center gap-1 cursor-help" data-tooltip={countryInfoHint.tenQT}>
+                <i class="fa-solid fa-circle-check"></i> Quốc gia: <strong>{countryInfoHint.tenQTEn || countryInfoHint.tenQT} ({countryInfoHint.maQT})</strong>
               </p>
             {/if}
           </div>
