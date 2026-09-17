@@ -1,4 +1,6 @@
 import cp from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 
 export interface Guest {
 	id: string;
@@ -117,23 +119,38 @@ class RemoteD1Database implements D1DatabaseLike {
 		const formattedSql = this.escapeSql(query, params);
 
 		try {
-			const stdout = cp.execFileSync(
-				"pnpm",
-				[
-					"wrangler",
-					"d1",
-					"execute",
-					this.dbName,
-					"--remote",
-					"--command",
-					formattedSql,
-					"--json",
-				],
-				{
-					encoding: "utf8",
-					stdio: ["pipe", "pipe", "ignore"],
-				},
+			const wranglerBin = path.resolve(
+				process.cwd(),
+				"node_modules/wrangler/bin/wrangler.js",
 			);
+			const isDirectBin = fs.existsSync(wranglerBin);
+			const execCmd = isDirectBin ? process.execPath : "pnpm";
+			const execArgs = isDirectBin
+				? [
+						wranglerBin,
+						"d1",
+						"execute",
+						this.dbName,
+						"--remote",
+						"--command",
+						formattedSql,
+						"--json",
+					]
+				: [
+						"wrangler",
+						"d1",
+						"execute",
+						this.dbName,
+						"--remote",
+						"--command",
+						formattedSql,
+						"--json",
+					];
+
+			const stdout = cp.execFileSync(execCmd, execArgs, {
+				encoding: "utf8",
+				stdio: ["pipe", "pipe", "ignore"],
+			});
 
 			const parsed = JSON.parse(stdout);
 			const firstResult = parsed[0] || {};

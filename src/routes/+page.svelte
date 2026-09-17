@@ -429,7 +429,9 @@ async function loadStats(_force = false) {
 }
 
 async function loadStays(_force = false) {
-	loading = true;
+	if (rawStays.length === 0) {
+		loading = true;
+	}
 	try {
 		const url = new URL("/api/stays", window.location.origin);
 		if (activeTab === "register") {
