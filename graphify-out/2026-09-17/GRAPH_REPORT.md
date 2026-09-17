@@ -81,7 +81,7 @@ Cohesion: 0.18
 Nodes (11): entry, ignoreDependencies, test/**/*.ts, project, $schema, tailwindcss, src/index.ts, src/**/*.{js,ts,svelte} (+3 more)
 
 ## Knowledge Gaps
-- **72 isolated node(s):** `CatalogItem`, `TabInfo`, `LogEntry`, `LogLevel`, `TokenState` (+67 more)
+- **72 isolated node(s):** `CatalogItem`, `CompletenessResult`, `TransformedRowResult`, `TabInfo`, `ApiResponse` (+67 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 108 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -94,7 +94,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `Google Sheet Service & Apps Script Sync` to `Data Transformation & OCR Normalization`, `entry`?**
   _High betweenness centrality (0.042) - this node is a cross-community bridge._
-- **What connects `CatalogItem`, `TabInfo`, `LogEntry` to the rest of the system?**
+- **What connects `CatalogItem`, `CompletenessResult`, `TransformedRowResult` to the rest of the system?**
   _72 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.0822746521476104 - nodes in this community are weakly interconnected._

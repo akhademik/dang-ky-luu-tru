@@ -30,22 +30,16 @@
     "semantic_hash": "6b2fe1b52de8f7aa75de51999dfb286e"
   },
   "knip.json": {
-    "mtime": 1789548393.4098015,
-    "seen": 1789548477.4344969,
-    "ast_hash": "37b9439e9455d0e559076801c5a84985",
-    "semantic_hash": "37b9439e9455d0e559076801c5a84985"
+    "mtime": 1789607128.665268,
+    "seen": 1789607321.6908417,
+    "ast_hash": "0f7a9a005443d3794815a1ebc4c9fc5b",
+    "semantic_hash": "0f7a9a005443d3794815a1ebc4c9fc5b"
   },
   "package.json": {
     "mtime": 1789549492.823724,
     "seen": 1789549559.5218573,
     "ast_hash": "a43bc0d7bba1212bd17b91af2c584d19",
     "semantic_hash": "a43bc0d7bba1212bd17b91af2c584d19"
-  },
-  "public/app.js": {
-    "mtime": 1789547210.7919786,
-    "seen": 1789547221.8932772,
-    "ast_hash": "5a1da65864e5558d523fda8856857867",
-    "semantic_hash": "5a1da65864e5558d523fda8856857867"
   },
   "src/index.ts": {
     "mtime": 1789549541.6637275,
@@ -72,8 +66,8 @@
     "semantic_hash": "cce65b641bd5e7bdb49a4637be72f753"
   },
   "src/lib/server/googleSheetService.ts": {
-    "mtime": 1789562810.4123888,
-    "seen": 1789562829.838228,
+    "mtime": 1789607300.1373494,
+    "seen": 1789607321.6910872,
     "ast_hash": "a4e43690b7b0f9b82fa4b0c68c39e392",
     "semantic_hash": "a4e43690b7b0f9b82fa4b0c68c39e392"
   },
@@ -84,16 +78,16 @@
     "semantic_hash": "0043c7e2fb8d9e5be7fda511d1c02f18"
   },
   "src/lib/server/syncPipeline.ts": {
-    "mtime": 1789605615.2649195,
-    "seen": 1789605654.2778308,
-    "ast_hash": "b200a8fdc27bb1d1aaf6c10dd657b172",
-    "semantic_hash": "b200a8fdc27bb1d1aaf6c10dd657b172"
+    "mtime": 1789607207.5293436,
+    "seen": 1789607321.6911428,
+    "ast_hash": "c6a3c70691b2b73fa2ba8544600c9b01",
+    "semantic_hash": "c6a3c70691b2b73fa2ba8544600c9b01"
   },
   "src/lib/server/tokenManager.ts": {
-    "mtime": 1789605244.076851,
-    "seen": 1789605303.9637783,
-    "ast_hash": "39af9476fd27a3a72c6c879caa2809ef",
-    "semantic_hash": "39af9476fd27a3a72c6c879caa2809ef"
+    "mtime": 1789607193.353311,
+    "seen": 1789607321.6911442,
+    "ast_hash": "5e002ca596ca03a50e7094edb7cf2a1a",
+    "semantic_hash": "5e002ca596ca03a50e7094edb7cf2a1a"
   },
   "src/routes/+layout.svelte": {
     "mtime": 1789549541.6676328,
@@ -161,12 +155,6 @@
     "ast_hash": "9d1f5ffb0f125af13422d45f807ccf8d",
     "semantic_hash": "9d1f5ffb0f125af13422d45f807ccf8d"
   },
-  "src/routes/api/events/+server.ts": {
-    "mtime": 1789549541.6637275,
-    "seen": 1789549559.5219984,
-    "ast_hash": "74d722926cc5fc02a17da09877cd05cd",
-    "semantic_hash": "74d722926cc5fc02a17da09877cd05cd"
-  },
   "src/routes/api/sheets/pull/+server.ts": {
     "mtime": 1789549907.9000163,
     "seen": 1789550020.9112186,
@@ -180,10 +168,10 @@
     "semantic_hash": "927eb2276736c9a272ff503e72477007"
   },
   "src/lib/server/logger.ts": {
-    "mtime": 1789549861.0280216,
-    "seen": 1789550020.9108734,
-    "ast_hash": "5bf0b4502e2cfb7747fc101545cdb406",
-    "semantic_hash": "5bf0b4502e2cfb7747fc101545cdb406"
+    "mtime": 1789607200.957322,
+    "seen": 1789607321.6911418,
+    "ast_hash": "cc8df28662764ff33a765eef273fbcaf",
+    "semantic_hash": "cc8df28662764ff33a765eef273fbcaf"
   },
   "src/routes/api/logs/+server.ts": {
     "mtime": 1789549933.0084221,

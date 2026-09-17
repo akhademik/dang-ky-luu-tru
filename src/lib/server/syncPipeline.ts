@@ -5,7 +5,7 @@ import { DataTransformer, type RawOcrRow } from "./dataTransformer.js";
 import { GoogleSheetService } from "./googleSheetService.js";
 import { KbttClient } from "./kbttClient.js";
 
-export interface SyncResult {
+interface SyncResult {
 	step: string;
 	success: boolean;
 	status: string;

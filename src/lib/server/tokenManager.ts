@@ -1,13 +1,6 @@
 import { CONFIG } from "./config.js";
 import { logger } from "./logger.js";
 
-export interface TokenState {
-	accessToken: string | null;
-	refreshToken: string | null;
-	expiresAt: number;
-	tokenType: string;
-}
-
 export class TokenManager {
 	private static instance: TokenManager;
 	public accessToken: string | null = null;

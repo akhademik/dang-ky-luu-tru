@@ -18,31 +18,17 @@
       "src_lib_server_kbttclient_apiresponse",
       "src_lib_server_logger",
       "src_lib_server_logger_logentry",
-      "src_lib_server_logger_logger",
-      "src_lib_server_logger_logger_clear",
-      "src_lib_server_logger_logger_debug",
-      "src_lib_server_logger_logger_error",
-      "src_lib_server_logger_logger_formattime",
-      "src_lib_server_logger_logger_getinstance",
-      "src_lib_server_logger_logger_getrecentlogs",
-      "src_lib_server_logger_logger_info",
-      "src_lib_server_logger_logger_log",
-      "src_lib_server_logger_logger_warn",
       "src_lib_server_logger_loglevel",
       "src_lib_server_syncpipeline",
       "src_lib_server_syncpipeline_syncpipeline",
       "src_lib_server_syncpipeline_syncpipeline_initialize",
       "src_lib_server_syncpipeline_syncresult",
       "src_lib_server_tokenmanager",
-      "src_lib_server_tokenmanager_tokenstate",
       "src_routes_api_catalogs_server",
       "src_routes_api_catalogs_server_get",
       "src_routes_api_env_server",
       "src_routes_api_env_server_get",
       "src_routes_api_env_server_post",
-      "src_routes_api_logs_server",
-      "src_routes_api_logs_server_delete",
-      "src_routes_api_logs_server_get",
       "src_routes_api_sheets_delete_row_server",
       "src_routes_api_sheets_delete_row_server_post",
       "src_routes_api_sheets_pull_server",
@@ -53,61 +39,11 @@
       "src_routes_api_sheets_update_row_server_post",
       "src_routes_api_sync_server",
       "src_routes_api_sync_server_post",
-      "src_routes_api_token_server",
-      "src_routes_api_token_server_get",
-      "src_routes_api_token_server_post",
       "src_routes_api_transform_server",
       "src_routes_api_transform_server_post",
       "test_test_pipeline"
     ],
     "1": [
-      "public_app",
-      "public_app_addnewrow",
-      "public_app_availabletabs",
-      "public_app_catalogdata",
-      "public_app_checktokenstatus",
-      "public_app_cleanroomnumber",
-      "public_app_closeeditmodal",
-      "public_app_copycountrycode",
-      "public_app_currentrows",
-      "public_app_editingrowindices",
-      "public_app_executesyncbatch",
-      "public_app_fallbackcopytext",
-      "public_app_fetchsheettabslist",
-      "public_app_filtercatalog",
-      "public_app_getcombinedaddress",
-      "public_app_getdisplayaddress",
-      "public_app_handlemanuallogin",
-      "public_app_handleregisterclick",
-      "public_app_handletabchange",
-      "public_app_isguestvn",
-      "public_app_loadcatalogs",
-      "public_app_loadsampledata",
-      "public_app_normalizestr",
-      "public_app_openeditmodal",
-      "public_app_parseandapplyaddress",
-      "public_app_processandsyncnow",
-      "public_app_pulldatafromgooglesheet",
-      "public_app_pushselectedrows",
-      "public_app_pushsinglerow",
-      "public_app_removerow",
-      "public_app_rendercataloglist",
-      "public_app_rendertable",
-      "public_app_rowvalidationstates",
-      "public_app_savemodaledit",
-      "public_app_selectedrowindices",
-      "public_app_setuphotreload",
-      "public_app_showcopytoast",
-      "public_app_switchtab",
-      "public_app_toggleeditrow",
-      "public_app_togglerowselect",
-      "public_app_toggleselectall",
-      "public_app_updateaddresscell",
-      "public_app_updatecell",
-      "public_app_updatepayloadpreview",
-      "public_app_updateselectedcountbadge"
-    ],
-    "2": [
       "package",
       "package_author",
       "package_description",
@@ -136,7 +72,7 @@
       "ref_pnpm",
       "ref_tam_tru"
     ],
-    "3": [
+    "2": [
       "biomejs_biome",
       "jiti",
       "package_devdependencies",
@@ -161,7 +97,7 @@
       "typescript",
       "vite"
     ],
-    "4": [
+    "3": [
       "ref_node_modules",
       "ref_public",
       "ref_src_js",
@@ -184,7 +120,7 @@
       "tsconfig_include",
       "tsconfig_json_ref_test_ts"
     ],
-    "5": [
+    "4": [
       "src_lib_server_datatransformer_datatransformer",
       "src_lib_server_datatransformer_datatransformer_checkcompleteness",
       "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
@@ -207,6 +143,24 @@
       "src_lib_server_syncpipeline_syncpipeline_processrows",
       "test_test_pipeline_runtests"
     ],
+    "5": [
+      "src_lib_server_logger_logger",
+      "src_lib_server_logger_logger_clear",
+      "src_lib_server_logger_logger_debug",
+      "src_lib_server_logger_logger_error",
+      "src_lib_server_logger_logger_formattime",
+      "src_lib_server_logger_logger_getinstance",
+      "src_lib_server_logger_logger_getrecentlogs",
+      "src_lib_server_logger_logger_info",
+      "src_lib_server_logger_logger_log",
+      "src_lib_server_logger_logger_warn",
+      "src_routes_api_logs_server",
+      "src_routes_api_logs_server_delete",
+      "src_routes_api_logs_server_get",
+      "src_routes_api_token_server",
+      "src_routes_api_token_server_get",
+      "src_routes_api_token_server_post"
+    ],
     "6": [
       "src_lib_server_catalogmanager_catalogmanager",
       "src_lib_server_catalogmanager_catalogmanager_constructor",
@@ -225,20 +179,6 @@
       "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich"
     ],
     "7": [
-      "knip",
-      "knip_entry",
-      "knip_ignoredependencies",
-      "knip_json_ref_test_ts",
-      "knip_project",
-      "knip_schema",
-      "package_devdependencies_tailwindcss",
-      "ref_src_index_ts",
-      "ref_src_js_ts_svelte",
-      "ref_src_lib_js_ts",
-      "ref_src_routes_js_ts_svelte",
-      "tailwindcss"
-    ],
-    "8": [
       "src_lib_server_googlesheetservice_googlesheetservice",
       "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
       "src_lib_server_googlesheetservice_googlesheetservice_constructor",
@@ -251,6 +191,18 @@
       "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
       "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
       "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow"
+    ],
+    "8": [
+      "knip",
+      "knip_entry",
+      "knip_ignoredependencies",
+      "knip_project",
+      "knip_schema",
+      "package_devdependencies_tailwindcss",
+      "ref_src_js_ts_svelte",
+      "ref_src_routes_js_ts_svelte",
+      "ref_test_ts",
+      "tailwindcss"
     ],
     "9": [
       "src_lib_server_tokenmanager_tokenmanager",
@@ -278,43 +230,38 @@
       "src_routes_page_isrowregistered"
     ],
     "12": [
-      "src_routes_api_events_server",
-      "src_routes_api_events_server_get"
-    ],
-    "13": [
       "svelte_config",
       "svelte_config_config"
     ],
-    "14": [
+    "13": [
       "src_routes_layout"
     ],
-    "15": [
+    "14": [
       "vite_config"
     ]
   },
   "cohesion": {
-    "0": 0.0822746521476104,
-    "1": 0.09797979797979799,
-    "2": 0.07407407407407407,
-    "3": 0.08695652173913043,
-    "4": 0.09523809523809523,
-    "5": 0.2904761904761905,
+    "0": 0.12073170731707317,
+    "1": 0.07407407407407407,
+    "2": 0.08695652173913043,
+    "3": 0.09523809523809523,
+    "4": 0.2904761904761905,
+    "5": 0.16666666666666666,
     "6": 0.20952380952380953,
-    "7": 0.18181818181818182,
-    "8": 0.2878787878787879,
+    "7": 0.2878787878787879,
+    "8": 0.2222222222222222,
     "9": 0.3333333333333333,
     "10": 0.4666666666666667,
     "11": 0.6666666666666666,
     "12": 1.0,
     "13": 1.0,
-    "14": 1.0,
-    "15": 1.0
+    "14": 1.0
   },
   "gods": [
     {
       "id": "src_lib_server_datatransformer_datatransformer",
       "label": "DataTransformer",
-      "degree": 24
+      "degree": 23
     },
     {
       "id": "src_lib_server_logger_logger",
@@ -332,24 +279,19 @@
       "degree": 17
     },
     {
-      "id": "src_lib_server_syncpipeline_syncpipeline",
-      "label": "SyncPipeline",
-      "degree": 16
-    },
-    {
       "id": "test_test_pipeline_runtests",
       "label": "runTests()",
       "degree": 15
     },
     {
-      "id": "src_lib_server_tokenmanager_tokenmanager",
-      "label": "TokenManager",
-      "degree": 14
+      "id": "src_lib_server_syncpipeline_syncpipeline",
+      "label": "SyncPipeline",
+      "degree": 15
     },
     {
-      "id": "public_app_rendertable",
-      "label": "renderTable()",
-      "degree": 13
+      "id": "src_lib_server_tokenmanager_tokenmanager",
+      "label": "TokenManager",
+      "degree": 15
     },
     {
       "id": "src_lib_server_config_config",
@@ -357,9 +299,14 @@
       "degree": 13
     },
     {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 11
+    },
+    {
       "id": "src_lib_server_kbttclient_kbttclient",
       "label": "KbttClient",
-      "degree": 11
+      "degree": 10
     }
   ],
   "surprises": [
@@ -397,63 +344,19 @@
       "why": "connects across different repos/directories"
     },
     {
-      "source": "SyncResult",
-      "target": "RawOcrRow",
-      "source_files": [
-        "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "peripheral node `SyncResult` unexpectedly reaches hub `RawOcrRow`"
-    },
-    {
       "source": "SyncPipeline",
-      "target": "DataTransformer",
+      "target": "TokenManager",
       "source_files": [
         "src/lib/server/syncPipeline.ts",
-        "src/lib/server/dataTransformer.ts"
+        "src/lib/server/tokenManager.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
       "why": "bridges separate communities"
     }
   ],
-  "questions": [
-    {
-      "type": "bridge_node",
-      "question": "Why does `CatalogManager` connect `CatalogManager` to `syncPipeline.ts`?",
-      "why": "High betweenness centrality (0.047) - this node is a cross-community bridge."
-    },
-    {
-      "type": "bridge_node",
-      "question": "Why does `DataTransformer` connect `DataTransformer` to `syncPipeline.ts`, `KbttClient`?",
-      "why": "High betweenness centrality (0.047) - this node is a cross-community bridge."
-    },
-    {
-      "type": "bridge_node",
-      "question": "Why does `devDependencies` connect `Google Sheet Service & Apps Script Sync` to `Data Transformation & OCR Normalization`, `entry`?",
-      "why": "High betweenness centrality (0.042) - this node is a cross-community bridge."
-    },
-    {
-      "type": "isolated_nodes",
-      "question": "What connects `CatalogItem`, `TabInfo`, `LogEntry` to the rest of the system?",
-      "why": "72 weakly-connected nodes found - possible documentation gaps or missing edges."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `syncPipeline.ts` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.0822746521476104 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `app.js` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.09797979797979799 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `Data Transformation & OCR Normalization` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected."
-    }
-  ]
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
 }
