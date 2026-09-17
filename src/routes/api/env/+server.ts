@@ -3,9 +3,15 @@ import { type ApiEnvironment, CONFIG } from "$lib/server/config.js";
 import { logger } from "$lib/server/logger.js";
 import { syncPipeline } from "$lib/server/syncPipeline.js";
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ platform }) => {
+	const env = (platform?.env || {}) as Record<string, unknown>;
+	const deployEnv = String(env.KBTT_ENV || CONFIG.currentEnv || "dev").toLowerCase();
+	const isProd = deployEnv === "prod";
+
 	return json({
-		env: CONFIG.currentEnv,
+		env: isProd ? "prod" : CONFIG.currentEnv,
+		deployEnv: isProd ? "prod" : "dev",
+		isProdFixed: isProd,
 		baseUrl: CONFIG.BASE_URL,
 		devUrl: CONFIG.DEV_BASE_URL,
 		prodUrl: CONFIG.PROD_BASE_URL,
@@ -13,7 +19,21 @@ export const GET: RequestHandler = async () => {
 	});
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, platform }) => {
+	const env = (platform?.env || {}) as Record<string, unknown>;
+	const deployEnv = String(env.KBTT_ENV || CONFIG.currentEnv || "dev").toLowerCase();
+
+	// If running in PROD mode, prevent switching environment
+	if (deployEnv === "prod") {
+		return json(
+			{
+				success: false,
+				error: "Môi trường PRODUCTION đã được cố định, không thể chuyển đổi môi trường API.",
+			},
+			{ status: 403 },
+		);
+	}
+
 	const body = await request.json().catch(() => ({}));
 	const nextEnv = (body.env || "").toLowerCase() as ApiEnvironment;
 
@@ -43,6 +63,8 @@ export const POST: RequestHandler = async ({ request }) => {
 	return json({
 		success: true,
 		env: CONFIG.currentEnv,
+		deployEnv: "dev",
+		isProdFixed: false,
 		baseUrl: CONFIG.BASE_URL,
 		devUrl: CONFIG.DEV_BASE_URL,
 		prodUrl: CONFIG.PROD_BASE_URL,

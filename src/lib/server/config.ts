@@ -53,9 +53,17 @@ let currentEnv: ApiEnvironment =
 		? "prod"
 		: "dev");
 
+const APP_PASSWORD =
+	(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
+	"@@Abc123";
+
 export const CONFIG = {
 	DEV_BASE_URL,
 	PROD_BASE_URL,
+	APP_PASSWORD,
+	get isProdMode(): boolean {
+		return currentEnv === "prod";
+	},
 	get currentEnv(): ApiEnvironment {
 		return currentEnv;
 	},

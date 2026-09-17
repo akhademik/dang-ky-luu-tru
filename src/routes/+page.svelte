@@ -104,6 +104,12 @@ let loading = $state(false);
 let searchTerm = $state("");
 let filterRoom = $state("");
 let currentEnv = $state<"dev" | "prod">("dev");
+let isProdFixed = $state(false);
+let isAuthenticated = $state(true);
+let authPassword = $state("");
+let authError = $state("");
+let authLoading = $state(false);
+
 let notification = $state<{
 	message: string;
 	type: "success" | "error" | "info";
@@ -206,6 +212,62 @@ async function loadAuditLogs() {
 	} catch {}
 }
 
+async function checkAuth() {
+	try {
+		const res = await fetch("/api/auth/login");
+		const data = await res.json();
+		isAuthenticated = data.authenticated;
+		isProdFixed = data.isProd;
+		if (data.isProd) {
+			currentEnv = "prod";
+		}
+		if (!data.isProd) {
+			isAuthenticated = true;
+		}
+	} catch {
+		isAuthenticated = true;
+	}
+}
+
+async function handleLogin() {
+	if (!authPassword.trim()) {
+		authError = "Vui lòng nhập mật khẩu";
+		return;
+	}
+	authLoading = true;
+	authError = "";
+	try {
+		const res = await fetch("/api/auth/login", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ password: authPassword }),
+		});
+		const data = await res.json();
+		if (data.success) {
+			isAuthenticated = true;
+			authPassword = "";
+			showToast("Đăng nhập thành công!", "success");
+			await loadCatalogs();
+			await loadStays();
+			await loadStats();
+		} else {
+			authError = data.message || "Mật khẩu không chính xác";
+		}
+	} catch {
+		authError = "Lỗi kết nối máy chủ";
+	} finally {
+		authLoading = false;
+	}
+}
+
+async function handleLogout() {
+	try {
+		await fetch("/api/auth/login", { method: "DELETE" });
+		isAuthenticated = false;
+		showToast("Đã đăng xuất khỏi phiên làm việc", "info");
+	} catch {}
+}
+
 async function loadCatalogs() {
 	try {
 		const res = await fetch("/api/catalogs");
@@ -216,7 +278,22 @@ async function loadCatalogs() {
 	} catch {}
 }
 
+async function loadEnv() {
+	try {
+		const res = await fetch("/api/env");
+		const data = await res.json();
+		if (data) {
+			currentEnv = data.env;
+			isProdFixed = !!data.isProdFixed;
+		}
+	} catch {}
+}
+
 async function switchEnv(env: "dev" | "prod") {
+	if (isProdFixed) {
+		showToast("Môi trường PROD đã cố định trên hệ thống", "info");
+		return;
+	}
 	try {
 		const res = await fetch("/api/env", {
 			method: "POST",
@@ -492,15 +569,20 @@ $effect(() => {
 	}
 });
 
-onMount(() => {
+onMount(async () => {
 	const now = new Date(Date.now() + 7 * 3600 * 1000);
 	newGuestForm.ngay_den = now.toISOString().replace("T", " ").substring(0, 19);
 	const future = new Date(now.getTime() + 2 * 24 * 3600 * 1000);
 	newGuestForm.ngay_di_du_kien = future.toISOString().substring(0, 10);
 
-	loadCatalogs();
-	loadStays();
-	loadStats();
+	await checkAuth();
+	await loadEnv();
+
+	if (isAuthenticated) {
+		loadCatalogs();
+		loadStays();
+		loadStats();
+	}
 });
 </script>
 
@@ -510,6 +592,50 @@ onMount(() => {
 		<div class="fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border backdrop-blur-md transition-all duration-300 {notification.type === 'success' ? 'bg-emerald-950/90 text-emerald-200 border-emerald-600' : notification.type === 'error' ? 'bg-rose-950/90 text-rose-200 border-rose-600' : 'bg-sky-950/90 text-sky-200 border-sky-600'}">
 			<span class="text-xl">{notification.type === 'success' ? '✓' : notification.type === 'error' ? '⚠' : 'ℹ'}</span>
 			<span class="font-medium text-sm">{notification.message}</span>
+		</div>
+	{/if}
+
+	<!-- Prod Password Login Modal / Barrier -->
+	{#if !isAuthenticated}
+		<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md p-4">
+			<div class="w-full max-w-md bg-slate-800 border border-slate-700 p-6 md:p-8 rounded-2xl shadow-2xl">
+				<div class="text-center mb-6">
+					<div class="w-14 h-14 bg-sky-500/20 text-sky-400 border border-sky-500/40 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
+						🔒
+					</div>
+					<h2 class="text-xl font-bold text-white">Yêu Cầu Xác Thực Hệ Thống</h2>
+					<p class="text-xs text-slate-400 mt-1">Hệ thống đang hoạt động ở môi trường Vận Hành PROD. Vui lòng nhập mật khẩu phiên để tiếp tục.</p>
+				</div>
+
+				{#if authError}
+					<div class="mb-4 p-3 bg-rose-950/80 border border-rose-600/80 text-rose-200 text-xs rounded-xl flex items-center gap-2">
+						<span>⚠</span>
+						<span>{authError}</span>
+					</div>
+				{/if}
+
+				<form onsubmit={(e) => { e.preventDefault(); handleLogin(); }} class="space-y-4">
+					<div>
+						<label for="app_password" class="block text-xs font-semibold text-slate-300 mb-1">Mật khẩu truy cập:</label>
+						<input
+							id="app_password"
+							type="password"
+							bind:value={authPassword}
+							placeholder="Nhập mật khẩu..."
+							class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition-colors shadow-inner"
+						/>
+					</div>
+
+					<button
+						type="submit"
+						disabled={authLoading}
+						class="w-full py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all transform active:scale-95 disabled:opacity-50"
+					>
+						{authLoading ? "Đang xác thực..." : "Mở Khóa Phiên Làm Việc ➔"}
+					</button>
+				</form>
+				<p class="text-[11px] text-slate-400 text-center mt-4">Phiên đăng nhập được duy trì cho đến khi đóng trình duyệt hoặc đăng xuất.</p>
+			</div>
 		</div>
 	{/if}
 
@@ -525,28 +651,39 @@ onMount(() => {
 			<p class="text-xs md:text-sm text-slate-400 mt-1 flex items-center gap-2">
 				<span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
 				Cloudflare D1 Native Database Core • API KBTT v1.4 Chuẩn Bộ Công An
+				{#if isProdFixed}
+					<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-600/50 uppercase tracking-wide">
+						PROD MODE
+					</span>
+				{:else}
+					<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-600/50 uppercase tracking-wide">
+						DEV MODE
+					</span>
+				{/if}
 			</p>
 		</div>
 
 		<!-- Action Controls -->
 		<div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-			<!-- Environment Switcher -->
-			<div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-700 text-xs font-semibold">
-				<button
-					type="button"
-					onclick={() => switchEnv("dev")}
-					class="px-3 py-1.5 rounded-lg transition-all {currentEnv === 'dev' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
-				>
-					DEV (Sandbox)
-				</button>
-				<button
-					type="button"
-					onclick={() => switchEnv("prod")}
-					class="px-3 py-1.5 rounded-lg transition-all {currentEnv === 'prod' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
-				>
-					PROD (BCA)
-				</button>
-			</div>
+			<!-- Environment Switcher (Only visible in DEV / Non-fixed mode) -->
+			{#if !isProdFixed}
+				<div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-700 text-xs font-semibold">
+					<button
+						type="button"
+						onclick={() => switchEnv("dev")}
+						class="px-3 py-1.5 rounded-lg transition-all {currentEnv === 'dev' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
+					>
+						DEV (Sandbox)
+					</button>
+					<button
+						type="button"
+						onclick={() => switchEnv("prod")}
+						class="px-3 py-1.5 rounded-lg transition-all {currentEnv === 'prod' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}"
+					>
+						PROD (BCA)
+					</button>
+				</div>
+			{/if}
 
 			<!-- Add Guest Button -->
 			<button
@@ -557,6 +694,18 @@ onMount(() => {
 				<span>+</span>
 				<span>Thêm Khách Thủ Công</span>
 			</button>
+
+			<!-- Logout Button (for Prod mode) -->
+			{#if isProdFixed && isAuthenticated}
+				<button
+					type="button"
+					onclick={handleLogout}
+					title="Đăng xuất phiên làm việc"
+					class="px-3 py-2 bg-slate-700/80 hover:bg-rose-900/80 text-slate-300 hover:text-rose-200 text-xs font-semibold rounded-xl border border-slate-600 transition-all"
+				>
+					Đăng xuất ⏻
+				</button>
+			{/if}
 		</div>
 	</header>
 
