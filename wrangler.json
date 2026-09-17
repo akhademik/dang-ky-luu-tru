@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dang-ky-luu-tru",
+  "pages_build_output_dir": ".svelte-kit/cloudflare",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dang-ky-luu-tru-db",
+      "database_id": "e515b104-d8a2-4f34-b04f-4fa7dc81772c"
+    }
+  ]
+}
