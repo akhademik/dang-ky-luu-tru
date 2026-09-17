@@ -517,14 +517,28 @@ export class DataTransformer {
 		);
 		const roomFormatted = cleanedRoom ? `Phong so ${cleanedRoom}` : "";
 
+		// BCA C06 API 4 requires thoiHanTamTruStr (format: YYYY-MM-DD HH:mm:ss)
+		// Fallback: thoi_han_thi_thuc -> thoiHanTamTru -> ngayDi / ngay_di_du_kien -> +30 days
+		const departureRaw =
+			row.ngayDi || row["(đến ngày)"] || row.ngay_di_du_kien || row["Ngày đi"];
+
+		const visaRaw =
+			row.thoi_han_thi_thuc ||
+			row.thoiHanTamTru ||
+			row.thoiHanTamTruStr ||
+			row["Thời hạn tạm trú"] ||
+			row["Thời hạn thị thực"] ||
+			departureRaw ||
+			new Date(Date.now() + 30 * 24 * 3600 * 1000)
+				.toISOString()
+				.substring(0, 10);
+
 		return {
 			hoTen: String(row.hoTen || row["Họ tên"] || "")
 				.trim()
 				.toUpperCase(),
 			gioiTinh: DataTransformer.mapGender(row.gioiTinh || row["Giới tính"]),
-			soDienThoai: String(
-				row.soDienThoai || row["Số điện thoại"] || "",
-			).replace(/[^\d+]/g, ""),
+			soDienThoai: "",
 			ngayThangNamSinhStr: DataTransformer.formatDateOnly(
 				row.ngaySinh || row["D.O.B"] || row["Ngày sinh"],
 			),
@@ -539,15 +553,9 @@ export class DataTransformer {
 				row.ngayDen || row["(từ ngày)"] || row["Ngày đến"],
 				"14:00:00",
 			),
-			ngayDiDuKienStr: DataTransformer.formatDateTime(
-				row.ngayDi || row["(đến ngày)"] || row["Ngày đi"],
-				"12:00:00",
-			),
+			ngayDiDuKienStr: DataTransformer.formatDateTime(departureRaw, "12:00:00"),
 			soPhong: roomFormatted,
-			thoiHanTamTruStr: DataTransformer.formatDateTime(
-				row.thoiHanTamTru || row.thoiHanTamTruStr || row["Thời hạn tạm trú"],
-				"23:59:59",
-			),
+			thoiHanTamTruStr: DataTransformer.formatDateTime(visaRaw, "23:59:59"),
 			loaiGiayTo: 4,
 			soHoChieu: DataTransformer.cleanDocNumber(
 				row.soHoChieu ||
@@ -556,7 +564,7 @@ export class DataTransformer {
 					row["Số giấy tờ"],
 			),
 			anhHoChieuB64: "",
-			ghiChu: "",
+			ghiChu: String(row.ghiChu || row.ghi_chu || row["Ghi chú"] || "").trim(),
 		};
 	}
 

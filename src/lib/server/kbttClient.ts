@@ -94,10 +94,17 @@ export class KbttClient {
 		const isSuccess =
 			res.ok && (resData.code === "200" || resData.code === 200);
 
-		const responseMessage =
+		const rawMsg =
 			(resData.message as string) ||
 			(resData.error as string) ||
-			(isSuccess ? "Thành công" : `Lỗi HTTP ${res.status}: ${rawText}`);
+			(resData.error_description as string);
+
+		const responseMessage =
+			rawMsg && String(rawMsg).trim()
+				? String(rawMsg).trim()
+				: isSuccess
+					? "Thành công"
+					: `Lỗi HTTP ${res.status}${rawText ? `: ${rawText}` : " (Máy chủ C06 không thể xử lý payload)"}`;
 
 		if (isSuccess) {
 			logger.info(
