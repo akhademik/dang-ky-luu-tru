@@ -1,0 +1,29 @@
+import { json, type RequestHandler } from "@sveltejs/kit";
+import { getDb } from "$lib/server/db.js";
+import { stayService } from "$lib/server/stayService.js";
+
+export const POST: RequestHandler = async ({ request, platform }) => {
+	try {
+		const db = getDb(platform);
+		const body = await request.json();
+
+		const stayId = String(body.stayId || body.stay_id || "").trim();
+		if (!stayId) {
+			return json(
+				{ success: false, message: "stayId là bắt buộc" },
+				{ status: 400 },
+			);
+		}
+
+		const result = await stayService.reRegisterStay(db, stayId, {
+			so_phong: body.so_phong,
+			ngay_den: body.ngay_den,
+			ngay_di_du_kien: body.ngay_di_du_kien,
+		});
+
+		return json(result, { status: result.success ? 200 : 400 });
+	} catch (err: unknown) {
+		const errMsg = err instanceof Error ? err.message : String(err);
+		return json({ success: false, error: errMsg }, { status: 500 });
+	}
+};

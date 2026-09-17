@@ -5,9 +5,11 @@ import {
 	checkoutStay as dbCheckoutStay,
 	extendStay as dbExtendStay,
 	updateStay as dbUpdateStay,
+	generateId,
 	getStayById,
 	getStays,
 	logKbttAction,
+	type StayDetail,
 	type StayStatus,
 	updateGuest,
 	upsertGuest,
@@ -534,6 +536,101 @@ class StayService {
 		});
 
 		return true;
+	}
+
+	public async reRegisterStay(
+		db: D1DatabaseLike,
+		stayId: string,
+		options?: {
+			so_phong?: string;
+			ngay_den?: string;
+			ngay_di_du_kien?: string;
+		},
+	): Promise<{
+		success: boolean;
+		message: string;
+		stayId?: string;
+		stay?: StayDetail;
+	}> {
+		const existingStay = await getStayById(db, stayId);
+		if (!existingStay) {
+			return {
+				success: false,
+				message: "Không tìm thấy thông tin lượt lưu trú gốc",
+			};
+		}
+
+		// Calculate GMT+7 dates
+		const vnNow = DataTransformer.getVnNow();
+		const nextDay = new Date(
+			Date.UTC(vnNow.year, vnNow.month - 1, vnNow.day + 1),
+		);
+		const defaultNgayDi = `${nextDay.getUTCFullYear()}-${String(nextDay.getUTCMonth() + 1).padStart(2, "0")}-${String(nextDay.getUTCDate()).padStart(2, "0")} 12:00:00`;
+
+		const newNgayDen = options?.ngay_den || vnNow.fullStr;
+		const newNgayDi = options?.ngay_di_du_kien || defaultNgayDi;
+		const newSoPhong = options?.so_phong
+			? DataTransformer.cleanRoomNumber(options.so_phong)
+			: existingStay.so_phong;
+
+		// If existing stay was active (not CHECKED_OUT), mark it CHECKED_OUT to archive it
+		if (existingStay.status !== "CHECKED_OUT") {
+			await dbCheckoutStay(db, stayId);
+		}
+
+		// Insert new stay with READY_TO_SYNC
+		const newStayId = generateId();
+		await db
+			.prepare(
+				`
+				INSERT INTO stays (
+					id, guest_id, so_phong, ngay_den, ngay_di_du_kien,
+					thoi_han_thi_thuc, ly_do_luu_tru, status, ma_ho_so_kbtt, ghi_chu,
+					created_at, updated_at
+				) VALUES (?, ?, ?, ?, ?, ?, ?, 'READY_TO_SYNC', '', ?, ?, ?)
+			`,
+			)
+			.bind(
+				newStayId,
+				existingStay.guest_id,
+				newSoPhong,
+				newNgayDen,
+				newNgayDi,
+				existingStay.thoi_han_thi_thuc || null,
+				existingStay.ly_do_luu_tru || 1,
+				existingStay.ghi_chu || "",
+				vnNow.fullStr,
+				vnNow.fullStr,
+			)
+			.run();
+
+		const createdStay = await getStayById(db, newStayId);
+
+		await logKbttAction(db, {
+			stay_id: newStayId,
+			api_endpoint: "RE_REGISTER_STAY",
+			guest_name: existingStay.ho_ten,
+			so_giay_to: existingStay.so_giay_to,
+			so_phong: newSoPhong,
+			request_payload: JSON.stringify({
+				originalStayId: stayId,
+				newNgayDen,
+				newNgayDi,
+			}),
+			response_payload: JSON.stringify({
+				success: true,
+				newStayId,
+				status: "READY_TO_SYNC",
+			}),
+			is_success: 1,
+		});
+
+		return {
+			success: true,
+			message: `Đã tạo lượt khai báo mới cho khách ${existingStay.ho_ten}! Bản ghi đã sẵn sàng ở mục Chờ Khai Báo.`,
+			stayId: newStayId,
+			stay: createdStay || undefined,
+		};
 	}
 }
 

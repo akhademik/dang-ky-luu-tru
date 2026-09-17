@@ -202,7 +202,7 @@ export function getDb(platform?: {
 	return remoteD1Instance;
 }
 
-function generateId(): string {
+export function generateId(): string {
 	return typeof globalThis.crypto !== "undefined" &&
 		typeof globalThis.crypto.randomUUID === "function"
 		? globalThis.crypto.randomUUID()

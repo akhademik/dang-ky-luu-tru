@@ -325,6 +325,12 @@ let extendNewDate = $state("");
 let showCheckoutModal = $state(false);
 let checkoutTargetStay = $state<StayDetail | null>(null);
 
+let showReRegisterModal = $state(false);
+let reRegisterTargetStay = $state<StayDetail | null>(null);
+let reRegisterRoom = $state("1");
+let reRegisterArrivalDate = $state("");
+let reRegisterDepartureDate = $state("");
+
 let showDeleteModal = $state(false);
 let deleteTargetStay = $state<StayDetail | null>(null);
 let deletingIds = $state<Set<string>>(new Set());
@@ -787,6 +793,58 @@ async function submitCheckout() {
 	} catch {
 		showToast("Lỗi khi checkout", "error");
 		await loadStays(true);
+	}
+}
+
+// Re-Register Stay (Lượt mới / Khách quay lại / Chuyển sang PROD)
+function openReRegisterModal(stay: StayDetail) {
+	reRegisterTargetStay = stay;
+	reRegisterRoom = stay.so_phong || "1";
+
+	const now = new Date(Date.now() + 7 * 3600 * 1000);
+	const nextDay = new Date(now.getTime() + 24 * 3600 * 1000);
+
+	const pad = (n: number) => String(n).padStart(2, "0");
+	const nowStr = `${pad(now.getUTCDate())}/${pad(now.getUTCMonth() + 1)}/${now.getUTCFullYear()} ${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
+	const nextDayStr = `${pad(nextDay.getUTCDate())}/${pad(nextDay.getUTCMonth() + 1)}/${nextDay.getUTCFullYear()} 12:00`;
+
+	reRegisterArrivalDate = nowStr;
+	reRegisterDepartureDate = nextDayStr;
+	showReRegisterModal = true;
+}
+
+async function submitReRegister() {
+	if (!reRegisterTargetStay) return;
+	const targetId = reRegisterTargetStay.id;
+	showReRegisterModal = false;
+	showToast("Đang tạo lượt khai báo mới...", "info");
+
+	try {
+		const res = await fetch("/api/stays/re-register", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				stayId: targetId,
+				so_phong: reRegisterRoom,
+				ngay_den: reRegisterArrivalDate,
+				ngay_di_du_kien: reRegisterDepartureDate,
+			}),
+		});
+		const data = await res.json();
+		if (data.success) {
+			showToast(
+				"✓ Đã tạo lượt khai báo mới! Bản ghi đã chuyển vào Chờ Khai Báo.",
+				"success",
+			);
+			clearLocalCache();
+			activeTab = "register";
+			await loadStays(true);
+			await loadStats(true);
+		} else {
+			showToast(`Lỗi: ${data.message || data.error}`, "error");
+		}
+	} catch {
+		showToast("Lỗi khi tạo lượt khai báo mới", "error");
 	}
 }
 
@@ -2162,6 +2220,14 @@ onMount(async () => {
 													{/if}
 													<button
 														type="button"
+														onclick={() => openReRegisterModal(stay)}
+														class="px-2 py-1 bg-purple-700 hover:bg-purple-600 text-purple-100 font-medium rounded text-[11px] transition-all"
+														title="Khai báo lại lượt mới / Gửi sang môi trường khác (PROD/DEV)"
+													>
+														🔄 Khai Báo Lại
+													</button>
+													<button
+														type="button"
 														onclick={() => openEdit(stay)}
 														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
 													>
@@ -2309,6 +2375,15 @@ onMount(async () => {
 															class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-[11px] shadow transition-all"
 														>
 															Khai Báo ⚡
+														</button>
+													{:else}
+														<button
+															type="button"
+															onclick={() => openReRegisterModal(stay)}
+															class="px-2 py-1 bg-purple-700 hover:bg-purple-600 text-white font-semibold rounded text-[11px] shadow transition-all"
+															title="Khách quay lại lưu trú / Tạo lượt khai báo mới"
+														>
+															🔄 Khai Báo Lại
 														</button>
 													{/if}
 													<button
@@ -2759,6 +2834,64 @@ onMount(async () => {
 				<div class="flex items-center justify-end gap-2">
 					<button type="button" onclick={() => { showCheckoutModal = false; }} class="px-3.5 py-2 bg-slate-700 rounded-lg text-xs">Hủy</button>
 					<button type="button" onclick={() => submitCheckout()} class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg text-xs">Xác Nhận Trả Phòng</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- MODAL: RE-REGISTER STAY -->
+	{#if showReRegisterModal && reRegisterTargetStay}
+		<div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+			<div class="bg-slate-800 border border-slate-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl">
+				<div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+					<h3 class="text-base font-bold text-purple-400 flex items-center gap-2">
+						<span>🔄</span> Khai Báo Lại Lưu Trú (Lượt Mới)
+					</h3>
+					<button type="button" onclick={() => { showReRegisterModal = false; }} class="text-slate-400 hover:text-white text-xl">✕</button>
+				</div>
+
+				<div class="space-y-3.5 text-xs">
+					<div class="p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 flex items-center justify-between">
+						<div>
+							<div class="font-bold text-slate-100 text-sm">{reRegisterTargetStay.ho_ten}</div>
+							<div class="text-slate-400 font-mono mt-0.5">{reRegisterTargetStay.so_giay_to} ({reRegisterTargetStay.quoc_tich})</div>
+						</div>
+						<span class="px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 font-semibold border border-purple-500/30">
+							Phòng {reRegisterTargetStay.so_phong}
+						</span>
+					</div>
+
+					<p class="text-slate-300 leading-relaxed">
+						Hệ thống sẽ tạo <strong>lượt lưu trú mới (Sẵn sàng khai báo)</strong> cho khách này với thời gian đến là <strong>thời điểm hiện tại</strong>, để bạn gửi khai báo lại lên BCA (ví dụ chuyển sang môi trường PROD hoặc khách quay lại).
+					</p>
+
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+						<div>
+							<label for="rereg_room" class="block text-slate-400 mb-1 font-medium">Số Phòng</label>
+							<select id="rereg_room" bind:value={reRegisterRoom} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500">
+								{#each ROOM_OPTIONS as r}
+									<option value={r}>Phòng {r}</option>
+								{/each}
+							</select>
+						</div>
+
+						<div>
+							<label for="rereg_arrival" class="block text-slate-400 mb-1 font-medium">Ngày Đến (Mặc định: Hiện Tại)</label>
+							<input id="rereg_arrival" type="text" bind:value={reRegisterArrivalDate} placeholder="DD/MM/YYYY HH:mm" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500" />
+						</div>
+
+						<div class="sm:col-span-2">
+							<label for="rereg_departure" class="block text-slate-400 mb-1 font-medium">Ngày Đi Dự Kiến (+1 ngày, 12:00)</label>
+							<input id="rereg_departure" type="text" bind:value={reRegisterDepartureDate} placeholder="DD/MM/YYYY 12:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500" />
+						</div>
+					</div>
+				</div>
+
+				<div class="mt-6 pt-3 border-t border-slate-700 flex items-center justify-end gap-2">
+					<button type="button" onclick={() => { showReRegisterModal = false; }} class="px-3.5 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs">Hủy</button>
+					<button type="button" onclick={() => submitReRegister()} class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-lg shadow-purple-900/30">
+						<span>⚡</span> Xác Nhận & Chuyển Sang Chờ Khai Báo
+					</button>
 				</div>
 			</div>
 		</div>
