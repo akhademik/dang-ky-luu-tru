@@ -110,6 +110,17 @@ let authPassword = $state("");
 let authError = $state("");
 let authLoading = $state(false);
 
+let filterTinh = $state("");
+let filterQuocTich = $state("");
+
+function copyCode(code?: string, name?: string) {
+	if (!code) return;
+	if (typeof navigator !== "undefined" && navigator.clipboard) {
+		navigator.clipboard.writeText(code);
+	}
+	showToast(`Đã sao chép: ${code} (${name || ""})`, "info");
+}
+
 let notification = $state<{
 	message: string;
 	type: "success" | "error" | "info";
@@ -272,7 +283,9 @@ async function loadCatalogs() {
 	try {
 		const res = await fetch("/api/catalogs");
 		const data = await res.json();
-		if (data.success && data.data) {
+		if (data.catalogs) {
+			catalogs = data.catalogs;
+		} else if (data.data) {
 			catalogs = data.data;
 		}
 	} catch {}
@@ -1049,32 +1062,136 @@ onMount(async () => {
 
 		<!-- TAB 4: DANH MỤC CHUẨN -->
 		{#if activeTab === "catalogs"}
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-				<!-- Quốc tịch -->
-				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl">
-					<h3 class="font-bold text-sm text-sky-400 mb-3 flex items-center gap-2">
-						<span>🌐</span> Danh Mục Quốc Tịch Chuẩn (Alpha-3)
-					</h3>
-					<div class="max-h-96 overflow-y-auto divide-y divide-slate-700/50 text-xs">
-						{#each catalogs.quocTich as qt}
-							<div class="py-2 flex items-center justify-between">
-								<span class="text-slate-200">{qt.tenQT} ({qt.tenQTEn})</span>
-								<span class="font-mono font-bold text-amber-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">{qt.maQT}</span>
+			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+				<!-- 1. Tỉnh / TP (API 7) -->
+				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl flex flex-col">
+					<div class="flex items-center justify-between mb-2">
+						<h3 class="font-bold text-xs uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
+							<span>📍</span> Tỉnh / TP (API 7)
+						</h3>
+						<span class="text-xs font-mono font-bold bg-teal-950 text-teal-300 border border-teal-700/50 px-2 py-0.5 rounded-full">
+							{catalogs.tinhTp.length}
+						</span>
+					</div>
+					<input
+						type="text"
+						bind:value={filterTinh}
+						placeholder="Tìm tỉnh (vd: Ha Noi, HN, 101)..."
+						class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 mb-2 focus:outline-none focus:border-teal-500 transition-colors"
+					/>
+					<div class="overflow-y-auto max-h-80 divide-y divide-slate-700/50 text-xs pr-1">
+						{#each catalogs.tinhTp.filter(t => {
+							const q = (filterTinh || "").trim().toLowerCase();
+							if (!q) return true;
+							const ten = String(t.tenTT || "").toLowerCase();
+							const ma = String(t.maTT || "").toLowerCase();
+							const maChu = String(t.maTTChu || "").toLowerCase();
+							return ten.includes(q) || ma.includes(q) || maChu.includes(q);
+						}) as tt}
+							<div class="py-2 flex items-center justify-between hover:bg-slate-700/30 px-1 rounded transition-colors">
+								<div>
+									<div class="font-semibold text-slate-200">{tt.tenTT}</div>
+									{#if tt.tenTTEn}
+										<div class="text-[10px] text-slate-400">{tt.tenTTEn}</div>
+									{/if}
+								</div>
+								<button
+									type="button"
+									onclick={() => copyCode(String(tt.maTT || ""), String(tt.tenTT || ""))}
+									title="Sao chép mã"
+									class="font-mono text-[11px] font-bold text-teal-300 bg-slate-900 hover:bg-teal-900/60 px-2 py-0.5 rounded border border-slate-700 hover:border-teal-600 transition-colors"
+								>
+									{tt.maTT}{tt.maTTChu ? ` (${tt.maTTChu})` : ""}
+								</button>
 							</div>
 						{/each}
 					</div>
 				</div>
 
-				<!-- Tỉnh Thành -->
-				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl">
-					<h3 class="font-bold text-sm text-teal-400 mb-3 flex items-center gap-2">
-						<span>📍</span> Danh Mục Tỉnh / Thành Phố
-					</h3>
-					<div class="max-h-96 overflow-y-auto divide-y divide-slate-700/50 text-xs">
-						{#each catalogs.tinhTp as tt}
-							<div class="py-2 flex items-center justify-between">
-								<span class="text-slate-200">{tt.tenTT}</span>
-								<span class="font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">Mã: {tt.maTT}</span>
+				<!-- 2. Quốc Tịch (API 6) -->
+				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl flex flex-col">
+					<div class="flex items-center justify-between mb-2">
+						<h3 class="font-bold text-xs uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+							<span>🌐</span> Quốc Tịch (API 6)
+						</h3>
+						<span class="text-xs font-mono font-bold bg-sky-950 text-sky-300 border border-sky-700/50 px-2 py-0.5 rounded-full">
+							{catalogs.quocTich.length}
+						</span>
+					</div>
+					<input
+						type="text"
+						bind:value={filterQuocTich}
+						placeholder="Tìm quốc tịch (vd: Germany, D, VNM)..."
+						class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 mb-2 focus:outline-none focus:border-sky-500 transition-colors"
+					/>
+					<div class="overflow-y-auto max-h-80 divide-y divide-slate-700/50 text-xs pr-1">
+						{#each catalogs.quocTich.filter(q => {
+							const query = (filterQuocTich || "").trim().toLowerCase();
+							if (!query) return true;
+							const ten = String(q.tenQT || "").toLowerCase();
+							const tenEn = String(q.tenQTEn || "").toLowerCase();
+							const ma = String(q.maQT || "").toLowerCase();
+							return ten.includes(query) || tenEn.includes(query) || ma.includes(query);
+						}) as qt}
+							<div class="py-2 flex items-center justify-between hover:bg-slate-700/30 px-1 rounded transition-colors">
+								<div>
+									<div class="font-semibold text-slate-200">{qt.tenQTEn || qt.tenQT}</div>
+									{#if qt.tenQT && qt.tenQT !== qt.tenQTEn}
+										<div class="text-[10px] text-slate-400">{qt.tenQT}</div>
+									{/if}
+								</div>
+								<button
+									type="button"
+									onclick={() => copyCode(String(qt.maQT || ""), String(qt.tenQTEn || qt.tenQT || ""))}
+									title="Sao chép mã Alpha-3"
+									class="font-mono text-[11px] font-bold text-amber-400 bg-slate-900 hover:bg-amber-900/60 px-2 py-0.5 rounded border border-slate-700 hover:border-amber-600 transition-colors"
+								>
+									{qt.maQT}
+								</button>
+							</div>
+						{/each}
+					</div>
+				</div>
+
+				<!-- 3. Loại Giấy Tờ (API 10) -->
+				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl flex flex-col">
+					<div class="flex items-center justify-between mb-3">
+						<h3 class="font-bold text-xs uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+							<span>🪪</span> Loại Giấy Tờ (API 10)
+						</h3>
+						<span class="text-xs font-mono font-bold bg-indigo-950 text-indigo-300 border border-indigo-700/50 px-2 py-0.5 rounded-full">
+							{catalogs.loaiGiayTo.length}
+						</span>
+					</div>
+					<div class="space-y-2 text-xs">
+						{#each catalogs.loaiGiayTo as lg}
+							<div class="p-2.5 bg-slate-900/80 rounded-xl border border-slate-700/80 flex items-center justify-between">
+								<span class="font-medium text-slate-200">{lg.name}</span>
+								<span class="font-mono text-indigo-300 font-bold bg-indigo-950 px-2 py-0.5 rounded border border-indigo-700/60 text-[11px]">
+									Mã: {lg.id}
+								</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+
+				<!-- 4. Lý Do Cư Trú (API 9) -->
+				<div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-xl flex flex-col">
+					<div class="flex items-center justify-between mb-3">
+						<h3 class="font-bold text-xs uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+							<span>📋</span> Lý Do Cư Trú (API 9)
+						</h3>
+						<span class="text-xs font-mono font-bold bg-purple-950 text-purple-300 border border-purple-700/50 px-2 py-0.5 rounded-full">
+							{catalogs.lyDoCuTru.length}
+						</span>
+					</div>
+					<div class="space-y-2 text-xs">
+						{#each catalogs.lyDoCuTru as ld}
+							<div class="p-2.5 bg-slate-900/80 rounded-xl border border-slate-700/80 flex items-center justify-between">
+								<span class="font-medium text-slate-200">{ld.name}</span>
+								<span class="font-mono text-purple-300 font-bold bg-purple-950 px-2 py-0.5 rounded border border-purple-700/60 text-[11px]">
+									Mã: {ld.id}
+								</span>
 							</div>
 						{/each}
 					</div>
