@@ -957,15 +957,18 @@ function validateArrivalDate(val?: string | null): {
 		};
 	}
 
-	const arrivalDay = new Date(year, month - 1, day);
-	const today = new Date();
+	const arrivalDay = new Date(Date.UTC(year, month - 1, day));
+	const vnNow = new Date(Date.now() + 7 * 3600 * 1000);
 	const currentDay = new Date(
-		today.getFullYear(),
-		today.getMonth(),
-		today.getDate(),
+		Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()),
 	);
-	const yesterday = new Date(currentDay);
-	yesterday.setDate(yesterday.getDate() - 1);
+	const yesterday = new Date(
+		Date.UTC(
+			vnNow.getUTCFullYear(),
+			vnNow.getUTCMonth(),
+			vnNow.getUTCDate() - 1,
+		),
+	);
 
 	if (
 		arrivalDay.getTime() === currentDay.getTime() ||

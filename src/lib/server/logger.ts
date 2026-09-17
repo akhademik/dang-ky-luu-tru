@@ -23,9 +23,9 @@ class Logger {
 	}
 
 	private formatTime(): string {
-		const now = new Date();
+		const vnDate = new Date(Date.now() + 7 * 3600 * 1000);
 		const pad = (n: number) => String(n).padStart(2, "0");
-		return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}.${String(now.getMilliseconds()).padStart(3, "0")}`;
+		return `${vnDate.getUTCFullYear()}-${pad(vnDate.getUTCMonth() + 1)}-${pad(vnDate.getUTCDate())} ${pad(vnDate.getUTCHours())}:${pad(vnDate.getUTCMinutes())}:${pad(vnDate.getUTCSeconds())}.${String(vnDate.getUTCMilliseconds()).padStart(3, "0")}`;
 	}
 
 	public log(

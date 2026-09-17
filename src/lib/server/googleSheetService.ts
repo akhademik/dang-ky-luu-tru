@@ -126,8 +126,13 @@ export class GoogleSheetService {
 				tabs.push({ name: "Sheet 1", gid: "0", isDateTab: false });
 			}
 
-			// Tìm tab gần với ngày hiện tại nhất
-			const nowDate = new Date();
+			// Tìm tab gần với ngày hiện tại nhất (GMT+7)
+			const vnNow = new Date(Date.now() + 7 * 3600 * 1000);
+			const nowDate = new Date(
+				vnNow.getUTCFullYear(),
+				vnNow.getUTCMonth(),
+				vnNow.getUTCDate(),
+			);
 			let bestTab: (TabInfo & { parsedDate?: Date | null }) | null = null;
 			let minDiff = Infinity;
 

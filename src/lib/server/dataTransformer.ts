@@ -172,7 +172,47 @@ export class DataTransformer {
 			.trim();
 	}
 
-	public static isArrivalDateValid(dateStr: unknown): {
+	public static getVnNow(date = new Date()): {
+		year: number;
+		month: number;
+		day: number;
+		hour: number;
+		minute: number;
+		second: number;
+		dateStr: string;
+		timeStr: string;
+		fullStr: string;
+	} {
+		const vnMillis = date.getTime() + 7 * 3600 * 1000;
+		const vnDate = new Date(vnMillis);
+		const year = vnDate.getUTCFullYear();
+		const month = vnDate.getUTCMonth() + 1;
+		const day = vnDate.getUTCDate();
+		const hour = vnDate.getUTCHours();
+		const minute = vnDate.getUTCMinutes();
+		const second = vnDate.getUTCSeconds();
+
+		const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+		const timeStr = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}`;
+		const fullStr = `${dateStr} ${timeStr}`;
+
+		return {
+			year,
+			month,
+			day,
+			hour,
+			minute,
+			second,
+			dateStr,
+			timeStr,
+			fullStr,
+		};
+	}
+
+	public static isArrivalDateValid(
+		dateStr: unknown,
+		now = new Date(),
+	): {
 		valid: boolean;
 		error?: string;
 	} {
@@ -182,15 +222,16 @@ export class DataTransformer {
 			return { valid: false, error: "Định dạng ngày đến không hợp lệ" };
 		}
 
-		const arrivalDay = new Date(parsed.year, parsed.month - 1, parsed.day);
-		const today = new Date();
-		const currentDay = new Date(
-			today.getFullYear(),
-			today.getMonth(),
-			today.getDate(),
+		const vnNow = DataTransformer.getVnNow(now);
+		const arrivalDay = new Date(
+			Date.UTC(parsed.year, parsed.month - 1, parsed.day),
 		);
-		const yesterday = new Date(currentDay);
-		yesterday.setDate(yesterday.getDate() - 1);
+		const currentDay = new Date(
+			Date.UTC(vnNow.year, vnNow.month - 1, vnNow.day),
+		);
+		const yesterday = new Date(
+			Date.UTC(vnNow.year, vnNow.month - 1, vnNow.day - 1),
+		);
 
 		if (
 			arrivalDay.getTime() === currentDay.getTime() ||
@@ -639,11 +680,12 @@ export class DataTransformer {
 		ngayDiRaw?: unknown,
 		now = new Date(),
 	): { ngayDen: string; ngayDi: string } {
-		const nowTimeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
-		const nowDateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+		const vnNow = DataTransformer.getVnNow(now);
 
 		let ngayDen: string;
-		let checkInDateObj: Date;
+		let checkInYear: number;
+		let checkInMonth: number;
+		let checkInDay: number;
 
 		if (ngayDenRaw) {
 			const parsed = DataTransformer.parseDateTime(ngayDenRaw);
@@ -659,24 +701,22 @@ export class DataTransformer {
 					const ss = String(parsed.second).padStart(2, "0");
 					ngayDen = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
 				} else {
-					ngayDen = `${y}-${m}-${d} ${nowTimeStr}`;
+					ngayDen = `${y}-${m}-${d} ${vnNow.timeStr}`;
 				}
-				checkInDateObj = new Date(parsed.year, parsed.month - 1, parsed.day);
+				checkInYear = parsed.year;
+				checkInMonth = parsed.month;
+				checkInDay = parsed.day;
 			} else {
-				ngayDen = `${nowDateStr} ${nowTimeStr}`;
-				checkInDateObj = new Date(
-					now.getFullYear(),
-					now.getMonth(),
-					now.getDate(),
-				);
+				ngayDen = vnNow.fullStr;
+				checkInYear = vnNow.year;
+				checkInMonth = vnNow.month;
+				checkInDay = vnNow.day;
 			}
 		} else {
-			ngayDen = `${nowDateStr} ${nowTimeStr}`;
-			checkInDateObj = new Date(
-				now.getFullYear(),
-				now.getMonth(),
-				now.getDate(),
-			);
+			ngayDen = vnNow.fullStr;
+			checkInYear = vnNow.year;
+			checkInMonth = vnNow.month;
+			checkInDay = vnNow.day;
 		}
 
 		let ngayDi: string;
@@ -697,19 +737,21 @@ export class DataTransformer {
 					ngayDi = `${y}-${m}-${d} 12:00:00`;
 				}
 			} else {
-				const nextDay = new Date(checkInDateObj);
-				nextDay.setDate(nextDay.getDate() + 1);
-				const y = nextDay.getFullYear();
-				const m = String(nextDay.getMonth() + 1).padStart(2, "0");
-				const d = String(nextDay.getDate()).padStart(2, "0");
+				const nextDay = new Date(
+					Date.UTC(checkInYear, checkInMonth - 1, checkInDay + 1),
+				);
+				const y = nextDay.getUTCFullYear();
+				const m = String(nextDay.getUTCMonth() + 1).padStart(2, "0");
+				const d = String(nextDay.getUTCDate()).padStart(2, "0");
 				ngayDi = `${y}-${m}-${d} 12:00:00`;
 			}
 		} else {
-			const nextDay = new Date(checkInDateObj);
-			nextDay.setDate(nextDay.getDate() + 1);
-			const y = nextDay.getFullYear();
-			const m = String(nextDay.getMonth() + 1).padStart(2, "0");
-			const d = String(nextDay.getDate()).padStart(2, "0");
+			const nextDay = new Date(
+				Date.UTC(checkInYear, checkInMonth - 1, checkInDay + 1),
+			);
+			const y = nextDay.getUTCFullYear();
+			const m = String(nextDay.getUTCMonth() + 1).padStart(2, "0");
+			const d = String(nextDay.getUTCDate()).padStart(2, "0");
 			ngayDi = `${y}-${m}-${d} 12:00:00`;
 		}
 
