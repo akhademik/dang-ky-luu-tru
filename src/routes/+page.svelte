@@ -25,11 +25,7 @@ const COUNTRY_OPTIONS = [...QUOC_TICH_DATA]
 			label: `${code} - ${name}`,
 		};
 	})
-	.sort((a, b) => {
-		if (a.maQT === "VNM") return -1;
-		if (b.maQT === "VNM") return 1;
-		return a.name.localeCompare(b.name, "en");
-	});
+	.sort((a, b) => a.label.localeCompare(b.label, "en"));
 
 interface StayDetail {
 	id: string;
@@ -673,8 +669,7 @@ function formatDateTimeDisplay(dt?: string | null): string {
 		const y = dmy[3];
 		const hr = (dmy[4] || "00").padStart(2, "0");
 		const min = (dmy[5] || "00").padStart(2, "0");
-		const sec = (dmy[6] || "00").padStart(2, "0");
-		return `${d}/${m}/${y} ${hr}:${min}:${sec}`;
+		return `${d}/${m}/${y} ${hr}:${min}`;
 	}
 	const ymd = str.match(
 		/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/,
@@ -685,10 +680,9 @@ function formatDateTimeDisplay(dt?: string | null): string {
 		const d = ymd[3].padStart(2, "0");
 		const hr = (ymd[4] || "00").padStart(2, "0");
 		const min = (ymd[5] || "00").padStart(2, "0");
-		const sec = (ymd[6] || "00").padStart(2, "0");
-		return `${d}/${m}/${y} ${hr}:${min}:${sec}`;
+		return `${d}/${m}/${y} ${hr}:${min}`;
 	}
-	return str.replace("T", " ").substring(0, 19);
+	return str.replace("T", " ").substring(0, 16);
 }
 
 function validateDateString(val?: string | null): boolean {
@@ -1699,7 +1693,11 @@ onMount(async () => {
 											{#if val.errors.ho_ten}
 												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️ {val.errors.ho_ten}</span>
 											{/if}
-											<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{stay.gioi_tinh === 'F' ? 'Nữ' : 'Nam'}</span>
+											{#if stay.gioi_tinh === 'F'}
+												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40">Nữ ♀</span>
+											{:else}
+												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40">Nam ♂</span>
+											{/if}
 										</td>
 										<td class="p-3.5 font-mono font-bold">
 											{#if val.errors.so_phong}
@@ -1735,9 +1733,9 @@ onMount(async () => {
 										</td>
 										<td class="p-3.5">
 											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {stay.ngay_di_du_kien}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
 											{:else}
-												<span class="text-slate-400">{stay.ngay_di_du_kien || '-'}</span>
+												<span class="text-slate-400">{formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
 										<td class="p-3.5 text-slate-400 truncate max-w-xs">{stay.tinh_thanh || stay.dia_chi_chi_tiet || '-'}</td>
@@ -1812,6 +1810,11 @@ onMount(async () => {
 											{#if val.errors.ho_ten}
 												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️</span>
 											{/if}
+											{#if stay.gioi_tinh === 'F'}
+												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40">Nữ ♀</span>
+											{:else}
+												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40">Nam ♂</span>
+											{/if}
 										</td>
 										<td class="p-3.5 font-mono font-bold">
 											{#if val.errors.so_phong}
@@ -1843,9 +1846,9 @@ onMount(async () => {
 										</td>
 										<td class="p-3.5 font-medium">
 											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {stay.ngay_di_du_kien}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
 											{:else}
-												<span class="text-amber-300">{stay.ngay_di_du_kien || '-'}</span>
+												<span class="text-amber-300">{formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
 										<td class="p-3.5 font-mono text-[11px] text-slate-400">{stay.ma_ho_so_kbtt || '-'}</td>
@@ -1951,7 +1954,11 @@ onMount(async () => {
 											{#if val.errors.ho_ten}
 												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️ {val.errors.ho_ten}</span>
 											{/if}
-											<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{stay.gioi_tinh === 'F' ? 'Nữ' : 'Nam'}</span>
+											{#if stay.gioi_tinh === 'F'}
+												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40">Nữ ♀</span>
+											{:else}
+												<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40">Nam ♂</span>
+											{/if}
 										</td>
 										<td class="p-3.5 font-mono font-bold">
 											{#if val.errors.so_phong}
@@ -1992,9 +1999,9 @@ onMount(async () => {
 										</td>
 										<td class="p-3.5">
 											{#if val.errors.ngay_di_du_kien}
-												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {stay.ngay_di_du_kien}</span>
+												<span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700 text-[11px]" title={val.errors.ngay_di_du_kien}>⚠️ {formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
 											{:else}
-												<span class="text-slate-400">{stay.ngay_di_du_kien || '-'}</span>
+												<span class="text-slate-400">{formatDateTimeDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
 										<td class="p-3.5 font-mono text-[11px] text-slate-300">{stay.ma_ho_so_kbtt || '-'}</td>
@@ -2307,15 +2314,23 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="edit_gioi_tinh" class="block text-slate-400 mb-1 font-medium">Giới tính</label>
-						<select
-							id="edit_gioi_tinh"
-							bind:value={editStay.gioi_tinh}
-							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
-						>
-							<option value="M">Nam (M)</option>
-							<option value="F">Nữ (F)</option>
-						</select>
+						<span class="block text-slate-400 mb-1 font-medium">Giới tính</span>
+						<div class="grid grid-cols-2 gap-2">
+							<button
+								type="button"
+								onclick={() => { if (editStay) editStay.gioi_tinh = 'M'; }}
+								class="py-2.5 px-3 rounded-lg text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 {editStay.gioi_tinh !== 'F' ? 'bg-blue-600/30 text-blue-200 border-blue-500 shadow-md ring-1 ring-blue-500/50' : 'bg-slate-900 text-slate-400 border-slate-700 hover:bg-slate-800'}"
+							>
+								<span>♂</span> Nam
+							</button>
+							<button
+								type="button"
+								onclick={() => { if (editStay) editStay.gioi_tinh = 'F'; }}
+								class="py-2.5 px-3 rounded-lg text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 {editStay.gioi_tinh === 'F' ? 'bg-pink-600/30 text-pink-200 border-pink-500 shadow-md ring-1 ring-pink-500/50' : 'bg-slate-900 text-slate-400 border-slate-700 hover:bg-slate-800'}"
+							>
+								<span>♀</span> Nữ
+							</button>
+						</div>
 					</div>
 
 					<div>
@@ -2567,11 +2582,23 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="add_gioi_tinh" class="block text-slate-400 mb-1 font-medium">Giới tính</label>
-						<select id="add_gioi_tinh" bind:value={newGuestForm.gioi_tinh} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500">
-							<option value="M">Nam (M)</option>
-							<option value="F">Nữ (F)</option>
-						</select>
+						<span class="block text-slate-400 mb-1 font-medium">Giới tính</span>
+						<div class="grid grid-cols-2 gap-2">
+							<button
+								type="button"
+								onclick={() => { newGuestForm.gioi_tinh = 'M'; }}
+								class="py-2.5 px-3 rounded-lg text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 {newGuestForm.gioi_tinh !== 'F' ? 'bg-blue-600/30 text-blue-200 border-blue-500 shadow-md ring-1 ring-blue-500/50' : 'bg-slate-900 text-slate-400 border-slate-700 hover:bg-slate-800'}"
+							>
+								<span>♂</span> Nam
+							</button>
+							<button
+								type="button"
+								onclick={() => { newGuestForm.gioi_tinh = 'F'; }}
+								class="py-2.5 px-3 rounded-lg text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 {newGuestForm.gioi_tinh === 'F' ? 'bg-pink-600/30 text-pink-200 border-pink-500 shadow-md ring-1 ring-pink-500/50' : 'bg-slate-900 text-slate-400 border-slate-700 hover:bg-slate-800'}"
+							>
+								<span>♀</span> Nữ
+							</button>
+						</div>
 					</div>
 
 					<div>

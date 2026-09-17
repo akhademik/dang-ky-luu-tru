@@ -98,11 +98,12 @@ class StayService {
 				);
 				const ngayDenRaw =
 					row.ngayDen || row["(từ ngày)"] || row.tuNgay || row.ngayDenCsltStr;
-				const ngayDen = this.transformer.formatDateTime(ngayDenRaw);
-
 				const ngayDiRaw =
 					row.ngayDi || row["(đến ngày)"] || row.denNgay || row.ngayDiDuKienStr;
-				const ngayDi = this.transformer.formatDateOnly(ngayDiRaw);
+				const { ngayDen, ngayDi } = DataTransformer.resolveCheckInCheckOut(
+					ngayDenRaw,
+					ngayDiRaw,
+				);
 
 				const soPhongClean = DataTransformer.cleanRoomNumber(
 					row.soPhong || row["Số phòng"] || row.room || "",

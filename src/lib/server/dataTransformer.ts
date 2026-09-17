@@ -606,6 +606,88 @@ export class DataTransformer {
 		return clean;
 	}
 
+	public static resolveCheckInCheckOut(
+		ngayDenRaw?: unknown,
+		ngayDiRaw?: unknown,
+		now = new Date(),
+	): { ngayDen: string; ngayDi: string } {
+		const nowTimeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+		const nowDateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+		let ngayDen: string;
+		let checkInDateObj: Date;
+
+		if (ngayDenRaw) {
+			const parsed = DataTransformer.parseDateTime(ngayDenRaw);
+			if (parsed) {
+				const y = parsed.year;
+				const m = String(parsed.month).padStart(2, "0");
+				const d = String(parsed.day).padStart(2, "0");
+				const rawStr = String(ngayDenRaw).trim();
+				const hasTime = rawStr.includes(":");
+				if (hasTime) {
+					const hh = String(parsed.hour).padStart(2, "0");
+					const mm = String(parsed.minute).padStart(2, "0");
+					const ss = String(parsed.second).padStart(2, "0");
+					ngayDen = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+				} else {
+					ngayDen = `${y}-${m}-${d} ${nowTimeStr}`;
+				}
+				checkInDateObj = new Date(parsed.year, parsed.month - 1, parsed.day);
+			} else {
+				ngayDen = `${nowDateStr} ${nowTimeStr}`;
+				checkInDateObj = new Date(
+					now.getFullYear(),
+					now.getMonth(),
+					now.getDate(),
+				);
+			}
+		} else {
+			ngayDen = `${nowDateStr} ${nowTimeStr}`;
+			checkInDateObj = new Date(
+				now.getFullYear(),
+				now.getMonth(),
+				now.getDate(),
+			);
+		}
+
+		let ngayDi: string;
+		if (ngayDiRaw) {
+			const parsedDi = DataTransformer.parseDateTime(ngayDiRaw);
+			if (parsedDi) {
+				const y = parsedDi.year;
+				const m = String(parsedDi.month).padStart(2, "0");
+				const d = String(parsedDi.day).padStart(2, "0");
+				const rawStr = String(ngayDiRaw).trim();
+				const hasTime = rawStr.includes(":");
+				if (hasTime) {
+					const hh = String(parsedDi.hour).padStart(2, "0");
+					const mm = String(parsedDi.minute).padStart(2, "0");
+					const ss = String(parsedDi.second).padStart(2, "0");
+					ngayDi = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+				} else {
+					ngayDi = `${y}-${m}-${d} 12:00:00`;
+				}
+			} else {
+				const nextDay = new Date(checkInDateObj);
+				nextDay.setDate(nextDay.getDate() + 1);
+				const y = nextDay.getFullYear();
+				const m = String(nextDay.getMonth() + 1).padStart(2, "0");
+				const d = String(nextDay.getDate()).padStart(2, "0");
+				ngayDi = `${y}-${m}-${d} 12:00:00`;
+			}
+		} else {
+			const nextDay = new Date(checkInDateObj);
+			nextDay.setDate(nextDay.getDate() + 1);
+			const y = nextDay.getFullYear();
+			const m = String(nextDay.getMonth() + 1).padStart(2, "0");
+			const d = String(nextDay.getDate()).padStart(2, "0");
+			ngayDi = `${y}-${m}-${d} 12:00:00`;
+		}
+
+		return { ngayDen, ngayDi };
+	}
+
 	public formatDateTime(dateRaw: unknown, defaultTime = "12:00:00"): string {
 		return DataTransformer.formatDateTime(dateRaw, defaultTime);
 	}
