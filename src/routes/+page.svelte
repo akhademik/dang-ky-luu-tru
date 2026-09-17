@@ -698,6 +698,26 @@ onMount(async () => {
 				</div>
 			{/if}
 
+			<!-- Refresh Data Button -->
+			<button
+				type="button"
+				onclick={async () => {
+					loading = true;
+					showToast("Đang làm mới dữ liệu từ Cloudflare D1...", "info");
+					await loadStays();
+					await loadStats();
+					if (activeTab === "audit") await loadAuditLogs();
+					if (activeTab === "catalogs") await loadCatalogs();
+					loading = false;
+					showToast("✓ Đã làm mới dữ liệu", "success");
+				}}
+				title="Làm mới danh sách từ CSDL"
+				class="flex items-center gap-1.5 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl border border-slate-600 transition-all active:scale-95"
+			>
+				<span class="{loading ? 'animate-spin' : ''}">🔄</span>
+				<span>Làm mới</span>
+			</button>
+
 			<!-- Add Guest Button -->
 			<button
 				type="button"
