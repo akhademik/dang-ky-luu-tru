@@ -1,5 +1,22 @@
 <script lang="ts">
 import { onMount } from "svelte";
+import { QUOC_TICH_DATA } from "$lib/data/catalogs";
+
+const ROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+const LOAI_GIAY_TO_OPTIONS = [
+	{ id: "1", name: "1 - Thẻ CCCD (1)" },
+	{ id: "2", name: "2 - Thẻ CMND (2)" },
+	{ id: "3", name: "3 - Giấy phép lái xe (3)" },
+	{ id: "4", name: "4 - Hộ chiếu / Passport (4)" },
+	{ id: "8", name: "8 - Thẻ Căn Cước (8)" },
+];
+
+const COUNTRY_OPTIONS = [...QUOC_TICH_DATA].sort((a, b) => {
+	if (a.maQT === "VNM") return -1;
+	if (b.maQT === "VNM") return 1;
+	return (a.tenQT || a.maQT || "").localeCompare(b.tenQT || b.maQT || "", "vi");
+});
 
 interface StayDetail {
 	id: string;
@@ -150,8 +167,8 @@ let newGuestForm = $state({
 	ho_ten: "",
 	so_giay_to: "",
 	quoc_tich: "VNM",
-	loai_giay_to: "CCCD",
-	ngay_sinh: "2000-01-01",
+	loai_giay_to: "1",
+	ngay_sinh: "01/01/2000",
 	gioi_tinh: "M",
 	so_phong: "1",
 	ngay_den: "",
@@ -160,8 +177,58 @@ let newGuestForm = $state({
 	phuong_xa: "",
 	quan_huyen: "",
 	tinh_thanh: "TP. Hà Nội",
-	so_dien_thoai: "",
 });
+
+const CACHE_KEY_PREFIX = "kbtt_stays_cache_v2_";
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+interface CacheEntry<T> {
+	timestamp: number;
+	data: T;
+}
+
+function getLocalCache<T>(key: string): T | null {
+	if (typeof window === "undefined" || !window.localStorage) return null;
+	try {
+		const raw = localStorage.getItem(CACHE_KEY_PREFIX + key);
+		if (!raw) return null;
+		const parsed: CacheEntry<T> = JSON.parse(raw);
+		if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
+			return parsed.data;
+		}
+		localStorage.removeItem(CACHE_KEY_PREFIX + key);
+		return null;
+	} catch {
+		return null;
+	}
+}
+
+function setLocalCache<T>(key: string, data: T) {
+	if (typeof window === "undefined" || !window.localStorage) return;
+	try {
+		const entry: CacheEntry<T> = {
+			timestamp: Date.now(),
+			data,
+		};
+		localStorage.setItem(CACHE_KEY_PREFIX + key, JSON.stringify(entry));
+	} catch {}
+}
+
+function clearLocalCache() {
+	if (typeof window === "undefined" || !window.localStorage) return;
+	try {
+		const toRemove: string[] = [];
+		for (let i = 0; i < localStorage.length; i++) {
+			const k = localStorage.key(i);
+			if (k?.startsWith(CACHE_KEY_PREFIX)) {
+				toRemove.push(k);
+			}
+		}
+		for (const k of toRemove) {
+			localStorage.removeItem(k);
+		}
+	} catch {}
+}
 
 function showToast(
 	message: string,
@@ -173,17 +240,35 @@ function showToast(
 	}, 4000);
 }
 
-async function loadStats() {
+async function loadStats(force = false) {
+	if (!force) {
+		const cached = getLocalCache<Stats>("stats");
+		if (cached) {
+			stats = cached;
+			return;
+		}
+	}
 	try {
 		const res = await fetch("/api/stats");
 		const data = await res.json();
 		if (data.success && data.data) {
 			stats = data.data;
+			setLocalCache("stats", stats);
 		}
 	} catch {}
 }
 
-async function loadStays() {
+async function loadStays(force = false) {
+	const cacheKey = `${activeTab}_${searchTerm.trim()}_${filterRoom.trim()}`;
+	if (!force) {
+		const cached = getLocalCache<StayDetail[]>(cacheKey);
+		if (cached) {
+			stays = cached;
+			loadStats(false);
+			return;
+		}
+	}
+
 	loading = true;
 	try {
 		const url = new URL("/api/stays", window.location.origin);
@@ -199,8 +284,9 @@ async function loadStays() {
 		const data = await res.json();
 		if (data.success) {
 			stays = data.data;
+			setLocalCache(cacheKey, stays);
 		}
-		loadStats();
+		loadStats(force);
 	} catch (err) {
 		showToast("Không thể tải danh sách lưu trú từ CSDL", "error");
 	} finally {
@@ -367,6 +453,7 @@ async function registerStay(stayId: string) {
 		});
 		const data = await res.json();
 		if (data.success) {
+			clearLocalCache();
 			showToast("✓ Đăng ký lưu trú thành công!", "success");
 			const maHoSo = data.data?.maHoSo || data.maHoSo;
 			stays = stays.map((s) =>
@@ -405,11 +492,12 @@ async function registerAllReady() {
 		});
 		const data = await res.json();
 		if (data.success) {
+			clearLocalCache();
 			showToast(data.message || "Đăng ký hàng loạt thành công!", "success");
 		} else {
 			showToast(data.message || "Có lỗi trong quá trình đăng ký", "error");
 		}
-		await loadStays();
+		await loadStays(true);
 	} catch (err: unknown) {
 		const msg = err instanceof Error ? err.message : String(err);
 		showToast(`Lỗi kết nối: ${msg}`, "error");
@@ -435,6 +523,7 @@ async function submitExtend() {
 			? { ...s, ngay_di_du_kien: newDate, status: "EXTENDED" }
 			: s,
 	);
+	clearLocalCache();
 	showToast("Đang gia hạn lưu trú...", "info");
 
 	try {
@@ -452,11 +541,11 @@ async function submitExtend() {
 			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
-			await loadStays();
+			await loadStays(true);
 		}
 	} catch {
 		showToast("Lỗi khi gia hạn", "error");
-		await loadStays();
+		await loadStays(true);
 	}
 }
 
@@ -479,6 +568,7 @@ async function submitCheckout() {
 			s.id === targetId ? { ...s, status: "CHECKED_OUT" } : s,
 		);
 	}
+	clearLocalCache();
 	showToast("Đang xử lý checkout...", "info");
 
 	try {
@@ -493,11 +583,11 @@ async function submitCheckout() {
 			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
-			await loadStays();
+			await loadStays(true);
 		}
 	} catch {
 		showToast("Lỗi khi checkout", "error");
-		await loadStays();
+		await loadStays(true);
 	}
 }
 
@@ -514,6 +604,7 @@ async function submitDelete() {
 
 	// Immediate visual feedback: strikethrough row & disable function buttons
 	deletingIds = new Set([...deletingIds, deletedId]);
+	clearLocalCache();
 	showToast("Đang xóa bản ghi khỏi CSDL...", "info");
 
 	try {
@@ -667,16 +758,96 @@ function validateDepartureDate(val?: string | null): {
 	return { valid: true };
 }
 
+function formatLoaiGiayTo(raw?: string | number): string {
+	const str = String(raw || "")
+		.toLowerCase()
+		.trim();
+	if (
+		str === "4" ||
+		str.includes("hộ chiếu") ||
+		str.includes("passport") ||
+		str.includes("ho_chieu")
+	) {
+		return "Hộ chiếu (4)";
+	}
+	if (
+		str === "8" ||
+		str.includes("thẻ căn cước") ||
+		str === "căn cước" ||
+		str.includes("can_cuoc")
+	) {
+		return "Thẻ Căn Cước (8)";
+	}
+	if (str === "2" || str.includes("cmnd")) {
+		return "CMND (2)";
+	}
+	if (str === "3" || str.includes("lái xe") || str.includes("gplx")) {
+		return "GPLX (3)";
+	}
+	return "CCCD (1)";
+}
+
 function isNumericDocType(docTypeRaw: unknown): boolean {
 	const clean = String(docTypeRaw || "").toLowerCase();
 	return (
 		clean.includes("cccd") ||
 		clean.includes("cmnd") ||
 		clean.includes("căn cước") ||
+		clean.includes("lái xe") ||
+		clean.includes("gplx") ||
 		clean === "1" ||
 		clean === "2" ||
+		clean === "3" ||
 		clean === "8"
 	);
+}
+
+function normalizeLoaiGiayTo(val?: string | number): string {
+	const clean = String(val || "")
+		.trim()
+		.toLowerCase();
+	if (
+		clean === "4" ||
+		clean.includes("hộ chiếu") ||
+		clean.includes("passport") ||
+		clean.includes("ho_chieu")
+	)
+		return "4";
+	if (
+		clean === "8" ||
+		clean.includes("thẻ căn cước") ||
+		clean === "căn cước" ||
+		clean.includes("can_cuoc")
+	)
+		return "8";
+	if (clean === "2" || clean.includes("cmnd")) return "2";
+	if (clean === "3" || clean.includes("lái xe") || clean.includes("gplx"))
+		return "3";
+	return "1";
+}
+
+function normalizeQuocTich(val?: string): string {
+	const clean = String(val || "")
+		.trim()
+		.toUpperCase();
+	if (
+		!clean ||
+		clean === "VN" ||
+		clean === "VIỆT NAM" ||
+		clean === "VIET NAM" ||
+		clean === "VIETNAM"
+	)
+		return "VNM";
+	const info = getCountryInfo(clean);
+	return info ? info.maQT : clean.length === 3 ? clean : "VNM";
+}
+
+function normalizeSoPhong(val?: string): string {
+	const clean = String(val || "").trim();
+	if (ROOM_OPTIONS.includes(clean)) return clean;
+	const num = parseInt(clean, 10);
+	if (!Number.isNaN(num) && num >= 1 && num <= 9) return String(num);
+	return "1";
 }
 
 function cleanDocNumberInput(val: string, docTypeRaw: unknown): string {
@@ -728,52 +899,18 @@ function getCountryInfo(
 		.trim()
 		.toUpperCase();
 	if (!code) return null;
-	if (catalogs.quocTich && catalogs.quocTich.length > 0) {
-		const found = catalogs.quocTich.find((item) => {
-			const ma = String(item.maQT || item.id || item.code || "")
-				.trim()
-				.toUpperCase();
-			return ma === code;
-		});
-		if (found) {
-			return {
-				maQT: String(found.maQT || code).toUpperCase(),
-				tenQT: String(found.tenQT || found.ten || ""),
-				tenQTEn: String(
-					found.tenQTEn || found.tenEn || found.name || found.tenQT || "",
-				),
-			};
-		}
-	}
-	const fallbackMap: Record<string, { tenQT: string; tenQTEn: string }> = {
-		VNM: { tenQT: "Việt Nam", tenQTEn: "Vietnam" },
-		USA: { tenQT: "Hoa Kỳ", tenQTEn: "United States" },
-		RUS: { tenQT: "Nga", tenQTEn: "Russia" },
-		CHN: { tenQT: "Trung Quốc", tenQTEn: "China" },
-		KOR: { tenQT: "Hàn Quốc", tenQTEn: "South Korea" },
-		JPN: { tenQT: "Nhật Bản", tenQTEn: "Japan" },
-		GBR: { tenQT: "Vương quốc Anh", tenQTEn: "United Kingdom" },
-		FRA: { tenQT: "Pháp", tenQTEn: "France" },
-		DEU: { tenQT: "CH Liên bang Đức", tenQTEn: "Germany" },
-		D: { tenQT: "CH Liên bang Đức", tenQTEn: "Germany" },
-		AUS: { tenQT: "Úc", tenQTEn: "Australia" },
-		THA: { tenQT: "Thái Lan", tenQTEn: "Thailand" },
-		LAO: { tenQT: "Lào", tenQTEn: "Laos" },
-		KHM: { tenQT: "Campuchia", tenQTEn: "Cambodia" },
-		SGP: { tenQT: "Singapore", tenQTEn: "Singapore" },
-		MYS: { tenQT: "Malaysia", tenQTEn: "Malaysia" },
-		IDN: { tenQT: "Indonesia", tenQTEn: "Indonesia" },
-		PHL: { tenQT: "Philippines", tenQTEn: "Philippines" },
-		IND: { tenQT: "Ấn Độ", tenQTEn: "India" },
-		ITA: { tenQT: "Ý (Italia)", tenQTEn: "Italy" },
-		ESP: { tenQT: "Tây Ban Nha", tenQTEn: "Spain" },
-		CAN: { tenQT: "Canada", tenQTEn: "Canada" },
-		BRA: { tenQT: "Brazil", tenQTEn: "Brazil" },
-		ARG: { tenQT: "Ac-hen-ti-na", tenQTEn: "Argentina" },
-		TWN: { tenQT: "Đài Loan", tenQTEn: "Taiwan" },
-	};
-	if (fallbackMap[code]) {
-		return { maQT: code, ...fallbackMap[code] };
+	const found = COUNTRY_OPTIONS.find((item) => {
+		const ma = String(item.maQT || item.id || item.code || "")
+			.trim()
+			.toUpperCase();
+		return ma === code;
+	});
+	if (found) {
+		return {
+			maQT: String(found.maQT || code).toUpperCase(),
+			tenQT: String(found.tenQT || found.name || ""),
+			tenQTEn: String(found.tenQTEn || found.name || found.tenQT || ""),
+		};
 	}
 	return null;
 }
@@ -787,10 +924,36 @@ function isValidAlpha3Country(code: string): boolean {
 	return clean.length === 3 && /^[A-Z]{3}$/.test(clean);
 }
 
+function onEditQuocTichChange() {
+	if (!editStay) return;
+	const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
+		editStay.quoc_tich?.trim().toUpperCase() || "",
+	);
+	if (!isVN && editStay.loai_giay_to !== "4") {
+		editStay.loai_giay_to = "4";
+	} else if (isVN && editStay.loai_giay_to === "4") {
+		editStay.loai_giay_to = "1";
+	}
+}
+
+function onAddQuocTichChange() {
+	const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
+		newGuestForm.quoc_tich?.trim().toUpperCase() || "",
+	);
+	if (!isVN && newGuestForm.loai_giay_to !== "4") {
+		newGuestForm.loai_giay_to = "4";
+	} else if (isVN && newGuestForm.loai_giay_to === "4") {
+		newGuestForm.loai_giay_to = "1";
+	}
+}
+
 // Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
 	editStay = {
 		...stay,
+		so_phong: normalizeSoPhong(stay.so_phong),
+		loai_giay_to: normalizeLoaiGiayTo(stay.loai_giay_to),
+		quoc_tich: normalizeQuocTich(stay.quoc_tich),
 		ngay_sinh: formatDateDisplay(stay.ngay_sinh),
 		ngay_den: formatDateTimeDisplay(stay.ngay_den),
 		ngay_di_du_kien: stay.ngay_di_du_kien
@@ -812,44 +975,55 @@ let editLiveVal = $derived.by(() => {
 		return { allValid: false, errors: {} as Record<string, string> };
 	const errors: Record<string, string> = {};
 
-	const isVN =
-		["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
-			editStay.quoc_tich?.trim().toUpperCase() || "",
-		) ||
-		(editStay.loai_giay_to || "").toLowerCase().includes("cccd") ||
-		(editStay.loai_giay_to || "").toLowerCase().includes("cmnd") ||
-		(editStay.loai_giay_to || "").toLowerCase().includes("căn cước");
+	const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
+		editStay.quoc_tich?.trim().toUpperCase() || "",
+	);
 
 	if (!editStay.ho_ten?.trim()) {
 		errors.ho_ten = "Họ tên không được để trống";
 	}
 
-	const roomNum = parseInt(editStay.so_phong || "", 10);
-	if (!editStay.so_phong?.trim()) {
-		errors.so_phong = "Số phòng không được để trống";
-	} else if (Number.isNaN(roomNum) || roomNum < 1 || roomNum > 999) {
-		errors.so_phong = "Số phòng phải là số hợp lệ (ví dụ: 1-9)";
+	const roomStr = String(editStay.so_phong || "").trim();
+	if (!roomStr || !ROOM_OPTIONS.includes(roomStr)) {
+		errors.so_phong = "Vui lòng chọn số phòng từ 1 đến 9";
 	}
 
 	const docNum = (editStay.so_giay_to || "").trim();
-	const docType = (editStay.loai_giay_to || "").toLowerCase();
+	const docType = String(editStay.loai_giay_to || "").toLowerCase();
 	if (!docNum) {
 		errors.so_giay_to = "Vui lòng nhập số giấy tờ";
 	} else if (
+		docType === "1" ||
 		docType.includes("cccd") ||
+		docType === "8" ||
 		docType.includes("căn cước") ||
-		(isVN && !docType.includes("hộ chiếu"))
+		(isVN &&
+			docType !== "4" &&
+			!docType.includes("hộ chiếu") &&
+			!docType.includes("cmnd") &&
+			!docType.includes("3") &&
+			!docType.includes("lái xe"))
 	) {
 		const digits = docNum.replace(/\D/g, "");
 		if (digits.length !== 12) {
-			errors.so_giay_to = "Số CCCD Việt Nam phải đủ 12 chữ số";
+			errors.so_giay_to = "Số CCCD/Căn cước phải đủ 12 chữ số";
 		}
-	} else if (docType.includes("cmnd")) {
+	} else if (docType === "2" || docType.includes("cmnd")) {
 		const digits = docNum.replace(/\D/g, "");
 		if (digits.length !== 9 && digits.length !== 12) {
 			errors.so_giay_to = "Số CMND phải 9 hoặc 12 chữ số";
 		}
 	} else if (
+		docType === "3" ||
+		docType.includes("lái xe") ||
+		docType.includes("gplx")
+	) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 12) {
+			errors.so_giay_to = "Số GPLX phải đủ 12 chữ số";
+		}
+	} else if (
+		docType === "4" ||
 		docType.includes("hộ chiếu") ||
 		docType.includes("passport") ||
 		!isVN
@@ -862,7 +1036,7 @@ let editLiveVal = $derived.by(() => {
 
 	const qt = (editStay.quoc_tich || "").trim().toUpperCase();
 	if (!qt) {
-		errors.quoc_tich = "Vui lòng nhập mã quốc tịch (ví dụ: VNM, USA, RUS, DEU)";
+		errors.quoc_tich = "Vui lòng chọn mã quốc tịch";
 	} else if (!isValidAlpha3Country(qt)) {
 		errors.quoc_tich = `Mã quốc tịch không hợp lệ: "${qt}" (Phải là mã 3 ký tự ISO)`;
 	}
@@ -917,6 +1091,7 @@ async function submitEdit() {
 	stays = stays.map((s) =>
 		s.id === updatedItem.id ? { ...s, ...updatedItem } : s,
 	);
+	clearLocalCache();
 	showToast("Đang cập nhật thay đổi vào CSDL...", "info");
 
 	try {
@@ -931,11 +1106,11 @@ async function submitEdit() {
 			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
-			await loadStays();
+			await loadStays(true);
 		}
 	} catch {
 		showToast("Lỗi kết nối khi lưu thông tin", "error");
-		await loadStays();
+		await loadStays(true);
 	}
 }
 
@@ -961,6 +1136,7 @@ async function submitAddGuest() {
 		});
 		const data = await res.json();
 		if (data.success) {
+			clearLocalCache();
 			showToast("Thêm khách mới vào CSDL thành công!", "success");
 			if (data.data?.stay && data.data?.guest) {
 				const newDetail: StayDetail = {
@@ -1309,13 +1485,16 @@ onMount(async () => {
 					</div>
 					{#if activeTab !== 'audit'}
 						<div class="w-32 md:w-40">
-							<input
-								type="text"
+							<select
 								bind:value={filterRoom}
-								oninput={() => loadStays()}
-								placeholder="Lọc phòng..."
-								class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500"
-							/>
+								onchange={() => loadStays()}
+								class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-xs md:text-sm text-slate-100 focus:outline-none focus:border-sky-500"
+							>
+								<option value="">Tất cả phòng</option>
+								{#each ROOM_OPTIONS as r}
+									<option value={r}>Phòng {r}</option>
+								{/each}
+							</select>
 						</div>
 					{/if}
 				</div>
@@ -1335,8 +1514,9 @@ onMount(async () => {
 					<button
 						type="button"
 						onclick={() => {
+							clearLocalCache();
 							if (activeTab === 'audit') loadAuditLogs();
-							else loadStays();
+							else loadStays(true);
 						}}
 						class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs rounded-lg transition-all"
 					>
@@ -1858,28 +2038,30 @@ onMount(async () => {
 
 					<div>
 						<label for="edit_so_phong" class="block text-slate-400 mb-1 font-medium">Số phòng <span class="text-rose-400">*</span></label>
-						<input
+						<select
 							id="edit_so_phong"
-							type="text"
 							bind:value={editStay.so_phong}
-							placeholder="5"
 							class="w-full bg-slate-900 border {editLiveVal.errors.so_phong ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
-						/>
+						>
+							{#each ROOM_OPTIONS as r}
+								<option value={r}>Phòng {r}</option>
+							{/each}
+						</select>
 						{#if editLiveVal.errors.so_phong}
 							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.so_phong}</p>
 						{/if}
 					</div>
 
 					<div>
-						<label for="edit_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ <span class="text-rose-400">*</span></label>
+						<label for="edit_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ (API 10) <span class="text-rose-400">*</span></label>
 						<select
 							id="edit_loai_giay_to"
 							bind:value={editStay.loai_giay_to}
 							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
 						>
-							<option value="CCCD">Thẻ CCCD / Căn cước</option>
-							<option value="HO_CHIEU">Hộ chiếu (Passport)</option>
-							<option value="CMND">CMND 9 số</option>
+							{#each LOAI_GIAY_TO_OPTIONS as opt}
+								<option value={opt.id}>{opt.name}</option>
+							{/each}
 						</select>
 					</div>
 
@@ -1897,7 +2079,7 @@ onMount(async () => {
 							onkeydown={(e) => {
 								if (editStay) handleDocNumberKeyDown(e, editStay.loai_giay_to);
 							}}
-							placeholder={editStay.loai_giay_to === 'HO_CHIEU' ? 'P12345678' : '001202012345'}
+							placeholder={editStay.loai_giay_to === '4' || editStay.loai_giay_to === 'HO_CHIEU' ? 'P12345678' : '001202012345'}
 							class="w-full bg-slate-900 border {editLiveVal.errors.so_giay_to ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono uppercase focus:outline-none focus:border-sky-500 transition-colors"
 						/>
 						{#if editLiveVal.errors.so_giay_to}
@@ -1906,17 +2088,19 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="edit_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch (Mã Alpha-3) <span class="text-rose-400">*</span></label>
-						<input
+						<label for="edit_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch (252 Quốc Gia) <span class="text-rose-400">*</span></label>
+						<select
 							id="edit_quoc_tich"
-							type="text"
 							bind:value={editStay.quoc_tich}
-							oninput={(e) => {
-								if (editStay) editStay.quoc_tich = (e.target as HTMLInputElement).value.toUpperCase().slice(0, 3);
-							}}
-							placeholder="VNM"
-							class="w-full bg-slate-900 border {editLiveVal.errors.quoc_tich ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 uppercase font-mono focus:outline-none focus:border-sky-500 transition-colors"
-						/>
+							onchange={onEditQuocTichChange}
+							class="w-full bg-slate-900 border {editLiveVal.errors.quoc_tich ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
+						>
+							{#each COUNTRY_OPTIONS as c}
+								<option value={c.maQT}>
+									{c.maQT} - {c.tenQT} ({c.tenQTEn})
+								</option>
+							{/each}
+						</select>
 						{#if editCountryInfo}
 							<div class="mt-1 px-2 py-0.5 rounded bg-sky-950/80 border border-sky-700/50 text-[10px] text-sky-300 font-medium inline-block">
 								🌐 {editCountryInfo.tenQT} ({editCountryInfo.tenQTEn})
@@ -1992,7 +2176,7 @@ onMount(async () => {
 						/>
 					</div>
 
-					<div>
+					<div class="sm:col-span-2">
 						<label for="edit_tinh_thanh" class="block text-slate-400 mb-1 font-medium">Tỉnh / Thành phố</label>
 						<input
 							id="edit_tinh_thanh"
@@ -2000,17 +2184,6 @@ onMount(async () => {
 							bind:value={editStay.tinh_thanh}
 							placeholder="TP. Hà Nội"
 							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
-						/>
-					</div>
-
-					<div>
-						<label for="edit_so_dien_thoai" class="block text-slate-400 mb-1 font-medium">Số điện thoại</label>
-						<input
-							id="edit_so_dien_thoai"
-							type="text"
-							bind:value={editStay.so_dien_thoai}
-							placeholder="0912345678"
-							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
 						/>
 					</div>
 				</div>
@@ -2157,51 +2330,85 @@ onMount(async () => {
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
 					<div>
-						<label for="add_ho_ten" class="block text-slate-400 mb-1">Họ và tên *</label>
-						<input id="add_ho_ten" type="text" bind:value={newGuestForm.ho_ten} placeholder="NGUYỄN VĂN A" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 uppercase" />
+						<label for="add_ho_ten" class="block text-slate-400 mb-1 font-medium">Họ và tên <span class="text-rose-400">*</span></label>
+						<input id="add_ho_ten" type="text" bind:value={newGuestForm.ho_ten} placeholder="NGUYỄN VĂN A" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 uppercase focus:outline-none focus:border-sky-500" />
 					</div>
 
 					<div>
-						<label for="add_so_phong" class="block text-slate-400 mb-1">Số phòng *</label>
-						<input id="add_so_phong" type="text" bind:value={newGuestForm.so_phong} placeholder="101 hoặc 5" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono" />
+						<label for="add_so_phong" class="block text-slate-400 mb-1 font-medium">Số phòng (1-9) <span class="text-rose-400">*</span></label>
+						<select id="add_so_phong" bind:value={newGuestForm.so_phong} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500">
+							{#each ROOM_OPTIONS as r}
+								<option value={r}>Phòng {r}</option>
+							{/each}
+						</select>
 					</div>
 
 					<div>
-						<label for="add_so_giay_to" class="block text-slate-400 mb-1">Số CCCD / Hộ Chiếu *</label>
-						<input id="add_so_giay_to" type="text" bind:value={newGuestForm.so_giay_to} placeholder="001..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono" />
+						<label for="add_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ (API 10) <span class="text-rose-400">*</span></label>
+						<select id="add_loai_giay_to" bind:value={newGuestForm.loai_giay_to} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500">
+							{#each LOAI_GIAY_TO_OPTIONS as opt}
+								<option value={opt.id}>{opt.name}</option>
+							{/each}
+						</select>
 					</div>
 
 					<div>
-						<label for="add_quoc_tich" class="block text-slate-400 mb-1">Quốc tịch *</label>
-						<input id="add_quoc_tich" type="text" bind:value={newGuestForm.quoc_tich} placeholder="VNM, USA, KOR..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 uppercase font-mono" />
+						<label for="add_so_giay_to" class="block text-slate-400 mb-1 font-medium">Số CCCD / Hộ Chiếu <span class="text-rose-400">*</span></label>
+						<input
+							id="add_so_giay_to"
+							type="text"
+							bind:value={newGuestForm.so_giay_to}
+							oninput={(e) => {
+								newGuestForm.so_giay_to = cleanDocNumberInput((e.target as HTMLInputElement).value, newGuestForm.loai_giay_to);
+							}}
+							onkeydown={(e) => handleDocNumberKeyDown(e, newGuestForm.loai_giay_to)}
+							placeholder={newGuestForm.loai_giay_to === '4' ? 'P12345678' : '001202012345'}
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono uppercase focus:outline-none focus:border-sky-500"
+						/>
 					</div>
 
 					<div>
-						<label for="add_ngay_sinh" class="block text-slate-400 mb-1">Ngày sinh (YYYY-MM-DD)</label>
-						<input id="add_ngay_sinh" type="date" bind:value={newGuestForm.ngay_sinh} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="add_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch (252 Quốc Gia) <span class="text-rose-400">*</span></label>
+						<select id="add_quoc_tich" bind:value={newGuestForm.quoc_tich} onchange={onAddQuocTichChange} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500">
+							{#each COUNTRY_OPTIONS as c}
+								<option value={c.maQT}>
+									{c.maQT} - {c.tenQT} ({c.tenQTEn})
+								</option>
+							{/each}
+						</select>
 					</div>
 
 					<div>
-						<label for="add_gioi_tinh" class="block text-slate-400 mb-1">Giới tính</label>
-						<select id="add_gioi_tinh" bind:value={newGuestForm.gioi_tinh} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+						<label for="add_ngay_sinh" class="block text-slate-400 mb-1 font-medium">Ngày sinh (DD/MM/YYYY)</label>
+						<input id="add_ngay_sinh" type="text" bind:value={newGuestForm.ngay_sinh} placeholder="01/01/2000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500" />
+					</div>
+
+					<div>
+						<label for="add_gioi_tinh" class="block text-slate-400 mb-1 font-medium">Giới tính</label>
+						<select id="add_gioi_tinh" bind:value={newGuestForm.gioi_tinh} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500">
 							<option value="M">Nam (M)</option>
 							<option value="F">Nữ (F)</option>
 						</select>
 					</div>
 
 					<div>
-						<label for="add_ngay_den" class="block text-slate-400 mb-1">Ngày đến</label>
-						<input id="add_ngay_den" type="text" bind:value={newGuestForm.ngay_den} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="add_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY HH:mm:ss)</label>
+						<input id="add_ngay_den" type="text" bind:value={newGuestForm.ngay_den} placeholder="17/09/2026 14:00:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500" />
 					</div>
 
 					<div>
-						<label for="add_ngay_di_du_kien" class="block text-slate-400 mb-1">Ngày đi dự kiến</label>
-						<input id="add_ngay_di_du_kien" type="date" bind:value={newGuestForm.ngay_di_du_kien} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="add_ngay_di_du_kien" class="block text-slate-400 mb-1 font-medium">Ngày đi dự kiến (DD/MM/YYYY HH:mm:ss)</label>
+						<input id="add_ngay_di_du_kien" type="text" bind:value={newGuestForm.ngay_di_du_kien} placeholder="19/09/2026 12:00:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500" />
 					</div>
 
 					<div class="sm:col-span-2">
-						<label for="add_dia_chi_chi_tiet" class="block text-slate-400 mb-1">Địa chỉ chi tiết</label>
-						<input id="add_dia_chi_chi_tiet" type="text" bind:value={newGuestForm.dia_chi_chi_tiet} placeholder="Số nhà, đường phố..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="add_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ chi tiết</label>
+						<input id="add_dia_chi_chi_tiet" type="text" bind:value={newGuestForm.dia_chi_chi_tiet} placeholder="Số nhà, đường phố..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500" />
+					</div>
+
+					<div class="sm:col-span-2">
+						<label for="add_tinh_thanh" class="block text-slate-400 mb-1 font-medium">Tỉnh / Thành phố</label>
+						<input id="add_tinh_thanh" type="text" bind:value={newGuestForm.tinh_thanh} placeholder="TP. Hà Nội" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500" />
 					</div>
 				</div>
 

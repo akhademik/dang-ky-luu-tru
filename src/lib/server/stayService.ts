@@ -213,7 +213,7 @@ class StayService {
 			"Họ tên": stay.ho_ten,
 			"Số giấy tờ": stay.so_giay_to,
 			"Quốc tịch": stay.quoc_tich,
-			"Loại giấy tờ": stay.loai_giay_to === "HO_CHIEU" ? 4 : 1,
+			"Loại giấy tờ": this.catalog.findLoaiGiayTo(stay.loai_giay_to),
 			"D.O.B": stay.ngay_sinh,
 			"Giới tính": stay.gioi_tinh,
 			"Địa chỉ": stay.dia_chi_chi_tiet,
