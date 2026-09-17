@@ -537,31 +537,380 @@ async function submitDelete() {
 	}
 }
 
+// Date Formatting & Validation Utilities (aligned with sheet-works)
+function formatDateDisplay(val?: string | null): string {
+	if (!val) return "-";
+	const str = String(val).trim();
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	if (dmy) {
+		const d = dmy[1].padStart(2, "0");
+		const m = dmy[2].padStart(2, "0");
+		const y = dmy[3];
+		return `${d}/${m}/${y}`;
+	}
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+	if (ymd) {
+		const y = ymd[1];
+		const m = ymd[2].padStart(2, "0");
+		const d = ymd[3].padStart(2, "0");
+		return `${d}/${m}/${y}`;
+	}
+	return str;
+}
+
+function formatDateTimeDisplay(dt?: string | null): string {
+	if (!dt) return "-";
+	const str = String(dt).trim();
+	const dmy = str.match(
+		/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/,
+	);
+	if (dmy) {
+		const d = dmy[1].padStart(2, "0");
+		const m = dmy[2].padStart(2, "0");
+		const y = dmy[3];
+		const hr = (dmy[4] || "00").padStart(2, "0");
+		const min = (dmy[5] || "00").padStart(2, "0");
+		const sec = (dmy[6] || "00").padStart(2, "0");
+		return `${d}/${m}/${y} ${hr}:${min}:${sec}`;
+	}
+	const ymd = str.match(
+		/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/,
+	);
+	if (ymd) {
+		const y = ymd[1];
+		const m = ymd[2].padStart(2, "0");
+		const d = ymd[3].padStart(2, "0");
+		const hr = (ymd[4] || "00").padStart(2, "0");
+		const min = (ymd[5] || "00").padStart(2, "0");
+		const sec = (ymd[6] || "00").padStart(2, "0");
+		return `${d}/${m}/${y} ${hr}:${min}:${sec}`;
+	}
+	return str.replace("T", " ").substring(0, 19);
+}
+
+function validateDateString(val?: string | null): boolean {
+	if (!val) return false;
+	const str = String(val).trim();
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	if (dmy) {
+		const d = parseInt(dmy[1], 10);
+		const m = parseInt(dmy[2], 10);
+		const y = parseInt(dmy[3], 10);
+		return d >= 1 && d <= 31 && m >= 1 && m <= 12 && y >= 1900 && y <= 2100;
+	}
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+	if (ymd) {
+		const y = parseInt(ymd[1], 10);
+		const m = parseInt(ymd[2], 10);
+		const d = parseInt(ymd[3], 10);
+		return d >= 1 && d <= 31 && m >= 1 && m <= 12 && y >= 1900 && y <= 2100;
+	}
+	return false;
+}
+
+function validateArrivalDate(val?: string | null): {
+	valid: boolean;
+	error?: string;
+} {
+	if (!val || !String(val).trim()) {
+		return { valid: false, error: "Vui lòng nhập ngày đến" };
+	}
+	const str = String(val).trim();
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+
+	let day: number, month: number, year: number;
+	if (dmy) {
+		day = parseInt(dmy[1], 10);
+		month = parseInt(dmy[2], 10);
+		year = parseInt(dmy[3], 10);
+	} else if (ymd) {
+		year = parseInt(ymd[1], 10);
+		month = parseInt(ymd[2], 10);
+		day = parseInt(ymd[3], 10);
+	} else {
+		return {
+			valid: false,
+			error: "Ngày đến phải theo định dạng DD/MM/YYYY HH:mm:ss",
+		};
+	}
+
+	const arrivalDay = new Date(year, month - 1, day);
+	const today = new Date();
+	const currentDay = new Date(
+		today.getFullYear(),
+		today.getMonth(),
+		today.getDate(),
+	);
+
+	if (arrivalDay.getTime() > currentDay.getTime() + 24 * 3600 * 1000) {
+		return { valid: false, error: "Ngày đến không được ở tương lai" };
+	}
+	return { valid: true };
+}
+
+function validateDepartureDate(val?: string | null): {
+	valid: boolean;
+	error?: string;
+} {
+	if (!val || !String(val).trim()) return { valid: true };
+	const str = String(val).trim();
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+
+	if (!dmy && !ymd) {
+		return {
+			valid: false,
+			error: "Ngày đi phải theo định dạng DD/MM/YYYY HH:mm:ss",
+		};
+	}
+	return { valid: true };
+}
+
+function isNumericDocType(docTypeRaw: unknown): boolean {
+	const clean = String(docTypeRaw || "").toLowerCase();
+	return (
+		clean.includes("cccd") ||
+		clean.includes("cmnd") ||
+		clean.includes("căn cước") ||
+		clean === "1" ||
+		clean === "2" ||
+		clean === "8"
+	);
+}
+
+function cleanDocNumberInput(val: string, docTypeRaw: unknown): string {
+	if (!val) return "";
+	if (isNumericDocType(docTypeRaw)) {
+		return val.replace(/\D/g, "").slice(0, 12);
+	}
+	return val
+		.replace(/[^a-zA-Z0-9]/g, "")
+		.toUpperCase()
+		.slice(0, 12);
+}
+
+function handleDocNumberKeyDown(e: KeyboardEvent, docTypeRaw: unknown): void {
+	if (
+		[
+			"Backspace",
+			"Delete",
+			"Tab",
+			"ArrowLeft",
+			"ArrowRight",
+			"ArrowUp",
+			"ArrowDown",
+			"Home",
+			"End",
+			"Enter",
+		].includes(e.key) ||
+		e.ctrlKey ||
+		e.metaKey
+	) {
+		return;
+	}
+
+	if (isNumericDocType(docTypeRaw)) {
+		if (!/^[0-9]$/.test(e.key)) {
+			e.preventDefault();
+		}
+	} else {
+		if (!/^[a-zA-Z0-9]$/.test(e.key)) {
+			e.preventDefault();
+		}
+	}
+}
+
+function getCountryInfo(
+	codeRaw: string,
+): { maQT: string; tenQT: string; tenQTEn: string } | null {
+	const code = String(codeRaw || "")
+		.trim()
+		.toUpperCase();
+	if (!code) return null;
+	if (catalogs.quocTich && catalogs.quocTich.length > 0) {
+		const found = catalogs.quocTich.find((item) => {
+			const ma = String(item.maQT || item.id || item.code || "")
+				.trim()
+				.toUpperCase();
+			return ma === code;
+		});
+		if (found) {
+			return {
+				maQT: String(found.maQT || code).toUpperCase(),
+				tenQT: String(found.tenQT || found.ten || ""),
+				tenQTEn: String(
+					found.tenQTEn || found.tenEn || found.name || found.tenQT || "",
+				),
+			};
+		}
+	}
+	const fallbackMap: Record<string, { tenQT: string; tenQTEn: string }> = {
+		VNM: { tenQT: "Việt Nam", tenQTEn: "Vietnam" },
+		USA: { tenQT: "Hoa Kỳ", tenQTEn: "United States" },
+		RUS: { tenQT: "Nga", tenQTEn: "Russia" },
+		CHN: { tenQT: "Trung Quốc", tenQTEn: "China" },
+		KOR: { tenQT: "Hàn Quốc", tenQTEn: "South Korea" },
+		JPN: { tenQT: "Nhật Bản", tenQTEn: "Japan" },
+		GBR: { tenQT: "Vương quốc Anh", tenQTEn: "United Kingdom" },
+		FRA: { tenQT: "Pháp", tenQTEn: "France" },
+		DEU: { tenQT: "CH Liên bang Đức", tenQTEn: "Germany" },
+		D: { tenQT: "CH Liên bang Đức", tenQTEn: "Germany" },
+		AUS: { tenQT: "Úc", tenQTEn: "Australia" },
+		THA: { tenQT: "Thái Lan", tenQTEn: "Thailand" },
+		LAO: { tenQT: "Lào", tenQTEn: "Laos" },
+		KHM: { tenQT: "Campuchia", tenQTEn: "Cambodia" },
+		SGP: { tenQT: "Singapore", tenQTEn: "Singapore" },
+		MYS: { tenQT: "Malaysia", tenQTEn: "Malaysia" },
+		IDN: { tenQT: "Indonesia", tenQTEn: "Indonesia" },
+		PHL: { tenQT: "Philippines", tenQTEn: "Philippines" },
+		IND: { tenQT: "Ấn Độ", tenQTEn: "India" },
+		ITA: { tenQT: "Ý (Italia)", tenQTEn: "Italy" },
+		ESP: { tenQT: "Tây Ban Nha", tenQTEn: "Spain" },
+		CAN: { tenQT: "Canada", tenQTEn: "Canada" },
+		BRA: { tenQT: "Brazil", tenQTEn: "Brazil" },
+		ARG: { tenQT: "Ac-hen-ti-na", tenQTEn: "Argentina" },
+		TWN: { tenQT: "Đài Loan", tenQTEn: "Taiwan" },
+	};
+	if (fallbackMap[code]) {
+		return { maQT: code, ...fallbackMap[code] };
+	}
+	return null;
+}
+
+function isValidAlpha3Country(code: string): boolean {
+	const clean = String(code || "")
+		.trim()
+		.toUpperCase();
+	if (!clean) return false;
+	if (getCountryInfo(clean)) return true;
+	return clean.length === 3 && /^[A-Z]{3}$/.test(clean);
+}
+
 // Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
-	editStay = { ...stay };
+	editStay = {
+		...stay,
+		ngay_sinh: formatDateDisplay(stay.ngay_sinh),
+		ngay_den: formatDateTimeDisplay(stay.ngay_den),
+		ngay_di_du_kien: stay.ngay_di_du_kien
+			? formatDateTimeDisplay(stay.ngay_di_du_kien)
+			: "",
+	};
 	editErrors = {};
 	showEditModal = true;
 }
 
+let editCountryInfo = $derived.by(() => {
+	if (!editStay) return null;
+	const qt = editStay.quoc_tich?.trim().toUpperCase() || "";
+	return getCountryInfo(qt);
+});
+
+let editLiveVal = $derived.by(() => {
+	if (!editStay)
+		return { allValid: false, errors: {} as Record<string, string> };
+	const errors: Record<string, string> = {};
+
+	const isVN =
+		["VNM", "VN", "VIỆT NAM", "VIET NAM", "VIETNAM"].includes(
+			editStay.quoc_tich?.trim().toUpperCase() || "",
+		) ||
+		(editStay.loai_giay_to || "").toLowerCase().includes("cccd") ||
+		(editStay.loai_giay_to || "").toLowerCase().includes("cmnd") ||
+		(editStay.loai_giay_to || "").toLowerCase().includes("căn cước");
+
+	if (!editStay.ho_ten?.trim()) {
+		errors.ho_ten = "Họ tên không được để trống";
+	}
+
+	const roomNum = parseInt(editStay.so_phong || "", 10);
+	if (!editStay.so_phong?.trim()) {
+		errors.so_phong = "Số phòng không được để trống";
+	} else if (Number.isNaN(roomNum) || roomNum < 1 || roomNum > 999) {
+		errors.so_phong = "Số phòng phải là số hợp lệ (ví dụ: 1-9)";
+	}
+
+	const docNum = (editStay.so_giay_to || "").trim();
+	const docType = (editStay.loai_giay_to || "").toLowerCase();
+	if (!docNum) {
+		errors.so_giay_to = "Vui lòng nhập số giấy tờ";
+	} else if (
+		docType.includes("cccd") ||
+		docType.includes("căn cước") ||
+		(isVN && !docType.includes("hộ chiếu"))
+	) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 12) {
+			errors.so_giay_to = "Số CCCD Việt Nam phải đủ 12 chữ số";
+		}
+	} else if (docType.includes("cmnd")) {
+		const digits = docNum.replace(/\D/g, "");
+		if (digits.length !== 9 && digits.length !== 12) {
+			errors.so_giay_to = "Số CMND phải 9 hoặc 12 chữ số";
+		}
+	} else if (
+		docType.includes("hộ chiếu") ||
+		docType.includes("passport") ||
+		!isVN
+	) {
+		const clean = docNum.replace(/[^a-zA-Z0-9]/g, "");
+		if (clean.length < 6 || clean.length > 12) {
+			errors.so_giay_to = "Số hộ chiếu quốc tế phải từ 6 đến 12 ký tự";
+		}
+	}
+
+	const qt = (editStay.quoc_tich || "").trim().toUpperCase();
+	if (!qt) {
+		errors.quoc_tich = "Vui lòng nhập mã quốc tịch (ví dụ: VNM, USA, RUS, DEU)";
+	} else if (!isValidAlpha3Country(qt)) {
+		errors.quoc_tich = `Mã quốc tịch không hợp lệ: "${qt}" (Phải là mã 3 ký tự ISO)`;
+	}
+
+	if (editStay.ngay_sinh?.trim() && !validateDateString(editStay.ngay_sinh)) {
+		errors.ngay_sinh =
+			"Ngày sinh phải theo định dạng DD/MM/YYYY (ví dụ: 22/09/2002)";
+	}
+
+	const arrCheck = validateArrivalDate(editStay.ngay_den);
+	if (!arrCheck.valid) {
+		errors.ngay_den =
+			arrCheck.error ||
+			"Ngày đến phải theo định dạng DD/MM/YYYY HH:mm:ss (ví dụ: 17/09/2026 14:00:00)";
+	}
+
+	const depCheck = validateDepartureDate(editStay.ngay_di_du_kien);
+	if (!depCheck.valid) {
+		errors.ngay_di_du_kien =
+			depCheck.error ||
+			"Ngày đi phải theo định dạng DD/MM/YYYY HH:mm:ss (ví dụ: 19/09/2026 12:00:00)";
+	}
+
+	return {
+		allValid: Object.keys(errors).length === 0,
+		errors,
+	};
+});
+
 function validateEdit() {
 	if (!editStay) return false;
-	const errs: Record<string, string> = {};
-	if (!editStay.ho_ten.trim()) errs.ho_ten = "Họ tên không được để trống";
-	if (!editStay.so_giay_to.trim())
-		errs.so_giay_to = "Số giấy tờ không được để trống";
-	if (editStay.quoc_tich === "VNM" && editStay.so_giay_to.length !== 12) {
-		errs.so_giay_to = "CCCD Việt Nam phải đủ 12 chữ số";
-	}
-	if (!editStay.so_phong.trim()) errs.so_phong = "Số phòng không được để trống";
-	if (!editStay.ngay_den) errs.ngay_den = "Ngày đến không được để trống";
-	editErrors = errs;
-	return Object.keys(errs).length === 0;
+	editErrors = editLiveVal.errors;
+	return editLiveVal.allValid;
 }
 
 async function submitEdit() {
-	if (!editStay || !validateEdit()) return;
-	const updatedItem = { ...editStay };
+	if (!editStay || !validateEdit()) {
+		showToast("Vui lòng kiểm tra và sửa các trường báo đỏ", "error");
+		return;
+	}
+	const updatedItem = {
+		...editStay,
+		ngay_sinh: formatDateDisplay(editStay.ngay_sinh),
+		ngay_den: formatDateTimeDisplay(editStay.ngay_den),
+		ngay_di_du_kien: editStay.ngay_di_du_kien
+			? formatDateTimeDisplay(editStay.ngay_di_du_kien)
+			: "",
+	};
 	showEditModal = false;
 
 	// Optimistically update local array immediately
@@ -597,13 +946,13 @@ async function submitAddGuest() {
 		return;
 	}
 	try {
-		const nowStr = new Date(Date.now() + 7 * 3600 * 1000)
-			.toISOString()
-			.replace("T", " ")
-			.substring(0, 19);
 		const payload = {
 			...newGuestForm,
-			ngay_den: newGuestForm.ngay_den || nowStr,
+			ngay_sinh: formatDateDisplay(newGuestForm.ngay_sinh),
+			ngay_den: formatDateTimeDisplay(newGuestForm.ngay_den),
+			ngay_di_du_kien: newGuestForm.ngay_di_du_kien
+				? formatDateTimeDisplay(newGuestForm.ngay_di_du_kien)
+				: "",
 		};
 		const res = await fetch("/api/stays", {
 			method: "POST",
@@ -638,12 +987,6 @@ async function submitAddGuest() {
 function openPayloadViewer(log: KbttLog) {
 	selectedLog = log;
 	showPayloadModal = true;
-}
-
-// Helper formatting
-function formatDateTimeDisplay(dt?: string) {
-	if (!dt) return "-";
-	return dt.replace("T", " ").substring(0, 19);
 }
 
 function getStatusBadge(status: string) {
@@ -1500,69 +1843,202 @@ onMount(async () => {
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
 					<div>
-						<label for="edit_ho_ten" class="block text-slate-400 mb-1">Họ và tên *</label>
-						<input id="edit_ho_ten" type="text" bind:value={editStay.ho_ten} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 uppercase" />
-						{#if editErrors.ho_ten}<span class="text-rose-400 text-[11px]">{editErrors.ho_ten}</span>{/if}
+						<label for="edit_ho_ten" class="block text-slate-400 mb-1 font-medium">Họ và tên <span class="text-rose-400">*</span></label>
+						<input
+							id="edit_ho_ten"
+							type="text"
+							bind:value={editStay.ho_ten}
+							placeholder="NGUYỄN VĂN A"
+							class="w-full bg-slate-900 border {editLiveVal.errors.ho_ten ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 uppercase focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editLiveVal.errors.ho_ten}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.ho_ten}</p>
+						{/if}
 					</div>
 
 					<div>
-						<label for="edit_so_phong" class="block text-slate-400 mb-1">Số phòng *</label>
-						<input id="edit_so_phong" type="text" bind:value={editStay.so_phong} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono" />
+						<label for="edit_so_phong" class="block text-slate-400 mb-1 font-medium">Số phòng <span class="text-rose-400">*</span></label>
+						<input
+							id="edit_so_phong"
+							type="text"
+							bind:value={editStay.so_phong}
+							placeholder="5"
+							class="w-full bg-slate-900 border {editLiveVal.errors.so_phong ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editLiveVal.errors.so_phong}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.so_phong}</p>
+						{/if}
 					</div>
 
 					<div>
-						<label for="edit_so_giay_to" class="block text-slate-400 mb-1">Số CCCD / Hộ Chiếu *</label>
-						<input id="edit_so_giay_to" type="text" bind:value={editStay.so_giay_to} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono" />
-						{#if editErrors.so_giay_to}<span class="text-rose-400 text-[11px]">{editErrors.so_giay_to}</span>{/if}
+						<label for="edit_loai_giay_to" class="block text-slate-400 mb-1 font-medium">Loại giấy tờ <span class="text-rose-400">*</span></label>
+						<select
+							id="edit_loai_giay_to"
+							bind:value={editStay.loai_giay_to}
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
+						>
+							<option value="CCCD">Thẻ CCCD / Căn cước</option>
+							<option value="HO_CHIEU">Hộ chiếu (Passport)</option>
+							<option value="CMND">CMND 9 số</option>
+						</select>
 					</div>
 
 					<div>
-						<label for="edit_quoc_tich" class="block text-slate-400 mb-1">Quốc tịch (Mã Alpha-3) *</label>
-						<input id="edit_quoc_tich" type="text" bind:value={editStay.quoc_tich} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 uppercase font-mono" />
+						<label for="edit_so_giay_to" class="block text-slate-400 mb-1 font-medium">Số CCCD / Hộ Chiếu <span class="text-rose-400">*</span></label>
+						<input
+							id="edit_so_giay_to"
+							type="text"
+							bind:value={editStay.so_giay_to}
+							oninput={(e) => {
+								if (editStay) {
+									editStay.so_giay_to = cleanDocNumberInput((e.target as HTMLInputElement).value, editStay.loai_giay_to);
+								}
+							}}
+							onkeydown={(e) => {
+								if (editStay) handleDocNumberKeyDown(e, editStay.loai_giay_to);
+							}}
+							placeholder={editStay.loai_giay_to === 'HO_CHIEU' ? 'P12345678' : '001202012345'}
+							class="w-full bg-slate-900 border {editLiveVal.errors.so_giay_to ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono uppercase focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editLiveVal.errors.so_giay_to}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.so_giay_to}</p>
+						{/if}
 					</div>
 
 					<div>
-						<label for="edit_ngay_sinh" class="block text-slate-400 mb-1">Ngày sinh (YYYY-MM-DD)</label>
-						<input id="edit_ngay_sinh" type="text" bind:value={editStay.ngay_sinh} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="edit_quoc_tich" class="block text-slate-400 mb-1 font-medium">Quốc tịch (Mã Alpha-3) <span class="text-rose-400">*</span></label>
+						<input
+							id="edit_quoc_tich"
+							type="text"
+							bind:value={editStay.quoc_tich}
+							oninput={(e) => {
+								if (editStay) editStay.quoc_tich = (e.target as HTMLInputElement).value.toUpperCase().slice(0, 3);
+							}}
+							placeholder="VNM"
+							class="w-full bg-slate-900 border {editLiveVal.errors.quoc_tich ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 uppercase font-mono focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editCountryInfo}
+							<div class="mt-1 px-2 py-0.5 rounded bg-sky-950/80 border border-sky-700/50 text-[10px] text-sky-300 font-medium inline-block">
+								🌐 {editCountryInfo.tenQT} ({editCountryInfo.tenQTEn})
+							</div>
+						{/if}
+						{#if editLiveVal.errors.quoc_tich}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.quoc_tich}</p>
+						{/if}
 					</div>
 
 					<div>
-						<label for="edit_gioi_tinh" class="block text-slate-400 mb-1">Giới tính</label>
-						<select id="edit_gioi_tinh" bind:value={editStay.gioi_tinh} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+						<label for="edit_ngay_sinh" class="block text-slate-400 mb-1 font-medium">Ngày sinh (DD/MM/YYYY)</label>
+						<input
+							id="edit_ngay_sinh"
+							type="text"
+							bind:value={editStay.ngay_sinh}
+							placeholder="22/09/2002"
+							class="w-full bg-slate-900 border {editLiveVal.errors.ngay_sinh ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editLiveVal.errors.ngay_sinh}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.ngay_sinh}</p>
+						{/if}
+					</div>
+
+					<div>
+						<label for="edit_gioi_tinh" class="block text-slate-400 mb-1 font-medium">Giới tính</label>
+						<select
+							id="edit_gioi_tinh"
+							bind:value={editStay.gioi_tinh}
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
+						>
 							<option value="M">Nam (M)</option>
 							<option value="F">Nữ (F)</option>
 						</select>
 					</div>
 
 					<div>
-						<label for="edit_ngay_den" class="block text-slate-400 mb-1">Ngày đến (YYYY-MM-DD HH:mm:ss)</label>
-						<input id="edit_ngay_den" type="text" bind:value={editStay.ngay_den} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="edit_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY HH:mm:ss) <span class="text-rose-400">*</span></label>
+						<input
+							id="edit_ngay_den"
+							type="text"
+							bind:value={editStay.ngay_den}
+							placeholder="17/09/2026 14:00:00"
+							class="w-full bg-slate-900 border {editLiveVal.errors.ngay_den ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editLiveVal.errors.ngay_den}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.ngay_den}</p>
+						{/if}
 					</div>
 
 					<div>
-						<label for="edit_ngay_di_du_kien" class="block text-slate-400 mb-1">Ngày đi dự kiến (YYYY-MM-DD)</label>
-						<input id="edit_ngay_di_du_kien" type="text" bind:value={editStay.ngay_di_du_kien} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="edit_ngay_di_du_kien" class="block text-slate-400 mb-1 font-medium">Ngày đi dự kiến (DD/MM/YYYY HH:mm:ss)</label>
+						<input
+							id="edit_ngay_di_du_kien"
+							type="text"
+							bind:value={editStay.ngay_di_du_kien}
+							placeholder="19/09/2026 12:00:00"
+							class="w-full bg-slate-900 border {editLiveVal.errors.ngay_di_du_kien ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+						/>
+						{#if editLiveVal.errors.ngay_di_du_kien}
+							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.ngay_di_du_kien}</p>
+						{/if}
 					</div>
 
 					<div class="sm:col-span-2">
-						<label for="edit_dia_chi_chi_tiet" class="block text-slate-400 mb-1">Địa chỉ chi tiết</label>
-						<input id="edit_dia_chi_chi_tiet" type="text" bind:value={editStay.dia_chi_chi_tiet} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="edit_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ chi tiết</label>
+						<input
+							id="edit_dia_chi_chi_tiet"
+							type="text"
+							bind:value={editStay.dia_chi_chi_tiet}
+							placeholder="Số nhà, đường phố..."
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
+						/>
 					</div>
 
 					<div>
-						<label for="edit_tinh_thanh" class="block text-slate-400 mb-1">Tỉnh / Thành phố</label>
-						<input id="edit_tinh_thanh" type="text" bind:value={editStay.tinh_thanh} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="edit_tinh_thanh" class="block text-slate-400 mb-1 font-medium">Tỉnh / Thành phố</label>
+						<input
+							id="edit_tinh_thanh"
+							type="text"
+							bind:value={editStay.tinh_thanh}
+							placeholder="TP. Hà Nội"
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors"
+						/>
 					</div>
 
 					<div>
-						<label for="edit_so_dien_thoai" class="block text-slate-400 mb-1">Số điện thoại</label>
-						<input id="edit_so_dien_thoai" type="text" bind:value={editStay.so_dien_thoai} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100" />
+						<label for="edit_so_dien_thoai" class="block text-slate-400 mb-1 font-medium">Số điện thoại</label>
+						<input
+							id="edit_so_dien_thoai"
+							type="text"
+							bind:value={editStay.so_dien_thoai}
+							placeholder="0912345678"
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+						/>
 					</div>
 				</div>
 
-				<div class="flex items-center justify-end gap-3 mt-6 border-t border-slate-700 pt-4">
-					<button type="button" onclick={() => { showEditModal = false; }} class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium">Hủy</button>
-					<button type="button" onclick={() => submitEdit()} class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold shadow-lg">Lưu Thay Đổi</button>
+				<div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 border-t border-slate-700 pt-4">
+					<div class="text-[11px]">
+						{#if !editLiveVal.allValid}
+							<span class="text-rose-400 font-medium flex items-center gap-1">
+								<span>⚠</span> Vui lòng sửa các trường báo đỏ trước khi lưu.
+							</span>
+						{:else}
+							<span class="text-emerald-400 font-medium flex items-center gap-1">
+								<span>✓</span> Thông tin hợp lệ, có thể lưu ngay.
+							</span>
+						{/if}
+					</div>
+
+					<div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+						<button type="button" onclick={() => { showEditModal = false; }} class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium transition-colors">Hủy</button>
+						<button
+							type="button"
+							onclick={() => submitEdit()}
+							disabled={!editLiveVal.allValid}
+							class="px-5 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-bold shadow-lg transition-all flex items-center gap-1.5"
+						>
+							<span>💾</span> Lưu Thay Đổi
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
