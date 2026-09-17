@@ -184,7 +184,7 @@ interface CatalogItem {
 let activeTab = $state<
 	"register" | "inhouse" | "all_guests" | "audit" | "catalogs"
 >("register");
-let stays = $state<StayDetail[]>([]);
+let rawStays = $state<StayDetail[]>([]);
 let auditLogs = $state<KbttLog[]>([]);
 let stats = $state<Stats>({
 	totalGuests: 0,
@@ -207,6 +207,59 @@ let catalogs = $state<{
 let loading = $state(false);
 let searchTerm = $state("");
 let filterRoom = $state("");
+let debouncedSearchTerm = $state("");
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+function onSearchInput() {
+	const val = searchTerm.trim();
+	if (!val) {
+		if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+		debouncedSearchTerm = "";
+		if (activeTab === "audit") loadAuditLogs();
+		return;
+	}
+	if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+	searchDebounceTimer = setTimeout(() => {
+		debouncedSearchTerm = val;
+		if (activeTab === "audit") {
+			loadAuditLogs();
+		}
+	}, 150);
+}
+
+let stays = $derived.by(() => {
+	const term = (debouncedSearchTerm || searchTerm).trim().toLowerCase();
+	const room = filterRoom.trim();
+
+	return rawStays.filter((stay) => {
+		if (room && String(stay.so_phong || "").trim() !== room) {
+			return false;
+		}
+		if (!term) return true;
+		const hoTen = (stay.ho_ten || "").toLowerCase();
+		const soGiayTo = (stay.so_giay_to || "").toLowerCase();
+		const soPhong = String(stay.so_phong || "").toLowerCase();
+		const quocTich = (stay.quoc_tich || "").toLowerCase();
+		const countryName = getCountryFullName(stay.quoc_tich).toLowerCase();
+		const diaChi = (stay.dia_chi_chi_tiet || "").toLowerCase();
+		const tinh = (stay.tinh_thanh || "").toLowerCase();
+		const phuong = (stay.phuong_xa || "").toLowerCase();
+		const quan = (stay.quan_huyen || "").toLowerCase();
+
+		return (
+			hoTen.includes(term) ||
+			soGiayTo.includes(term) ||
+			soPhong.includes(term) ||
+			quocTich.includes(term) ||
+			countryName.includes(term) ||
+			diaChi.includes(term) ||
+			tinh.includes(term) ||
+			phuong.includes(term) ||
+			quan.includes(term)
+		);
+	});
+});
+
 let currentEnv = $state<"dev" | "prod">("dev");
 let isProdFixed = $state(false);
 let isAuthenticated = $state(true);
@@ -346,11 +399,11 @@ async function loadStats(force = false) {
 }
 
 async function loadStays(force = false) {
-	const cacheKey = `${activeTab}_${searchTerm.trim()}_${filterRoom.trim()}`;
+	const cacheKey = `stays_master_${activeTab}`;
 	if (!force) {
 		const cached = getLocalCache<StayDetail[]>(cacheKey);
 		if (cached) {
-			stays = cached;
+			rawStays = cached;
 			loadStats(false);
 			return;
 		}
@@ -362,16 +415,11 @@ async function loadStays(force = false) {
 		if (activeTab === "register") {
 			url.searchParams.set("status", "READY_TO_SYNC");
 		}
-		if (activeTab !== "all_guests") {
-			if (searchTerm) url.searchParams.set("search", searchTerm);
-			if (filterRoom) url.searchParams.set("room", filterRoom);
-		}
-
 		const res = await fetch(url.toString());
 		const data = await res.json();
 		if (data.success) {
-			stays = data.data;
-			setLocalCache(cacheKey, stays);
+			rawStays = data.data;
+			setLocalCache(cacheKey, rawStays);
 		}
 		loadStats(force);
 	} catch (err) {
@@ -543,7 +591,7 @@ async function registerStay(stayId: string) {
 			clearLocalCache();
 			showToast("✓ Đăng ký lưu trú thành công!", "success");
 			const maHoSo = data.data?.maHoSo || data.maHoSo;
-			stays = stays.map((s) =>
+			rawStays = rawStays.map((s) =>
 				s.id === stayId
 					? {
 							...s,
@@ -553,8 +601,9 @@ async function registerStay(stayId: string) {
 					: s,
 			);
 			if (activeTab === "register") {
-				stays = stays.filter((s) => s.id !== stayId);
+				rawStays = rawStays.filter((s) => s.id !== stayId);
 			}
+			setLocalCache(`stays_master_${activeTab}`, rawStays);
 			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message || "Đăng ký thất bại"}`, "error");
@@ -605,12 +654,12 @@ async function submitExtend() {
 	showExtendModal = false;
 
 	// Optimistically update
-	stays = stays.map((s) =>
+	rawStays = rawStays.map((s) =>
 		s.id === targetId
 			? { ...s, ngay_di_du_kien: newDate, status: "EXTENDED" }
 			: s,
 	);
-	clearLocalCache();
+	setLocalCache(`stays_master_${activeTab}`, rawStays);
 	showToast("Đang gia hạn lưu trú...", "info");
 
 	try {
@@ -649,13 +698,13 @@ async function submitCheckout() {
 
 	// Optimistically update
 	if (activeTab === "inhouse" || activeTab === "register") {
-		stays = stays.filter((s) => s.id !== targetId);
+		rawStays = rawStays.filter((s) => s.id !== targetId);
 	} else {
-		stays = stays.map((s) =>
+		rawStays = rawStays.map((s) =>
 			s.id === targetId ? { ...s, status: "CHECKED_OUT" } : s,
 		);
 	}
-	clearLocalCache();
+	setLocalCache(`stays_master_${activeTab}`, rawStays);
 	showToast("Đang xử lý checkout...", "info");
 
 	try {
@@ -691,7 +740,6 @@ async function submitDelete() {
 
 	// Immediate visual feedback: strikethrough row & disable function buttons
 	deletingIds = new Set([...deletingIds, deletedId]);
-	clearLocalCache();
 	showToast("Đang xóa bản ghi khỏi CSDL...", "info");
 
 	try {
@@ -701,7 +749,8 @@ async function submitDelete() {
 		const data = await res.json();
 		if (data.success) {
 			showToast("✓ Đã xóa lượt lưu trú thành công", "success");
-			stays = stays.filter((s) => s.id !== deletedId);
+			rawStays = rawStays.filter((s) => s.id !== deletedId);
+			setLocalCache(`stays_master_${activeTab}`, rawStays);
 			loadStats();
 		} else {
 			showToast(`Lỗi xóa: ${data.message}`, "error");
@@ -1327,10 +1376,10 @@ async function submitEdit() {
 	showEditModal = false;
 
 	// Optimistically update local array immediately
-	stays = stays.map((s) =>
+	rawStays = rawStays.map((s) =>
 		s.id === updatedItem.id ? { ...s, ...updatedItem } : s,
 	);
-	clearLocalCache();
+	setLocalCache(`stays_master_${activeTab}`, rawStays);
 	showToast("Đang cập nhật thay đổi vào CSDL...", "info");
 
 	try {
@@ -1379,19 +1428,19 @@ async function submitAddGuest() {
 		});
 		const data = await res.json();
 		if (data.success) {
-			clearLocalCache();
 			showToast("Thêm khách mới vào CSDL thành công!", "success");
 			if (data.data?.stay && data.data?.guest) {
 				const newDetail: StayDetail = {
 					...data.data.guest,
 					...data.data.stay,
 				};
-				const existingIdx = stays.findIndex((s) => s.id === newDetail.id);
+				const existingIdx = rawStays.findIndex((s) => s.id === newDetail.id);
 				if (existingIdx >= 0) {
-					stays[existingIdx] = newDetail;
+					rawStays[existingIdx] = newDetail;
 				} else {
-					stays = [newDetail, ...stays];
+					rawStays = [newDetail, ...rawStays];
 				}
+				setLocalCache(`stays_master_${activeTab}`, rawStays);
 			}
 			showAddModal = false;
 			loadStats();
@@ -1706,19 +1755,28 @@ onMount(async () => {
 						<input
 							type="text"
 							bind:value={searchTerm}
-							oninput={() => {
-								if (activeTab === 'audit') loadAuditLogs();
-								else loadStays();
-							}}
-							placeholder="Tìm kiếm theo Họ tên, CCCD/Hộ chiếu, Số phòng..."
-							class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3.5 py-2 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500"
+							oninput={onSearchInput}
+							placeholder="Tìm kiếm theo Họ tên, CCCD/Hộ chiếu, Số phòng, Quốc tịch, Địa chỉ..."
+							class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3.5 py-2 pr-8 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500"
 						/>
+						{#if searchTerm}
+							<button
+								type="button"
+								onclick={() => {
+									searchTerm = "";
+									onSearchInput();
+								}}
+								class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs px-1 rounded transition-colors"
+								title="Xóa tìm kiếm"
+							>
+								✕
+							</button>
+						{/if}
 					</div>
 					{#if activeTab !== 'audit'}
 						<div class="w-32 md:w-40">
 							<select
 								bind:value={filterRoom}
-								onchange={() => loadStays()}
 								class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-xs md:text-sm text-slate-100 focus:outline-none focus:border-sky-500"
 							>
 								<option value="">Tất cả phòng</option>
@@ -1900,14 +1958,13 @@ onMount(async () => {
 								<th class="p-3.5">CCCD / Hộ Chiếu</th>
 								<th class="p-3.5">Ngày Đến</th>
 								<th class="p-3.5">Ngày Đi Dự Kiến</th>
-								<th class="p-3.5">Mã Hồ Sơ KBTT</th>
 								<th class="p-3.5 text-center">Quản Lý</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-slate-700/60">
 							{#if stays.length === 0}
 								<tr>
-									<td colspan="8" class="p-8 text-center text-slate-400">Không tìm thấy lượt lưu trú nào phù hợp.</td>
+									<td colspan="7" class="p-8 text-center text-slate-400">Không tìm thấy lượt lưu trú nào phù hợp.</td>
 								</tr>
 							{:else}
 								{#each stays as stay (stay.id)}
@@ -1969,7 +2026,6 @@ onMount(async () => {
 												<span class="text-amber-300">{formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
 										</td>
-										<td class="p-3.5 font-mono text-[11px] text-slate-400">{stay.ma_ho_so_kbtt || '-'}</td>
 										<td class="p-3.5 text-center">
 											{#if isDeleting}
 												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
