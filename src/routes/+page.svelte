@@ -976,8 +976,23 @@ function validateArrivalDate(val?: string | null): {
 		today.getMonth(),
 		today.getDate(),
 	);
+	const yesterday = new Date(currentDay);
+	yesterday.setDate(yesterday.getDate() - 1);
 
-	if (arrivalDay.getTime() > currentDay.getTime() + 24 * 3600 * 1000) {
+	if (
+		arrivalDay.getTime() === currentDay.getTime() ||
+		arrivalDay.getTime() === yesterday.getTime()
+	) {
+		return { valid: true };
+	}
+	if (arrivalDay.getTime() < yesterday.getTime()) {
+		return {
+			valid: false,
+			error:
+				"Ngày đến không được quá 1 ngày trước hôm nay (chỉ chấp nhận hôm nay hoặc hôm qua)",
+		};
+	}
+	if (arrivalDay.getTime() > currentDay.getTime()) {
 		return { valid: false, error: "Ngày đến không được ở tương lai" };
 	}
 	return { valid: true };

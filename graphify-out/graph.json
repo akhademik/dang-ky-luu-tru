@@ -4,6 +4,32 @@
   "graph": {},
   "nodes": [
     {
+      "id": "src_app_d_platform",
+      "label": "Platform",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": "platform",
+      "source_file": "src/app.d.ts",
+      "source_location": "L11"
+    },
+    {
+      "id": "src_lib_server_db_d1databaselike",
+      "label": "D1DatabaseLike",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": "d1databaselike",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L86"
+    },
+    {
       "id": "src_lib_server_db_d1preparedstatement",
       "label": "D1PreparedStatement",
       "_callable": true,
@@ -264,43 +290,30 @@
       "source_location": "L7"
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
+      "id": "src_lib_data_catalogs_standardcatalogitem",
+      "label": "StandardCatalogItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "GoogleSheetService",
+      "community_name": "catalogManager.ts",
       "file_type": "code",
-      "norm_label": "googlesheetservice",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L12"
+      "norm_label": "standardcatalogitem",
+      "source_file": "src/lib/data/catalogs.ts",
+      "source_location": "L3"
     },
     {
-      "id": "src_app_d_platform",
-      "label": "Platform",
+      "id": "src_lib_server_catalogmanager_catalogitem",
+      "label": "CatalogItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
+      "community": 10,
+      "community_name": "catalogManager.ts",
       "file_type": "code",
-      "norm_label": "platform",
-      "source_file": "src/app.d.ts",
-      "source_location": "L11"
-    },
-    {
-      "id": "src_lib_server_db_d1databaselike",
-      "label": "D1DatabaseLike",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
-      "file_type": "code",
-      "norm_label": "d1databaselike",
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L86"
+      "norm_label": "catalogitem",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L9"
     },
     {
       "id": "src_lib_server_db_remoted1database",
@@ -308,8 +321,8 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
+      "community": 12,
+      "community_name": "RemoteD1Database",
       "file_type": "code",
       "norm_label": "remoted1database",
       "source_file": "src/lib/server/db.ts",
@@ -347,7 +360,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": "kbttclient",
@@ -360,7 +373,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": "tokenmanager",
@@ -368,30 +381,41 @@
       "source_location": "L4"
     },
     {
-      "id": "src_lib_data_catalogs_standardcatalogitem",
-      "label": "StandardCatalogItem",
+      "id": "src_lib_server_googlesheetservice_googlesheetservice",
+      "label": "GoogleSheetService",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "catalogManager.ts",
+      "community_name": "GoogleSheetService",
       "file_type": "code",
-      "norm_label": "standardcatalogitem",
-      "source_file": "src/lib/data/catalogs.ts",
-      "source_location": "L3"
+      "norm_label": "googlesheetservice",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L12"
     },
     {
-      "id": "src_lib_server_catalogmanager_catalogitem",
-      "label": "CatalogItem",
+      "id": "src_app_d_waituntil",
+      "label": "waitUntil()",
       "_callable": true,
-      "_callable_class": true,
       "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
+      "community": 0,
+      "community_name": "db.ts",
       "file_type": "code",
-      "norm_label": "catalogitem",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L9"
+      "norm_label": "waituntil()",
+      "source_file": "src/app.d.ts",
+      "source_location": "L25"
+    },
+    {
+      "id": "src_lib_server_db_autocheckoutexpiredstays",
+      "label": "autoCheckoutExpiredStays()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": "autocheckoutexpiredstays()",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L446"
     },
     {
       "id": "src_lib_server_db_checkoutstay",
@@ -403,7 +427,31 @@
       "file_type": "code",
       "norm_label": "checkoutstay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L584"
+      "source_location": "L622"
+    },
+    {
+      "id": "src_lib_server_db_d1databaselike_exec",
+      "label": ".exec()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": ".exec()",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L88"
+    },
+    {
+      "id": "src_lib_server_db_d1databaselike_prepare",
+      "label": ".prepare()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": ".prepare()",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L87"
     },
     {
       "id": "src_lib_server_db_d1preparedstatement_all",
@@ -463,7 +511,7 @@
       "file_type": "code",
       "norm_label": "deletestay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L606"
+      "source_location": "L644"
     },
     {
       "id": "src_lib_server_db_extendstay",
@@ -475,7 +523,7 @@
       "file_type": "code",
       "norm_label": "extendstay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L568"
+      "source_location": "L606"
     },
     {
       "id": "src_lib_server_db_generateid",
@@ -499,7 +547,7 @@
       "file_type": "code",
       "norm_label": "getauditlogs()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L646"
+      "source_location": "L684"
     },
     {
       "id": "src_lib_server_db_getdashboardstats",
@@ -511,7 +559,7 @@
       "file_type": "code",
       "norm_label": "getdashboardstats()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L678"
+      "source_location": "L716"
     },
     {
       "id": "src_lib_server_db_getdb",
@@ -535,7 +583,7 @@
       "file_type": "code",
       "norm_label": "getstaybyid()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L501"
+      "source_location": "L539"
     },
     {
       "id": "src_lib_server_db_getstays",
@@ -547,7 +595,7 @@
       "file_type": "code",
       "norm_label": "getstays()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L446"
+      "source_location": "L478"
     },
     {
       "id": "src_lib_server_db_logkbttaction",
@@ -559,7 +607,7 @@
       "file_type": "code",
       "norm_label": "logkbttaction()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L617"
+      "source_location": "L655"
     },
     {
       "id": "src_lib_server_db_remoted1database_prepare",
@@ -583,7 +631,7 @@
       "file_type": "code",
       "norm_label": "updateguest()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L540"
+      "source_location": "L578"
     },
     {
       "id": "src_lib_server_db_updatestay",
@@ -595,7 +643,7 @@
       "file_type": "code",
       "norm_label": "updatestay()",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L516"
+      "source_location": "L554"
     },
     {
       "id": "src_lib_server_db_upsertguest",
@@ -631,7 +679,7 @@
       "file_type": "code",
       "norm_label": ".batchregisterstays()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L312"
+      "source_location": "L333"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_checkoutstay",
@@ -643,19 +691,7 @@
       "file_type": "code",
       "norm_label": ".checkoutstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L398"
-    },
-    {
-      "id": "src_lib_server_stayservice_stayservice_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "db.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L42"
+      "source_location": "L426"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_extendstay",
@@ -667,7 +703,19 @@
       "file_type": "code",
       "norm_label": ".extendstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L365"
+      "source_location": "L386"
+    },
+    {
+      "id": "src_lib_server_stayservice_stayservice_ingestocrrows",
+      "label": ".ingestOcrRows()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": ".ingestocrrows()",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L48"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_registerstaytokbtt",
@@ -679,7 +727,7 @@
       "file_type": "code",
       "norm_label": ".registerstaytokbtt()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L192"
+      "source_location": "L213"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_updateguestandstay",
@@ -691,7 +739,7 @@
       "file_type": "code",
       "norm_label": ".updateguestandstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L430"
+      "source_location": "L465"
     },
     {
       "id": "src_routes_api_ingest_ocr_server_post",
@@ -1150,215 +1198,23 @@
       "source_location": "L6"
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
-      "label": ".buildOrderedRowValues()",
+      "id": "src_routes_page_showtoast",
+      "label": "showToast()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "GoogleSheetService",
+      "community_name": "catalogManager.ts",
       "file_type": "code",
-      "norm_label": ".buildorderedrowvalues()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L691"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
-      "label": ".deleteSheetRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": ".deletesheetrow()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L926"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
-      "label": ".fetchSheetData()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": ".fetchsheetdata()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L204"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
-      "label": ".fetchSheetTabs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": ".fetchsheettabs()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L47"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
-      "label": "._mapHeaderToKey()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": "._mapheadertokey()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L573"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
-      "label": "._parseApiValues()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": "._parseapivalues()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L521"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
-      "label": ".parseCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": ".parsecsv()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L332"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
-      "label": "._parseDateFromTabName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": "._parsedatefromtabname()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L186"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
-      "label": ".parseSheetIdentifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": ".parsesheetidentifier()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L27"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
-      "label": ".updateSheetRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "GoogleSheetService",
-      "file_type": "code",
-      "norm_label": ".updatesheetrow()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L786"
-    },
-    {
-      "id": "src_app_d_waituntil",
-      "label": "waitUntil()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
-      "file_type": "code",
-      "norm_label": "waituntil()",
-      "source_file": "src/app.d.ts",
-      "source_location": "L25"
-    },
-    {
-      "id": "src_lib_server_db_d1databaselike_exec",
-      "label": ".exec()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
-      "file_type": "code",
-      "norm_label": ".exec()",
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L88"
-    },
-    {
-      "id": "src_lib_server_db_d1databaselike_prepare",
-      "label": ".prepare()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
-      "file_type": "code",
-      "norm_label": ".prepare()",
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L87"
-    },
-    {
-      "id": "src_lib_server_db_remoted1database_exec",
-      "label": ".exec()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
-      "file_type": "code",
-      "norm_label": ".exec()",
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L197"
-    },
-    {
-      "id": "src_lib_server_db_remoted1database_executequery",
-      "label": ".executeQuery()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
-      "file_type": "code",
-      "norm_label": ".executequery()",
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L108"
-    },
-    {
-      "id": "src_lib_server_db_remoted1database_formatsql",
-      "label": ".formatSql()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
-      "file_type": "code",
-      "norm_label": ".formatsql()",
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L95"
+      "norm_label": "showtoast()",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L484"
     },
     {
       "id": "scripts_apps_script_onedit_handlesheetchange",
       "label": "handleSheetChange()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "handlesheetchange()",
@@ -1370,7 +1226,7 @@
       "label": "handleSheetEdit()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "handlesheetedit()",
@@ -1382,7 +1238,7 @@
       "label": "installTrigger()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "installtrigger()",
@@ -1394,7 +1250,7 @@
       "label": "onOpen()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "onopen()",
@@ -1406,7 +1262,7 @@
       "label": "syncAllSheetsToCloudflare()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "syncallsheetstocloudflare()",
@@ -1418,7 +1274,7 @@
       "label": "syncCurrentSheetToCloudflare()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "synccurrentsheettocloudflare()",
@@ -1430,12 +1286,48 @@
       "label": "syncRowToCloudflare()",
       "_callable": true,
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "syncrowtocloudflare()",
       "source_file": "scripts/apps_script_onedit.js",
       "source_location": "L101"
+    },
+    {
+      "id": "src_lib_server_db_remoted1database_exec",
+      "label": ".exec()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "RemoteD1Database",
+      "file_type": "code",
+      "norm_label": ".exec()",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L197"
+    },
+    {
+      "id": "src_lib_server_db_remoted1database_executequery",
+      "label": ".executeQuery()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "RemoteD1Database",
+      "file_type": "code",
+      "norm_label": ".executequery()",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L108"
+    },
+    {
+      "id": "src_lib_server_db_remoted1database_formatsql",
+      "label": ".formatSql()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "RemoteD1Database",
+      "file_type": "code",
+      "norm_label": ".formatsql()",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L95"
     },
     {
       "id": "test_inspect_modal_speed_main",
@@ -1690,18 +1582,6 @@
       "source_location": "L439"
     },
     {
-      "id": "src_lib_server_stayservice_stayservice_ingestocrrows",
-      "label": ".ingestOcrRows()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": ".ingestocrrows()",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L48"
-    },
-    {
       "id": "src_lib_server_syncpipeline_syncpipeline_processrows",
       "label": ".processRows()",
       "_callable": true,
@@ -1934,7 +1814,7 @@
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".constructor()",
@@ -1946,7 +1826,7 @@
       "label": "._postPayload()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": "._postpayload()",
@@ -1958,7 +1838,7 @@
       "label": ".sendForeign()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".sendforeign()",
@@ -1970,7 +1850,7 @@
       "label": ".sendVietnam()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".sendvietnam()",
@@ -1982,7 +1862,7 @@
       "label": ".submitForeignGuests()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".submitforeignguests()",
@@ -1994,7 +1874,7 @@
       "label": ".submitVietnameseGuests()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".submitvietnameseguests()",
@@ -2002,11 +1882,23 @@
       "source_location": "L19"
     },
     {
+      "id": "src_lib_server_stayservice_stayservice_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TokenManager",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L42"
+    },
+    {
       "id": "src_lib_server_syncpipeline_syncpipeline_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".constructor()",
@@ -2018,7 +1910,7 @@
       "label": ".clear()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".clear()",
@@ -2030,7 +1922,7 @@
       "label": ".getInstance()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".getinstance()",
@@ -2042,7 +1934,7 @@
       "label": ".getStatus()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".getstatus()",
@@ -2054,7 +1946,7 @@
       "label": ".getValidToken()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".getvalidtoken()",
@@ -2066,7 +1958,7 @@
       "label": ".login()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".login()",
@@ -2078,7 +1970,7 @@
       "label": ".refresh()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".refresh()",
@@ -2090,7 +1982,7 @@
       "label": ".revoke()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".revoke()",
@@ -2102,7 +1994,7 @@
       "label": ".revokeToken()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".revoketoken()",
@@ -2114,7 +2006,7 @@
       "label": ".saveToken()",
       "_callable": true,
       "_origin": "ast",
-      "community": 8,
+      "community": 7,
       "community_name": "TokenManager",
       "file_type": "code",
       "norm_label": ".savetoken()",
@@ -2122,40 +2014,158 @@
       "source_location": "L130"
     },
     {
-      "id": "src_routes_page_each",
-      "label": "#each()",
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
+      "label": ".buildOrderedRowValues()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "catalogManager.ts",
+      "community_name": "GoogleSheetService",
       "file_type": "code",
-      "norm_label": "#each()",
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L1803"
+      "norm_label": ".buildorderedrowvalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L691"
     },
     {
-      "id": "src_routes_page_if",
-      "label": "if()",
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+      "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "catalogManager.ts",
+      "community_name": "GoogleSheetService",
       "file_type": "code",
-      "norm_label": "if()",
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L871"
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L23"
     },
     {
-      "id": "src_routes_page_showtoast",
-      "label": "showToast()",
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
+      "label": ".deleteSheetRow()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "catalogManager.ts",
+      "community_name": "GoogleSheetService",
       "file_type": "code",
-      "norm_label": "showtoast()",
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L328"
+      "norm_label": ".deletesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L926"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
+      "label": ".fetchSheetData()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheetdata()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L204"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
+      "label": ".fetchSheetTabs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheettabs()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L47"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
+      "label": "._mapHeaderToKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._mapheadertokey()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L573"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
+      "label": "._parseApiValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parseapivalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L521"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
+      "label": ".parseCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsecsv()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L332"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
+      "label": "._parseDateFromTabName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parsedatefromtabname()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L186"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
+      "label": ".parseSheetIdentifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsesheetidentifier()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L27"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "label": ".updateSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".updatesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L786"
+    },
+    {
+      "id": "src_app_d",
+      "label": "app.d.ts",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": "app.d.ts",
+      "source_file": "src/app.d.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_app_d_app",
+      "label": "App",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "db.ts",
+      "file_type": "code",
+      "norm_label": "app",
+      "source_file": "src/app.d.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_lib_server_db",
@@ -2499,32 +2509,87 @@
       "source_location": "L1"
     },
     {
-      "id": "src_app_d",
-      "label": "app.d.ts",
+      "id": "svelte",
+      "label": "svelte",
       "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
+      "community": 10,
+      "community_name": "catalogManager.ts",
+      "confidence": "EXTRACTED",
       "file_type": "code",
-      "norm_label": "app.d.ts",
-      "source_file": "src/app.d.ts",
+      "norm_label": "svelte",
+      "source_file": "svelte"
+    },
+    {
+      "id": "src_lib_data_catalogs",
+      "label": "catalogs.ts",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "catalogManager.ts",
+      "file_type": "code",
+      "norm_label": "catalogs.ts",
+      "source_file": "src/lib/data/catalogs.ts",
       "source_location": "L1"
     },
     {
-      "id": "src_app_d_app",
-      "label": "App",
+      "id": "src_lib_data_catalogs_loai_giay_to_data",
+      "label": "LOAI_GIAY_TO_DATA",
       "_origin": "ast",
-      "community": 11,
-      "community_name": "D1DatabaseLike",
+      "community": 10,
+      "community_name": "catalogManager.ts",
       "file_type": "code",
-      "norm_label": "app",
-      "source_file": "src/app.d.ts",
-      "source_location": "L6"
+      "norm_label": "loai_giay_to_data",
+      "source_file": "src/lib/data/catalogs.ts",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_lib_data_catalogs_ly_do_cu_tru_data",
+      "label": "LY_DO_CU_TRU_DATA",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "catalogManager.ts",
+      "file_type": "code",
+      "norm_label": "ly_do_cu_tru_data",
+      "source_file": "src/lib/data/catalogs.ts",
+      "source_location": "L44"
+    },
+    {
+      "id": "src_lib_data_catalogs_quoc_tich_data",
+      "label": "QUOC_TICH_DATA",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "catalogManager.ts",
+      "file_type": "code",
+      "norm_label": "quoc_tich_data",
+      "source_file": "src/lib/data/catalogs.ts",
+      "source_location": "L55"
+    },
+    {
+      "id": "src_lib_server_catalogmanager",
+      "label": "catalogManager.ts",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "catalogManager.ts",
+      "file_type": "code",
+      "norm_label": "catalogmanager.ts",
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_page",
+      "label": "+page.svelte",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "catalogManager.ts",
+      "file_type": "code",
+      "norm_label": "+page.svelte",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L1"
     },
     {
       "id": "scripts_apps_script_onedit",
       "label": "apps_script_onedit.js",
       "_origin": "ast",
-      "community": 12,
+      "community": 11,
       "community_name": "apps_script_onedit.js",
       "file_type": "code",
       "norm_label": "apps_script_onedit.js",
@@ -3613,7 +3678,7 @@
       "id": "biome",
       "label": "biome.json",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "biome.json",
@@ -3624,7 +3689,7 @@
       "id": "biome_actions_source",
       "label": "source",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "source",
@@ -3635,7 +3700,7 @@
       "id": "biome_assist",
       "label": "assist",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "assist",
@@ -3646,7 +3711,7 @@
       "id": "biome_assist_actions",
       "label": "actions",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "actions",
@@ -3657,7 +3722,7 @@
       "id": "biome_correctness_nounusedvariables",
       "label": "noUnusedVariables",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "nounusedvariables",
@@ -3668,7 +3733,7 @@
       "id": "biome_files",
       "label": "files",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "files",
@@ -3679,7 +3744,7 @@
       "id": "biome_formatter",
       "label": "formatter",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "formatter",
@@ -3690,7 +3755,7 @@
       "id": "biome_formatter_enabled",
       "label": "enabled",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "enabled",
@@ -3701,7 +3766,7 @@
       "id": "biome_formatter_indentstyle",
       "label": "indentStyle",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "indentstyle",
@@ -3712,7 +3777,7 @@
       "id": "biome_formatter_quotestyle",
       "label": "quoteStyle",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "quotestyle",
@@ -3723,7 +3788,7 @@
       "id": "biome_javascript",
       "label": "javascript",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "javascript",
@@ -3734,7 +3799,7 @@
       "id": "biome_javascript_formatter",
       "label": "formatter",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "formatter",
@@ -3745,7 +3810,7 @@
       "id": "biome_linter",
       "label": "linter",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "linter",
@@ -3756,7 +3821,7 @@
       "id": "biome_linter_enabled",
       "label": "enabled",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "enabled",
@@ -3767,7 +3832,7 @@
       "id": "biome_linter_rules",
       "label": "rules",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "rules",
@@ -3778,7 +3843,7 @@
       "id": "biome_rules_correctness",
       "label": "correctness",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "correctness",
@@ -3789,7 +3854,7 @@
       "id": "biome_schema",
       "label": "$schema",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "$schema",
@@ -3800,89 +3865,12 @@
       "id": "biome_source_organizeimports",
       "label": "organizeImports",
       "_origin": "ast",
-      "community": 7,
+      "community": 8,
       "community_name": "biome.json",
       "file_type": "code",
       "norm_label": "organizeimports",
       "source_file": "biome.json",
       "source_location": "L18"
-    },
-    {
-      "id": "svelte",
-      "label": "svelte",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
-      "confidence": "EXTRACTED",
-      "file_type": "code",
-      "norm_label": "svelte",
-      "source_file": "svelte"
-    },
-    {
-      "id": "src_lib_data_catalogs",
-      "label": "catalogs.ts",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
-      "file_type": "code",
-      "norm_label": "catalogs.ts",
-      "source_file": "src/lib/data/catalogs.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_data_catalogs_loai_giay_to_data",
-      "label": "LOAI_GIAY_TO_DATA",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
-      "file_type": "code",
-      "norm_label": "loai_giay_to_data",
-      "source_file": "src/lib/data/catalogs.ts",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_lib_data_catalogs_ly_do_cu_tru_data",
-      "label": "LY_DO_CU_TRU_DATA",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
-      "file_type": "code",
-      "norm_label": "ly_do_cu_tru_data",
-      "source_file": "src/lib/data/catalogs.ts",
-      "source_location": "L44"
-    },
-    {
-      "id": "src_lib_data_catalogs_quoc_tich_data",
-      "label": "QUOC_TICH_DATA",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
-      "file_type": "code",
-      "norm_label": "quoc_tich_data",
-      "source_file": "src/lib/data/catalogs.ts",
-      "source_location": "L55"
-    },
-    {
-      "id": "src_lib_server_catalogmanager",
-      "label": "catalogManager.ts",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
-      "file_type": "code",
-      "norm_label": "catalogmanager.ts",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_page",
-      "label": "+page.svelte",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "catalogManager.ts",
-      "file_type": "code",
-      "norm_label": "+page.svelte",
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L1"
     }
   ],
   "links": [
@@ -4415,6 +4403,42 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_db_autocheckoutexpiredstays",
+      "target": "src_lib_server_db_d1preparedstatement_bind",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L454",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_db_autocheckoutexpiredstays",
+      "target": "src_lib_server_db_d1preparedstatement_run",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L454",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_db_autocheckoutexpiredstays",
+      "target": "src_lib_server_db_remoted1database_prepare",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L454",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_db_checkoutstay",
       "target": "src_lib_server_db_d1preparedstatement_bind",
       "relation": "calls",
@@ -4423,7 +4447,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L595",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -4435,7 +4459,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L595",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -4447,7 +4471,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L595",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -4459,7 +4483,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L610",
+      "source_location": "L648",
       "weight": 1.0
     },
     {
@@ -4471,7 +4495,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L610",
+      "source_location": "L648",
       "weight": 1.0
     },
     {
@@ -4483,7 +4507,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L610",
+      "source_location": "L648",
       "weight": 1.0
     },
     {
@@ -4495,7 +4519,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L573",
+      "source_location": "L611",
       "weight": 1.0
     },
     {
@@ -4507,7 +4531,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L573",
+      "source_location": "L611",
       "weight": 1.0
     },
     {
@@ -4519,7 +4543,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L573",
+      "source_location": "L611",
       "weight": 1.0
     },
     {
@@ -4531,7 +4555,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L671",
+      "source_location": "L709",
       "weight": 1.0
     },
     {
@@ -4543,7 +4567,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L671",
+      "source_location": "L709",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_db_getdashboardstats",
+      "target": "src_lib_server_db_autocheckoutexpiredstays",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L724",
       "weight": 1.0
     },
     {
@@ -4555,7 +4591,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L695",
+      "source_location": "L735",
       "weight": 1.0
     },
     {
@@ -4579,7 +4615,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L513",
+      "source_location": "L551",
       "weight": 1.0
     },
     {
@@ -4591,7 +4627,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L513",
+      "source_location": "L551",
       "weight": 1.0
     },
     {
@@ -4603,7 +4639,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L513",
+      "source_location": "L551",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_db_getstays",
+      "target": "src_lib_server_db_autocheckoutexpiredstays",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -4615,7 +4663,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L496",
+      "source_location": "L534",
       "weight": 1.0
     },
     {
@@ -4627,7 +4675,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L496",
+      "source_location": "L534",
       "weight": 1.0
     },
     {
@@ -4639,7 +4687,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L621",
+      "source_location": "L659",
       "weight": 1.0
     },
     {
@@ -4651,7 +4699,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L622",
+      "source_location": "L660",
       "weight": 1.0
     },
     {
@@ -4663,7 +4711,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L622",
+      "source_location": "L660",
       "weight": 1.0
     },
     {
@@ -4675,7 +4723,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L622",
+      "source_location": "L660",
       "weight": 1.0
     },
     {
@@ -4711,7 +4759,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L561",
+      "source_location": "L599",
       "weight": 1.0
     },
     {
@@ -4723,7 +4771,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L561",
+      "source_location": "L599",
       "weight": 1.0
     },
     {
@@ -4735,7 +4783,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L561",
+      "source_location": "L599",
       "weight": 1.0
     },
     {
@@ -4747,7 +4795,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L533",
+      "source_location": "L571",
       "weight": 1.0
     },
     {
@@ -4759,7 +4807,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L533",
+      "source_location": "L571",
       "weight": 1.0
     },
     {
@@ -4771,7 +4819,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L533",
+      "source_location": "L571",
       "weight": 1.0
     },
     {
@@ -5107,7 +5155,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L328",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -5119,7 +5167,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L342",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -5131,7 +5179,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L343",
+      "source_location": "L364",
       "weight": 1.0
     },
     {
@@ -5143,7 +5191,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L402",
+      "source_location": "L430",
       "weight": 1.0
     },
     {
@@ -5155,7 +5203,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L409",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -5191,7 +5239,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L370",
+      "source_location": "L391",
       "weight": 1.0
     },
     {
@@ -5203,7 +5251,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L377",
+      "source_location": "L405",
       "weight": 1.0
     },
     {
@@ -5239,7 +5287,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L140",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -5251,7 +5299,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L160",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -5263,7 +5311,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L202",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -5275,7 +5323,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L252",
+      "source_location": "L273",
       "weight": 1.0
     },
     {
@@ -5287,7 +5335,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L453",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -5299,7 +5347,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L456",
+      "source_location": "L491",
       "weight": 1.0
     },
     {
@@ -5311,7 +5359,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L472",
+      "source_location": "L507",
       "weight": 1.0
     },
     {
@@ -6056,18 +6104,6 @@
       "context": "field",
       "source_file": "src/lib/server/kbttClient.ts",
       "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice",
-      "target": "src_lib_server_datatransformer_datatransformer",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -8715,8 +8751,44 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_stayservice_stayservice_batchregisterstays",
+      "target": "src_lib_server_db_d1databaselike",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L333",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_checkoutstay",
+      "target": "src_lib_server_db_d1databaselike",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L426",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_extendstay",
+      "target": "src_lib_server_db_d1databaselike",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L386",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_stayservice_stayservice_ingestocrrows",
-      "target": "src_lib_server_datatransformer_rawocrrow",
+      "target": "src_lib_server_db_d1databaselike",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8724,6 +8796,30 @@
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
       "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_registerstaytokbtt",
+      "target": "src_lib_server_db_d1databaselike",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_updateguestandstay",
+      "target": "src_lib_server_db_d1databaselike",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -9783,7 +9879,7 @@
     },
     {
       "source": "src_lib_server_db",
-      "target": "src_lib_server_db_getstays",
+      "target": "src_lib_server_db_autocheckoutexpiredstays",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9805,13 +9901,24 @@
     },
     {
       "source": "src_lib_server_db",
+      "target": "src_lib_server_db_getstays",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L478",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_db",
       "target": "src_lib_server_db_getstaybyid",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L501",
+      "source_location": "L539",
       "weight": 1.0
     },
     {
@@ -9822,7 +9929,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L516",
+      "source_location": "L554",
       "weight": 1.0
     },
     {
@@ -9833,29 +9940,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L540",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_db",
-      "target": "src_lib_server_db_extendstay",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L568",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_db",
-      "target": "src_lib_server_db_checkoutstay",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/db.ts",
-      "source_location": "L584",
+      "source_location": "L578",
       "weight": 1.0
     },
     {
@@ -9871,7 +9956,7 @@
     },
     {
       "source": "src_lib_server_db",
-      "target": "src_lib_server_db_deletestay",
+      "target": "src_lib_server_db_extendstay",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9882,13 +9967,35 @@
     },
     {
       "source": "src_lib_server_db",
+      "target": "src_lib_server_db_checkoutstay",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L622",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_db",
+      "target": "src_lib_server_db_deletestay",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/db.ts",
+      "source_location": "L644",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_db",
       "target": "src_lib_server_db_logkbttaction",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L617",
+      "source_location": "L655",
       "weight": 1.0
     },
     {
@@ -9899,7 +10006,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L646",
+      "source_location": "L684",
       "weight": 1.0
     },
     {
@@ -9910,7 +10017,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/db.ts",
-      "source_location": "L678",
+      "source_location": "L716",
       "weight": 1.0
     },
     {
@@ -10053,7 +10160,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L485",
+      "source_location": "L520",
       "weight": 1.0
     },
     {
@@ -10388,35 +10495,13 @@
     },
     {
       "source": "src_routes_page",
-      "target": "src_routes_page_each",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L1803",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
       "target": "src_routes_page_showtoast",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L328",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_page",
-      "target": "src_routes_page_if",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/+page.svelte",
-      "source_location": "L871",
+      "source_location": "L626",
       "weight": 1.0
     },
     {
@@ -11488,7 +11573,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L192",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -11499,7 +11584,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L312",
+      "source_location": "L333",
       "weight": 1.0
     },
     {
@@ -11510,18 +11595,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L365",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice",
-      "target": "src_lib_server_stayservice_stayservice_checkoutstay",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L398",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -11537,13 +11611,24 @@
     },
     {
       "source": "src_lib_server_stayservice_stayservice",
+      "target": "src_lib_server_stayservice_stayservice_checkoutstay",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L426",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice",
       "target": "src_lib_server_stayservice_stayservice_updateguestandstay",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L430",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -11716,5 +11801,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7f4c68e3c09a41c19a69d3839ad5fa45d4919889"
+  "built_at_commit": "8488fa79162ea8248a79d5b93a3e218e7a22e5c1"
 }
