@@ -392,6 +392,13 @@ class StayService {
 		if (!stay) {
 			return { success: false, message: "Không tìm thấy khách để gia hạn" };
 		}
+		if (stay.status !== "SYNCED_KBTT" && stay.status !== "EXTENDED") {
+			return {
+				success: false,
+				message:
+					"Chỉ được phép gia hạn cho khách đã khai báo thành công với BCA!",
+			};
+		}
 
 		const ok = await dbExtendStay(db, stayId, newNgayDi);
 		if (ok) {
@@ -423,6 +430,13 @@ class StayService {
 		const stay = await getStayById(db, stayId);
 		if (!stay) {
 			return { success: false, message: "Không tìm thấy khách để checkout" };
+		}
+		if (stay.status !== "SYNCED_KBTT" && stay.status !== "EXTENDED") {
+			return {
+				success: false,
+				message:
+					"Chỉ được phép checkout cho khách đã khai báo thành công với BCA!",
+			};
 		}
 
 		const ok = await dbCheckoutStay(db, stayId);

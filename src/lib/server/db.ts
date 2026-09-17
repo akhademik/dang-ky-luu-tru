@@ -443,6 +443,38 @@ export async function upsertStay(
 	}
 }
 
+export async function autoCheckoutExpiredStays(
+	db: D1DatabaseLike,
+): Promise<number> {
+	try {
+		const nowStr = new Date(Date.now() + 7 * 3600 * 1000)
+			.toISOString()
+			.replace("T", " ")
+			.substring(0, 19);
+		const res = await db
+			.prepare(`
+				UPDATE stays
+				SET status = 'CHECKED_OUT',
+				    ngay_di_thuc_te = coalesce(nullif(ngay_di_du_kien, ''), ?),
+				    updated_at = ?
+				WHERE status IN ('SYNCED_KBTT', 'EXTENDED')
+				  AND ngay_di_du_kien IS NOT NULL
+				  AND trim(ngay_di_du_kien) != ''
+				  AND datetime(
+				      case 
+				          when length(trim(ngay_di_du_kien)) = 10 then trim(ngay_di_du_kien) || ' 12:00:00'
+				          else trim(ngay_di_du_kien)
+				      end
+				  ) <= datetime('now', '+7 hours')
+			`)
+			.bind(nowStr, nowStr)
+			.run();
+		return res?.meta?.changes || 0;
+	} catch {
+		return 0;
+	}
+}
+
 export async function getStays(
 	db: D1DatabaseLike,
 	filter?: {
@@ -453,6 +485,8 @@ export async function getStays(
 		offset?: number;
 	},
 ): Promise<StayDetail[]> {
+	await autoCheckoutExpiredStays(db);
+
 	let query = `
 		SELECT s.id, s.guest_id, s.so_phong, s.ngay_den, s.ngay_di_du_kien, s.ngay_di_thuc_te,
 		       s.ly_do_luu_tru, s.ly_do_chi_tiet, s.status, s.ma_ho_so_kbtt, s.ghi_chu,
@@ -466,8 +500,12 @@ export async function getStays(
 	const params: unknown[] = [];
 
 	if (filter?.status && filter.status !== "ALL") {
-		query += " AND s.status = ?";
-		params.push(filter.status);
+		if (filter.status === "IN_HOUSE" || filter.status === "inhouse") {
+			query += " AND s.status IN ('SYNCED_KBTT', 'EXTENDED')";
+		} else {
+			query += " AND s.status = ?";
+			params.push(filter.status);
+		}
 	}
 
 	if (filter?.room?.trim()) {
@@ -683,6 +721,8 @@ export async function getDashboardStats(db: D1DatabaseLike): Promise<{
 	inHouse: number;
 	checkedOut: number;
 }> {
+	await autoCheckoutExpiredStays(db);
+
 	const query = `
 		SELECT 
 			(SELECT COUNT(*) FROM guests) as totalGuests,

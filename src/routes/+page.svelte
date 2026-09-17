@@ -243,6 +243,20 @@ let stays = $derived.by(() => {
 	const room = filterRoom.trim();
 
 	return rawStays.filter((stay) => {
+		if (
+			activeTab === "inhouse" &&
+			stay.status !== "SYNCED_KBTT" &&
+			stay.status !== "EXTENDED"
+		) {
+			return false;
+		}
+		if (
+			activeTab === "register" &&
+			stay.status !== "READY_TO_SYNC" &&
+			stay.status !== "PENDING_VALIDATION"
+		) {
+			return false;
+		}
 		if (room && String(stay.so_phong || "").trim() !== room) {
 			return false;
 		}
@@ -427,6 +441,8 @@ async function loadStays(force = false) {
 		const url = new URL("/api/stays", window.location.origin);
 		if (activeTab === "register") {
 			url.searchParams.set("status", "READY_TO_SYNC");
+		} else if (activeTab === "inhouse") {
+			url.searchParams.set("status", "IN_HOUSE");
 		}
 		const res = await fetch(url.toString());
 		const data = await res.json();
@@ -687,6 +703,13 @@ async function registerAllReady() {
 
 // Extend Stay
 function openExtendModal(stay: StayDetail) {
+	if (stay.status !== "SYNCED_KBTT" && stay.status !== "EXTENDED") {
+		showToast(
+			"Chỉ có thể gia hạn cho khách đã khai báo lưu trú thành công!",
+			"error",
+		);
+		return;
+	}
 	extendTargetStay = stay;
 	extendNewDate = stay.ngay_di_du_kien || "";
 	showExtendModal = true;
@@ -732,6 +755,13 @@ async function submitExtend() {
 
 // Checkout
 function openCheckoutModal(stay: StayDetail) {
+	if (stay.status !== "SYNCED_KBTT" && stay.status !== "EXTENDED") {
+		showToast(
+			"Chỉ có thể checkout cho khách đã khai báo lưu trú thành công!",
+			"error",
+		);
+		return;
+	}
 	checkoutTargetStay = stay;
 	showCheckoutModal = true;
 }
