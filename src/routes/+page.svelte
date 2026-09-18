@@ -801,13 +801,13 @@ async function submitExtend() {
 	const newDate = extendNewDate;
 	showExtendModal = false;
 
+	clearLocalCache();
 	// Optimistically update
 	rawStays = rawStays.map((s) =>
 		s.id === targetId
 			? { ...s, ngay_di_du_kien: newDate, status: "EXTENDED" }
 			: s,
 	);
-	setLocalCache(`stays_master_${activeTab}`, rawStays);
 	showToast("Đang gia hạn lưu trú...", "info");
 
 	try {
@@ -822,24 +822,25 @@ async function submitExtend() {
 		const data = await res.json();
 		if (data.success) {
 			showToast("✓ Gia hạn thành công!", "success");
-			loadStats();
+			clearLocalCache();
+			await loadStays(true);
+			await loadStats(true);
 		} else {
-			showToast(`Lỗi: ${data.message}`, "error");
+			showToast(`Lỗi: ${data.message || data.error}`, "error");
+			clearLocalCache();
 			await loadStays(true);
 		}
 	} catch {
 		showToast("Lỗi khi gia hạn", "error");
+		clearLocalCache();
 		await loadStays(true);
 	}
 }
 
 // Checkout
 function openCheckoutModal(stay: StayDetail) {
-	if (stay.status !== "SYNCED_KBTT" && stay.status !== "EXTENDED") {
-		showToast(
-			"Chỉ có thể checkout cho khách đã khai báo lưu trú thành công!",
-			"error",
-		);
+	if (stay.status === "CHECKED_OUT") {
+		showToast("Khách này đã trả phòng trước đó!", "info");
 		return;
 	}
 	checkoutTargetStay = stay;
@@ -851,6 +852,7 @@ async function submitCheckout() {
 	const targetId = checkoutTargetStay.id;
 	showCheckoutModal = false;
 
+	clearLocalCache();
 	// Optimistically update
 	if (activeTab === "inhouse" || activeTab === "register") {
 		rawStays = rawStays.filter((s) => s.id !== targetId);
@@ -859,7 +861,6 @@ async function submitCheckout() {
 			s.id === targetId ? { ...s, status: "CHECKED_OUT" } : s,
 		);
 	}
-	setLocalCache(`stays_master_${activeTab}`, rawStays);
 	showToast("Đang xử lý checkout...", "info");
 
 	try {
@@ -871,13 +872,17 @@ async function submitCheckout() {
 		const data = await res.json();
 		if (data.success) {
 			showToast("✓ Checkout thành công!", "success");
-			loadStats();
+			clearLocalCache();
+			await loadStays(true);
+			await loadStats(true);
 		} else {
-			showToast(`Lỗi: ${data.message}`, "error");
+			showToast(`Lỗi: ${data.message || data.error}`, "error");
+			clearLocalCache();
 			await loadStays(true);
 		}
 	} catch {
 		showToast("Lỗi khi checkout", "error");
+		clearLocalCache();
 		await loadStays(true);
 	}
 }

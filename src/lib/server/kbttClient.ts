@@ -48,6 +48,21 @@ export class KbttClient {
 		return this.submitForeignGuests(payloads);
 	}
 
+	public async doiNgayTraPhong(
+		payloads: {
+			loai: "TS" | "GH";
+			soGiayTo: string;
+			loaiGiayTo: number;
+			thoiGianStr?: string;
+		}[],
+	): Promise<ApiResponse> {
+		return this._postPayload(
+			CONFIG.ENDPOINTS.DOI_NGAY_TRA_PHONG,
+			payloads,
+			"Đổi ngày trả phòng / Gia hạn lưu trú (VN)",
+		);
+	}
+
 	private async _postPayload(
 		endpoint: string,
 		payloads: unknown[],

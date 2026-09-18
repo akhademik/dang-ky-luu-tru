@@ -152,6 +152,7 @@ export const CONFIG = {
 		DM_NOI_CU_TRU: "/cms-backend/public/noi-cu-tru/get-all",
 		KBTT_FOREIGN: "/client-service/kbtt/kbtt-3th",
 		KBTT_VIETNAM: "/client-service/kbtt-vn/kbtt-3th",
+		DOI_NGAY_TRA_PHONG: "/client-service/kbtt-vn/kbtt-3th/doi-ngay-tra-phong",
 	},
 	TOKEN_REFRESH_BUFFER_SECONDS: 60,
 };
