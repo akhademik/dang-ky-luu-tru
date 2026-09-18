@@ -98,22 +98,26 @@ export const CONFIG = {
 	GOOGLE_APPS_SCRIPT_URL:
 		(typeof process !== "undefined" && process.env?.GOOGLE_APPS_SCRIPT_URL) ||
 		"",
+	INGEST_API_KEY:
+		(typeof process !== "undefined" &&
+			(process.env?.INGEST_API_KEY || process.env?.WEBHOOK_SECRET)) ||
+		"",
 	get AUTH() {
 		if (currentEnv === "prod") {
 			return {
 				USERNAME:
 					(typeof process !== "undefined" &&
 						(process.env?.PROD_AUTH_USERNAME || process.env?.AUTH_USERNAME)) ||
-					"demo_tich_hop",
+					"",
 				PASSWORD:
 					(typeof process !== "undefined" &&
 						(process.env?.PROD_AUTH_PASSWORD || process.env?.AUTH_PASSWORD)) ||
-					"Demo@#$12345",
+					"",
 				BASIC_AUTH:
 					(typeof process !== "undefined" &&
 						(process.env?.PROD_AUTH_BASIC_AUTH ||
 							process.env?.AUTH_BASIC_AUTH)) ||
-					"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
+					"",
 				GRANT_TYPE:
 					(typeof process !== "undefined" &&
 						(process.env?.PROD_AUTH_GRANT_TYPE ||

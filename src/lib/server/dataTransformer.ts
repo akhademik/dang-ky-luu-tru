@@ -5,7 +5,7 @@ import type {
 } from "../types/index.js";
 import { type CatalogManager, catalogManager } from "./catalogManager.js";
 
-export type { RawOcrRow, CompletenessResult, TransformedRowResult };
+export type { CompletenessResult, RawOcrRow, TransformedRowResult };
 
 export class DataTransformer {
 	private catalogManager: CatalogManager;

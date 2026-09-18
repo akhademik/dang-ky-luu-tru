@@ -13,7 +13,9 @@
     "lint:biome": "biome check src test",
     "lint": "pnpm run check:svelte",
     "knip": "pnpm dlx knip",
-    "test": "node --import jiti/register test/test-pipeline.ts",
+    "test:auth": "node --import jiti/register test/auth-security.test.ts",
+    "test:pipeline": "node --import jiti/register test/test-pipeline.ts",
+    "test": "node --import jiti/register test/auth-security.test.ts && node --import jiti/register test/test-pipeline.ts",
     "check": "pnpm run check:svelte && pnpm run knip && pnpm test"
   },
   "keywords": [

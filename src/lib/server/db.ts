@@ -12,7 +12,7 @@ import type {
 	StayStatus,
 } from "../types/index.js";
 
-export type { Guest, StayStatus, Stay, StayDetail, KbttLog, D1DatabaseLike };
+export type { D1DatabaseLike, Guest, KbttLog, Stay, StayDetail, StayStatus };
 
 class RemoteD1Database implements D1DatabaseLike {
 	private dbName = "dang-ky-luu-tru-db";

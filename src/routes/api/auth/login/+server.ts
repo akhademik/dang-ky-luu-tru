@@ -3,7 +3,12 @@ import { getServerPassword, verifySession } from "$lib/server/auth.js";
 import { CONFIG } from "$lib/server/config.js";
 
 // Verify username + password and set session cookie
-export const POST: RequestHandler = async ({ request, cookies, platform }) => {
+export const POST: RequestHandler = async ({
+	request,
+	cookies,
+	platform,
+	url,
+}) => {
 	try {
 		const serverPass = getServerPassword(platform);
 		const body = await request.json().catch(() => ({}));
@@ -43,12 +48,17 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 			);
 		}
 
+		const isHttps =
+			url.protocol === "https:" ||
+			request.headers.get("x-forwarded-proto") === "https" ||
+			process.env?.NODE_ENV === "production";
+
 		// Set session cookie valid for 30 days
 		cookies.set("app_session", "authenticated", {
 			path: "/",
 			httpOnly: true,
 			sameSite: "lax",
-			secure: false,
+			secure: isHttps,
 			maxAge: 60 * 60 * 24 * 30, // 30 days
 		});
 

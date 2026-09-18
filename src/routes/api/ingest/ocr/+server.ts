@@ -1,9 +1,21 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
+import { verifyWebhookAuth } from "$lib/server/auth.js";
 import { getDb } from "$lib/server/db.js";
 import { stayService } from "$lib/server/stayService.js";
 
-export const POST: RequestHandler = async ({ request, platform }) => {
+export const POST: RequestHandler = async ({ request, platform, cookies }) => {
 	try {
+		if (!verifyWebhookAuth(request, cookies, platform)) {
+			return json(
+				{
+					success: false,
+					message:
+						"Yêu cầu khóa API xác thực hợp lệ (Unauthorized Webhook - Invalid or Missing API Key).",
+				},
+				{ status: 401 },
+			);
+		}
+
 		const db = getDb(platform);
 		const body = await request.json();
 
