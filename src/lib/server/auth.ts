@@ -1,13 +1,16 @@
+import { env as dynamicPrivateEnv } from "$env/dynamic/private";
 import { CONFIG } from "./config.js";
 
 /**
- * Lấy mật khẩu hệ thống từ biến môi trường Cloudflare Pages (platform.env),
+ * Lấy mật khẩu hệ thống từ biến môi trường Cloudflare Pages (platform.env / dynamicPrivateEnv),
  * Node.js (process.env), file .env hoặc cấu hình mặc định.
  */
 export function getServerPassword(platform?: App.Platform): string {
-	const platformEnv = platform?.env || {};
+	const platformEnv = (platform?.env || {}) as Record<string, unknown>;
 	const pass = String(
-		platformEnv.APP_PASSWORD ||
+		dynamicPrivateEnv.APP_PASSWORD ||
+			dynamicPrivateEnv.PASSWORD ||
+			platformEnv.APP_PASSWORD ||
 			platformEnv.PASSWORD ||
 			(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
 			(typeof process !== "undefined" && process.env?.PASSWORD) ||
