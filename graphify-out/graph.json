@@ -131,7 +131,7 @@
       "file_type": "code",
       "norm_label": "apienvironment",
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L36"
+      "source_location": "L43"
     },
     {
       "id": "src_lib_server_kbttclient_apiresponse",
@@ -2403,7 +2403,7 @@
       "file_type": "code",
       "norm_label": "config",
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L64"
+      "source_location": "L71"
     },
     {
       "id": "src_lib_server_datatransformer",
@@ -9973,7 +9973,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L36",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -9984,7 +9984,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L64",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -12124,5 +12124,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0370e73de0d735177494eacd106ffe83ce35981d"
+  "built_at_commit": "14e4c06228619936b9402372049987105162e1bd"
 }

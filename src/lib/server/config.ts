@@ -1,9 +1,16 @@
-// Tự động nạp file .env trong môi trường Node.js (không bundle node:fs trên Cloudflare Edge)
+// Tự động nạp file .env và cấu hình DNS IPv4 trong môi trường Node.js (không bundle node:fs trên Cloudflare Edge)
 if (
 	typeof process !== "undefined" &&
 	typeof process.getBuiltinModule === "function"
 ) {
 	try {
+		const dns = process.getBuiltinModule("node:dns") as {
+			setDefaultResultOrder?: (order: "ipv4first" | "verbatim") => void;
+		};
+		if (dns && typeof dns.setDefaultResultOrder === "function") {
+			dns.setDefaultResultOrder("ipv4first");
+		}
+
 		const fs = process.getBuiltinModule("node:fs") as {
 			existsSync: (p: string) => boolean;
 			readFileSync: (p: string, enc: string) => string;
