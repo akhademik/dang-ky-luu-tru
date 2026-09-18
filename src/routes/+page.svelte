@@ -1856,6 +1856,16 @@ function getAuditLogFailureReason(log: KbttLog): string {
 			return "Khách đang có lượt lưu trú tại cơ sở và chưa checkout lượt cũ.";
 		}
 		if (
+			serverMsg.includes("fetch failed") ||
+			serverMsg.includes("Failed to fetch") ||
+			serverMsg.includes("ECONNREFUSED") ||
+			serverMsg.includes("ETIMEDOUT") ||
+			serverMsg.includes("timeout") ||
+			serverMsg.includes("network")
+		) {
+			return "Không thể kết nối đến máy chủ API BCA (Lỗi đường truyền mạng hoặc máy chủ BCA phản hồi chậm / quá tải).";
+		}
+		if (
 			serverMsg.includes("Hết hạn") ||
 			serverMsg.includes("token") ||
 			serverMsg.includes("unauthorized") ||
@@ -2211,7 +2221,7 @@ onMount(async () => {
 			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'inhouse' ? 'border-teal-400 text-teal-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
 		>
 			<span>🏨</span>
-			<span>Khách Đang Ở & Gia Hạn / Checkout</span>
+			<span>Khách Đang Ở</span>
 		</button>
 
 		<button

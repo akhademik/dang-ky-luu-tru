@@ -52,14 +52,23 @@ export class TokenManager {
 			`Gửi yêu cầu đăng nhập OAuth tới: ${url} (username=${CONFIG.AUTH.USERNAME})`,
 		);
 
-		const res = await fetch(url, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-				Authorization: CONFIG.AUTH.BASIC_AUTH,
-			},
-			body: params.toString(),
-		});
+		let res: Response;
+		try {
+			res = await fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+					Authorization: CONFIG.AUTH.BASIC_AUTH,
+				},
+				body: params.toString(),
+			});
+		} catch (fetchErr) {
+			const rawMsg =
+				fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+			const errMsg = `Không thể kết nối đến máy chủ OAuth BCA (${url}): ${rawMsg}`;
+			logger.error("TokenManager", errMsg);
+			throw new Error(errMsg);
+		}
 
 		if (!res.ok) {
 			const err = await res.text();
