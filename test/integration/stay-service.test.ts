@@ -5,7 +5,6 @@ import {
 	extendStay,
 	getAuditLogs,
 	getDashboardStats,
-	getDb,
 	getStayById,
 	getStays,
 	logKbttAction,
@@ -15,13 +14,14 @@ import {
 	upsertStay,
 } from "../../src/lib/server/db.js";
 import { stayService } from "../../src/lib/server/stayService.js";
+import { MockD1Database } from "../helpers/mock-d1.js";
 
 async function runStayServiceIntegrationTests(): Promise<void> {
 	console.log(
 		"🧪 [Integration] Chạy kiểm thử D1 Database & StayService (Offline/Isolated)...",
 	);
 
-	const db = getDb();
+	const db = new MockD1Database();
 
 	// Clean test fixtures
 	await db.exec(
