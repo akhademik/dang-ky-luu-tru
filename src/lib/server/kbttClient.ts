@@ -67,19 +67,33 @@ export class KbttClient {
 			{ payloads },
 		);
 
-		let res: Response;
-		try {
-			res = await fetch(url, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-					Connection: "close",
-				},
-				body: JSON.stringify(payloads),
-			});
-		} catch (networkErr) {
-			const errMsg = `Lỗi mạng khi kết nối tới KBTT Server: ${(networkErr as Error).message}`;
+		let res: Response | null = null;
+		let lastError: Error | null = null;
+		for (let attempt = 1; attempt <= 3; attempt++) {
+			try {
+				res = await fetch(url, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+					body: JSON.stringify(payloads),
+				});
+				break;
+			} catch (networkErr) {
+				lastError = networkErr as Error;
+				if (attempt < 3) {
+					logger.warn(
+						"KbttClient",
+						`Kết nối tới KBTT Server lần ${attempt} thất bại (${lastError.message}), đang thử lại lần ${attempt + 1}...`,
+					);
+					await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+				}
+			}
+		}
+
+		if (!res) {
+			const errMsg = `Lỗi mạng khi kết nối tới KBTT Server: ${lastError?.message || "Không thể kết nối"}`;
 			logger.error("KbttClient", errMsg);
 			throw new Error(errMsg);
 		}

@@ -60,7 +60,6 @@ export class TokenManager {
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded",
 						Authorization: CONFIG.AUTH.BASIC_AUTH,
-						Connection: "close",
 					},
 					body: params.toString(),
 				});
@@ -111,7 +110,6 @@ export class TokenManager {
 			method: "POST",
 			headers: {
 				Authorization: "Basic QVBJX0MwNjp4aGhtUWE2eVZJbGZDRHA=",
-				Connection: "close",
 			},
 		});
 
