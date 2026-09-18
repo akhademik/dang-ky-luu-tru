@@ -511,37 +511,62 @@ function showToast(
 	}, 4000);
 }
 
+let statsInFlight: Promise<void> | null = null;
 async function loadStats(_force = false) {
-	try {
-		const res = await fetch("/api/stats");
-		const data = await res.json();
-		if (data.success && data.data) {
-			stats = data.data;
+	if (statsInFlight) return statsInFlight;
+	statsInFlight = (async () => {
+		try {
+			const res = await fetch("/api/stats");
+			const data = await res.json();
+			if (data.success && data.data) {
+				stats = data.data;
+			}
+		} catch {
+		} finally {
+			statsInFlight = null;
 		}
-	} catch {}
+	})();
+	return statsInFlight;
 }
 
+let staysInFlight: Promise<void> | null = null;
 async function loadStays(_force = false) {
-	if (rawStays.length === 0) {
-		loading = true;
-	}
-	try {
-		const url = new URL("/api/stays", window.location.origin);
-		if (activeTab === "register") {
-			url.searchParams.set("status", "READY_TO_SYNC");
-		} else if (activeTab === "inhouse") {
-			url.searchParams.set("status", "IN_HOUSE");
+	if (staysInFlight) return staysInFlight;
+	staysInFlight = (async () => {
+		try {
+			if (rawStays.length === 0) {
+				loading = true;
+			}
+			const url = new URL("/api/stays", window.location.origin);
+			if (activeTab === "register") {
+				url.searchParams.set("status", "READY_TO_SYNC");
+			} else if (activeTab === "inhouse") {
+				url.searchParams.set("status", "IN_HOUSE");
+			}
+			const res = await fetch(url.toString());
+			const data = await res.json();
+			if (data.success) {
+				rawStays = data.data || [];
+			}
+			loadStats(true);
+		} catch (err) {
+			showToast("Không thể tải danh sách lưu trú từ CSDL", "error");
+		} finally {
+			loading = false;
+			staysInFlight = null;
 		}
-		const res = await fetch(url.toString());
-		const data = await res.json();
-		if (data.success) {
-			rawStays = data.data || [];
-		}
-		loadStats(true);
-	} catch (err) {
-		showToast("Không thể tải danh sách lưu trú từ CSDL", "error");
-	} finally {
-		loading = false;
+	})();
+	return staysInFlight;
+}
+
+function setTab(tab: typeof activeTab) {
+	activeTab = tab;
+	if (tab === "audit") {
+		loadAuditLogs();
+	} else if (tab === "register" || tab === "inhouse" || tab === "all_guests") {
+		loadStays();
+	} else if (tab === "catalogs") {
+		loadCatalogs();
 	}
 }
 
@@ -979,17 +1004,13 @@ async function submitReRegister() {
 				data.message || "✓ Đã khai báo lưu trú thành công lên Bộ Công An!",
 				"success",
 			);
-			activeTab = "inhouse";
-			await loadStays(true);
-			await loadStats(true);
+			setTab("inhouse");
 		} else {
 			showToast(
 				`Thông báo: ${data.message || data.error || "Gửi BCA chưa thành công"}`,
 				"error",
 			);
-			activeTab = "register";
-			await loadStays(true);
-			await loadStats(true);
+			setTab("register");
 		}
 	} catch {
 		showToast("Lỗi kết nối khi gửi khai báo lại", "error");
@@ -2066,19 +2087,6 @@ function clearAllAuditLogs() {
 	});
 }
 
-// Svelte 5 Effects
-$effect(() => {
-	if (activeTab === "audit") {
-		loadAuditLogs();
-	} else if (
-		activeTab === "register" ||
-		activeTab === "inhouse" ||
-		activeTab === "all_guests"
-	) {
-		loadStays();
-	}
-});
-
 onMount(async () => {
 	clearLocalCache();
 	const now = new Date(Date.now() + 7 * 3600 * 1000);
@@ -2318,7 +2326,7 @@ onMount(async () => {
 	<div class="max-w-7xl mx-auto flex border-b border-slate-700 mb-6 space-x-2 md:space-x-4 overflow-x-auto pb-1">
 		<button
 			type="button"
-			onclick={() => { activeTab = "register"; }}
+			onclick={() => setTab("register")}
 			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'register' ? 'border-sky-400 text-sky-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
 		>
 			<span>⚡</span>
@@ -2330,7 +2338,7 @@ onMount(async () => {
 
 		<button
 			type="button"
-			onclick={() => { activeTab = "inhouse"; }}
+			onclick={() => setTab("inhouse")}
 			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'inhouse' ? 'border-teal-400 text-teal-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
 		>
 			<span>🏨</span>
@@ -2339,7 +2347,7 @@ onMount(async () => {
 
 		<button
 			type="button"
-			onclick={() => { activeTab = "all_guests"; }}
+			onclick={() => setTab("all_guests")}
 			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'all_guests' ? 'border-amber-400 text-amber-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
 		>
 			<span>👥</span>
@@ -2351,7 +2359,7 @@ onMount(async () => {
 
 		<button
 			type="button"
-			onclick={() => { activeTab = "audit"; }}
+			onclick={() => setTab("audit")}
 			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'audit' ? 'border-indigo-400 text-indigo-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
 		>
 			<span>🔍</span>
@@ -2360,7 +2368,7 @@ onMount(async () => {
 
 		<button
 			type="button"
-			onclick={() => { activeTab = "catalogs"; }}
+			onclick={() => setTab("catalogs")}
 			class="px-4 py-2.5 font-medium text-xs md:text-sm rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap {activeTab === 'catalogs' ? 'border-purple-400 text-purple-400 bg-slate-800/80' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'}"
 		>
 			<span>📚</span>
