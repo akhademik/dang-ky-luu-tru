@@ -153,13 +153,44 @@ let activeTab = $state<
 >("register");
 let rawStays = $state<StayDetail[]>([]);
 let auditLogs = $state<KbttLog[]>([]);
-let stats = $state<Stats>({
+let serverStats = $state<Stats>({
 	totalGuests: 0,
 	totalStays: 0,
 	readyToSync: 0,
 	syncedKbtt: 0,
 	inHouse: 0,
 	checkedOut: 0,
+});
+
+// Derive stats in real-time from memory store (rawStays), eliminating D1 stats reads
+let stats = $derived.by<Stats>(() => {
+	if (rawStays.length === 0 && serverStats.totalStays > 0) {
+		return serverStats;
+	}
+	const uniqueGuests = new Set(
+		rawStays.map((s) => s.guest_id || s.so_giay_to).filter(Boolean),
+	);
+	const readyToSync = rawStays.filter((s) =>
+		["READY_TO_SYNC", "PENDING_VALIDATION", "NOT_CHECKED_IN", "ERROR"].includes(
+			s.status,
+		),
+	).length;
+	const syncedKbtt = rawStays.filter((s) =>
+		["SYNCED_KBTT", "CHECKED_IN"].includes(s.status),
+	).length;
+	const inHouse = rawStays.filter((s) =>
+		["SYNCED_KBTT", "CHECKED_IN", "EXTENDED"].includes(s.status),
+	).length;
+	const checkedOut = rawStays.filter((s) => s.status === "CHECKED_OUT").length;
+
+	return {
+		totalGuests: uniqueGuests.size,
+		totalStays: rawStays.length,
+		readyToSync,
+		syncedKbtt,
+		inHouse,
+		checkedOut,
+	};
 });
 let catalogs = $state<{
 	quocTich: CatalogItem[];
@@ -493,11 +524,13 @@ function showToast(
 
 let statsInFlight: Promise<void> | null = null;
 let lastStatsFetchTime = 0;
-const CLIENT_STATS_CACHE_TTL_MS = 15_000; // 15s
+const CLIENT_STATS_CACHE_TTL_MS = 60_000; // 60s fallback
 
 async function loadStats(force = false) {
+	// If rawStays is already populated, stats are derived automatically in memory
+	if (rawStays.length > 0 && !force) return;
 	const now = Date.now();
-	if (!force && stats.totalStays > 0 && now - lastStatsFetchTime < CLIENT_STATS_CACHE_TTL_MS) {
+	if (!force && serverStats.totalStays > 0 && now - lastStatsFetchTime < CLIENT_STATS_CACHE_TTL_MS) {
 		return;
 	}
 	if (statsInFlight) return statsInFlight;
@@ -506,7 +539,7 @@ async function loadStats(force = false) {
 			const res = await fetch(`/api/stats${force ? "?force=true" : ""}`);
 			const data = await res.json();
 			if (data.success && data.data) {
-				stats = data.data;
+				serverStats = data.data;
 				lastStatsFetchTime = Date.now();
 			}
 		} catch {
@@ -518,25 +551,28 @@ async function loadStats(force = false) {
 }
 
 let staysInFlight: Promise<void> | null = null;
-async function loadStays(_force?: boolean) {
+let lastStaysFetchTime = 0;
+const CLIENT_STAYS_CACHE_TTL_MS = 300_000; // 5 minutes cache
+
+async function loadStays(force = false) {
+	const now = Date.now();
+	if (!force && rawStays.length > 0 && now - lastStaysFetchTime < CLIENT_STAYS_CACHE_TTL_MS) {
+		return;
+	}
 	if (staysInFlight) return staysInFlight;
 	staysInFlight = (async () => {
 		try {
 			if (rawStays.length === 0) {
 				loading = true;
 			}
-			const url = new URL("/api/stays", window.location.origin);
-			if (activeTab === "register") {
-				url.searchParams.set("status", "READY_TO_SYNC");
-			} else if (activeTab === "inhouse") {
-				url.searchParams.set("status", "IN_HOUSE");
-			}
-			const res = await fetch(url.toString());
+			// Fetch all stays once into client memory store
+			const res = await fetch("/api/stays?limit=500");
 			const data = await res.json();
 			if (data.success) {
 				rawStays = data.data || [];
+				lastStaysFetchTime = Date.now();
 			}
-		} catch (err) {
+		} catch {
 			showToast("Không thể tải danh sách lưu trú từ CSDL", "error");
 		} finally {
 			loading = false;
@@ -547,7 +583,7 @@ async function loadStays(_force?: boolean) {
 }
 
 async function refreshDashboard(forceStats = false) {
-	await Promise.all([loadStays(), loadStats(forceStats)]);
+	await Promise.all([loadStays(true), loadStats(forceStats)]);
 }
 
 function setTab(tab: typeof activeTab) {
@@ -555,10 +591,14 @@ function setTab(tab: typeof activeTab) {
 	if (tab === "audit") {
 		loadAuditLogs();
 	} else if (tab === "register" || tab === "inhouse" || tab === "all_guests") {
-		loadStays();
-		loadStats();
+		// Memory cache lookup - only fetch if empty
+		if (rawStays.length === 0) {
+			loadStays();
+		}
 	} else if (tab === "catalogs") {
-		loadCatalogs();
+		if (catalogs.quocTich.length === 0) {
+			loadCatalogs();
+		}
 	}
 }
 
@@ -765,11 +805,6 @@ async function registerStay(stayId: string) {
 						}
 					: s,
 			);
-			if (activeTab === "register") {
-				rawStays = rawStays.filter((s) => s.id !== stayId);
-			}
-			setLocalCache(`stays_master_${activeTab}`, rawStays);
-			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message || "Đăng ký thất bại"}`, "error");
 		}
@@ -875,8 +910,6 @@ async function submitExtend() {
 		if (data.success) {
 			showToast("✓ Gia hạn thành công!", "success");
 			clearLocalCache();
-			await loadStays(true);
-			await loadStats(true);
 		} else {
 			showToast(`Lỗi: ${data.message || data.error}`, "error");
 			clearLocalCache();
@@ -913,13 +946,9 @@ async function submitCheckout() {
 	markEntryBusy(targetId);
 	clearLocalCache();
 	// Optimistically update
-	if (activeTab === "inhouse" || activeTab === "register") {
-		rawStays = rawStays.filter((s) => s.id !== targetId);
-	} else {
-		rawStays = rawStays.map((s) =>
-			s.id === targetId ? { ...s, status: "CHECKED_OUT" } : s,
-		);
-	}
+	rawStays = rawStays.map((s) =>
+		s.id === targetId ? { ...s, status: "CHECKED_OUT" } : s,
+	);
 	showToast("Đang xử lý checkout...", "info");
 
 	try {
@@ -932,8 +961,6 @@ async function submitCheckout() {
 		if (data.success) {
 			showToast("✓ Checkout thành công!", "success");
 			clearLocalCache();
-			await loadStays(true);
-			await loadStats(true);
 		} else {
 			showToast(`Lỗi: ${data.message || data.error}`, "error");
 			clearLocalCache();
@@ -983,8 +1010,6 @@ async function submitStatusOverride() {
 		if (data.success) {
 			showToast(`✓ Đã cập nhật trạng thái thành "${newStatus}"!`, "success");
 			clearLocalCache();
-			await loadStays(true);
-			await loadStats(true);
 		} else {
 			showToast(`Lỗi: ${data.message || data.error}`, "error");
 			clearLocalCache();
@@ -1063,6 +1088,16 @@ async function submitReRegister() {
 				data.message || "✓ Đã khai báo lưu trú thành công lên Bộ Công An!",
 				"success",
 			);
+			if (data.stay) {
+				const existingIdx = rawStays.findIndex((s) => s.id === data.stay.id);
+				if (existingIdx >= 0) {
+					rawStays[existingIdx] = data.stay;
+				} else {
+					rawStays = [data.stay, ...rawStays];
+				}
+			} else {
+				await loadStays(true);
+			}
 			setTab("inhouse");
 		} else {
 			showToast(
@@ -1783,8 +1818,11 @@ async function submitEdit() {
 		if (data.success) {
 			showToast("✓ Cập nhật thông tin khách thành công!", "success");
 			clearLocalCache();
-			await loadStays(true);
-			await loadStats(true);
+			if (data.data) {
+				rawStays = rawStays.map((s) =>
+					s.id === data.data.id ? { ...s, ...data.data } : s,
+				);
+			}
 		} else {
 			showToast(`Lỗi: ${data.message || data.error}`, "error");
 			clearLocalCache();

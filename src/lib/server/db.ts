@@ -62,13 +62,18 @@ class RemoteD1Database implements D1DatabaseLike {
 		);
 		const isDirectBin = fs.existsSync(wranglerBin);
 		const execCmd = isDirectBin ? process.execPath : "pnpm";
+		// Default to --local when developing locally to prevent Cloudflare rate limits and quota burnout
+		const isRemote =
+			process.env.D1_USE_REMOTE === "true" || process.env.D1_REMOTE === "true";
+		const locationFlag = isRemote ? "--remote" : "--local";
+
 		const execArgs = isDirectBin
 			? [
 					wranglerBin,
 					"d1",
 					"execute",
 					this.dbName,
-					"--remote",
+					locationFlag,
 					"--command",
 					formattedSql,
 					"--json",
@@ -78,7 +83,7 @@ class RemoteD1Database implements D1DatabaseLike {
 					"d1",
 					"execute",
 					this.dbName,
-					"--remote",
+					locationFlag,
 					"--command",
 					formattedSql,
 					"--json",

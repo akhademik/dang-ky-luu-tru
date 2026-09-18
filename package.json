@@ -5,7 +5,9 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "NODE_OPTIONS=\"--dns-result-order=ipv4first --no-network-family-autoselection\" vite dev --host",
+    "dev": "node --import jiti/register scripts/init-local-db.ts && NODE_OPTIONS=\"--dns-result-order=ipv4first --no-network-family-autoselection\" vite dev --host",
+    "dev:remote": "D1_USE_REMOTE=true NODE_OPTIONS=\"--dns-result-order=ipv4first --no-network-family-autoselection\" vite dev --host",
+    "db:init-local": "node --import jiti/register scripts/init-local-db.ts",
     "build": "vite build",
     "preview": "vite preview",
     "check:svelte": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
