@@ -6,19 +6,19 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 	try {
 		const env = (platform?.env || {}) as Record<string, unknown>;
 		const serverPass = String(
-			env.APP_PASSWORD || CONFIG.APP_PASSWORD || "",
+			env.APP_PASSWORD ||
+				(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
+				CONFIG.APP_PASSWORD ||
+				"",
 		).trim();
 		const body = await request.json().catch(() => ({}));
 		const password = String(body.password || "").trim();
 
 		if (!serverPass) {
-			return json(
-				{
-					success: false,
-					message: "Chưa thiết lập biến môi trường APP_PASSWORD trên máy chủ!",
-				},
-				{ status: 500 },
-			);
+			return json({
+				success: true,
+				message: "Hệ thống không cấu hình mật khẩu bảo vệ",
+			});
 		}
 
 		if (!password || password !== serverPass) {
@@ -28,12 +28,13 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 			);
 		}
 
-		// Set session cookie (no maxAge/expires = session cookie deleted when browser/session closes)
+		// Set session cookie
 		cookies.set("app_session", "authenticated", {
 			path: "/",
 			httpOnly: true,
 			sameSite: "lax",
-			secure: process.env.NODE_ENV === "production",
+			secure: false,
+			maxAge: 60 * 60 * 24 * 7, // 7 days
 		});
 
 		return json({
@@ -49,28 +50,39 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 // Check session status
 export const GET: RequestHandler = async ({ cookies, platform }) => {
 	const env = (platform?.env || {}) as Record<string, unknown>;
+	const serverPass = String(
+		env.APP_PASSWORD ||
+			(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
+			CONFIG.APP_PASSWORD ||
+			"",
+	).trim();
 	const kbttEnv = String(
-		env.KBTT_ENV || CONFIG.currentEnv || "dev",
+		env.KBTT_ENV ||
+			(typeof process !== "undefined" && process.env?.KBTT_ENV) ||
+			CONFIG.currentEnv ||
+			"dev",
 	).toLowerCase();
 	const isProd = kbttEnv === "prod";
 
-	// In dev mode: no password required
-	if (!isProd) {
+	// If NO APP_PASSWORD is configured on the server, allow access
+	if (!serverPass) {
 		return json({
+			hasPassword: false,
 			authenticated: true,
-			isProd: false,
-			env: "dev",
+			isProd,
+			env: kbttEnv,
 		});
 	}
 
-	// In prod mode: check session cookie
+	// When APP_PASSWORD is set, verify the session cookie
 	const session = cookies.get("app_session");
 	const authenticated = session === "authenticated";
 
 	return json({
+		hasPassword: true,
 		authenticated,
-		isProd: true,
-		env: "prod",
+		isProd,
+		env: kbttEnv,
 	});
 };
 

@@ -359,7 +359,9 @@ let guestGroups = $derived.by(() => {
 
 let currentEnv = $state<"dev" | "prod">("dev");
 let isProdFixed = $state(false);
-let isAuthenticated = $state(true);
+let isAuthenticated = $state(false);
+let isCheckingAuth = $state(true);
+let hasPassword = $state(false);
 let authPassword = $state("");
 let authError = $state("");
 let authLoading = $state(false);
@@ -583,19 +585,20 @@ async function loadAuditLogs() {
 }
 
 async function checkAuth() {
+	isCheckingAuth = true;
 	try {
 		const res = await fetch("/api/auth/login");
 		const data = await res.json();
-		isAuthenticated = data.authenticated;
-		isProdFixed = data.isProd;
+		isAuthenticated = Boolean(data.authenticated);
+		hasPassword = Boolean(data.hasPassword);
+		isProdFixed = Boolean(data.isProd);
 		if (data.isProd) {
 			currentEnv = "prod";
 		}
-		if (!data.isProd) {
-			isAuthenticated = true;
-		}
 	} catch {
-		isAuthenticated = true;
+		isAuthenticated = false;
+	} finally {
+		isCheckingAuth = false;
 	}
 }
 
@@ -634,7 +637,7 @@ async function handleLogout() {
 	try {
 		await fetch("/api/auth/login", { method: "DELETE" });
 		isAuthenticated = false;
-		showToast("Đã đăng xuất khỏi phiên làm việc", "info");
+		showToast("Đã khóa phiên làm việc", "info");
 	} catch {}
 }
 
@@ -2041,16 +2044,23 @@ onMount(async () => {
 		</div>
 	{/if}
 
-	<!-- Prod Password Login Modal / Barrier -->
-	{#if !isAuthenticated}
-		<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md p-4">
+	<!-- Loading state while checking auth -->
+	{#if isCheckingAuth}
+		<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md">
+			<div class="flex flex-col items-center gap-3">
+				<div class="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+				<span class="text-xs text-slate-400">Đang kiểm tra bảo mật...</span>
+			</div>
+		</div>
+	{:else if !isAuthenticated}
+		<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-4">
 			<div class="w-full max-w-md bg-slate-800 border border-slate-700 p-6 md:p-8 rounded-2xl shadow-2xl">
 				<div class="text-center mb-6">
 					<div class="w-14 h-14 bg-sky-500/20 text-sky-400 border border-sky-500/40 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
 						🔒
 					</div>
 					<h2 class="text-xl font-bold text-white">Yêu Cầu Xác Thực Hệ Thống</h2>
-					<p class="text-xs text-slate-400 mt-1">Hệ thống đang hoạt động ở môi trường Vận Hành PROD. Vui lòng nhập mật khẩu phiên để tiếp tục.</p>
+					<p class="text-xs text-slate-400 mt-1">Hệ thống đã được bảo vệ bằng mật khẩu phiên. Vui lòng nhập mật khẩu để tiếp tục.</p>
 				</div>
 
 				{#if authError}
@@ -2080,7 +2090,7 @@ onMount(async () => {
 						{authLoading ? "Đang xác thực..." : "Mở Khóa Phiên Làm Việc ➔"}
 					</button>
 				</form>
-				<p class="text-[11px] text-slate-400 text-center mt-4">Phiên đăng nhập được duy trì cho đến khi đóng trình duyệt hoặc đăng xuất.</p>
+				<p class="text-[11px] text-slate-400 text-center mt-4">Phiên đăng nhập được duy trì an toàn cho đến khi bạn khóa phiên hoặc đóng trình duyệt.</p>
 			</div>
 		</div>
 	{/if}
@@ -2160,15 +2170,16 @@ onMount(async () => {
 				<span>Thêm Khách</span>
 			</button>
 
-			<!-- Logout Button (for Prod mode) -->
-			{#if isProdFixed && isAuthenticated}
+			<!-- Logout / Lock Session Button -->
+			{#if hasPassword && isAuthenticated}
 				<button
 					type="button"
 					onclick={handleLogout}
-					title="Đăng xuất phiên làm việc"
-					class="px-3 py-2 bg-slate-700/80 hover:bg-rose-900/80 text-slate-300 hover:text-rose-200 text-xs font-semibold rounded-xl border border-slate-600 transition-all"
+					title="Khóa phiên làm việc"
+					class="flex items-center gap-1.5 px-3 py-2 bg-slate-700/80 hover:bg-rose-900/80 text-slate-300 hover:text-rose-200 text-xs font-semibold rounded-xl border border-slate-600 transition-all"
 				>
-					Đăng xuất ⏻
+					<span>🔒</span>
+					<span>Khóa phiên</span>
 				</button>
 			{/if}
 		</div>
