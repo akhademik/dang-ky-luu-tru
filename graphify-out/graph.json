@@ -632,19 +632,7 @@
       "file_type": "code",
       "norm_label": ".batchregisterstays()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L339"
-    },
-    {
-      "id": "src_lib_server_stayservice_stayservice_checkoutstay",
-      "label": ".checkoutStay()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "db.ts",
-      "file_type": "code",
-      "norm_label": ".checkoutstay()",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L483"
+      "source_location": "L348"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_extendstay",
@@ -656,7 +644,7 @@
       "file_type": "code",
       "norm_label": ".extendstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L392"
+      "source_location": "L401"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_registerstaytokbtt",
@@ -680,7 +668,7 @@
       "file_type": "code",
       "norm_label": ".updateguestandstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L663"
+      "source_location": "L681"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_updatestaystatus",
@@ -692,7 +680,7 @@
       "file_type": "code",
       "norm_label": ".updatestaystatus()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L613"
+      "source_location": "L631"
     },
     {
       "id": "src_routes_api_sheets_pull_server_post",
@@ -1991,6 +1979,18 @@
       "source_location": "L507"
     },
     {
+      "id": "src_lib_server_stayservice_stayservice_checkoutstay",
+      "label": ".checkoutStay()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": ".checkoutstay()",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L493"
+    },
+    {
       "id": "src_lib_server_stayservice_stayservice_ingestocrrows",
       "label": ".ingestOcrRows()",
       "_callable": true,
@@ -2012,7 +2012,7 @@
       "file_type": "code",
       "norm_label": ".reregisterstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L726"
+      "source_location": "L744"
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline_processrows",
@@ -5335,7 +5335,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L355",
+      "source_location": "L364",
       "weight": 1.0
     },
     {
@@ -5347,7 +5347,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L369",
+      "source_location": "L378",
       "weight": 1.0
     },
     {
@@ -5359,7 +5359,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L370",
+      "source_location": "L379",
       "weight": 1.0
     },
     {
@@ -5371,19 +5371,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L487",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_checkoutstay",
-      "target": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L505",
+      "source_location": "L497",
       "weight": 1.0
     },
     {
@@ -5395,7 +5383,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L507",
+      "source_location": "L513",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_checkoutstay",
+      "target": "src_lib_server_datatransformer_datatransformer_formatdatetime",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L518",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_checkoutstay",
+      "target": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L538",
       "weight": 1.0
     },
     {
@@ -5407,7 +5419,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L541",
+      "source_location": "L554",
       "weight": 1.0
     },
     {
@@ -5443,7 +5455,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L397",
+      "source_location": "L406",
       "weight": 1.0
     },
     {
@@ -5455,7 +5467,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L415",
+      "source_location": "L425",
       "weight": 1.0
     },
     {
@@ -5467,7 +5479,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L417",
+      "source_location": "L427",
       "weight": 1.0
     },
     {
@@ -5479,7 +5491,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L432",
+      "source_location": "L442",
       "weight": 1.0
     },
     {
@@ -5567,6 +5579,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_stayservice_stayservice_registerstaytokbtt",
+      "target": "src_lib_server_db_updateguest",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L299",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_stayservice_stayservice_reregisterstay",
       "target": "src_lib_server_db_getstaybyid",
       "relation": "calls",
@@ -5575,7 +5599,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L743",
+      "source_location": "L761",
       "weight": 1.0
     },
     {
@@ -5587,7 +5611,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L752",
+      "source_location": "L770",
       "weight": 1.0
     },
     {
@@ -5599,7 +5623,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L759",
+      "source_location": "L777",
       "weight": 1.0
     },
     {
@@ -5611,7 +5635,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L766",
+      "source_location": "L784",
       "weight": 1.0
     },
     {
@@ -5623,7 +5647,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L786",
+      "source_location": "L804",
       "weight": 1.0
     },
     {
@@ -5635,7 +5659,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L795",
+      "source_location": "L813",
       "weight": 1.0
     },
     {
@@ -5647,7 +5671,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L820",
+      "source_location": "L838",
       "weight": 1.0
     },
     {
@@ -5659,7 +5683,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L842",
+      "source_location": "L860",
       "weight": 1.0
     },
     {
@@ -5671,7 +5695,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L686",
+      "source_location": "L704",
       "weight": 1.0
     },
     {
@@ -5683,7 +5707,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L689",
+      "source_location": "L707",
       "weight": 1.0
     },
     {
@@ -5695,7 +5719,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L713",
+      "source_location": "L731",
       "weight": 1.0
     },
     {
@@ -5707,7 +5731,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L618",
+      "source_location": "L636",
       "weight": 1.0
     },
     {
@@ -5719,7 +5743,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L639",
+      "source_location": "L657",
       "weight": 1.0
     },
     {
@@ -6719,7 +6743,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L531",
+      "source_location": "L549",
       "weight": 1.0
     },
     {
@@ -6732,7 +6756,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L427",
+      "source_location": "L437",
       "weight": 1.0
     },
     {
@@ -11134,7 +11158,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L877",
+      "source_location": "L895",
       "weight": 1.0
     },
     {
@@ -12747,7 +12771,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L339",
+      "source_location": "L348",
       "weight": 1.0
     },
     {
@@ -12769,7 +12793,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L392",
+      "source_location": "L401",
       "weight": 1.0
     },
     {
@@ -12780,7 +12804,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L483",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -12791,7 +12815,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L613",
+      "source_location": "L631",
       "weight": 1.0
     },
     {
@@ -12802,7 +12826,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L663",
+      "source_location": "L681",
       "weight": 1.0
     },
     {
@@ -12813,7 +12837,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L726",
+      "source_location": "L744",
       "weight": 1.0
     },
     {
@@ -13012,7 +13036,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L796",
+      "source_location": "L814",
       "weight": 1.0
     },
     {
@@ -13053,5 +13077,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a5b395bce325de86ce11d3c4944251f7ece65445"
+  "built_at_commit": "5274656c749c273f1430aeea02381f8f20b3e25d"
 }

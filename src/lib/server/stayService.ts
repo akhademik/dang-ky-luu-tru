@@ -291,6 +291,15 @@ class StayService {
 			});
 
 			if (response.success) {
+				const registeredLoaiGiayTo = transformed.payload.loaiGiayTo;
+				if (
+					registeredLoaiGiayTo !== undefined &&
+					registeredLoaiGiayTo !== null
+				) {
+					await updateGuest(db, stay.guest_id, {
+						loai_giay_to: String(registeredLoaiGiayTo),
+					});
+				}
 				await dbUpdateStay(db, stay.id, {
 					status: "SYNCED_KBTT",
 					ma_ho_so_kbtt: String(response.code || "OK"),
@@ -410,7 +419,8 @@ class StayService {
 
 		// If stay was synced to BCA, report extension to BCA via API 12 for VN guests
 		if ((stay.status === "SYNCED_KBTT" || stay.status === "EXTENDED") && isVN) {
-			const loaiGiayTo = this.catalog.findLoaiGiayTo(stay.loai_giay_to);
+			const rawLoai = Number.parseInt(String(stay.loai_giay_to || "1"), 10);
+			const loaiGiayTo = Number.isNaN(rawLoai) || rawLoai <= 0 ? 1 : rawLoai;
 			const soGiayTo =
 				DataTransformer.cleanDocNumber(stay.so_giay_to) ||
 				String(stay.so_giay_to || "").trim();
@@ -498,103 +508,111 @@ class StayService {
 		const quocTich = (stay.quoc_tich || "VNM").toUpperCase().trim();
 		const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM"].includes(quocTich);
 
-		// If stay was synced to BCA, report checkout to BCA via API 12 for VN guests
-		if ((stay.status === "SYNCED_KBTT" || stay.status === "EXTENDED") && isVN) {
-			const loaiGiayTo = this.catalog.findLoaiGiayTo(stay.loai_giay_to);
+		// Kiểm tra thời gian: Trên hệ thống C06 (BCA), khách tự động checkout sau 12:00:00 ngày đi dự kiến.
+		// Chỉ khi khách checkout TRƯỚC 12:00 ngày đi dự kiến (Trả phòng sớm - TS) thì mới gửi API 12 lên BCA.
+		const vnNow = DataTransformer.getVnNow();
+		const nowDateTimeStr = vnNow.fullStr; // YYYY-MM-DD HH:mm:ss GMT+7
+
+		let isEarlyCheckout = true;
+		if (stay.ngay_di_du_kien) {
+			const departureDateTime = DataTransformer.formatDateTime(
+				stay.ngay_di_du_kien,
+				"12:00:00",
+			);
+			if (departureDateTime && departureDateTime <= nowDateTimeStr) {
+				// Đã quá 12:00 ngày đi dự kiến -> Trên hệ thống BCA đã tự động kết thúc lưu trú
+				isEarlyCheckout = false;
+			}
+		}
+
+		// Nếu khách đã đồng bộ lên BCA, là khách VN và đang checkout TRƯỚC 12:00 ngày đi -> gửi API 12 (TS)
+		if (
+			(stay.status === "SYNCED_KBTT" || stay.status === "EXTENDED") &&
+			isVN &&
+			isEarlyCheckout
+		) {
+			// Lấy chính xác mã loại giấy tờ đã lưu từ lúc khai báo thành công (không đoán mò, không fallback lung tung)
+			const rawLoai = Number.parseInt(String(stay.loai_giay_to || "1"), 10);
+			const loaiGiayTo = Number.isNaN(rawLoai) || rawLoai <= 0 ? 1 : rawLoai;
 			const soGiayTo =
 				DataTransformer.cleanDocNumber(stay.so_giay_to) ||
 				String(stay.so_giay_to || "").trim();
-			const vnNow = DataTransformer.getVnNow();
-			const isoNowStr = vnNow.fullStr;
-			const dmyNowStr = `${String(vnNow.day).padStart(2, "0")}/${String(vnNow.month).padStart(2, "0")}/${vnNow.year} ${vnNow.timeStr}`;
 
-			// Candidate payloads to handle C06 validation variants (DD/MM/YYYY vs ISO vs without time vs loaiGiayTo 1 vs 8)
-			const candidatePayloads: Array<
+			const bcaPayload = [
 				{
-					loai: "TS";
-					soGiayTo: string;
-					loaiGiayTo: number;
-					thoiGianStr?: string;
-				}[]
-			> = [
-				[{ loai: "TS", soGiayTo, loaiGiayTo, thoiGianStr: dmyNowStr }],
-				[{ loai: "TS", soGiayTo, loaiGiayTo }],
-				[{ loai: "TS", soGiayTo, loaiGiayTo, thoiGianStr: isoNowStr }],
+					loai: "TS" as const,
+					soGiayTo,
+					loaiGiayTo,
+				},
 			];
-			if (loaiGiayTo === 1) {
-				candidatePayloads.push(
-					[{ loai: "TS", soGiayTo, loaiGiayTo: 8, thoiGianStr: dmyNowStr }],
-					[{ loai: "TS", soGiayTo, loaiGiayTo: 8 }],
-				);
-			}
 
 			let bcaRes: import("./kbttClient.js").ApiResponse | null = null;
-			let lastSentPayload = candidatePayloads[0];
-
-			for (const payload of candidatePayloads) {
-				lastSentPayload = payload;
-				try {
-					bcaRes = await this.kbttClient.doiNgayTraPhong(payload);
-					if (bcaRes.success) break;
-				} catch (err: unknown) {
-					const errMsg = err instanceof Error ? err.message : String(err);
-					await logKbttAction(db, {
-						stay_id: stayId,
-						api_endpoint: "API_12_DOI_NGAY_TRA_PHONG",
-						guest_name: stay.ho_ten,
-						so_giay_to: stay.so_giay_to,
-						so_phong: stay.so_phong,
-						request_payload: JSON.stringify(payload),
-						response_payload: JSON.stringify({ error: errMsg }),
-						is_success: 0,
-						error_message: errMsg,
-					});
-				}
-			}
-
-			if (bcaRes) {
+			try {
+				bcaRes = await this.kbttClient.doiNgayTraPhong(bcaPayload);
+			} catch (err: unknown) {
+				const errMsg = err instanceof Error ? err.message : String(err);
 				await logKbttAction(db, {
 					stay_id: stayId,
 					api_endpoint: "API_12_DOI_NGAY_TRA_PHONG",
 					guest_name: stay.ho_ten,
 					so_giay_to: stay.so_giay_to,
 					so_phong: stay.so_phong,
-					request_payload: JSON.stringify(lastSentPayload),
-					response_payload: JSON.stringify(
-						bcaRes.raw || { message: bcaRes.message, code: bcaRes.code },
-					),
-					http_status: typeof bcaRes.code === "number" ? bcaRes.code : 200,
-					code: String(bcaRes.code),
-					is_success: bcaRes.success ? 1 : 0,
-					error_message: bcaRes.success ? undefined : bcaRes.message,
+					request_payload: JSON.stringify(bcaPayload),
+					response_payload: JSON.stringify({ error: errMsg }),
+					is_success: 0,
+					error_message: errMsg,
 				});
+				return {
+					success: false,
+					message: `Lỗi kết nối BCA khi trả phòng: ${errMsg}`,
+				};
+			}
 
-				if (!bcaRes.success) {
-					const lowerMsg = (bcaRes.message || "").toLowerCase();
-					const isAlreadyOut =
-						lowerMsg.includes("đã checkout") ||
-						lowerMsg.includes("không tồn tại") ||
-						lowerMsg.includes("đã trả phòng");
-					if (!isAlreadyOut) {
-						return {
-							success: false,
-							message: `BCA từ chối trả phòng: ${bcaRes.message}`,
-						};
-					}
+			await logKbttAction(db, {
+				stay_id: stayId,
+				api_endpoint: "API_12_DOI_NGAY_TRA_PHONG",
+				guest_name: stay.ho_ten,
+				so_giay_to: stay.so_giay_to,
+				so_phong: stay.so_phong,
+				request_payload: JSON.stringify(bcaPayload),
+				response_payload: JSON.stringify(
+					bcaRes.raw || { message: bcaRes.message, code: bcaRes.code },
+				),
+				http_status: typeof bcaRes.code === "number" ? bcaRes.code : 200,
+				code: String(bcaRes.code),
+				is_success: bcaRes.success ? 1 : 0,
+				error_message: bcaRes.success ? undefined : bcaRes.message,
+			});
+
+			if (!bcaRes.success) {
+				const lowerMsg = (bcaRes.message || "").toLowerCase();
+				const isAlreadyOut =
+					lowerMsg.includes("đã checkout") ||
+					lowerMsg.includes("không tồn tại") ||
+					lowerMsg.includes("đã trả phòng") ||
+					lowerMsg.includes("đã kết thúc");
+				if (!isAlreadyOut) {
+					return {
+						success: false,
+						message: `BCA từ chối trả phòng: ${bcaRes.message}`,
+					};
 				}
 			}
 		} else {
-			// Local checkout log for un-synced or NNN
+			// Trả phòng nội bộ (đối với khách NNN, khách chưa sync, hoặc khách trả phòng sau 12:00 đã tự động checkout trên BCA)
 			await logKbttAction(db, {
 				stay_id: stayId,
 				api_endpoint: "CHECKOUT_STAY",
 				guest_name: stay.ho_ten,
 				so_giay_to: stay.so_giay_to,
 				so_phong: stay.so_phong,
-				request_payload: JSON.stringify({ stayId }),
+				request_payload: JSON.stringify({ stayId, isEarlyCheckout }),
 				response_payload: JSON.stringify({
 					success: true,
 					status: "CHECKED_OUT",
+					note: isEarlyCheckout
+						? "Local checkout"
+						: "Auto checkout on BCA after 12:00",
 				}),
 				is_success: 1,
 			});

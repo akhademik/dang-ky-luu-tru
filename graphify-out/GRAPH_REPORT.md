@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 364 nodes · 757 edges · 23 communities (13 shown, 6 thin omitted)
+- 364 nodes · 759 edges · 23 communities (13 shown, 6 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a5b395bc`
+- Built from commit: `5274656c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -64,7 +64,7 @@
 ## Communities (23 total, 6 thin omitted)
 
 ### Community 0 - "db.ts"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (36): autoCheckoutExpiredStays(), checkoutStay(), clearAuditLogs(), deleteAuditLog(), deleteStay(), extendStay(), generateId(), getAuditLogs() (+28 more)
 
 ### Community 1 - "syncPipeline.ts"
@@ -84,7 +84,7 @@ Cohesion: 0.07
 Nodes (26): author, description, keywords, license, main, name, scripts, build (+18 more)
 
 ### Community 5 - "DataTransformer"
-Cohesion: 0.25
+Cohesion: 0.24
 Nodes (3): DataTransformer, CompletenessResult, RawOcrRow
 
 ### Community 7 - "biome.json"
@@ -132,7 +132,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `ApiResponse`, `LogEntry`, `LogLevel` to the rest of the system?**
   _83 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.1222921034241789 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.125544267053701 - nodes in this community are weakly interconnected._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.09485815602836879 - nodes in this community are weakly interconnected._
 - **Should `devDependencies` be split into smaller, more focused modules?**

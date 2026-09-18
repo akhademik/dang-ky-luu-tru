@@ -20,9 +20,15 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
 - Side-effects: Dùng `$effect()` đồng bộ dữ liệu theo tab hoạt động (`activeTab`).
 - Component Props: Dùng `let { ... } = $props()`.
 
-### 1.4. Strict GMT+7 Timezone & C06 Date Format Policy
+### 1.4. Strict GMT+7 Timezone & Checkout / Document Code Policy
 - **Múi giờ duy nhất**: Tất cả thời gian lưu trữ trong Cloudflare D1, xử lý logic, đồng bộ Sheets, gửi API BCA và hiển thị giao diện bắt buộc dùng **GMT+7 (`Asia/Ho_Chi_Minh`)**.
-- **Giờ checkout chuẩn**: Mặc định là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` làm sai lệch logic tự động trả phòng (auto-checkout).
+- **Quy tắc Lưu trữ Chính xác Loại Giấy Tờ (`loai_giay_to`)**:
+  - Khi khai báo thành công (API 4/5), hệ thống ghi nhận chính xác mã số loại giấy tờ (ví dụ: `1` cho Thẻ CCCD, `8` cho Thẻ Căn cước mới, `4` cho Hộ chiếu) vào trường `loai_giay_to`.
+  - Khi thực hiện checkout (`TS`) hoặc gia hạn (`GH`), hệ thống bắt buộc lấy đúng mã `loai_giay_to` đã lưu từ hồ sơ khai báo thành công, **tuyệt đối không đoán mò, không fallback, không thay đổi mã loại giấy tờ**.
+- **Quy tắc Tự Động Checkout & Thời điểm Gửi API BCA**:
+  - **Cơ chế tự động của BCA**: Trên hệ thống C06 (BCA), hồ sơ lưu trú của khách **tự động checkout/kết thúc sau 12:00:00 của ngày đi dự kiến (`ngayDiDuKienStr`)**.
+  - **Cơ chế Database nội bộ (Cloudflare D1)**: Khi thời gian thực tế GMT+7 đã vượt quá 12:00:00 trưa ngày đi dự kiến, database D1 tự động chuyển trạng thái khách sang `CHECKED_OUT` mà **TUYỆT ĐỐI KHÔNG gửi API lên BCA**.
+  - **Thời điểm gửi API 12 (Trả phòng sớm - `loai: "TS"`)**: Hệ thống **chỉ gửi API 12 lên BCA khi người dùng bấm Checkout TRƯỚC 12:00:00 của ngày đi dự kiến**. Nếu đã quá 12:00:00 ngày đi, việc trả phòng chỉ cập nhật DB D1 nội bộ.
 - **Quy chuẩn Định dạng Thời gian gửi API C06 (BCA)**:
   - Đầu vào (Sheets/OCR/UI): Hỗ trợ linh hoạt `DD/MM/YYYY`, `DD-MM-YYYY`, `YYYY-MM-DD`.
   - **Payload gửi API 4 & API 5**:
@@ -31,12 +37,8 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
     - `ngayDiDuKienStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-09-19 12:00:00`). Phải `>= ngayDenCsltStr`.
     - `thoiHanTamTruStr` (NNN): Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-12-31 23:59:59`).
   - **Payload gửi API 12 (Đổi ngày đi / Gia hạn lưu trú)**:
-    - Trả phòng sớm (`loai: "TS"`): Payload chỉ bao gồm `[ { "loai": "TS", "soGiayTo": "...", "loaiGiayTo": 1 } ]` (không kèm trường `thoiGianStr`).
-    - Gia hạn lưu trú (`loai: "GH"`): Payload bao gồm `[ { "loai": "GH", "soGiayTo": "...", "loaiGiayTo": 1, "thoiGianStr": "YYYY-MM-DD HH:mm:ss" } ]`.
-  - **Quy tắc Số giấy tờ & Loại giấy tờ**:
-    - Thẻ CCCD: `loaiGiayTo = 1` (đúng 12 số, không dấu cách).
-    - Thẻ Căn cước mới: `loaiGiayTo = 8` (đúng 12 số, không dấu cách).
-    - Hộ chiếu: `loaiGiayTo = 4` (tối đa 10 ký tự, chữ & số).
+    - Trả phòng sớm (`loai: "TS"`): Gửi trước 12:00 trưa ngày đi, payload `[ { "loai": "TS", "soGiayTo": "...", "loaiGiayTo": 1 } ]`.
+    - Gia hạn lưu trú (`loai: "GH"`): Payload `[ { "loai": "GH", "soGiayTo": "...", "loaiGiayTo": 1, "thoiGianStr": "YYYY-MM-DD HH:mm:ss" } ]`.
 
 ### 1.5. Network & Connection Protocols (Quy Chuẩn Kết Nối Mạng & API)
 - **Bắt buộc IPv4 Only cho Node.js Runtime**:

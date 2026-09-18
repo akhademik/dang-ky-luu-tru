@@ -46,7 +46,13 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
 
 ## 4. Chuẩn Hóa Múi Giờ GMT+7 & Quy Chuẩn Payload Gửi API C06 (BCA)
 - **Toàn bộ logic thời gian, tính toán ngày đến/ngày đi, SQL trigger, auto-checkout, OCR ingestion, và hiển thị UI** BẮT BUỘC phải cố định theo **GMT+7** (`Asia/Ho_Chi_Minh`).
-- **Giờ checkout mặc định**: Luôn luôn là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` gây lỗi checkout sớm.
+- **Quy tắc Lưu trữ & Sử dụng Loại Giấy Tờ (`loai_giay_to`)**:
+  - Khi khai báo thành công qua API 4/5, hệ thống lưu chính xác mã loại giấy tờ (ví dụ: `1` cho Thẻ CCCD, `8` cho Thẻ Căn cước mới, `4` cho Hộ chiếu).
+  - Khi gọi API checkout (`TS`) hoặc gia hạn (`GH`), bắt buộc lấy đúng mã `loai_giay_to` đã lưu từ bản khai báo thành công, **tuyệt đối không đoán mò, không fallback sang mã khác**.
+- **Quy tắc Tự động Checkout & Thời điểm Gửi API BCA**:
+  - Trên hệ thống của Bộ Công An (C06), hồ sơ lưu trú **tự động kết thúc sau 12:00:00 ngày đi dự kiến (`ngayDiDuKienStr`)**.
+  - Trên database nội bộ (Cloudflare D1), khi thời gian thực tế đã qua 12:00:00 ngày đi, DB tự động chuyển trạng thái thành `CHECKED_OUT` mà **KHÔNG** gửi API lên BCA.
+  - **Chỉ gửi API 12 (`doi-ngay-tra-phong` với `loai: "TS"`) khi người dùng bấm Checkout TRƯỚC 12:00:00 ngày đi dự kiến (Trả phòng sớm)**.
 - **Quy chuẩn Định dạng Thời gian gửi API C06 (BCA)**:
   - Input (OCR / Sheets / Frontend): Nhận `DD/MM/YYYY`, `DD-MM-YYYY`, `YYYY-MM-DD`.
   - **API 4 (Khách Nước Ngoài) & API 5 (Khách Việt Nam)**:
@@ -55,9 +61,8 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
     - `ngayDiDuKienStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (ISO DateTime GMT+7, ví dụ: `2026-09-19 12:00:00`).
     - `thoiHanTamTruStr` (NNN): Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-12-31 23:59:59`).
   - **API 12 (Đổi ngày đi / Trả phòng sớm / Gia hạn lưu trú)**:
-    - Trả phòng sớm (`loai: "TS"`): Payload gửi lên là `[ { "loai": "TS", "soGiayTo": "...", "loaiGiayTo": 1 } ]` (không kèm trường `thoiGianStr`).
-    - Gia hạn lưu trú (`loai: "GH"`): Payload gửi lên là `[ { "loai": "GH", "soGiayTo": "...", "loaiGiayTo": 1, "thoiGianStr": "YYYY-MM-DD HH:mm:ss" } ]`.
-- Khách chỉ chuyển sang `CHECKED_OUT` tự động khi thời gian hiện tại GMT+7 đã qua 12:00:00 trưa ngày đi.
+    - Trả phòng sớm (`loai: "TS"`): Gửi trước 12:00 ngày đi, payload `[ { "loai": "TS", "soGiayTo": "...", "loaiGiayTo": 1 } ]` (không kèm `thoiGianStr`).
+    - Gia hạn lưu trú (`loai: "GH"`): Payload `[ { "loai": "GH", "soGiayTo": "...", "loaiGiayTo": 1, "thoiGianStr": "YYYY-MM-DD HH:mm:ss" } ]`.
 
 ## 5. Quy Định UI Modal & Xác Nhận (No Native Browser Dialogs)
 - **Tuyệt đối KHÔNG sử dụng `window.alert()`, `window.confirm()`, `window.prompt()`**.
