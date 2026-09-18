@@ -357,14 +357,21 @@ let guestGroups = $derived.by(() => {
 	return Array.from(map.values());
 });
 
+let { data } = $props<{ data?: { authenticated?: boolean } }>();
+
 let currentEnv = $state<"dev" | "prod">("dev");
 let isProdFixed = $state(false);
 let isAuthenticated = $state(false);
-let isCheckingAuth = $state(true);
-let hasPassword = $state(false);
+let authUsername = $state("root");
 let authPassword = $state("");
 let authError = $state("");
 let authLoading = $state(false);
+
+$effect(() => {
+	if (data?.authenticated) {
+		isAuthenticated = true;
+	}
+});
 
 let filterQuocTich = $state("");
 
@@ -585,26 +592,18 @@ async function loadAuditLogs() {
 }
 
 async function checkAuth() {
-	isCheckingAuth = true;
 	try {
 		const res = await fetch("/api/auth/login");
 		const data = await res.json();
 		isAuthenticated = Boolean(data.authenticated);
-		hasPassword = Boolean(data.hasPassword);
-		isProdFixed = Boolean(data.isProd);
-		if (data.isProd) {
-			currentEnv = "prod";
-		}
 	} catch {
 		isAuthenticated = false;
-	} finally {
-		isCheckingAuth = false;
 	}
 }
 
 async function handleLogin() {
 	if (!authPassword.trim()) {
-		authError = "Vui lòng nhập mật khẩu";
+		authError = "Vui lòng nhập mật khẩu truy cập";
 		return;
 	}
 	authLoading = true;
@@ -613,18 +612,22 @@ async function handleLogin() {
 		const res = await fetch("/api/auth/login", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ password: authPassword }),
+			body: JSON.stringify({
+				username: authUsername.trim() || "root",
+				password: authPassword.trim(),
+			}),
 		});
 		const data = await res.json();
 		if (data.success) {
 			isAuthenticated = true;
 			authPassword = "";
 			showToast("Đăng nhập thành công!", "success");
+			await loadEnv();
 			loadCatalogs();
 			await loadStays();
 			loadStats();
 		} else {
-			authError = data.message || "Mật khẩu không chính xác";
+			authError = data.message || "Tài khoản hoặc mật khẩu không chính xác";
 		}
 	} catch {
 		authError = "Lỗi kết nối máy chủ";
@@ -637,7 +640,7 @@ async function handleLogout() {
 	try {
 		await fetch("/api/auth/login", { method: "DELETE" });
 		isAuthenticated = false;
-		showToast("Đã khóa phiên làm việc", "info");
+		showToast("Đã đăng xuất khỏi hệ thống", "info");
 	} catch {}
 }
 
@@ -2035,63 +2038,99 @@ onMount(async () => {
 });
 </script>
 
+{#if !isAuthenticated}
+	<!-- DEDICATED FULL-SCREEN LOGIN PAGE -->
+	<div class="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden text-slate-100">
+		<!-- Background Ambient Glow -->
+		<div class="absolute -top-40 -left-40 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+		<div class="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+		<!-- Toast Notification -->
+		{#if notification}
+			<div class="fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border backdrop-blur-md transition-all duration-300 {notification.type === 'success' ? 'bg-emerald-950/90 text-emerald-200 border-emerald-600' : notification.type === 'error' ? 'bg-rose-950/90 text-rose-200 border-rose-600' : 'bg-sky-950/90 text-sky-200 border-sky-600'}">
+				<span class="text-xl">{notification.type === 'success' ? '✓' : notification.type === 'error' ? '⚠' : 'ℹ'}</span>
+				<span class="font-medium text-sm">{notification.message}</span>
+			</div>
+		{/if}
+
+		<div class="w-full max-w-md bg-slate-900/90 border border-slate-700/80 p-6 md:p-8 rounded-2xl shadow-2xl backdrop-blur-xl relative z-10">
+			<!-- Header / Brand -->
+			<div class="text-center mb-6">
+				<div class="w-16 h-16 bg-gradient-to-br from-sky-500/20 to-indigo-500/20 border border-sky-500/30 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg shadow-sky-500/5">
+					🛡️
+				</div>
+				<h1 class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400">
+					KHAI BÁO LƯU TRÚ
+				</h1>
+				<p class="text-xs text-slate-400 mt-1 font-medium">Hệ Thống Tích Hợp & Quản Lý Lưu Trú C06 BCA</p>
+			</div>
+
+			<!-- Error Alert -->
+			{#if authError}
+				<div class="mb-4 p-3 bg-rose-950/80 border border-rose-600/80 text-rose-200 text-xs rounded-xl flex items-center gap-2">
+					<span>⚠</span>
+					<span>{authError}</span>
+				</div>
+			{/if}
+
+			<!-- Login Form -->
+			<form onsubmit={(e) => { e.preventDefault(); handleLogin(); }} class="space-y-4">
+				<div>
+					<label for="app_username" class="block text-xs font-semibold text-slate-300 mb-1">Tài khoản quản trị:</label>
+					<div class="relative">
+						<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">👤</span>
+						<input
+							id="app_username"
+							type="text"
+							bind:value={authUsername}
+							placeholder="Tài khoản (root)"
+							class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition-colors shadow-inner font-mono"
+							required
+						/>
+					</div>
+				</div>
+
+				<div>
+					<label for="app_password" class="block text-xs font-semibold text-slate-300 mb-1">Mật khẩu truy cập:</label>
+					<div class="relative">
+						<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">🔑</span>
+						<input
+							id="app_password"
+							type="password"
+							bind:value={authPassword}
+							placeholder="Nhập mật khẩu..."
+							class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition-colors shadow-inner font-mono"
+							required
+						/>
+					</div>
+				</div>
+
+				<button
+					type="submit"
+					disabled={authLoading}
+					class="w-full py-3 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2"
+				>
+					{#if authLoading}
+						<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+						<span>Đang xác thực...</span>
+					{:else}
+						<span>Đăng Nhập Hệ Thống ➔</span>
+					{/if}
+				</button>
+			</form>
+
+			<div class="mt-6 pt-4 border-t border-slate-800 text-center">
+				<p class="text-[11px] text-slate-500">Mật khẩu được đồng bộ qua biến <code class="text-sky-400 font-mono">APP_PASSWORD</code> trên Cloudflare.</p>
+			</div>
+		</div>
+	</div>
+{:else}
 <div class="min-h-screen bg-slate-900 text-slate-100 p-4 md:p-6 font-sans">
 	<!-- Toast Notification -->
 	{#if notification}
 		<div class="fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border backdrop-blur-md transition-all duration-300 {notification.type === 'success' ? 'bg-emerald-950/90 text-emerald-200 border-emerald-600' : notification.type === 'error' ? 'bg-rose-950/90 text-rose-200 border-rose-600' : 'bg-sky-950/90 text-sky-200 border-sky-600'}">
 			<span class="text-xl">{notification.type === 'success' ? '✓' : notification.type === 'error' ? '⚠' : 'ℹ'}</span>
 			<span class="font-medium text-sm">{notification.message}</span>
-		</div>
-	{/if}
-
-	<!-- Loading state while checking auth -->
-	{#if isCheckingAuth}
-		<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md">
-			<div class="flex flex-col items-center gap-3">
-				<div class="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-				<span class="text-xs text-slate-400">Đang kiểm tra bảo mật...</span>
-			</div>
-		</div>
-	{:else if !isAuthenticated}
-		<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-4">
-			<div class="w-full max-w-md bg-slate-800 border border-slate-700 p-6 md:p-8 rounded-2xl shadow-2xl">
-				<div class="text-center mb-6">
-					<div class="w-14 h-14 bg-sky-500/20 text-sky-400 border border-sky-500/40 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
-						🔒
-					</div>
-					<h2 class="text-xl font-bold text-white">Yêu Cầu Xác Thực Hệ Thống</h2>
-					<p class="text-xs text-slate-400 mt-1">Hệ thống đã được bảo vệ bằng mật khẩu phiên. Vui lòng nhập mật khẩu để tiếp tục.</p>
-				</div>
-
-				{#if authError}
-					<div class="mb-4 p-3 bg-rose-950/80 border border-rose-600/80 text-rose-200 text-xs rounded-xl flex items-center gap-2">
-						<span>⚠</span>
-						<span>{authError}</span>
-					</div>
-				{/if}
-
-				<form onsubmit={(e) => { e.preventDefault(); handleLogin(); }} class="space-y-4">
-					<div>
-						<label for="app_password" class="block text-xs font-semibold text-slate-300 mb-1">Mật khẩu truy cập:</label>
-						<input
-							id="app_password"
-							type="password"
-							bind:value={authPassword}
-							placeholder="Nhập mật khẩu..."
-							class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition-colors shadow-inner"
-						/>
-					</div>
-
-					<button
-						type="submit"
-						disabled={authLoading}
-						class="w-full py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all transform active:scale-95 disabled:opacity-50"
-					>
-						{authLoading ? "Đang xác thực..." : "Mở Khóa Phiên Làm Việc ➔"}
-					</button>
-				</form>
-				<p class="text-[11px] text-slate-400 text-center mt-4">Phiên đăng nhập được duy trì an toàn cho đến khi bạn khóa phiên hoặc đóng trình duyệt.</p>
-			</div>
 		</div>
 	{/if}
 
@@ -2109,6 +2148,12 @@ onMount(async () => {
 
 		<!-- Action Controls -->
 		<div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+			<!-- User Profile Badge -->
+			<div class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900/90 border border-slate-700 rounded-xl text-xs text-sky-300 font-mono">
+				<span>👤</span>
+				<span>root</span>
+			</div>
+
 			<!-- Environment Switcher (Only visible in DEV / Non-fixed mode) -->
 			{#if !isProdFixed}
 				<div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-700 text-xs font-semibold">
@@ -2171,17 +2216,15 @@ onMount(async () => {
 			</button>
 
 			<!-- Logout / Lock Session Button -->
-			{#if hasPassword && isAuthenticated}
-				<button
-					type="button"
-					onclick={handleLogout}
-					title="Khóa phiên làm việc"
-					class="flex items-center gap-1.5 px-3 py-2 bg-slate-700/80 hover:bg-rose-900/80 text-slate-300 hover:text-rose-200 text-xs font-semibold rounded-xl border border-slate-600 transition-all"
-				>
-					<span>🔒</span>
-					<span>Khóa phiên</span>
-				</button>
-			{/if}
+			<button
+				type="button"
+				onclick={handleLogout}
+				title="Đăng xuất phiên làm việc"
+				class="flex items-center gap-1.5 px-3 py-2 bg-slate-700/80 hover:bg-rose-900/80 text-slate-300 hover:text-rose-200 text-xs font-semibold rounded-xl border border-slate-600 transition-all cursor-pointer"
+			>
+				<span>🔒</span>
+				<span>Đăng xuất</span>
+			</button>
 		</div>
 	</header>
 
@@ -3672,3 +3715,4 @@ onMount(async () => {
 		</div>
 	{/if}
 </div>
+{/if}

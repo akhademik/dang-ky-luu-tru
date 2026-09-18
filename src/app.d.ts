@@ -5,7 +5,9 @@ import type { D1DatabaseLike } from "$lib/server/db.js";
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			authenticated?: boolean;
+		}
 		// interface PageData {}
 		// interface PageState {}
 		interface Platform {

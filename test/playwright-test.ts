@@ -29,20 +29,22 @@ async function runE2ETest() {
 		await page.waitForFunction(() => !document.querySelector(".animate-spin"));
 		await page.waitForTimeout(500);
 
-		// Check if password barrier is active
+		// Check if login screen is active
+		const userInput = await page.$("#app_username");
 		const passInput = await page.$("#app_password");
-		if (passInput) {
-			console.log("🔒 Password barrier detected. Entering password...");
-			await page.fill("#app_password", "@@Abc123");
+		if (userInput || passInput) {
+			console.log("🔒 Login screen detected. Entering credentials...");
+			if (userInput) await page.fill("#app_username", "root");
+			if (passInput) await page.fill("#app_password", "@@Abc123");
 			await page.click('button[type="submit"]');
 			await page.waitForSelector("#app_password", {
 				state: "detached",
 				timeout: 10000,
 			});
-			console.log("🔓 Unlocked session successfully.");
+			console.log("🔓 Logged in successfully.");
 			await page.waitForTimeout(1000);
 		} else {
-			console.log("ℹ️ No password barrier or already authenticated.");
+			console.log("ℹ️ Already authenticated.");
 		}
 
 		// Check if table has guests
