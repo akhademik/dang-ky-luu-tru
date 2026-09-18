@@ -74,6 +74,7 @@ export class KbttClient {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${token}`,
+					Connection: "close",
 				},
 				body: JSON.stringify(payloads),
 			});
