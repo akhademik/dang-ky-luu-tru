@@ -20,10 +20,23 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
 - Side-effects: Dùng `$effect()` đồng bộ dữ liệu theo tab hoạt động (`activeTab`).
 - Component Props: Dùng `let { ... } = $props()`.
 
-### 1.4. Strict GMT+7 Timezone Policy (Chính Sách Múi Giờ Bắt Buộc)
+### 1.4. Strict GMT+7 Timezone & C06 Date Format Policy
 - **Múi giờ duy nhất**: Tất cả thời gian lưu trữ trong Cloudflare D1, xử lý logic, đồng bộ Sheets, gửi API BCA và hiển thị giao diện bắt buộc dùng **GMT+7 (`Asia/Ho_Chi_Minh`)**.
 - **Giờ checkout chuẩn**: Mặc định là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` làm sai lệch logic tự động trả phòng (auto-checkout).
-- **Vòng đời khách**: Khách chỉ bị auto-checkout khi giờ thực tế GMT+7 đã vượt quá 12:00:00 trưa ngày đi.
+- **Quy chuẩn Định dạng Thời gian gửi API C06 (BCA)**:
+  - Đầu vào (Sheets/OCR/UI): Hỗ trợ linh hoạt `DD/MM/YYYY`, `DD-MM-YYYY`, `YYYY-MM-DD`.
+  - **Payload gửi API 4 & API 5**:
+    - `ngayThangNamSinhStr`: Bắt buộc chuẩn **`YYYY-MM-DD`** (Ví dụ: `1992-10-01`).
+    - `ngayDenCsltStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-09-17 14:00:00`). C06 chỉ chấp nhận ngày hôm nay hoặc hôm qua.
+    - `ngayDiDuKienStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-09-19 12:00:00`). Phải `>= ngayDenCsltStr`.
+    - `thoiHanTamTruStr` (NNN): Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-12-31 23:59:59`).
+  - **Payload gửi API 12 (Đổi ngày đi / Gia hạn lưu trú)**:
+    - Trả phòng sớm (`loai: "TS"`): Payload chỉ bao gồm `[ { "loai": "TS", "soGiayTo": "...", "loaiGiayTo": 1 } ]` (không kèm trường `thoiGianStr`).
+    - Gia hạn lưu trú (`loai: "GH"`): Payload bao gồm `[ { "loai": "GH", "soGiayTo": "...", "loaiGiayTo": 1, "thoiGianStr": "YYYY-MM-DD HH:mm:ss" } ]`.
+  - **Quy tắc Số giấy tờ & Loại giấy tờ**:
+    - Thẻ CCCD: `loaiGiayTo = 1` (đúng 12 số, không dấu cách).
+    - Thẻ Căn cước mới: `loaiGiayTo = 8` (đúng 12 số, không dấu cách).
+    - Hộ chiếu: `loaiGiayTo = 4` (tối đa 10 ký tự, chữ & số).
 
 ### 1.5. Network & Connection Protocols (Quy Chuẩn Kết Nối Mạng & API)
 - **Bắt buộc IPv4 Only cho Node.js Runtime**:

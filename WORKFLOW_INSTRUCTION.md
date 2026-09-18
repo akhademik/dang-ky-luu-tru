@@ -44,9 +44,19 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
 - `src/routes/+page.svelte`: Giao diện chính Svelte 5 (Runes), Live-check Modal toàn diện, phản hồi lỗi thời gian thực, bảng dữ liệu tối ưu, tab điều phối.
 - `src/routes/api/`: RESTful endpoints xử lý proxy cho frontend (`sheets`, `sync`, `catalogs`, `token`, `transform`, `events`).
 
-## 4. Chuẩn Hóa Múi Giờ GMT+7 (Asia/Ho_Chi_Minh) Bắt Buộc
+## 4. Chuẩn Hóa Múi Giờ GMT+7 & Quy Chuẩn Payload Gửi API C06 (BCA)
 - **Toàn bộ logic thời gian, tính toán ngày đến/ngày đi, SQL trigger, auto-checkout, OCR ingestion, và hiển thị UI** BẮT BUỘC phải cố định theo **GMT+7** (`Asia/Ho_Chi_Minh`).
 - **Giờ checkout mặc định**: Luôn luôn là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` gây lỗi checkout sớm.
+- **Quy chuẩn Định dạng Thời gian gửi API C06 (BCA)**:
+  - Input (OCR / Sheets / Frontend): Nhận `DD/MM/YYYY`, `DD-MM-YYYY`, `YYYY-MM-DD`.
+  - **API 4 (Khách Nước Ngoài) & API 5 (Khách Việt Nam)**:
+    - `ngayThangNamSinhStr`: Bắt buộc chuẩn **`YYYY-MM-DD`** (ISO Date, ví dụ: `1990-05-15`).
+    - `ngayDenCsltStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (ISO DateTime GMT+7, ví dụ: `2026-09-17 14:00:00`). Chỉ chấp nhận ngày hôm nay hoặc hôm qua.
+    - `ngayDiDuKienStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (ISO DateTime GMT+7, ví dụ: `2026-09-19 12:00:00`).
+    - `thoiHanTamTruStr` (NNN): Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-12-31 23:59:59`).
+  - **API 12 (Đổi ngày đi / Trả phòng sớm / Gia hạn lưu trú)**:
+    - Trả phòng sớm (`loai: "TS"`): Payload gửi lên là `[ { "loai": "TS", "soGiayTo": "...", "loaiGiayTo": 1 } ]` (không kèm trường `thoiGianStr`).
+    - Gia hạn lưu trú (`loai: "GH"`): Payload gửi lên là `[ { "loai": "GH", "soGiayTo": "...", "loaiGiayTo": 1, "thoiGianStr": "YYYY-MM-DD HH:mm:ss" } ]`.
 - Khách chỉ chuyển sang `CHECKED_OUT` tự động khi thời gian hiện tại GMT+7 đã qua 12:00:00 trưa ngày đi.
 
 ## 5. Quy Định UI Modal & Xác Nhận (No Native Browser Dialogs)

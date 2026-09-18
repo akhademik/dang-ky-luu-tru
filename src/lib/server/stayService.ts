@@ -504,13 +504,11 @@ class StayService {
 			const soGiayTo =
 				DataTransformer.cleanDocNumber(stay.so_giay_to) ||
 				String(stay.so_giay_to || "").trim();
-			const thoiGianStr = DataTransformer.getVnNow().fullStr;
 			const bcaPayload = [
 				{
 					loai: "TS" as const,
 					soGiayTo,
 					loaiGiayTo,
-					thoiGianStr,
 				},
 			];
 

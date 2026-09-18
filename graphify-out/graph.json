@@ -680,7 +680,7 @@
       "file_type": "code",
       "norm_label": ".updateguestandstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L645"
+      "source_location": "L643"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_updatestaystatus",
@@ -692,7 +692,7 @@
       "file_type": "code",
       "norm_label": ".updatestaystatus()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L595"
+      "source_location": "L593"
     },
     {
       "id": "src_routes_api_sheets_pull_server_post",
@@ -2012,7 +2012,7 @@
       "file_type": "code",
       "norm_label": ".reregisterstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L708"
+      "source_location": "L706"
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline_processrows",
@@ -5388,18 +5388,6 @@
     },
     {
       "source": "src_lib_server_stayservice_stayservice_checkoutstay",
-      "target": "src_lib_server_datatransformer_datatransformer_getvnnow",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L507",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_checkoutstay",
       "target": "src_lib_server_db_logkbttaction",
       "relation": "calls",
       "_origin": "ast",
@@ -5407,7 +5395,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L522",
+      "source_location": "L520",
       "weight": 1.0
     },
     {
@@ -5575,7 +5563,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L725",
+      "source_location": "L723",
       "weight": 1.0
     },
     {
@@ -5587,7 +5575,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L734",
+      "source_location": "L732",
       "weight": 1.0
     },
     {
@@ -5599,7 +5587,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L741",
+      "source_location": "L739",
       "weight": 1.0
     },
     {
@@ -5611,7 +5599,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L748",
+      "source_location": "L746",
       "weight": 1.0
     },
     {
@@ -5623,7 +5611,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L768",
+      "source_location": "L766",
       "weight": 1.0
     },
     {
@@ -5635,7 +5623,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L777",
+      "source_location": "L775",
       "weight": 1.0
     },
     {
@@ -5647,7 +5635,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L802",
+      "source_location": "L800",
       "weight": 1.0
     },
     {
@@ -5659,7 +5647,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L824",
+      "source_location": "L822",
       "weight": 1.0
     },
     {
@@ -5671,7 +5659,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L668",
+      "source_location": "L666",
       "weight": 1.0
     },
     {
@@ -5683,7 +5671,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L671",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -5695,7 +5683,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L695",
+      "source_location": "L693",
       "weight": 1.0
     },
     {
@@ -5707,7 +5695,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L600",
+      "source_location": "L598",
       "weight": 1.0
     },
     {
@@ -5719,7 +5707,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L621",
+      "source_location": "L619",
       "weight": 1.0
     },
     {
@@ -6719,7 +6707,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L517",
+      "source_location": "L515",
       "weight": 1.0
     },
     {
@@ -11134,7 +11122,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L859",
+      "source_location": "L857",
       "weight": 1.0
     },
     {
@@ -12791,7 +12779,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L595",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -12802,7 +12790,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L645",
+      "source_location": "L643",
       "weight": 1.0
     },
     {
@@ -12813,7 +12801,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L708",
+      "source_location": "L706",
       "weight": 1.0
     },
     {
@@ -13012,7 +13000,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L778",
+      "source_location": "L776",
       "weight": 1.0
     },
     {
@@ -13053,5 +13041,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d3fed3bdb0647f5f2cc7017926253b6cf210439d"
+  "built_at_commit": "9bd05623573d2a78b204f56da80338439459ca57"
 }
