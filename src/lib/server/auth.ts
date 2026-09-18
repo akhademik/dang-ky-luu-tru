@@ -12,10 +12,10 @@ export function getServerPassword(platform?: App.Platform): string {
 			(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
 			(typeof process !== "undefined" && process.env?.PASSWORD) ||
 			CONFIG.APP_PASSWORD ||
-			"@@Abc123",
+			"",
 	).trim();
 
-	return pass || "@@Abc123";
+	return pass;
 }
 
 /**

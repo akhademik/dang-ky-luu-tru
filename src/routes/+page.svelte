@@ -3424,9 +3424,6 @@ onMount(async () => {
 							<option value="SYNCED_KBTT">🏨 Đang ở (Đã gửi BCA)</option>
 							<option value="READY_TO_SYNC">📤 Sẵn sàng khai báo</option>
 							<option value="CHECKED_OUT">🚪 Đã trả phòng</option>
-							<option value="EXTENDED">⏱️ Đã gia hạn</option>
-							<option value="NOT_CHECKED_IN">⏳ Chưa nhận phòng</option>
-							<option value="ERROR">⚠️ Lỗi khai báo</option>
 						</select>
 					</div>
 
@@ -3527,17 +3524,17 @@ onMount(async () => {
 					<label for="status-selector-grid" class="block text-xs font-semibold text-slate-300">
 						Chọn trạng thái mới muốn thiết lập:
 					</label>
-					<div id="status-selector-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+					<div id="status-selector-grid" class="grid grid-cols-1 gap-2.5 text-xs">
 						<!-- SYNCED_KBTT -->
 						<button
 							type="button"
 							onclick={() => { selectedNewStatus = 'SYNCED_KBTT'; }}
-							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'SYNCED_KBTT' ? 'bg-emerald-950/90 border-emerald-500 ring-2 ring-emerald-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+							class="p-3 rounded-xl border text-left transition-all flex items-start gap-3 {selectedNewStatus === 'SYNCED_KBTT' ? 'bg-emerald-950/90 border-emerald-500 ring-2 ring-emerald-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
 						>
-							<span class="text-base mt-0.5">🏨</span>
+							<span class="text-lg mt-0.5">🏨</span>
 							<div>
-								<div class="font-bold {selectedNewStatus === 'SYNCED_KBTT' ? 'text-emerald-300' : 'text-slate-200'}">Đang ở (Đã gửi BCA)</div>
-								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Gắn flag để có thể bấm Checkout / Gia hạn lại lên BCA</div>
+								<div class="font-bold text-sm {selectedNewStatus === 'SYNCED_KBTT' ? 'text-emerald-300' : 'text-slate-200'}">Đang ở (Đã gửi BCA)</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Gắn flag để có thể bấm Checkout 🚪 hoặc Gia hạn ⏱️ lại lên hệ thống BCA</div>
 							</div>
 						</button>
 
@@ -3545,12 +3542,12 @@ onMount(async () => {
 						<button
 							type="button"
 							onclick={() => { selectedNewStatus = 'READY_TO_SYNC'; }}
-							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'READY_TO_SYNC' ? 'bg-sky-950/90 border-sky-500 ring-2 ring-sky-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+							class="p-3 rounded-xl border text-left transition-all flex items-start gap-3 {selectedNewStatus === 'READY_TO_SYNC' ? 'bg-sky-950/90 border-sky-500 ring-2 ring-sky-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
 						>
-							<span class="text-base mt-0.5">📤</span>
+							<span class="text-lg mt-0.5">📤</span>
 							<div>
-								<div class="font-bold {selectedNewStatus === 'READY_TO_SYNC' ? 'text-sky-300' : 'text-slate-200'}">Sẵn sàng khai báo</div>
-								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Để gửi lại thông báo lưu trú lên cổng BCA</div>
+								<div class="font-bold text-sm {selectedNewStatus === 'READY_TO_SYNC' ? 'text-sky-300' : 'text-slate-200'}">Sẵn sàng khai báo</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Đưa về danh sách chờ khai báo để gửi lại thông báo lưu trú lên cổng BCA</div>
 							</div>
 						</button>
 
@@ -3558,51 +3555,12 @@ onMount(async () => {
 						<button
 							type="button"
 							onclick={() => { selectedNewStatus = 'CHECKED_OUT'; }}
-							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'CHECKED_OUT' ? 'bg-slate-800 border-slate-400 ring-2 ring-slate-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+							class="p-3 rounded-xl border text-left transition-all flex items-start gap-3 {selectedNewStatus === 'CHECKED_OUT' ? 'bg-slate-800 border-slate-400 ring-2 ring-slate-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
 						>
-							<span class="text-base mt-0.5">🚪</span>
+							<span class="text-lg mt-0.5">🚪</span>
 							<div>
-								<div class="font-bold {selectedNewStatus === 'CHECKED_OUT' ? 'text-slate-200' : 'text-slate-300'}">Đã trả phòng</div>
-								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Đóng lượt lưu trú và lưu trữ lịch sử</div>
-							</div>
-						</button>
-
-						<!-- EXTENDED -->
-						<button
-							type="button"
-							onclick={() => { selectedNewStatus = 'EXTENDED'; }}
-							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'EXTENDED' ? 'bg-indigo-950/90 border-indigo-500 ring-2 ring-indigo-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
-						>
-							<span class="text-base mt-0.5">⏱️</span>
-							<div>
-								<div class="font-bold {selectedNewStatus === 'EXTENDED' ? 'text-indigo-300' : 'text-slate-200'}">Đã gia hạn</div>
-								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Khách đã gia hạn thêm ngày lưu trú</div>
-							</div>
-						</button>
-
-						<!-- NOT_CHECKED_IN -->
-						<button
-							type="button"
-							onclick={() => { selectedNewStatus = 'NOT_CHECKED_IN'; }}
-							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'NOT_CHECKED_IN' ? 'bg-amber-950/90 border-amber-500 ring-2 ring-amber-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
-						>
-							<span class="text-base mt-0.5">⏳</span>
-							<div>
-								<div class="font-bold {selectedNewStatus === 'NOT_CHECKED_IN' ? 'text-amber-300' : 'text-slate-200'}">Chưa nhận phòng</div>
-								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Hồ sơ đặt trước chưa đến cơ sở</div>
-							</div>
-						</button>
-
-						<!-- ERROR -->
-						<button
-							type="button"
-							onclick={() => { selectedNewStatus = 'ERROR'; }}
-							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'ERROR' ? 'bg-rose-950/90 border-rose-500 ring-2 ring-rose-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
-						>
-							<span class="text-base mt-0.5">⚠️</span>
-							<div>
-								<div class="font-bold {selectedNewStatus === 'ERROR' ? 'text-rose-300' : 'text-slate-200'}">Lỗi khai báo</div>
-								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Đánh dấu cần kiểm tra và sửa thông tin</div>
+								<div class="font-bold text-sm {selectedNewStatus === 'CHECKED_OUT' ? 'text-slate-200' : 'text-slate-300'}">Đã trả phòng</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Đóng lượt lưu trú và lưu trữ lịch sử phòng trong CSDL</div>
 							</div>
 						</button>
 					</div>

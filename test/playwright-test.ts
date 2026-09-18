@@ -1,4 +1,5 @@
 import { chromium } from "@playwright/test";
+import { CONFIG } from "../src/lib/server/config.js";
 
 async function runE2ETest() {
 	console.log(
@@ -20,17 +21,18 @@ async function runE2ETest() {
 
 	try {
 		await page.goto("http://localhost:5173", {
-			waitUntil: "networkidle",
+			waitUntil: "domcontentloaded",
 		});
 		console.log("✅ Page loaded successfully. Title:", await page.title());
-		await page.waitForTimeout(1000);
+		await page.waitForTimeout(3000);
 
 		// Check if login screen is active
 		const passInput = await page.$("#app_password");
 		if (passInput) {
 			console.log("🔒 Login screen detected. Entering credentials...");
+			const envPass = CONFIG.APP_PASSWORD || process.env.APP_PASSWORD || "";
 			await page.fill("#app_username", "root");
-			await page.fill("#app_password", "@@Abc123");
+			await page.fill("#app_password", envPass);
 			await page.waitForTimeout(500);
 			await page.click('button[type="submit"]');
 			await page.waitForFunction(

@@ -25,6 +25,17 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 			);
 		}
 
+		if (!serverPass) {
+			return json(
+				{
+					success: false,
+					message:
+						"Chưa cấu hình biến môi trường APP_PASSWORD trên máy chủ / Cloudflare Pages!",
+				},
+				{ status: 500 },
+			);
+		}
+
 		if (!password || password !== serverPass) {
 			return json(
 				{ success: false, message: "Mật khẩu truy cập không chính xác!" },
