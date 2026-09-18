@@ -37,7 +37,7 @@ export class TokenManager {
 		return await this.login();
 	}
 
-	public async login(): Promise<string> {
+	public async login(retries = 2): Promise<string> {
 		const url = `${CONFIG.BASE_URL}${CONFIG.ENDPOINTS.TOKEN}`;
 		const grantType = CONFIG.AUTH.GRANT_TYPE || "api_cslt";
 		const params = new URLSearchParams({
@@ -52,43 +52,55 @@ export class TokenManager {
 			`Gửi yêu cầu đăng nhập OAuth tới: ${url} (username=${CONFIG.AUTH.USERNAME})`,
 		);
 
-		let res: Response;
-		try {
-			res = await fetch(url, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-					Authorization: CONFIG.AUTH.BASIC_AUTH,
-				},
-				body: params.toString(),
-			});
-		} catch (fetchErr) {
-			const rawMsg =
-				fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-			const errMsg = `Không thể kết nối đến máy chủ OAuth BCA (${url}): ${rawMsg}`;
-			logger.error("TokenManager", errMsg);
-			throw new Error(errMsg);
+		let lastErr: unknown = null;
+		for (let attempt = 1; attempt <= retries + 1; attempt++) {
+			try {
+				const res = await fetch(url, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+						Authorization: CONFIG.AUTH.BASIC_AUTH,
+					},
+					body: params.toString(),
+				});
+
+				if (!res.ok) {
+					const err = await res.text();
+					const errMsg = `Đăng nhập OAuth thất bại (HTTP ${res.status}): ${err}`;
+					logger.error("TokenManager", errMsg);
+					throw new Error(errMsg);
+				}
+
+				const data = (await res.json()) as Record<string, unknown>;
+				this.saveToken(data);
+				if (!this.accessToken) {
+					const errMsg = `Phản hồi OAuth không chứa AccessToken: ${JSON.stringify(data)}`;
+					logger.error("TokenManager", errMsg);
+					throw new Error(errMsg);
+				}
+				logger.info(
+					"TokenManager",
+					`Đăng nhập OAuth thành công! Token có hiệu lực đến ${new Date(this.expiresAt).toISOString()}`,
+				);
+				return this.accessToken;
+			} catch (fetchErr) {
+				lastErr = fetchErr;
+				const rawMsg =
+					fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+				if (attempt <= retries) {
+					logger.warn(
+						"TokenManager",
+						`Kết nối OAuth lần ${attempt} thất bại (${rawMsg}), đang tự động thử lại lần ${attempt + 1}...`,
+					);
+					await new Promise((r) => setTimeout(r, 600 * attempt));
+				}
+			}
 		}
 
-		if (!res.ok) {
-			const err = await res.text();
-			const errMsg = `Đăng nhập OAuth thất bại (HTTP ${res.status}): ${err}`;
-			logger.error("TokenManager", errMsg);
-			throw new Error(errMsg);
-		}
-
-		const data = (await res.json()) as Record<string, unknown>;
-		this.saveToken(data);
-		if (!this.accessToken) {
-			const errMsg = `Phản hồi OAuth không chứa AccessToken: ${JSON.stringify(data)}`;
-			logger.error("TokenManager", errMsg);
-			throw new Error(errMsg);
-		}
-		logger.info(
-			"TokenManager",
-			`Đăng nhập OAuth thành công! Token có hiệu lực đến ${new Date(this.expiresAt).toISOString()}`,
-		);
-		return this.accessToken;
+		const rawMsg = lastErr instanceof Error ? lastErr.message : String(lastErr);
+		const errMsg = `Không thể kết nối đến máy chủ OAuth BCA (${url}): ${rawMsg}`;
+		logger.error("TokenManager", errMsg);
+		throw new Error(errMsg);
 	}
 
 	public async refresh(): Promise<string> {
