@@ -1,92 +1,288 @@
-# Production Hardening Roadmap & Task Tracker
+8. Tuy nhiên vẫn còn một số vấn đề tôi muốn bạn biết
 
-Completed Roadmap (100% Accomplished):
+Đây là phần quan trọng nhất của review lần này.
 
----
+Tôi không cho 9.5–10, vì vẫn còn một vài điểm kỹ thuật đáng xử lý.
 
-### Phase 1 — Security 🔴 [COMPLETED]
+🔴 A. Session cookie vẫn quá đơn giản
 
-Highest priority:
-- [x] Create centralized API authentication (`src/hooks.server.ts` & `src/lib/server/auth.ts`).
-- [x] Protect every browser API (`/api/stays/*`, `/api/sheets/*`, `/api/stats`, `/api/env`, `/api/token`, `/api/logs`).
-- [x] Protect webhook separately with API key/signature (`POST /api/ingest/ocr` via `x-api-key` / `?api_key=`).
-- [x] Remove production credential fallbacks (fail-fast with clear configuration errors).
-- [x] Fix secure cookie behavior (`session_auth` HttpOnly, SameSite=Strict, Secure).
-- [x] Add CSRF protection where appropriate.
-- [x] Verify no sensitive API can be called unauthenticated.
-- [x] Add automated authentication & security tests (`test/api/auth-security.test.ts`).
+Hiện tại:
 
----
+cookies.set("app_session", "authenticated", ...)
 
-### Phase 2 — Data Integrity 🟠 [COMPLETED]
+và verify:
 
-- [x] Add DB constraints where appropriate (Deduplication, cascade foreign keys).
-- [x] Enforce valid status transitions (`src/lib/server/validator.ts` Stay State Machine).
-- [x] Centralize date/time logic (`src/lib/server/time.ts` GMT+7 `Asia/Ho_Chi_Minh`).
-- [x] Add request IDs to BCA operations (`src/lib/server/kbttClient.ts`).
-- [x] Make audit logs append-only in Production mode (Prevent log deletion/clearing).
-- [x] Review retry/idempotency behavior (Exponential backoff & Request ID tracking).
-- [x] Validate all API inputs centrally (`src/lib/server/validator.ts`).
-- [x] Add data integrity tests integrated into the test suite.
+return session === "authenticated";
 
----
+Điều này có nghĩa session thực chất là:
 
-### Phase 3 — Testing 🟠 [COMPLETED]
+app_session=authenticated
 
-Split test hierarchy:
-- [x] **Unit tests** (`test/unit/`): `catalog.test.ts`, `transformer.test.ts`, `time.test.ts`, `validator.test.ts`, `svelte-deprecation.test.ts` (`pnpm run test:unit`).
-- [x] **API tests** (`test/api/`): `auth-security.test.ts` (`pnpm run test:api`).
-- [x] **Integration tests** (`test/integration/`): `stay-service.test.ts` (`pnpm run test:integration`).
-- [x] **E2E tests** (`test/playwright-test.ts`): UI & Browser flows (`pnpm run test:e2e`).
-- [x] **Live External API tests** (`test/live/`): `live-bca-pipeline.test.ts` (`pnpm run test:live`).
+chứ không phải một session token ngẫu nhiên/signed session.
 
-Verification guarantee:
-- [x] `pnpm test` executes unified unit, API, and offline integration suites (100% offline-capable, never requires live BCA credentials or production remote infra).
+Cookie đã có:
 
----
+HttpOnly
+SameSite=Lax
+Secure
+MaxAge
 
-### Phase 4 — Architecture Cleanup 🟡 [COMPLETED]
+nên đã tốt hơn trước.
 
-Refactored into clean modular units:
-- [x] **time.ts**: Centralized GMT+7 date-time handling service.
-- [x] **validator.ts**: Centralized business validations and Stay State Machine.
-- [x] **repositories/**: Modular domain repositories (`guestRepository`, `stayRepository`, `auditRepository`, `statsRepository`).
-- [x] **services/**: Modular domain services (`stayService`, `kbttClient`, `tokenManager`, `catalogManager`, `dataTransformer`).
-- [x] **utils/format.ts**: Extracted shared UI formatting helpers, country resolvers, and options.
-- [x] **components/**: Modular UI components (`ConfirmModal.svelte`, `StayStatusBadge.svelte` adhering to Svelte 5 Runes & Callback Props).
-- [x] **db.ts**: Clean facade delegating to modular repository implementations.
+Nhưng nếu xét security architecture nghiêm túc thì:
 
----
+authenticated
 
-### Phase 5 — CI/CD 🟡 [COMPLETED]
+không nên là credential/session secret.
 
-GitHub Actions CI Pipeline (`.github/workflows/ci.yml`):
-- [x] **Triggers**: Push & Pull Request on `main` and `develop`.
-- [x] **Concurrency**: Automatic job cancellation for obsolete workflow runs.
-- [x] **Step 1**: Biome Linter & Formatter (`pnpm run lint:biome`).
-- [x] **Step 2**: Svelte-Check Diagnostics & TypeScript checks (`pnpm run check:svelte`).
-- [x] **Step 3**: Knip Dead Code & Unused Exports Analysis (`pnpm run knip`).
-- [x] **Step 4**: Unified Test Suite with Svelte 5 anti-deprecation and security tests (`pnpm test`).
-- [x] **Step 5**: Production Build compilation for Cloudflare Pages (`pnpm run build`).
+Tôi sẽ nâng cấp sau này thành:
+random session ID
+↓
+server-side session
 
----
+hoặc:
 
-### Phase 6 — Documentation 🟢 [COMPLETED]
+signed session token
 
-Synchronized all technical documentation with current source tree:
-- [x] `ARCHITECTURE.md`: Complete system architecture, D1 schema, State Machine, Repository patterns, and developer guide.
-- [x] `DESIGN_PATTERN.md`: Architectural patterns, Svelte 5 Runes & Callback Props guidelines, Dark Slate Glassmorphism color palette.
-- [x] `WORKFLOW_INSTRUCTION.md`: Mandatory 6-step verification workflow, coding standards, GMT+7 policies.
-- [x] `tasks.md`: Full checklist of all 6 phases marked complete.
-- [x] `README.md`: Modernized overview, features, directory references, and commands.
+Nhưng đây không phải việc cần làm ngay nếu đây là app nội bộ với một tài khoản root duy nhất.
 
----
+🔴 B. Webhook đang cho phép query parameter làm secret
 
-## Final Project Verdict
+Trong verifyWebhookAuth():
 
-The application has been successfully hardened and modularized:
-- **Security**: 🟢 Production-grade centralized API Gateway authentication & CSRF protection.
-- **Reliability**: 🟢 Strict GMT+7 Time Service & Stay State Machine transitions.
-- **Architecture**: 🟢 Clean separation of Concerns (Repositories, Services, Utils, Components).
-- **Modern Svelte 5**: 🟢 100% Runes & Callback Props (deprecated patterns blocked by automated tests).
-- **Automation**: 🟢 Full GitHub Actions CI Pipeline with 0 errors/warnings on every check.
+url.searchParams.get("key")
+url.searchParams.get("token")
+url.searchParams.get("apiKey")
+
+Điều này nghĩa là có thể:
+
+/api/ingest/ocr?token=SECRET
+
+Vấn đề là query string dễ xuất hiện trong:
+
+access logs
+reverse proxy logs
+analytics
+browser history
+monitoring
+
+Tốt hơn nên chỉ cho:
+
+Authorization: Bearer <secret>
+
+hoặc:
+
+X-API-Key: <secret>
+
+Tôi sẽ bỏ query secret trong phiên bản hardening tiếp theo.
+
+🔴 C. So sánh API key chưa constant-time
+
+Hiện tại:
+
+providedKey === expectedKey
+
+Với app nội bộ thì rủi ro thực tế thấp.
+
+Nhưng nếu đã đi theo hướng security hardening thì có thể nâng lên constant-time comparison.
+
+Không phải priority cao.
+
+🟠 D. db.ts vẫn còn RemoteD1Database khá đặc biệt
+
+Bạn đã tách repository, nhưng db.ts vẫn chứa:
+
+node:child_process
+node:fs
+node:path
+
+và:
+
+wrangler d1 execute --remote
+
+Điều này vẫn là một kiến trúc hơi "đặc biệt".
+
+Tức là:
+
+Production
+↓
+Cloudflare D1 binding
+
+Local / fallback
+↓
+Node
+↓
+spawn wrangler
+↓
+remote D1
+
+Nó hoạt động được, nhưng không phải thiết kế tôi thích nhất.
+
+Tốt hơn:
+src/lib/server/db/
+d1.ts
+remote-dev.ts
+index.ts
+
+hoặc adapter riêng:
+
+D1Database
+RemoteD1Database
+
+Nhưng hiện tại tôi không khuyên bạn refactor tiếp ngay.
+
+Nếu app đang chạy ổn thì để nguyên.
+
+🟠 E. escapeSql() vẫn là phần tôi muốn loại bỏ
+
+Trong RemoteD1Database vẫn có:
+
+private escapeSql(query: string, params: unknown[])
+
+và tự thay:
+
+?
+↓
+'escaped value'
+
+Trong D1 thật thì bạn đã dùng:
+
+.prepare(...)
+.bind(...)
+
+rất tốt.
+
+Nhưng dev remote adapter lại biến nó thành:
+
+prepared statement giả
+↓
+manual SQL interpolation
+↓
+wrangler CLI
+
+Không phải lỗi bảo mật rõ ràng trong implementation hiện tại, vì có escaping, nhưng đây là một abstraction dễ phát sinh bug lâu dài.
+
+Nếu có Phase 7, tôi sẽ xử lý điểm này.
+
+🟠 F. updateStay() vẫn có dynamic SQL field names
+
+Có đoạn:
+
+for (const [key, val] of Object.entries(fields)) {
+if (key !== "id" && ...)
+sets.push(`${key} = ?`);
+}
+
+Giá trị thì parameterized:
+
+?
+
+nhưng column name không parameterized.
+
+Nếu fields chỉ đến từ code nội bộ thì ổn.
+
+Nhưng nếu sau này API truyền thẳng object vào:
+
+request.body
+↓
+updateStay()
+
+thì đây sẽ là boundary nguy hiểm.
+
+Tôi khuyên:
+
+const ALLOWED_UPDATE_FIELDS = new Set([
+"ghi_chu",
+"so_phong",
+"ngay_di_du_kien",
+...
+]);
+
+hoặc tốt hơn dùng typed update DTO.
+
+🟠 G. upsertStay() vẫn có một chút logic phức tạp
+
+Đoạn:
+
+WHERE guest_id = ?
+AND (
+status != 'CHECKED_OUT'
+OR ngay_den LIKE ?
+)
+
+đang thực hiện dedupe ở application/repository level.
+
+Nó đã tốt hơn trước nhưng vẫn có race condition tiềm ẩn nếu có hai request đồng thời.
+
+Nếu nghiệp vụ thực sự yêu cầu:
+
+1 guest
+
+- # 1 ngày đến
+  1 stay
+
+thì nên có DB constraint/index phù hợp.
+
+Đây là thứ tôi sẽ kiểm tra thêm nếu bạn muốn đưa app lên production với dữ liệu lớn.
+
+🟠 H. Time service tốt hơn nhưng vẫn đang dùng offset thủ công
+
+Bạn đã gom:
+
+time.ts
+
+Đây là cải tiến rất tốt.
+
+Nhưng implementation:
+
+Date.now() + 7 _ 60 _ 60 \* 1000
+
+vẫn là fixed offset.
+
+Đối với Việt Nam thì thực tế hiện tại không có DST, nên không phải bug.
+
+Nhưng về mặt semantic thì:
+
+Asia/Ho_Chi_Minh
+
+sẽ rõ ràng hơn:
+
+UTC+7
+
+Đặc biệt nếu sau này code có xử lý timestamp BCA/API.
+
+Không cần sửa ngay.
+
+🟡 I. Auto checkout vẫn là lazy checkout
+
+Hiện tại:
+
+getStays()
+↓
+autoCheckoutExpiredStays()
+
+Nghĩa là:
+
+Không phải hệ thống tự động checkout đúng 12:00.
+
+Mà là:
+
+Khi hệ thống có request đọc dữ liệu, nó kiểm tra và auto-checkout những record đã quá hạn.
+
+Đây là lazy auto checkout.
+
+Nếu nghiệp vụ yêu cầu:
+
+12:00:00
+↓
+automatically update DB
+
+kể cả không ai mở website, thì Cloudflare Scheduled Worker/Cron sẽ phù hợp hơn.
+
+Nếu nghiệp vụ chỉ cần:
+
+lần tiếp theo mở app
+↓
+dữ liệu tự được cập nhật
+
+thì implementation hiện tại hợp lý.
