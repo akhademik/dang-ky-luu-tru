@@ -410,11 +410,10 @@ class StayService {
 
 		// If stay was synced to BCA, report extension to BCA via API 12 for VN guests
 		if ((stay.status === "SYNCED_KBTT" || stay.status === "EXTENDED") && isVN) {
-			let loaiGiayTo = Number.parseInt(String(stay.loai_giay_to || "1"), 10);
-			if (Number.isNaN(loaiGiayTo) || loaiGiayTo <= 0) {
-				loaiGiayTo = 1;
-			}
-			const soGiayTo = String(stay.so_giay_to || "").trim();
+			const loaiGiayTo = this.catalog.findLoaiGiayTo(stay.loai_giay_to);
+			const soGiayTo =
+				DataTransformer.cleanDocNumber(stay.so_giay_to) ||
+				String(stay.so_giay_to || "").trim();
 			const thoiGianStr = DataTransformer.formatDateTime(newNgayDi, "12:00:00");
 			const bcaPayload = [
 				{
@@ -501,16 +500,17 @@ class StayService {
 
 		// If stay was synced to BCA, report checkout to BCA via API 12 for VN guests
 		if ((stay.status === "SYNCED_KBTT" || stay.status === "EXTENDED") && isVN) {
-			let loaiGiayTo = Number.parseInt(String(stay.loai_giay_to || "1"), 10);
-			if (Number.isNaN(loaiGiayTo) || loaiGiayTo <= 0) {
-				loaiGiayTo = 1;
-			}
-			const soGiayTo = String(stay.so_giay_to || "").trim();
+			const loaiGiayTo = this.catalog.findLoaiGiayTo(stay.loai_giay_to);
+			const soGiayTo =
+				DataTransformer.cleanDocNumber(stay.so_giay_to) ||
+				String(stay.so_giay_to || "").trim();
+			const thoiGianStr = DataTransformer.getVnNow().fullStr;
 			const bcaPayload = [
 				{
 					loai: "TS" as const,
 					soGiayTo,
 					loaiGiayTo,
+					thoiGianStr,
 				},
 			];
 
