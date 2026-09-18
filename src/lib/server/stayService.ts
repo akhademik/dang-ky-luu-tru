@@ -592,6 +592,56 @@ class StayService {
 		return { success: false, message: "Không thể thực hiện trả phòng" };
 	}
 
+	public async updateStayStatus(
+		db: D1DatabaseLike,
+		stayId: string,
+		newStatus: StayStatus,
+	): Promise<{ success: boolean; message: string }> {
+		const stay = await getStayById(db, stayId);
+		if (!stay) {
+			return {
+				success: false,
+				message: "Không tìm thấy khách để đổi trạng thái",
+			};
+		}
+		const isCheckedOut = newStatus === "CHECKED_OUT";
+		const nowStr = new Date(Date.now() + 7 * 3600 * 1000)
+			.toISOString()
+			.replace("T", " ")
+			.substring(0, 19);
+
+		const ok = await dbUpdateStay(db, stayId, {
+			status: newStatus,
+			ngay_di_thuc_te: isCheckedOut
+				? stay.ngay_di_thuc_te || nowStr
+				: undefined,
+		});
+
+		if (ok) {
+			await logKbttAction(db, {
+				stay_id: stayId,
+				api_endpoint: "OVERWRITE_STATUS",
+				guest_name: stay.ho_ten,
+				so_giay_to: stay.so_giay_to,
+				so_phong: stay.so_phong,
+				request_payload: JSON.stringify({
+					oldStatus: stay.status,
+					newStatus,
+				}),
+				response_payload: JSON.stringify({
+					success: true,
+					status: newStatus,
+				}),
+				is_success: 1,
+			});
+			return {
+				success: true,
+				message: `Đã đổi trạng thái khách sang "${newStatus}" thành công!`,
+			};
+		}
+		return { success: false, message: "Không thể cập nhật trạng thái" };
+	}
+
 	public async updateGuestAndStay(
 		db: D1DatabaseLike,
 		stayId: string,
@@ -612,6 +662,7 @@ class StayService {
 			thoi_han_thi_thuc?: string;
 			ly_do_luu_tru?: number;
 			ghi_chu?: string;
+			status?: StayStatus;
 		},
 	): Promise<boolean> {
 		const stay = await getStayById(db, stayId);
@@ -648,6 +699,7 @@ class StayService {
 			thoi_han_thi_thuc: isVN ? "" : payload.thoi_han_thi_thuc,
 			ly_do_luu_tru: payload.ly_do_luu_tru,
 			ghi_chu: payload.ghi_chu,
+			status: payload.status,
 		});
 
 		return true;

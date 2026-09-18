@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 360 nodes · 756 edges · 23 communities (13 shown, 5 thin omitted)
+- 363 nodes · 752 edges · 21 communities (12 shown, 4 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1bb03e24`
+- Built from commit: `70aacda7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,14 +18,12 @@
 - syncPipeline.ts
 - devDependencies
 - scripts
-- compilerOptions
 - DataTransformer
-- CatalogManager
 - biome.json
-- types/index.ts
-- TokenManager
-- GoogleSheetService
+- compilerOptions
+- CatalogManager
 - catalogManager.ts
+- GoogleSheetService
 - login/+server.ts
 - wrangler.json
 - apps_script_onedit.js
@@ -34,24 +32,24 @@
 - svelte.config.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `DataTransformer` - 30 edges
-2. `CatalogManager` - 28 edges
-3. `getDb()` - 28 edges
+1. `DataTransformer` - 29 edges
+2. `getDb()` - 29 edges
+3. `CatalogManager` - 27 edges
 4. `Logger` - 22 edges
 5. `runTests()` - 22 edges
-6. `StayService` - 20 edges
+6. `StayService` - 19 edges
 7. `SyncPipeline` - 19 edges
 8. `GoogleSheetService` - 18 edges
-9. `TokenManager` - 18 edges
-10. `KbttClient` - 17 edges
+9. `KbttClient` - 17 edges
+10. `TokenManager` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `runTests()` --calls--> `GoogleSheetService`  [EXTRACTED]
-  test/test-pipeline.ts → src/lib/server/googleSheetService.ts
-- `runTests()` --calls--> `KbttClient`  [EXTRACTED]
-  test/test-pipeline.ts → src/lib/server/kbttClient.ts
 - `include` --extends--> `src/**/*.svelte`  [EXTRACTED]
   tsconfig.json → biome.json
+- `runTests()` --calls--> `KbttClient`  [EXTRACTED]
+  test/test-pipeline.ts → src/lib/server/kbttClient.ts
+- `runTests()` --calls--> `GoogleSheetService`  [EXTRACTED]
+  test/test-pipeline.ts → src/lib/server/googleSheetService.ts
 - `runTests()` --calls--> `checkoutStay()`  [EXTRACTED]
   test/test-pipeline.ts → src/lib/server/db.ts
 - `runTests()` --calls--> `extendStay()`  [EXTRACTED]
@@ -60,15 +58,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (23 total, 5 thin omitted)
+## Communities (21 total, 4 thin omitted)
 
 ### Community 0 - "db.ts"
-Cohesion: 0.13
-Nodes (34): autoCheckoutExpiredStays(), checkoutStay(), clearAuditLogs(), deleteAuditLog(), deleteStay(), extendStay(), generateId(), getAuditLogs() (+26 more)
+Cohesion: 0.08
+Nodes (44): autoCheckoutExpiredStays(), checkoutStay(), clearAuditLogs(), deleteAuditLog(), deleteStay(), extendStay(), generateId(), getAuditLogs() (+36 more)
 
 ### Community 1 - "syncPipeline.ts"
-Cohesion: 0.10
-Nodes (7): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, SyncPipeline
+Cohesion: 0.07
+Nodes (9): ApiEnvironment, CONFIG, ApiResponse, KbttClient, LogEntry, Logger, LogLevel, SyncPipeline (+1 more)
 
 ### Community 2 - "devDependencies"
 Cohesion: 0.05
@@ -78,61 +76,57 @@ Nodes (37): @biomejs/biome, jiti, entry, ignoreDependencies, test/**/*.ts, proje
 Cohesion: 0.07
 Nodes (26): author, description, keywords, license, main, name, scripts, build (+18 more)
 
-### Community 4 - "compilerOptions"
-Cohesion: 0.08
-Nodes (24): includes, src/**/*.js, src/**/*.svelte, src/**/*.ts, test/**/*.ts, node_modules/**, public/**, ./.svelte-kit/tsconfig.json (+16 more)
+### Community 4 - "DataTransformer"
+Cohesion: 0.24
+Nodes (4): DataTransformer, CompletenessResult, RawOcrRow, SyncResult
 
-### Community 5 - "DataTransformer"
-Cohesion: 0.26
-Nodes (3): DataTransformer, CompletenessResult, RawOcrRow
+### Community 5 - "biome.json"
+Cohesion: 0.09
+Nodes (22): source, assist, actions, noUnusedVariables, files, includes, formatter, enabled (+14 more)
 
-### Community 7 - "biome.json"
-Cohesion: 0.11
-Nodes (17): source, assist, actions, noUnusedVariables, files, formatter, enabled, indentStyle (+9 more)
+### Community 6 - "compilerOptions"
+Cohesion: 0.10
+Nodes (19): node_modules/**, public/**, ./.svelte-kit/tsconfig.json, compilerOptions, allowJs, checkJs, esModuleInterop, forceConsistentCasingInFileNames (+11 more)
 
-### Community 8 - "types/index.ts"
-Cohesion: 0.14
-Nodes (10): D1PreparedStatement, Guest, IngestResult, IngestResultItem, KbttLog, Stay, StayDetail, SyncResult (+2 more)
-
-### Community 11 - "catalogManager.ts"
+### Community 8 - "catalogManager.ts"
 Cohesion: 0.21
 Nodes (5): LOAI_GIAY_TO_DATA, LY_DO_CU_TRU_DATA, QUOC_TICH_DATA, StandardCatalogItem, CatalogItem
 
-### Community 12 - "login/+server.ts"
+### Community 10 - "login/+server.ts"
 Cohesion: 0.33
 Nodes (6): handle(), getServerPassword(), verifySession(), GET(), POST(), load()
 
-### Community 13 - "wrangler.json"
+### Community 11 - "wrangler.json"
 Cohesion: 0.25
 Nodes (7): nodejs_compat, compatibility_date, compatibility_flags, d1_databases, name, pages_build_output_dir, $schema
 
-### Community 14 - "apps_script_onedit.js"
+### Community 12 - "apps_script_onedit.js"
 Cohesion: 0.32
 Nodes (3): handleSheetChange(), handleSheetEdit(), syncRowToCloudflare()
 
-### Community 15 - "app.d.ts"
+### Community 13 - "app.d.ts"
 Cohesion: 0.40
 Nodes (3): App, Locals, Platform
 
 ## Knowledge Gaps
-- **81 isolated node(s):** `ApiResponse`, `LogEntry`, `LogLevel`, `CatalogItem`, `Locals` (+76 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 132 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **81 isolated node(s):** `LogEntry`, `LogLevel`, `ApiResponse`, `Locals`, `Platform` (+76 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 134 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `CatalogManager` connect `CatalogManager` to `db.ts`, `syncPipeline.ts`, `DataTransformer`, `types/index.ts`, `catalogManager.ts`?**
+- **Why does `CatalogManager` connect `CatalogManager` to `catalogManager.ts`, `syncPipeline.ts`, `DataTransformer`, `db.ts`?**
   _High betweenness centrality (0.063) - this node is a cross-community bridge._
-- **Why does `DataTransformer` connect `DataTransformer` to `db.ts`, `syncPipeline.ts`, `CatalogManager`, `types/index.ts`, `GoogleSheetService`?**
-  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+- **Why does `DataTransformer` connect `DataTransformer` to `db.ts`, `syncPipeline.ts`, `CatalogManager`?**
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `runTests()` (e.g. with `.fetchSheetData()` and `.fetchSheetTabs()`) actually correct?**
   _`runTests()` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `ApiResponse`, `LogEntry`, `LogLevel` to the rest of the system?**
+- **What connects `LogEntry`, `LogLevel`, `ApiResponse` to the rest of the system?**
   _81 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.1264849755415793 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0837138508371385 - nodes in this community are weakly interconnected._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.10048309178743961 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06875 - nodes in this community are weakly interconnected._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.05405405405405406 - nodes in this community are weakly interconnected._

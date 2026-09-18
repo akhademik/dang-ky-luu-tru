@@ -20,27 +20,23 @@ async function runE2ETest() {
 
 	try {
 		await page.goto("http://localhost:5173", {
-			waitUntil: "domcontentloaded",
+			waitUntil: "networkidle",
 		});
 		console.log("✅ Page loaded successfully. Title:", await page.title());
-		await page.waitForTimeout(2000);
-
-		// Wait for initial auth check to finish
-		await page.waitForFunction(() => !document.querySelector(".animate-spin"));
-		await page.waitForTimeout(500);
+		await page.waitForTimeout(1000);
 
 		// Check if login screen is active
-		const userInput = await page.$("#app_username");
 		const passInput = await page.$("#app_password");
-		if (userInput || passInput) {
+		if (passInput) {
 			console.log("🔒 Login screen detected. Entering credentials...");
-			if (userInput) await page.fill("#app_username", "root");
-			if (passInput) await page.fill("#app_password", "@@Abc123");
+			await page.fill("#app_username", "root");
+			await page.fill("#app_password", "@@Abc123");
+			await page.waitForTimeout(500);
 			await page.click('button[type="submit"]');
-			await page.waitForSelector("#app_password", {
-				state: "detached",
-				timeout: 10000,
-			});
+			await page.waitForFunction(
+				() => !document.querySelector("#app_password"),
+				{ timeout: 15000 },
+			);
 			console.log("🔓 Logged in successfully.");
 			await page.waitForTimeout(1000);
 		} else {
@@ -50,6 +46,28 @@ async function runE2ETest() {
 		// Check if table has guests
 		const guestRows = await page.$$("table tbody tr");
 		console.log(`📊 Found ${guestRows.length} rows in the initial table.`);
+
+		// Click "Tất Cả Hồ Sơ" tab
+		const allGuestsTab = await page.getByText("Tất Cả Hồ Sơ");
+		if (await allGuestsTab.isVisible()) {
+			await allGuestsTab.click();
+			console.log("✅ Clicked on Tất Cả Hồ Sơ tab.");
+			await page.waitForTimeout(1000);
+
+			// Check if interactive status badge exists and click it
+			const statusBadge = await page.$("button[title*='ghi đè']");
+			if (statusBadge) {
+				await statusBadge.click();
+				console.log(
+					"✅ Clicked on interactive status badge, opening Status Override Modal.",
+				);
+				await page.waitForSelector("#status-selector-grid", { timeout: 5000 });
+				// Click close or cancel
+				await page.getByRole("button", { name: "Hủy Bỏ" }).click();
+				console.log("✅ Closed Status Override Modal.");
+				await page.waitForTimeout(500);
+			}
+		}
 
 		// Click "Dev Logs" tab
 		const devLogsTab = await page.getByText("Dev Logs");
@@ -62,6 +80,7 @@ async function runE2ETest() {
 		console.log("🎉 Playwright test completed without unhandled errors.");
 	} catch (err: unknown) {
 		console.error("❌ Playwright test failed:", err);
+		process.exit(1);
 	} finally {
 		await browser.close();
 	}

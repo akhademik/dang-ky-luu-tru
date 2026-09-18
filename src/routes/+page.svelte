@@ -106,6 +106,17 @@ function getShortAddress(
 	return "-";
 }
 
+type StayStatus =
+	| "PENDING_VALIDATION"
+	| "READY_TO_SYNC"
+	| "NOT_CHECKED_IN"
+	| "SYNCED_KBTT"
+	| "CHECKED_IN"
+	| "EXTENDED"
+	| "CHECKED_OUT"
+	| "ERROR"
+	| "CANCELLED";
+
 interface StayDetail {
 	id: string;
 	guest_id: string;
@@ -115,16 +126,7 @@ interface StayDetail {
 	ngay_di_thuc_te?: string;
 	thoi_han_thi_thuc?: string;
 	ly_do_luu_tru?: number;
-	status:
-		| "PENDING_VALIDATION"
-		| "READY_TO_SYNC"
-		| "NOT_CHECKED_IN"
-		| "SYNCED_KBTT"
-		| "CHECKED_IN"
-		| "EXTENDED"
-		| "CHECKED_OUT"
-		| "ERROR"
-		| "CANCELLED";
+	status: StayStatus;
 	ma_ho_so_kbtt?: string;
 	ghi_chu?: string;
 	source_sheet_tab?: string;
@@ -412,6 +414,10 @@ let deletingIds = $state<Set<string>>(new Set());
 
 let showPayloadModal = $state(false);
 let selectedLog = $state<KbttLog | null>(null);
+
+let showStatusModal = $state(false);
+let statusTargetStay = $state<StayDetail | null>(null);
+let selectedNewStatus = $state<StayStatus>("SYNCED_KBTT");
 
 let showCustomConfirmModal = $state(false);
 let confirmDialogState = $state<{
@@ -882,6 +888,50 @@ async function submitCheckout() {
 		}
 	} catch {
 		showToast("Lỗi khi checkout", "error");
+		clearLocalCache();
+		await loadStays(true);
+	}
+}
+
+// Overwrite / Change Stay Status in DB
+function openStatusModal(stay: StayDetail) {
+	statusTargetStay = stay;
+	selectedNewStatus = stay.status;
+	showStatusModal = true;
+}
+
+async function submitStatusOverride() {
+	if (!statusTargetStay) return;
+	const targetId = statusTargetStay.id;
+	const newStatus = selectedNewStatus;
+	showStatusModal = false;
+
+	clearLocalCache();
+	// Optimistically update
+	rawStays = rawStays.map((s) =>
+		s.id === targetId ? { ...s, status: newStatus } : s,
+	);
+	showToast("Đang cập nhật trạng thái...", "info");
+
+	try {
+		const res = await fetch(`/api/stays/${targetId}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ status: newStatus }),
+		});
+		const data = await res.json();
+		if (data.success) {
+			showToast(`✓ Đã cập nhật trạng thái thành "${newStatus}"!`, "success");
+			clearLocalCache();
+			await loadStays(true);
+			await loadStats(true);
+		} else {
+			showToast(`Lỗi: ${data.message || data.error}`, "error");
+			clearLocalCache();
+			await loadStays(true);
+		}
+	} catch {
+		showToast("Lỗi khi cập nhật trạng thái", "error");
 		clearLocalCache();
 		await loadStays(true);
 	}
@@ -1617,11 +1667,11 @@ async function submitEdit() {
 	};
 	showEditModal = false;
 
+	clearLocalCache();
 	// Optimistically update local array immediately
 	rawStays = rawStays.map((s) =>
 		s.id === updatedItem.id ? { ...s, ...updatedItem } : s,
 	);
-	setLocalCache(`stays_master_${activeTab}`, rawStays);
 	showToast("Đang cập nhật thay đổi vào CSDL...", "info");
 
 	try {
@@ -1633,13 +1683,17 @@ async function submitEdit() {
 		const data = await res.json();
 		if (data.success) {
 			showToast("✓ Cập nhật thông tin khách thành công!", "success");
-			loadStats();
+			clearLocalCache();
+			await loadStays(true);
+			await loadStats(true);
 		} else {
-			showToast(`Lỗi: ${data.message}`, "error");
+			showToast(`Lỗi: ${data.message || data.error}`, "error");
+			clearLocalCache();
 			await loadStays(true);
 		}
 	} catch {
 		showToast("Lỗi kết nối khi lưu thông tin", "error");
+		clearLocalCache();
 		await loadStays(true);
 	}
 }
@@ -2536,18 +2590,20 @@ onMount(async () => {
 								<th class="p-3.5">CCCD / Hộ Chiếu</th>
 								<th class="p-3.5">Ngày Đến</th>
 								<th class="p-3.5">Ngày Đi Dự Kiến</th>
+								<th class="p-3.5">Trạng Thái</th>
 								<th class="p-3.5 text-center">Quản Lý</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-slate-700/60">
 							{#if stays.length === 0}
 								<tr>
-									<td colspan="6" class="p-8 text-center text-slate-400">Không tìm thấy lượt lưu trú nào phù hợp.</td>
+									<td colspan="7" class="p-8 text-center text-slate-400">Không tìm thấy lượt lưu trú nào phù hợp.</td>
 								</tr>
 							{:else}
 								{#each stays as stay (stay.id)}
 									{@const isDeleting = deletingIds.has(stay.id)}
 									{@const val = validateStayDetail(stay)}
+									{@const badge = getStatusBadge(stay.status, val.hasErrors)}
 									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
 											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
@@ -2597,6 +2653,17 @@ onMount(async () => {
 											{:else}
 												<span class="text-amber-300">{formatDepartureDisplay(stay.ngay_di_du_kien)}</span>
 											{/if}
+										</td>
+										<td class="p-3.5">
+											<button
+												type="button"
+												onclick={() => openStatusModal(stay)}
+												class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+												title="Bấm để ghi đè / đổi trạng thái CSDL"
+											>
+												<span>{badge.label}</span>
+												<span class="text-[9px] opacity-0 group-hover/badge:opacity-100 transition-opacity">✎</span>
+											</button>
 										</td>
 										<td class="p-3.5 text-center">
 											{#if isDeleting}
@@ -2743,9 +2810,15 @@ onMount(async () => {
 
 									<!-- Col 5: Trạng thái -->
 									<div class="w-32 min-w-[8rem] max-w-[8rem] flex-shrink-0">
-										<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
-											{badge.label}
-										</span>
+										<button
+											type="button"
+											onclick={(e) => { e.stopPropagation(); openStatusModal(stay); }}
+											class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+											title="Bấm để ghi đè / đổi trạng thái CSDL"
+										>
+											<span>{badge.label}</span>
+											<span class="text-[9px] opacity-0 group-hover/badge:opacity-100 transition-opacity">✎</span>
+										</button>
 									</div>
 
 									<!-- Col 6: Thao tác -->
@@ -2835,10 +2908,16 @@ onMount(async () => {
 										</div>
 
 										<!-- Col 5: Trạng thái gần nhất -->
-										<div class="w-32 min-w-[8rem] max-w-[8rem] flex-shrink-0">
-											<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {latestBadge.class}">
-												{latestBadge.label}
-											</span>
+										<div class="w-32 min-w-[8rem] max-w-[8rem] flex-shrink-0" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="toolbar" tabindex="-1">
+											<button
+												type="button"
+												onclick={() => openStatusModal(group.latestStay)}
+												class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {latestBadge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+												title="Bấm để ghi đè / đổi trạng thái CSDL"
+											>
+												<span>{latestBadge.label}</span>
+												<span class="text-[9px] opacity-0 group-hover/badge:opacity-100 transition-opacity">✎</span>
+											</button>
 										</div>
 
 										<!-- Col 6: Thao tác -->
@@ -2914,9 +2993,15 @@ onMount(async () => {
 																	</div>
 																</td>
 																<td class="p-2.5 font-sans">
-																	<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
-																		{badge.label}
-																	</span>
+																	<button
+																		type="button"
+																		onclick={() => openStatusModal(stay)}
+																		class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+																		title="Bấm để ghi đè / đổi trạng thái CSDL"
+																	>
+																		<span>{badge.label}</span>
+																		<span class="text-[9px] opacity-0 group-hover/badge:opacity-100 transition-opacity">✎</span>
+																	</button>
 																</td>
 																<td class="p-2.5 text-slate-400 max-w-xs truncate font-sans">
 																	{stay.ghi_chu || '-'}
@@ -3330,6 +3415,22 @@ onMount(async () => {
 					</div>
 
 					<div class="sm:col-span-2">
+						<label for="edit_status" class="block text-slate-400 mb-1 font-medium">Trạng thái lưu trú</label>
+						<select
+							id="edit_status"
+							bind:value={editStay.status}
+							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500 transition-colors font-semibold"
+						>
+							<option value="SYNCED_KBTT">🏨 Đang ở (Đã gửi BCA)</option>
+							<option value="READY_TO_SYNC">📤 Sẵn sàng khai báo</option>
+							<option value="CHECKED_OUT">🚪 Đã trả phòng</option>
+							<option value="EXTENDED">⏱️ Đã gia hạn</option>
+							<option value="NOT_CHECKED_IN">⏳ Chưa nhận phòng</option>
+							<option value="ERROR">⚠️ Lỗi khai báo</option>
+						</select>
+					</div>
+
+					<div class="sm:col-span-2">
 						<label for="edit_dia_chi_chi_tiet" class="block text-slate-400 mb-1 font-medium">Địa chỉ</label>
 						<input
 							id="edit_dia_chi_chi_tiet"
@@ -3376,6 +3477,159 @@ onMount(async () => {
 							<span>💾</span> Lưu Thay Đổi
 						</button>
 					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- MODAL: GHI ĐÈ TRẠNG THÁI LƯU TRÚ (STATUS OVERRIDE) -->
+	{#if showStatusModal && statusTargetStay}
+		{@const curBadge = getStatusBadge(statusTargetStay.status)}
+		<div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+			<div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+				<div class="flex items-center justify-between border-b border-slate-800 pb-3">
+					<div class="flex items-center gap-2.5">
+						<span class="text-2xl">🔄</span>
+						<div>
+							<h3 class="font-bold text-slate-100 text-base">Ghi Đè Trạng Thái Lưu Trú</h3>
+							<p class="text-xs text-slate-400">Điều chỉnh trạng thái trong Database khi bị lệch với cổng BCA</p>
+						</div>
+					</div>
+					<button
+						type="button"
+						onclick={() => { showStatusModal = false; }}
+						class="text-slate-400 hover:text-white text-xl p-1 rounded-lg hover:bg-slate-800 transition-colors"
+					>✕</button>
+				</div>
+
+				<div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 text-xs space-y-1.5 font-mono">
+					<div class="flex justify-between">
+						<span class="text-slate-400 font-sans">Khách hàng:</span>
+						<strong class="text-slate-100 font-bold">{statusTargetStay.ho_ten}</strong>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-slate-400 font-sans">Số giấy tờ:</span>
+						<span class="text-slate-200">{statusTargetStay.so_giay_to} ({statusTargetStay.quoc_tich})</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-slate-400 font-sans">Số phòng:</span>
+						<span class="text-sky-400 font-bold">Phòng {statusTargetStay.so_phong}</span>
+					</div>
+					<div class="flex justify-between items-center pt-1 border-t border-slate-800/80">
+						<span class="text-slate-400 font-sans">Trạng thái hiện tại:</span>
+						<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {curBadge.class}">
+							{curBadge.label} ({statusTargetStay.status})
+						</span>
+					</div>
+				</div>
+
+				<div class="space-y-2">
+					<label for="status-selector-grid" class="block text-xs font-semibold text-slate-300">
+						Chọn trạng thái mới muốn thiết lập:
+					</label>
+					<div id="status-selector-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+						<!-- SYNCED_KBTT -->
+						<button
+							type="button"
+							onclick={() => { selectedNewStatus = 'SYNCED_KBTT'; }}
+							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'SYNCED_KBTT' ? 'bg-emerald-950/90 border-emerald-500 ring-2 ring-emerald-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+						>
+							<span class="text-base mt-0.5">🏨</span>
+							<div>
+								<div class="font-bold {selectedNewStatus === 'SYNCED_KBTT' ? 'text-emerald-300' : 'text-slate-200'}">Đang ở (Đã gửi BCA)</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Gắn flag để có thể bấm Checkout / Gia hạn lại lên BCA</div>
+							</div>
+						</button>
+
+						<!-- READY_TO_SYNC -->
+						<button
+							type="button"
+							onclick={() => { selectedNewStatus = 'READY_TO_SYNC'; }}
+							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'READY_TO_SYNC' ? 'bg-sky-950/90 border-sky-500 ring-2 ring-sky-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+						>
+							<span class="text-base mt-0.5">📤</span>
+							<div>
+								<div class="font-bold {selectedNewStatus === 'READY_TO_SYNC' ? 'text-sky-300' : 'text-slate-200'}">Sẵn sàng khai báo</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Để gửi lại thông báo lưu trú lên cổng BCA</div>
+							</div>
+						</button>
+
+						<!-- CHECKED_OUT -->
+						<button
+							type="button"
+							onclick={() => { selectedNewStatus = 'CHECKED_OUT'; }}
+							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'CHECKED_OUT' ? 'bg-slate-800 border-slate-400 ring-2 ring-slate-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+						>
+							<span class="text-base mt-0.5">🚪</span>
+							<div>
+								<div class="font-bold {selectedNewStatus === 'CHECKED_OUT' ? 'text-slate-200' : 'text-slate-300'}">Đã trả phòng</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Đóng lượt lưu trú và lưu trữ lịch sử</div>
+							</div>
+						</button>
+
+						<!-- EXTENDED -->
+						<button
+							type="button"
+							onclick={() => { selectedNewStatus = 'EXTENDED'; }}
+							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'EXTENDED' ? 'bg-indigo-950/90 border-indigo-500 ring-2 ring-indigo-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+						>
+							<span class="text-base mt-0.5">⏱️</span>
+							<div>
+								<div class="font-bold {selectedNewStatus === 'EXTENDED' ? 'text-indigo-300' : 'text-slate-200'}">Đã gia hạn</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Khách đã gia hạn thêm ngày lưu trú</div>
+							</div>
+						</button>
+
+						<!-- NOT_CHECKED_IN -->
+						<button
+							type="button"
+							onclick={() => { selectedNewStatus = 'NOT_CHECKED_IN'; }}
+							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'NOT_CHECKED_IN' ? 'bg-amber-950/90 border-amber-500 ring-2 ring-amber-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+						>
+							<span class="text-base mt-0.5">⏳</span>
+							<div>
+								<div class="font-bold {selectedNewStatus === 'NOT_CHECKED_IN' ? 'text-amber-300' : 'text-slate-200'}">Chưa nhận phòng</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Hồ sơ đặt trước chưa đến cơ sở</div>
+							</div>
+						</button>
+
+						<!-- ERROR -->
+						<button
+							type="button"
+							onclick={() => { selectedNewStatus = 'ERROR'; }}
+							class="p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 {selectedNewStatus === 'ERROR' ? 'bg-rose-950/90 border-rose-500 ring-2 ring-rose-400/30' : 'bg-slate-800/60 border-slate-700 hover:border-slate-600'}"
+						>
+							<span class="text-base mt-0.5">⚠️</span>
+							<div>
+								<div class="font-bold {selectedNewStatus === 'ERROR' ? 'text-rose-300' : 'text-slate-200'}">Lỗi khai báo</div>
+								<div class="text-[11px] text-slate-400 leading-tight mt-0.5">Đánh dấu cần kiểm tra và sửa thông tin</div>
+							</div>
+						</button>
+					</div>
+				</div>
+
+				<div class="p-3 bg-amber-950/40 border border-amber-800/60 rounded-xl text-amber-300 text-xs flex items-start gap-2">
+					<span class="text-base">💡</span>
+					<div>
+						<strong>Mẹo xử lý:</strong> Nếu khách đã bị checkout nhầm trên DB nhưng trên cổng BCA vẫn còn đang ở, hãy chuyển sang <span class="font-bold underline">"Đang ở (Đã gửi BCA)"</span> rồi sau đó ra bảng điều khiển bấm lại nút <strong>"Checkout 🚪"</strong> để hệ thống gửi lệnh trả phòng lên BCA.
+					</div>
+				</div>
+
+				<div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
+					<button
+						type="button"
+						onclick={() => { showStatusModal = false; }}
+						class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+					>
+						Hủy Bỏ
+					</button>
+					<button
+						type="button"
+						onclick={() => submitStatusOverride()}
+						class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-sky-600/30 transition-all flex items-center gap-1.5"
+					>
+						<span>💾</span> Lưu Trạng Thái
+					</button>
 				</div>
 			</div>
 		</div>
