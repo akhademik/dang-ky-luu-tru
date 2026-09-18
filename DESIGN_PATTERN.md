@@ -81,6 +81,13 @@ Dự án áp dụng phong cách **Modern Dark Slate Glassmorphism** hiện đạ
 - Bo góc `rounded-lg`, đổ bóng `shadow-xl`, hiệu ứng mờ `backdrop-blur-md`
 - Phân loại 3 mức: `success` (Emerald), `error` (Rose), `info` (Sky).
 
+### 3.4. Custom Modals & Dialogs Rule (Tuyệt đối không dùng Native Dialog)
+- **CẤM SỬ DỤNG**: Tuyệt đối không sử dụng các hộp thoại mặc định của trình duyệt như `window.alert()`, `window.confirm()`, `window.prompt()`.
+- **BẮT BUỘC CUSTOM MODAL**: Mọi thao tác xác nhận (xóa khách, checkout, xóa dev logs, cảnh báo...) đều phải dùng component/dialog modal tùy biến viết bằng Svelte + Tailwind:
+  - Lớp phủ mờ nền: `fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4`
+  - Hộp thoại: `bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl`
+  - Đầy đủ tiêu đề, icon cảnh báo, nội dung giải thích rõ ràng kèm nút "Hủy" và "Xác nhận".
+
 ---
 
 ## 4. QUY TẮC MÔI TRƯỜNG & BẢO MẬT

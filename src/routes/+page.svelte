@@ -404,6 +404,18 @@ let deletingIds = $state<Set<string>>(new Set());
 let showPayloadModal = $state(false);
 let selectedLog = $state<KbttLog | null>(null);
 
+let showCustomConfirmModal = $state(false);
+let confirmDialogState = $state<{
+	title: string;
+	message: string;
+	subMessage?: string;
+	confirmText: string;
+	cancelText: string;
+	icon?: string;
+	isDanger?: boolean;
+	onConfirm: () => Promise<void> | void;
+} | null>(null);
+
 let showAddModal = $state(false);
 let newGuestForm = $state({
 	ho_ten: "",
@@ -1887,52 +1899,96 @@ function getAuditLogFailureReason(log: KbttLog): string {
 	return "Yêu cầu không thành công";
 }
 
-async function deleteAuditLogItem(logId: string) {
-	if (
-		!confirm(
-			"Bạn có chắc chắn muốn xóa bản ghi log này khỏi Dev Logs? (Không ảnh hưởng đến thông tin khách lưu trú)",
-		)
-	) {
-		return;
-	}
-	try {
-		const res = await fetch(`/api/stays/audit?id=${logId}`, {
-			method: "DELETE",
-		});
-		const data = await res.json();
-		if (data.success) {
-			auditLogs = auditLogs.filter((l) => l.id !== logId);
-			showToast("✓ Đã xóa bản ghi nhật ký khỏi Dev Logs", "success");
-		} else {
-			showToast(`Không thể xóa log: ${data.error || "Lỗi"}`, "error");
-		}
-	} catch {
-		showToast("Lỗi khi kết nối xóa log", "error");
+function openCustomConfirm(options: {
+	title: string;
+	message: string;
+	subMessage?: string;
+	confirmText?: string;
+	cancelText?: string;
+	icon?: string;
+	isDanger?: boolean;
+	onConfirm: () => Promise<void> | void;
+}) {
+	confirmDialogState = {
+		title: options.title,
+		message: options.message,
+		subMessage: options.subMessage,
+		confirmText: options.confirmText || "Xác nhận",
+		cancelText: options.cancelText || "Hủy",
+		icon: options.icon || "⚠️",
+		isDanger: options.isDanger !== false,
+		onConfirm: options.onConfirm,
+	};
+	showCustomConfirmModal = true;
+}
+
+async function handleCustomConfirm() {
+	if (confirmDialogState?.onConfirm) {
+		const fn = confirmDialogState.onConfirm;
+		showCustomConfirmModal = false;
+		await fn();
+	} else {
+		showCustomConfirmModal = false;
 	}
 }
 
-async function clearAllAuditLogs() {
-	if (
-		!confirm(
-			"Bạn có chắc chắn muốn xóa TOÀN BỘ nhật ký Dev Logs? (Không ảnh hưởng đến thông tin khách lưu trú)",
-		)
-	) {
-		return;
-	}
-	try {
-		const res = await fetch("/api/stays/audit?clear=true", {
-			method: "DELETE",
-		});
-		const data = await res.json();
-		if (data.success) {
-			auditLogs = [];
-			showToast("✓ Đã xóa toàn bộ nhật ký Dev Logs", "success");
-		} else {
-			showToast(`Không thể xóa logs: ${data.error || "Lỗi"}`, "error");
-		}
-	} catch {
-		showToast("Lỗi khi xóa logs", "error");
-	}
+function deleteAuditLogItem(logId: string) {
+	openCustomConfirm({
+		title: "Xác nhận xóa bản ghi nhật ký",
+		icon: "🗑️",
+		isDanger: true,
+		confirmText: "Xóa log",
+		cancelText: "Hủy",
+		message: "Bạn có chắc chắn muốn xóa bản ghi này khỏi Dev Logs?",
+		subMessage:
+			"Thao tác này chỉ xóa bản ghi lịch sử API và hoàn toàn không ảnh hưởng đến dữ liệu khách lưu trú trong CSDL.",
+		onConfirm: async () => {
+			try {
+				const res = await fetch(`/api/stays/audit?id=${logId}`, {
+					method: "DELETE",
+				});
+				const data = await res.json();
+				if (data.success) {
+					auditLogs = auditLogs.filter((l) => l.id !== logId);
+					showToast("✓ Đã xóa bản ghi nhật ký khỏi Dev Logs", "success");
+				} else {
+					showToast(`Không thể xóa log: ${data.error || "Lỗi"}`, "error");
+				}
+			} catch {
+				showToast("Lỗi khi kết nối xóa log", "error");
+			}
+		},
+	});
+}
+
+function clearAllAuditLogs() {
+	openCustomConfirm({
+		title: "Xác nhận xóa TOÀN BỘ nhật ký",
+		icon: "🗑️",
+		isDanger: true,
+		confirmText: "Xóa tất cả logs",
+		cancelText: "Hủy",
+		message:
+			"Bạn có chắc chắn muốn xóa toàn bộ lịch sử API trong Dev Logs không?",
+		subMessage:
+			"Tất cả bản ghi trong bảng kbtt_logs sẽ bị xóa. Dữ liệu khách hàng và các lượt ở vẫn được bảo toàn nguyên vẹn trong CSDL.",
+		onConfirm: async () => {
+			try {
+				const res = await fetch("/api/stays/audit?clear=true", {
+					method: "DELETE",
+				});
+				const data = await res.json();
+				if (data.success) {
+					auditLogs = [];
+					showToast("✓ Đã xóa toàn bộ nhật ký Dev Logs", "success");
+				} else {
+					showToast(`Không thể xóa logs: ${data.error || "Lỗi"}`, "error");
+				}
+			} catch {
+				showToast("Lỗi khi xóa logs", "error");
+			}
+		},
+	});
 }
 
 // Svelte 5 Effects
@@ -3545,6 +3601,51 @@ onMount(async () => {
 				<div class="flex items-center justify-end gap-3 mt-6 border-t border-slate-700 pt-4">
 					<button type="button" onclick={() => { showAddModal = false; }} class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium">Hủy</button>
 					<button type="button" onclick={() => submitAddGuest()} class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold shadow-lg">Thêm Khách</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- MODAL: CUSTOM REUSABLE CONFIRM DIALOG -->
+	{#if showCustomConfirmModal && confirmDialogState}
+		<div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+			<div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 {confirmDialogState.isDanger ? 'bg-rose-950/80 border border-rose-700/80 text-rose-300' : 'bg-sky-950/80 border border-sky-700/80 text-sky-300'}">
+						{confirmDialogState.icon}
+					</div>
+					<div>
+						<h3 class="text-sm md:text-base font-bold {confirmDialogState.isDanger ? 'text-rose-400' : 'text-slate-100'}">
+							{confirmDialogState.title}
+						</h3>
+					</div>
+				</div>
+
+				<p class="text-xs md:text-sm text-slate-300 mb-2 leading-relaxed">
+					{confirmDialogState.message}
+				</p>
+
+				{#if confirmDialogState.subMessage}
+					<p class="text-[11px] text-slate-400 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60 mb-4">
+						{confirmDialogState.subMessage}
+					</p>
+				{/if}
+
+				<div class="flex items-center justify-end gap-2.5 mt-5 pt-3 border-t border-slate-700/60">
+					<button
+						type="button"
+						onclick={() => { showCustomConfirmModal = false; }}
+						class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl text-xs font-semibold transition-all"
+					>
+						{confirmDialogState.cancelText}
+					</button>
+					<button
+						type="button"
+						onclick={handleCustomConfirm}
+						class="px-4 py-2 {confirmDialogState.isDanger ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-900/30' : 'bg-sky-600 hover:bg-sky-500 shadow-sky-900/30'} text-white font-bold rounded-xl text-xs shadow-lg transition-all transform active:scale-95 flex items-center gap-1.5"
+					>
+						<span>{confirmDialogState.confirmText}</span>
+					</button>
 				</div>
 			</div>
 		</div>

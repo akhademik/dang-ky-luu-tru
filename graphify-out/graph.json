@@ -1147,7 +1147,7 @@
       "file_type": "code",
       "norm_label": "loadauditlogs()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1941"
+      "source_location": "L1997"
     },
     {
       "id": "src_routes_page_showtoast",
@@ -1159,7 +1159,7 @@
       "file_type": "code",
       "norm_label": "showtoast()",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L544"
+      "source_location": "L556"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_clear",
@@ -10763,7 +10763,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L1941",
+      "source_location": "L1997",
       "weight": 1.0
     },
     {
@@ -10774,7 +10774,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L544",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -12115,10 +12115,10 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/routes/+page.svelte",
-      "source_location": "L2902",
+      "source_location": "L2958",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b787315f09d7858b1a56b68f8728e4239bf70fc3"
+  "built_at_commit": "e019c0d3f2d0172b86dea0db960791d9ee3b5a23"
 }

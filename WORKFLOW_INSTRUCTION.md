@@ -48,3 +48,7 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
 - **Toàn bộ logic thời gian, tính toán ngày đến/ngày đi, SQL trigger, auto-checkout, OCR ingestion, và hiển thị UI** BẮT BUỘC phải cố định theo **GMT+7** (`Asia/Ho_Chi_Minh`).
 - **Giờ checkout mặc định**: Luôn luôn là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` gây lỗi checkout sớm.
 - Khách chỉ chuyển sang `CHECKED_OUT` tự động khi thời gian hiện tại GMT+7 đã qua 12:00:00 trưa ngày đi.
+
+## 5. Quy Định UI Modal & Xác Nhận (No Native Browser Dialogs)
+- **Tuyệt đối KHÔNG sử dụng `window.alert()`, `window.confirm()`, `window.prompt()`**.
+- Toàn bộ hộp thoại xác nhận, cảnh báo và form thao tác BẮT BUỘC phải dùng Custom Modal Svelte Reactive kết hợp Tailwind CSS với backdrop mờ và giao diện đồng nhất.
