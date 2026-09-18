@@ -13,10 +13,12 @@
     "lint:biome": "biome check src test",
     "lint": "pnpm run check:svelte",
     "knip": "pnpm dlx knip",
-    "test:auth": "node --import jiti/register test/auth-security.test.ts",
-    "test:integrity": "node --import jiti/register test/data-integrity.test.ts",
-    "test:pipeline": "node --import jiti/register test/test-pipeline.ts",
-    "test": "node --import jiti/register test/auth-security.test.ts && node --import jiti/register test/data-integrity.test.ts && node --import jiti/register test/test-pipeline.ts",
+    "test:unit": "node --import jiti/register test/unit/catalog.test.ts && node --import jiti/register test/unit/transformer.test.ts && node --import jiti/register test/unit/time.test.ts && node --import jiti/register test/unit/validator.test.ts",
+    "test:api": "node --import jiti/register test/api/auth-security.test.ts",
+    "test:integration": "node --import jiti/register test/integration/stay-service.test.ts",
+    "test:e2e": "node --import jiti/register test/playwright-test.ts",
+    "test:live": "node --import jiti/register test/live/live-bca-pipeline.test.ts",
+    "test": "pnpm run test:unit && pnpm run test:api && pnpm run test:integration",
     "check": "pnpm run check:svelte && pnpm run knip && pnpm test"
   },
   "keywords": [

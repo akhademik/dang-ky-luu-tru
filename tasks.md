@@ -39,21 +39,17 @@ Phase 2 — Data integrity 🟠 [COMPLETED]
 - [x] Review retry/idempotency behavior (Exponential backoff & Request ID tracking).
 - [x] Validate all API inputs centrally (`src/lib/server/validator.ts`).
 - [x] Add data integrity tests (`test/data-integrity.test.ts`).
-Phase 3 — Testing 🟠
+Phase 3 — Testing 🟠 [COMPLETED]
 
-Split:
+Split test hierarchy:
+- [x] **Unit tests** (`test/unit/`): `catalog.test.ts`, `transformer.test.ts`, `time.test.ts`, `validator.test.ts` (`pnpm run test:unit`)
+- [x] **API tests** (`test/api/`): `auth-security.test.ts` (`pnpm run test:api`)
+- [x] **Integration tests** (`test/integration/`): `stay-service.test.ts` (`pnpm run test:integration`)
+- [x] **E2E tests** (`test/playwright-test.ts`): UI & Browser flows (`pnpm run test:e2e`)
+- [x] **Live External API tests** (`test/live/`): `live-bca-pipeline.test.ts` (`pnpm run test:live`)
 
-unit
-integration
-API
-E2E
-live external API
-
-Then:
-
-pnpm test
-
-must never require BCA credentials or remote production infrastructure.
+Verification guarantee:
+- [x] `pnpm test` executes unified unit, API, and offline integration suites (100% offline-capable, never requires live BCA credentials or production remote infra).
 
 Phase 4 — Architecture cleanup 🟡
 
