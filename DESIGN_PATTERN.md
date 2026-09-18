@@ -6,51 +6,33 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
 
 ## 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)
 
-### 1.1. Single Source of Truth: Cloudflare D1
-- **Database Core**: Mọi thao tác hiển thị, đăng ký, gia hạn, trả phòng và tra soát hồ sơ đều truy vấn và ghi trực tiếp vào Cloudflare D1 (`guests`, `stays`, `kbtt_logs`).
-- **Google Sheets vai trò**: Đầu vào nhận OCR và kích hoạt Google Apps Script Webhook đẩy dữ liệu vào `POST /api/ingest/ocr`.
+### 1.1. Single Source of Truth: Cloudflare D1 & Modular Repositories
+- **Database Core**: Mọi thao tác hiển thị, đăng ký, gia hạn, trả phòng và tra soát hồ sơ đều truy vấn và ghi trực tiếp vào Cloudflare D1 (`guests`, `stays`, `kbtt_logs`) thông qua tầng Repository chuyên biệt tại `src/lib/server/repositories/`.
+- **Google Sheets vai trò**: Đầu vào nhận OCR và kích hoạt Google Apps Script Webhook đẩy dữ liệu vào `POST /api/ingest/ocr` (được bảo vệ bởi Webhook API Key).
 
 ### 1.2. Zero-FS Edge Runtime Compatibility
-- **Nguyên tắc**: Không dùng `import fs from 'node:fs'` ở cấp module static.
+- **Nguyên tắc**: Không dùng `import fs from 'node:fs'` ở cấp module static trong runtime production.
 - **Dữ liệu tĩnh**: Toàn bộ danh mục tra cứu C06 (252 Quốc tịch, 34 Tỉnh/TP, Loại giấy tờ, Lý do lưu trú) được nhúng trực tiếp dạng TypeScript objects trong `src/lib/data/catalogs.ts`.
 
-### 1.3. Svelte 5 Modern Runes Pattern
-- State: Dùng `$state()` cho reactive state (khai báo biến đơn hoặc mảng đối tượng).
-- Derived Values: Dùng `$derived()` để tính toán danh sách lọc, thống kê.
-- Side-effects: Dùng `$effect()` đồng bộ dữ liệu theo tab hoạt động (`activeTab`).
-- Component Props: Dùng `let { ... } = $props()`.
+### 1.3. Svelte 5 Modern Runes & Callback Props Pattern
+- **State**: Dùng `$state()` cho reactive state (khai báo biến đơn hoặc mảng đối tượng).
+- **Derived Values**: Dùng `$derived()` hoặc `$derived.by()` để tính toán danh sách lọc, thống kê.
+- **Side-effects**: Dùng `$effect()` đồng bộ dữ liệu theo tab hoạt động (`activeTab`).
+- **Component Props**: Dùng `let { ... }: Props = $props()`.
+- **Event Handling**: Tuyệt đối không dùng `createEventDispatcher` hay `on:click`. Sử dụng **Callback Props** (`onconfirm?: () => void`) và standard HTML event attributes (`onclick`, `onchange`).
 
-### 1.4. Strict GMT+7 Timezone & Checkout / Document Code Policy
-- **Múi giờ duy nhất**: Tất cả thời gian lưu trữ trong Cloudflare D1, xử lý logic, đồng bộ Sheets, gửi API BCA và hiển thị giao diện bắt buộc dùng **GMT+7 (`Asia/Ho_Chi_Minh`)**.
-- **Quy tắc Lưu trữ Chính xác Loại Giấy Tờ (`loai_giay_to`)**:
-  - Khi khai báo thành công (API 4/5), hệ thống ghi nhận chính xác mã số loại giấy tờ (ví dụ: `1` cho Thẻ CCCD, `8` cho Thẻ Căn cước mới, `4` cho Hộ chiếu) vào trường `loai_giay_to`.
-  - Khi thực hiện checkout (`TS`) hoặc gia hạn (`GH`), hệ thống bắt buộc lấy đúng mã `loai_giay_to` đã lưu từ hồ sơ khai báo thành công, **tuyệt đối không đoán mò, không fallback, không thay đổi mã loại giấy tờ**.
+### 1.4. Centralized Security Gateway & Auth Pattern
+- Toàn bộ browser endpoints `/api/*` đều được kiểm soát phiên làm việc tập trung tại `hooks.server.ts` thông qua `session_auth` HttpOnly, SameSite=Strict cookies.
+- Webhook `/api/ingest/ocr` được xác thực độc lập bằng `x-api-key` hoặc query token `?api_key=...`.
+- Xác thực mật khẩu sử dụng so sánh hằng số thời gian (`crypto.timingSafeEqual`) chống tấn công Timing Attacks.
+
+### 1.5. Strict GMT+7 Timezone & Stay State Machine Policy
+- **Múi giờ duy nhất**: Tất cả thời gian lưu trữ trong Cloudflare D1, xử lý logic, đồng bộ Sheets, gửi API BCA và hiển thị giao diện bắt buộc dùng **GMT+7 (`Asia/Ho_Chi_Minh`)** được quản lý tập trung tại `src/lib/server/time.ts`.
+- **Stay State Machine**: Chuyển đổi trạng thái lưu trú được kiểm soát chặt chẽ tại `src/lib/server/validator.ts` ngăn chặn các bước nhảy trạng thái không hợp lệ.
 - **Quy tắc Tự Động Checkout & Thời điểm Gửi API BCA**:
-  - **Cơ chế tự động của BCA**: Trên hệ thống C06 (BCA), hồ sơ lưu trú của khách **tự động checkout/kết thúc sau 12:00:00 của ngày đi dự kiến (`ngayDiDuKienStr`)**.
-  - **Cơ chế Database nội bộ (Cloudflare D1)**: Khi thời gian thực tế GMT+7 đã vượt quá 12:00:00 trưa ngày đi dự kiến, database D1 tự động chuyển trạng thái khách sang `CHECKED_OUT` mà **TUYỆT ĐỐI KHÔNG gửi API lên BCA**.
-  - **Thời điểm gửi API 12 (Trả phòng sớm - `loai: "TS"`)**: Hệ thống **chỉ gửi API 12 lên BCA khi người dùng bấm Checkout TRƯỚC 12:00:00 của ngày đi dự kiến**. Nếu đã quá 12:00:00 ngày đi, việc trả phòng chỉ cập nhật DB D1 nội bộ.
-- **Quy chuẩn Định dạng Thời gian gửi API C06 (BCA)**:
-  - Đầu vào (Sheets/OCR/UI): Hỗ trợ linh hoạt `DD/MM/YYYY`, `DD-MM-YYYY`, `YYYY-MM-DD`.
-  - **Payload gửi API 4 & API 5**:
-    - `ngayThangNamSinhStr`: Bắt buộc chuẩn **`YYYY-MM-DD`** (Ví dụ: `1992-10-01`).
-    - `ngayDenCsltStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-09-17 14:00:00`). C06 chỉ chấp nhận ngày hôm nay hoặc hôm qua.
-    - `ngayDiDuKienStr`: Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-09-19 12:00:00`). Phải `>= ngayDenCsltStr`.
-    - `thoiHanTamTruStr` (NNN): Bắt buộc chuẩn **`YYYY-MM-DD HH:mm:ss`** (Ví dụ: `2026-12-31 23:59:59`).
-  - **Payload gửi API 12 (Đổi ngày đi / Gia hạn lưu trú)**:
-    - Trả phòng sớm (`loai: "TS"`): Gửi trước 12:00 trưa ngày đi, payload `[ { "loai": "TS", "soGiayTo": "...", "loaiGiayTo": 1 } ]`.
-    - Gia hạn lưu trú (`loai: "GH"`): Payload `[ { "loai": "GH", "soGiayTo": "...", "loaiGiayTo": 1, "thoiGianStr": "YYYY-MM-DD HH:mm:ss" } ]`.
-
-### 1.5. Network & Connection Protocols (Quy Chuẩn Kết Nối Mạng & API)
-- **Bắt buộc IPv4 Only cho Node.js Runtime**:
-  - Máy chủ Sandbox BCA (`api-kbtt.ai-vlab.com`) và Cloudflare Proxy trả về cả 2 bản ghi IPv4 và IPv6. Để chống lỗi treo `ETIMEDOUT / fetch failed` do mạng nội bộ không định tuyến IPv6, bắt buộc:
-    1. Runtime: Gọi `net.setDefaultAutoSelectFamily(false)` và `dns.setDefaultResultOrder("ipv4first")` trong [`config.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/config.ts).
-    2. CLI/Scripts: Truyền `NODE_OPTIONS="--dns-result-order=ipv4first --no-network-family-autoselection"` trong `package.json`.
-- **Tương thích chuẩn HTTP/2 (RFC 7540)**:
-  - Tuyệt đối không gửi header hop-by-hop `Connection: "close"` khi gọi API tới Cloudflare Proxy.
-- **Cơ chế Tự Động Thử Lại (Exponential Backoff Retry)**:
-  - Mọi yêu cầu HTTP ra bên ngoài ([`TokenManager`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/tokenManager.ts), [`KbttClient`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClient.ts)) phải có vòng lặp retry tối thiểu 3 lần kèm độ trễ giãn cách (`attempt * 1000ms`) để triệt tiêu lỗi chập chờn.
-- **Bảo mật Dữ liệu & Ghi chú Nội bộ**:
-  - Ghi chú (`ghi_chu`) của khách sạn là dữ liệu lưu hành nội bộ trong DB D1. Khi đóng gói payload gửi API C06 BCA, trường `ghiChu` bắt buộc phải để chuỗi rỗng `""`.
+  - **Cơ chế tự động của BCA**: Trên hệ thống C06 (BCA), hồ sơ lưu trú của khách **tự động checkout sau 12:00:00 của ngày đi dự kiến (`ngayDiDuKienStr`)**.
+  - **Cơ chế Database nội bộ**: Khi thời gian thực tế GMT+7 vượt quá 12:00:00 trưa ngày đi dự kiến, database D1 tự động chuyển trạng thái khách sang `CHECKED_OUT` mà **TUYỆT ĐỐI KHÔNG gửi API lên BCA**.
+  - **Thời điểm gửi API 12 (Trả phòng sớm - `loai: "TS"`)**: Hệ thống **chỉ gửi API 12 lên BCA khi người dùng bấm Checkout TRƯỚC 12:00:00 của ngày đi dự kiến**.
 
 ---
 
@@ -78,11 +60,11 @@ Dự án áp dụng phong cách **Modern Dark Slate Glassmorphism** hiện đạ
 ### 2.3. Semantic Accents (Màu Trạng Thái Nghiệp Vụ)
 | Nghiệp vụ / Trạng thái | Accent Color | Tailwind Badge Style | Ý nghĩa |
 | :--- | :--- | :--- | :--- |
-| **Khai Báo Mới (READY_TO_SYNC)** | **Amber / Vàng cam** | `bg-amber-100 text-amber-800 border-amber-300` | Khách mới nạp từ OCR, chờ duyệt gửi BCA |
-| **Đã Đăng Ký (SYNCED_KBTT)** | **Emerald / Xanh lá** | `bg-emerald-100 text-emerald-800 border-emerald-300` | Đã gửi thành công API 4/5, có mã MANDK |
-| **Đã Gia Hạn (EXTENDED)** | **Indigo / Tím xanh** | `bg-indigo-100 text-indigo-800 border-indigo-300` | Khách đã gia hạn thêm ngày ở |
-| **Đã Checkout (CHECKED_OUT)** | **Slate / Xám trung tính**| `bg-gray-100 text-gray-700 border-gray-300` | Khách đã rời cơ sở lưu trú |
-| **Lỗi / Thiếu tin (PENDING)**| **Rose / Đỏ hồng** | `bg-rose-100 text-rose-800 border-rose-300` | Dữ liệu OCR thiếu trường bắt buộc |
+| **Khai Báo Mới (READY_TO_SYNC)** | **Amber / Vàng cam** | `bg-amber-500/15 border-amber-500/30 text-amber-400` | Khách mới nạp từ OCR, chờ duyệt gửi BCA |
+| **Đã Đăng Ký (SYNCED_KBTT)** | **Emerald / Xanh lá** | `bg-emerald-500/15 border-emerald-500/30 text-emerald-400` | Đã gửi thành công API 4/5, có mã MANDK |
+| **Đã Gia Hạn (EXTENDED)** | **Indigo / Tím xanh** | `bg-indigo-500/15 border-indigo-500/30 text-indigo-400` | Khách đã gia hạn thêm ngày ở |
+| **Đã Checkout (CHECKED_OUT)** | **Slate / Xám trung tính**| `bg-slate-700/50 border-slate-600/50 text-slate-400` | Khách đã rời cơ sở lưu trú |
+| **Lỗi / Thiếu tin (ERROR / PENDING)**| **Rose / Đỏ hồng** | `bg-rose-500/15 border-rose-500/30 text-rose-400` | Dữ liệu OCR thiếu trường bắt buộc hoặc BCA từ chối |
 
 ---
 
@@ -103,20 +85,6 @@ Dự án áp dụng phong cách **Modern Dark Slate Glassmorphism** hiện đạ
 - Số phòng, CCCD, Mã Code: Sử dụng font đơn cách `font-mono`.
 - Họ và tên: Luôn tự động chuyển in hoa `uppercase`.
 
-### 3.3. Toast Notifications
-- Nằm cố định ở góc trên bên phải: `fixed top-5 right-5 z-50`
-- Bo góc `rounded-lg`, đổ bóng `shadow-xl`, hiệu ứng mờ `backdrop-blur-md`
-- Phân loại 3 mức: `success` (Emerald), `error` (Rose), `info` (Sky).
-
-### 3.4. Custom Modals & Dialogs Rule (Tuyệt đối không dùng Native Dialog)
-- **CẤM SỬ DỤNG**: Tuyệt đối không sử dụng các hộp thoại mặc định của trình duyệt như `window.alert()`, `window.confirm()`, `window.prompt()`.
-- **BẮT BUỘC CUSTOM MODAL**: Mọi thao tác xác nhận (xóa khách, checkout, xóa dev logs, cảnh báo...) đều phải dùng component/dialog modal tùy biến viết bằng Svelte + Tailwind:
-  - Lớp phủ mờ nền: `fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4`
-  - Hộp thoại: `bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl`
-  - Đầy đủ tiêu đề, icon cảnh báo, nội dung giải thích rõ ràng kèm nút "Hủy" và "Xác nhận".
-
----
-
-## 4. QUY TẮC MÔI TRƯỜNG & BẢO MẬT
-- **DEV Mode**: Mở toàn quyền truy cập không yêu cầu mật khẩu, hiển thị toggle chuyển đổi Sandbox/BCA.
-- **PROD Mode**: Cố định môi trường BCA, ẩn hoàn toàn nút toggle môi trường, khóa bằng mật khẩu phiên làm việc qua biến môi trường `APP_PASSWORD`.
+### 3.3. Custom Modals & Dialogs (No Native Browser Dialogs)
+- **CẤM SỬ DỤNG**: Tuyệt đối không sử dụng các hộp thoại mặc định `window.alert()`, `window.confirm()`.
+- **BẮT BUỘC CUSTOM MODAL**: Sử dụng [`ConfirmModal.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/ConfirmModal.svelte) hoặc modal custom Svelte 5 đồng bộ toàn hệ thống.

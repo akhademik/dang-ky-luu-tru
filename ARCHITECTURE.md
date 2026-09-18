@@ -6,20 +6,29 @@ Tài liệu này mô tả toàn diện cấu trúc mã nguồn, mô hình dữ l
 
 ## 1. Tổng Quan Kiến Trúc (Architecture Overview)
 
-Hệ thống hoạt động theo mô hình **SvelteKit 2 + Svelte 5 + Cloudflare D1 (Serverless SQLite) + BCA KBTT API v1.4**.
+Hệ thống hoạt động theo mô hình **SvelteKit 2 + Svelte 5 (Runes) + Cloudflare D1 (Serverless SQLite) + BCA KBTT API v1.4**.
 
 ```mermaid
 flowchart TD
     subgraph Input_Layer [Tầng Thu Thập & Nhập Liệu]
         GS[Google Sheets OCR - CSV Export]
         UI_ADD[Thêm Khách Thủ Công UI]
+        API_INGEST[POST /api/ingest/ocr Webhook]
     end
 
-    subgraph Service_Layer [Tầng Xử Lý & Chuẩn Hóa Dữ Liệu]
-        GSS[GoogleSheetService - Auto Tab Scanner]
-        DT[DataTransformer - Clean & Validate GMT+7]
+    subgraph Service_Layer [Tầng Nghiệp Vụ & Chuẩn Hóa]
+        TIME[TimeService - GMT+7 Asia/Ho_Chi_Minh]
+        VAL[Validator - Input & Stay State Machine]
         CM[CatalogManager - Quoc Tich, Tinh Thanh, Loai Giay To]
-        SS[StayService - Business & Lifecycle Manager]
+        DT[DataTransformer - OCR & BCA Payload Builder]
+        SS[StayService - Business & Lifecycle Orchestrator]
+    end
+
+    subgraph Repository_Layer [Tầng Repositories]
+        GR[guestRepository - Quản lý khách]
+        SR[stayRepository - Quản lý lượt ở]
+        AR[auditRepository - Nhật ký API]
+        ST[statsRepository - Thống kê Dashboard]
     end
 
     subgraph Storage_Layer [Tầng Lưu Trữ - Single Source of Truth]
@@ -37,8 +46,8 @@ flowchart TD
     end
 
     Input_Layer --> Service_Layer
-    Service_Layer --> Storage_Layer
-    Storage_Layer <--> SS
+    Service_Layer --> Repository_Layer
+    Repository_Layer --> Storage_Layer
     SS --> TM --> KBTT
     KBTT --> BCA_DEV
     KBTT --> BCA_PROD
@@ -95,7 +104,7 @@ Quản lý trạng thái và vòng đời lưu trú của từng phòng và từ
 ---
 
 ### 2.3. Bảng `kbtt_logs` (Nhật ký giao tiếp API BCA)
-Lưu vết toàn bộ Request / Response JSON payload phục vụ đối soát, kiểm tra lỗi BCA và audit logs.
+Lưu vết toàn bộ Request / Response JSON payload phục vụ đối soát, kiểm tra lỗi BCA và audit logs. Trong môi trường Production, nhật ký mang tính **Append-only** (không thể bị xóa từ UI).
 
 | Tên Cột | Kiểu Dữ Liệu | Ràng Buộc | Ý Nghĩa |
 |:---|:---|:---|:---|
@@ -114,6 +123,8 @@ Lưu vết toàn bộ Request / Response JSON payload phục vụ đối soát, 
 ---
 
 ## 3. Vòng Đời Trạng Thái Lượt Lưu Trú (Stay Lifecycle State Machine)
+
+Hệ thống quản lý trạng thái thông qua State Machine nghiêm ngặt tại `src/lib/server/validator.ts`:
 
 ```mermaid
 stateDiagram-v2
@@ -137,113 +148,105 @@ stateDiagram-v2
     SYNCED_KBTT --> READY_TO_SYNC: Bấm "Khai Báo Lại 🔄" (Đổi sang PROD / Gửi lại)
 ```
 
-### Chi tiết các trạng thái:
-1. `READY_TO_SYNC` (**Sẵn sàng khai báo**): Dữ liệu đầy đủ, hợp lệ theo quy chuẩn BCA, sẵn sàng bấm nút gửi API.
-2. `PENDING_VALIDATION` (**Cần bổ sung dữ liệu**): Bị thiếu trường bắt buộc (ví dụ: khách nước ngoài thiếu thời hạn visa, thiếu số phòng).
-3. `ERROR` (**Lỗi khai báo**): Gửi lên API BCA nhưng bị từ chối (HTTP 400, HTTP 500 do sai định dạng hoặc lỗi nghiệp vụ BCA).
-4. `SYNCED_KBTT` (**Đang lưu trú / Đã khai báo BCA**): Đã khai báo thành công, khách đang ở tại cơ sở lưu trú.
-5. `EXTENDED` (**Đã gia hạn**): Đã cập nhật ngày đi dự kiến mới.
-6. `CHECKED_OUT` (**Đã trả phòng**): Đã kết thúc lượt lưu trú, phòng được giải phóng.
-
 ---
 
-## 4. Các Quy Chuẩn Nghiệp Vụ Quan Trọng (Critical Business Rules)
-
-### 4.1. Múi Giờ Chuẩn GMT+7 (Asia/Ho_Chi_Minh) - BẮT BUỘC 100%
-- **Nguyên tắc tuyệt đối**: Toàn bộ thao tác tính toán ngày giờ hiện tại, ngày đi dự kiến, bóc tách OCR từ Google Sheets, lưu trữ Cloudflare D1, và log audit đều phải **CHẶT CHẼ TUÂN THỦ MÚI GIỜ GMT+7** (`Asia/Ho_Chi_Minh`, `UTC + 7 hours`).
-- **Giờ Trả Phòng Mặc Định (Check-out Time)**: Luôn luôn là **12:00:00 (Trưa) GMT+7**. Tuyệt đối không lưu trữ hoặc tính toán theo UTC `05:00:00`.
-- **Khi tạo hoặc nạp lượt lưu trú mới**:
-  - `ngay_den` = Thời gian hiện tại GMT+7 (`YYYY-MM-DD HH:mm:ss`).
-  - `ngay_di_du_kien` = Ngày đi lúc 12:00:00 GMT+7 (`YYYY-MM-DD 12:00:00`).
-- **Quy tắc Tự động Checkout (Auto Checkout)**:
-  - Hệ thống chỉ tự động chuyển trạng thái sang `CHECKED_OUT` khi thời gian thực tế hiện tại (GMT+7) đã vượt qua mốc `ngay_di_du_kien` (12:00:00 trưa ngày đi). Trước 12:00 trưa, khách vẫn ở trạng thái đang lưu trú (`SYNCED_KBTT` / `IN_HOUSE`).
-
-### 4.2. Quy Tắc Validation & Điều Kiện Bắt Buộc
-1. **Ngày đến (`ngay_den`)**: Bắt buộc là **Hôm nay hoặc Hôm qua** (không được ở tương lai, không được quá 1 ngày trong quá khứ).
-2. **Khách Việt Nam (`quoc_tich === 'VNM'`)**:
-   - `thoi_han_thi_thuc` phải để trống/vô hiệu hóa.
-   - Sử dụng endpoint API 5: `/client-service/kbtt-vn/kbtt-3th`.
-3. **Khách Nước Ngoài (`quoc_tich !== 'VNM'`)**:
-   - `thoi_han_thi_thuc` **bắt buộc phải có** và phải lớn hơn hoặc bằng ngày đến (`ngay_den`).
-   - Tuyệt đối **không tự ý fallback/giả lập** thời hạn visa. Nếu thiếu phải cảnh báo đỏ và ngăn không cho khai báo đến khi người dùng điền đủ.
-   - Sử dụng endpoint API 4: `/client-service/kbtt/kbtt-3th`.
-4. **Số CCCD**:
-   - Giữ nguyên số 0 ở đầu (độ dài 12 ký tự số).
-5. **Chống Gửi Bừa (Strict Pre-flight Check)**:
-   - Nút **"Khai Báo"** và **"Khai Báo Tất Cả"** sẽ kiểm tra chéo toàn diện; nếu có bất kỳ bản ghi nào lỗi validation, hệ thống sẽ dừng ngay lập tức và yêu cầu chỉnh sửa.
-
----
-
-## 5. Cấu Trúc Thư Mục Dự Án (Project Structure)
+## 4. Cấu Trúc Thư Mục Dự Án (Project Structure)
 
 ```
 .
+├── .github/
+│   └── workflows/
+│       └── ci.yml                    # GitHub Actions CI Workflow (Biome, Svelte, Knip, Test, Build)
 ├── src/
 │   ├── app.d.ts                      # Định nghĩa SvelteKit & Cloudflare Platform bindings
+│   ├── hooks.server.ts               # Central API Gateway Auth, CSRF & Cookie security
 │   ├── lib/
+│   │   ├── components/               # Modular UI Components (Svelte 5 Runes & Callback Props)
+│   │   │   ├── ConfirmModal.svelte   # Modal xác nhận hành động
+│   │   │   └── StayStatusBadge.svelte# Badge hiển thị trạng thái lưu trú
+│   │   ├── data/
+│   │   │   └── catalogs.ts           # Dữ liệu tĩnh danh mục C06 (Zero-FS compatible)
+│   │   ├── types/
+│   │   │   └── index.ts              # Toàn bộ TypeScript interfaces & types của dự án
+│   │   ├── utils/
+│   │   │   └── format.ts             # Trích xuất formatting helpers, options, country resolvers
 │   │   └── server/
-│   │       ├── catalogManager.ts     # Quản lý danh mục Tỉnh thành, Quốc tịch, Loại giấy tờ
-│   │       ├── config.ts             # Quản lý cấu hình .env (DEV/PROD BCA URLs & Credentials)
+│   │       ├── auth.ts               # Core authentication, cookie helpers, constant-time comparison
+│   │       ├── catalogManager.ts     # Tra cứu & chuẩn hóa Quốc tịch, Tỉnh thành, Loại giấy tờ
+│   │       ├── config.ts             # Quản lý cấu hình .env (DEV/PROD URLs, Credentials)
 │   │       ├── dataTransformer.ts    # Bóc tách OCR, chuẩn hóa ngày giờ GMT+7, validate payload
-│   │       ├── db.ts                 # Tầng dữ liệu Cloudflare D1 (CRUD guests, stays, logs)
+│   │       ├── db.ts                 # Database facade delegating to repositories
 │   │       ├── googleSheetService.ts # Kéo CSV Google Sheets OCR, quét danh sách Tabs
-│   │       ├── kbttClient.ts         # Client gọi API BCA v1.4 (API 4, API 5, OAuth2)
-│   │       ├── logger.ts             # Bộ ghi nhật ký hệ thống GMT+7
+│   │       ├── kbttClient.ts         # Client gọi API BCA v1.4 (API 4, API 5, API 12, OAuth2)
+│   │       ├── logger.ts             # Ghi log chuẩn định dạng GMT+7
 │   │       ├── stayService.ts        # Quản lý nghiệp vụ lưu trú (Ingest, Checkout, Extend, Re-register)
 │   │       ├── syncPipeline.ts       # Pipeline điều phối đồng bộ
-│   │       └── tokenManager.ts       # Quản lý token OAuth 2.0 (tự động refresh khi hết hạn)
+│   │       ├── time.ts               # Central GMT+7 Time Service
+│   │       ├── tokenManager.ts       # Quản lý token OAuth 2.0 (tự động refresh khi hết hạn)
+│   │       ├── validator.ts          # Central validation & Stay State Machine
+│   │       └── repositories/         # Modular DB repositories
+│   │           ├── auditRepository.ts# Nhật ký API BCA
+│   │           ├── guestRepository.ts# Hồ sơ khách hàng
+│   │           ├── index.ts          # Barrel file repositories
+│   │           ├── statsRepository.ts# Thống kê Dashboard
+│   │           └── stayRepository.ts # Lượt lưu trú & auto-checkout
 │   └── routes/
 │       ├── +page.svelte              # Giao diện chính (5 Tabs, Modals, Optimistic UI)
 │       ├── +layout.svelte            # Layout khung giao diện
 │       └── api/
-│           ├── auth/                 # Xác thực phiên làm việc
-│           ├── catalogs/             # API tra cứu danh mục
-│           ├── env/                  # API chuyển đổi môi trường DEV <-> PROD
-│           ├── logs/                 # API nhật ký hệ thống
-│           ├── sheets/               # API quét tabs & kéo dữ liệu Google Sheets
-│           ├── stats/                # API thống kê số liệu Dashboard
-│           ├── stays/                # API CRUD lượt lưu trú
-│           │   ├── +server.ts        # GET / POST stays
-│           │   ├── [id]/+server.ts   # GET / PUT / DELETE stay
+│           ├── auth/                 # POST /api/auth/login, POST /api/auth/logout, GET /api/auth/session
+│           ├── catalogs/             # GET /api/catalogs
+│           ├── env/                  # GET / POST /api/env
+│           ├── ingest/ocr/           # POST /api/ingest/ocr (Webhook protected)
+│           ├── logs/                 # GET /api/logs
+│           ├── sheets/               # GET /api/sheets/tabs, GET /api/sheets/pull
+│           ├── stats/                # GET /api/stats
+│           ├── stays/                # GET / POST /api/stays
+│           │   ├── [id]/+server.ts   # GET / PUT / DELETE /api/stays/[id]
+│           │   ├── audit/            # GET / DELETE /api/stays/audit
 │           │   ├── checkout/         # POST /api/stays/checkout
 │           │   ├── extend/           # POST /api/stays/extend
 │           │   ├── re-register/      # POST /api/stays/re-register
-│           │   └── register/         # POST /api/stays/register (Gửi lên BCA)
-│           └── token/                # API kiểm tra trạng thái token OAuth
-├── data/
-│   └── catalogs/                     # JSON danh mục chuẩn (quốc tịch, tỉnh thành, lý do)
-├── migrations/
-│   ├── 0001_initial_schema.sql       # Khởi tạo bảng guests, stays, kbtt_logs, indexes
-│   ├── 0002_fix_stays_table.sql      # Cập nhật schema & indexes
-│   └── 0003_add_missing_indexes.sql  # Tối ưu hóa chỉ mục tìm kiếm
+│           │   └── register/         # POST /api/stays/register
+│           ├── token/                # GET /api/token
+│           └── transform/            # POST /api/transform
 ├── test/
-│   └── test-pipeline.ts              # Toàn bộ bài kiểm thử tự động Unit & Integration
+│   ├── unit/                         # Unit tests (Catalog, Transformer, Time, Validator, Svelte 5 anti-deprecation)
+│   ├── api/                          # API security & authentication tests
+│   ├── integration/                  # D1 Database & StayService offline integration tests
+│   ├── playwright-test.ts            # E2E test browser automation
+│   └── live/                         # Live BCA pipeline tests (Manual / Opt-in)
 ├── wrangler.json                     # Cấu hình Cloudflare D1 & Workers deployment
 └── package.json                      # pnpm dependencies & scripts
 ```
 
 ---
 
-## 6. Hướng Dẫn Phát Triển & Mở Rộng Tính Năng (Developer Guide)
+## 5. Hướng Dẫn Phát Triển & Kiểm Thử (Developer & Testing Guide)
 
-### 6.1. Thêm một trường mới vào Lượt lưu trú (Adding a New Field)
-1. Tạo migration SQL trong thư mục `migrations/`:
-   ```sql
-   ALTER TABLE stays ADD COLUMN ten_truong_moi TEXT;
-   ```
-2. Cập nhật `interface Stay` và `interface StayDetail` trong [`src/lib/server/db.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/db.ts).
-3. Cập nhật phương thức `upsertStay`, `getStays` trong `db.ts` và `updateGuestAndStay` trong [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts).
-4. Cập nhật modal giao diện trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte).
+### 5.1. Thêm tính năng mới
+1. Mọi truy vấn cơ sở dữ liệu mới phải được đặt trong thư mục `src/lib/server/repositories/`.
+2. Mọi chuyển đổi trạng thái lưu trú phải tuân thủ State Machine trong `src/lib/server/validator.ts`.
+3. Toàn bộ tính toán ngày giờ phải sử dụng `src/lib/server/time.ts`.
+4. Giao diện UI viết theo chuẩn Svelte 5 (Runes `$state`, `$derived`, `$props`, Callback Props).
 
-### 6.2. Kiểm Thử Hệ Thống (Testing Pipeline)
-Trước khi commit hoặc deploy, luôn chạy bộ kiểm thử chuẩn:
+### 5.2. Chạy quy trình kiểm tra chất lượng trước khi commit
 ```bash
-# 1. Format code
-pnpm run format
-
-# 2. Type-check Svelte & TypeScript
+# 1. Type-check Svelte & TypeScript
 pnpm run check:svelte
 
-# 3. Chạy toàn bộ Unit & Integration tests
+# 2. Phân tích dead code & dependencies
+pnpm run knip
+
+# 3. Linter & Formatter Biome
+pnpm run lint:biome
+
+# 4. Chạy bộ kiểm thử tự động (100% offline)
 pnpm test
+
+# 5. Build kiểm tra bundle
+pnpm run build
+
+# 6. Cập nhật đồ thị kiến trúc
+graphify . --code-only && graphify cluster-only .
 ```
