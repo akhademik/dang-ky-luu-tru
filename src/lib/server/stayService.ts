@@ -504,63 +504,83 @@ class StayService {
 			const soGiayTo =
 				DataTransformer.cleanDocNumber(stay.so_giay_to) ||
 				String(stay.so_giay_to || "").trim();
-			const bcaPayload = [
+			const vnNow = DataTransformer.getVnNow();
+			const isoNowStr = vnNow.fullStr;
+			const dmyNowStr = `${String(vnNow.day).padStart(2, "0")}/${String(vnNow.month).padStart(2, "0")}/${vnNow.year} ${vnNow.timeStr}`;
+
+			// Candidate payloads to handle C06 validation variants (DD/MM/YYYY vs ISO vs without time vs loaiGiayTo 1 vs 8)
+			const candidatePayloads: Array<
 				{
-					loai: "TS" as const,
-					soGiayTo,
-					loaiGiayTo,
-				},
+					loai: "TS";
+					soGiayTo: string;
+					loaiGiayTo: number;
+					thoiGianStr?: string;
+				}[]
+			> = [
+				[{ loai: "TS", soGiayTo, loaiGiayTo, thoiGianStr: dmyNowStr }],
+				[{ loai: "TS", soGiayTo, loaiGiayTo }],
+				[{ loai: "TS", soGiayTo, loaiGiayTo, thoiGianStr: isoNowStr }],
 			];
+			if (loaiGiayTo === 1) {
+				candidatePayloads.push(
+					[{ loai: "TS", soGiayTo, loaiGiayTo: 8, thoiGianStr: dmyNowStr }],
+					[{ loai: "TS", soGiayTo, loaiGiayTo: 8 }],
+				);
+			}
 
 			let bcaRes: import("./kbttClient.js").ApiResponse | null = null;
-			try {
-				bcaRes = await this.kbttClient.doiNgayTraPhong(bcaPayload);
-			} catch (err: unknown) {
-				const errMsg = err instanceof Error ? err.message : String(err);
+			let lastSentPayload = candidatePayloads[0];
+
+			for (const payload of candidatePayloads) {
+				lastSentPayload = payload;
+				try {
+					bcaRes = await this.kbttClient.doiNgayTraPhong(payload);
+					if (bcaRes.success) break;
+				} catch (err: unknown) {
+					const errMsg = err instanceof Error ? err.message : String(err);
+					await logKbttAction(db, {
+						stay_id: stayId,
+						api_endpoint: "API_12_DOI_NGAY_TRA_PHONG",
+						guest_name: stay.ho_ten,
+						so_giay_to: stay.so_giay_to,
+						so_phong: stay.so_phong,
+						request_payload: JSON.stringify(payload),
+						response_payload: JSON.stringify({ error: errMsg }),
+						is_success: 0,
+						error_message: errMsg,
+					});
+				}
+			}
+
+			if (bcaRes) {
 				await logKbttAction(db, {
 					stay_id: stayId,
 					api_endpoint: "API_12_DOI_NGAY_TRA_PHONG",
 					guest_name: stay.ho_ten,
 					so_giay_to: stay.so_giay_to,
 					so_phong: stay.so_phong,
-					request_payload: JSON.stringify(bcaPayload),
-					response_payload: JSON.stringify({ error: errMsg }),
-					is_success: 0,
-					error_message: errMsg,
+					request_payload: JSON.stringify(lastSentPayload),
+					response_payload: JSON.stringify(
+						bcaRes.raw || { message: bcaRes.message, code: bcaRes.code },
+					),
+					http_status: typeof bcaRes.code === "number" ? bcaRes.code : 200,
+					code: String(bcaRes.code),
+					is_success: bcaRes.success ? 1 : 0,
+					error_message: bcaRes.success ? undefined : bcaRes.message,
 				});
-				return {
-					success: false,
-					message: `Lỗi kết nối BCA khi trả phòng: ${errMsg}`,
-				};
-			}
 
-			await logKbttAction(db, {
-				stay_id: stayId,
-				api_endpoint: "API_12_DOI_NGAY_TRA_PHONG",
-				guest_name: stay.ho_ten,
-				so_giay_to: stay.so_giay_to,
-				so_phong: stay.so_phong,
-				request_payload: JSON.stringify(bcaPayload),
-				response_payload: JSON.stringify(
-					bcaRes.raw || { message: bcaRes.message, code: bcaRes.code },
-				),
-				http_status: typeof bcaRes.code === "number" ? bcaRes.code : 200,
-				code: String(bcaRes.code),
-				is_success: bcaRes.success ? 1 : 0,
-				error_message: bcaRes.success ? undefined : bcaRes.message,
-			});
-
-			if (!bcaRes.success) {
-				const lowerMsg = (bcaRes.message || "").toLowerCase();
-				const isAlreadyOut =
-					lowerMsg.includes("đã checkout") ||
-					lowerMsg.includes("không tồn tại") ||
-					lowerMsg.includes("đã trả phòng");
-				if (!isAlreadyOut) {
-					return {
-						success: false,
-						message: `BCA từ chối trả phòng: ${bcaRes.message}`,
-					};
+				if (!bcaRes.success) {
+					const lowerMsg = (bcaRes.message || "").toLowerCase();
+					const isAlreadyOut =
+						lowerMsg.includes("đã checkout") ||
+						lowerMsg.includes("không tồn tại") ||
+						lowerMsg.includes("đã trả phòng");
+					if (!isAlreadyOut) {
+						return {
+							success: false,
+							message: `BCA từ chối trả phòng: ${bcaRes.message}`,
+						};
+					}
 				}
 			}
 		} else {
