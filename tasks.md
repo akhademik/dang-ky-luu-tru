@@ -62,27 +62,17 @@ Refactor into smaller modular units:
 - [x] **components/**: Modular UI components (`ConfirmModal.svelte`, `StayStatusBadge.svelte`).
 - [x] **db.ts**: Clean facade delegating to modular repository implementations.
 
-Phase 5 — CI/CD 🟡
+Phase 5 — CI/CD 🟡 [COMPLETED]
 
-Add:
+GitHub Actions CI Pipeline (`.github/workflows/ci.yml`):
+- [x] **Triggers**: Push & Pull Request on `main` and `develop`.
+- [x] **Concurrency**: Automatic job cancellation for obsolete workflow runs.
+- [x] **Step 1**: Biome Linter & Formatter (`pnpm run lint:biome`).
+- [x] **Step 2**: Svelte-Check Diagnostics & TypeScript checks (`pnpm run check:svelte`).
+- [x] **Step 3**: Knip Dead Code & Unused Exports Analysis (`pnpm run knip`).
+- [x] **Step 4**: Unified Test Suite with Svelte 5 anti-deprecation and security tests (`pnpm test`).
+- [x] **Step 5**: Production Build compilation for Cloudflare Pages (`pnpm run build`).
 
-GitHub Actions
-↓
-Biome
-↓
-Svelte check
-↓
-Knip
-↓
-Unit tests
-↓
-Build
-
-Then optionally:
-
-manual workflow
-↓
-live BCA integration test
 Phase 6 — Documentation 🟢
 
 Finally synchronize:

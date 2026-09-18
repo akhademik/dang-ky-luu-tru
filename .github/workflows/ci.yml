@@ -1,0 +1,50 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Code Quality, Verification & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js (LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 1. Biome Linter & Formatter Check
+        run: pnpm run lint:biome
+
+      - name: 2. Svelte Diagnostics & Type Check
+        run: pnpm run check:svelte
+
+      - name: 3. Knip Dead Code & Exports Analysis
+        run: pnpm run knip
+
+      - name: 4. Unified Test Suite (Unit, API, Integration, Svelte 5 Anti-Deprecation)
+        run: pnpm test
+
+      - name: 5. Cloudflare Pages / SvelteKit Build
+        run: pnpm run build
