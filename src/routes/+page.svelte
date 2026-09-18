@@ -2871,7 +2871,7 @@ onMount(async () => {
 									<th class="p-3.5 whitespace-nowrap">Khách Hàng</th>
 									<th class="p-3.5 whitespace-nowrap">Phòng</th>
 									<th class="p-3.5 whitespace-nowrap">CCCD / Hộ Chiếu</th>
-									<th class="p-3.5">Kết Quả & Lý Do</th>
+									<th class="p-3.5 whitespace-nowrap">Kết Quả</th>
 									<th class="p-3.5 text-center whitespace-nowrap">Thao Tác</th>
 								</tr>
 							</thead>
@@ -2893,29 +2893,19 @@ onMount(async () => {
 											<td class="p-3.5 font-semibold text-slate-200 whitespace-nowrap">{log.guest_name || '-'}</td>
 											<td class="p-3.5 font-mono text-sky-400 whitespace-nowrap">{log.so_phong ? `Phòng ${log.so_phong}` : '-'}</td>
 											<td class="p-3.5 font-mono text-slate-300 whitespace-nowrap">{log.so_giay_to || '-'}</td>
-											<td class="p-3.5">
+											<td class="p-3.5 whitespace-nowrap">
 												{#if log.is_success}
 													<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 font-medium text-[10px]">
 														✓ Thành công
 													</span>
 												{:else}
 													{@const failReason = getAuditLogFailureReason(log)}
-													<div class="flex flex-col gap-1 max-w-sm md:max-w-md">
-														<div class="flex items-center gap-1.5">
-															<span
-																class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-[10px] cursor-help"
-																title={log.error_message ? `Lý do: ${failReason}\n(Chi tiết kỹ thuật: ${log.error_message})` : `Lý do: ${failReason}`}
-															>
-																✕ Thất bại ({log.code || '500'})
-															</span>
-														</div>
-														<span
-															class="text-rose-300/90 text-[11px] leading-snug font-normal cursor-help"
-															title={log.error_message ? `Chi tiết kỹ thuật: ${log.error_message}` : ''}
-														>
-															{failReason}
-														</span>
-													</div>
+													<span
+														class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-[10px] cursor-help hover:bg-rose-900 transition-all"
+														title={log.error_message && log.error_message !== failReason ? `${failReason}\n(Chi tiết kỹ thuật: ${log.error_message})` : failReason}
+													>
+														✕ Thất bại ({log.code || '500'})
+													</span>
 												{/if}
 											</td>
 											<td class="p-3.5 text-center whitespace-nowrap">
