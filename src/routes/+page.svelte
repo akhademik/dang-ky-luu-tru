@@ -478,14 +478,22 @@ function showToast(
 }
 
 let statsInFlight: Promise<void> | null = null;
-async function loadStats(_force = false) {
+let lastStatsFetchTime = 0;
+const CLIENT_STATS_CACHE_TTL_MS = 15_000; // 15s
+
+async function loadStats(force = false) {
+	const now = Date.now();
+	if (!force && stats.totalStays > 0 && now - lastStatsFetchTime < CLIENT_STATS_CACHE_TTL_MS) {
+		return;
+	}
 	if (statsInFlight) return statsInFlight;
 	statsInFlight = (async () => {
 		try {
-			const res = await fetch("/api/stats");
+			const res = await fetch(`/api/stats${force ? "?force=true" : ""}`);
 			const data = await res.json();
 			if (data.success && data.data) {
 				stats = data.data;
+				lastStatsFetchTime = Date.now();
 			}
 		} catch {
 		} finally {
@@ -496,7 +504,7 @@ async function loadStats(_force = false) {
 }
 
 let staysInFlight: Promise<void> | null = null;
-async function loadStays(_force = false) {
+async function loadStays(_force?: boolean) {
 	if (staysInFlight) return staysInFlight;
 	staysInFlight = (async () => {
 		try {
@@ -514,7 +522,6 @@ async function loadStays(_force = false) {
 			if (data.success) {
 				rawStays = data.data || [];
 			}
-			loadStats(true);
 		} catch (err) {
 			showToast("Không thể tải danh sách lưu trú từ CSDL", "error");
 		} finally {
@@ -525,55 +532,73 @@ async function loadStays(_force = false) {
 	return staysInFlight;
 }
 
+async function refreshDashboard(forceStats = false) {
+	await Promise.all([loadStays(), loadStats(forceStats)]);
+}
+
 function setTab(tab: typeof activeTab) {
 	activeTab = tab;
 	if (tab === "audit") {
 		loadAuditLogs();
 	} else if (tab === "register" || tab === "inhouse" || tab === "all_guests") {
 		loadStays();
+		loadStats();
 	} else if (tab === "catalogs") {
 		loadCatalogs();
 	}
 }
 
+let pullInFlight: Promise<void> | null = null;
 async function pullFromGoogleSheets(options?: { silent?: boolean }) {
+	if (pullInFlight) {
+		if (!options?.silent) {
+			showToast("Tiến trình đồng bộ đang chạy, vui lòng chờ...", "info");
+		}
+		return pullInFlight;
+	}
+
 	loading = true;
 	if (!options?.silent) {
 		showToast("Đang đồng bộ dữ liệu mới nhất vào CSDL...", "info");
 	}
-	try {
-		const res = await fetch("/api/sheets/pull", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({}),
-		});
-		const data = await res.json();
-		if (data.success) {
-			const count =
-				data.ingested !== undefined || data.updated !== undefined
-					? (data.ingested || 0) + (data.updated || 0)
-					: data.rows?.length || 0;
-			const tabMsg = data.tabName ? ` [Tab: ${data.tabName}]` : "";
-			showToast(
-				`✓ Đã đồng bộ thành công ${count} khách vào CSDL!${tabMsg}`,
-				"success",
-			);
-		} else if (!options?.silent) {
-			showToast(
-				`Lỗi kéo dữ liệu: ${data.message || "Không có dữ liệu mới"}`,
-				"error",
-			);
+
+	pullInFlight = (async () => {
+		try {
+			const res = await fetch("/api/sheets/pull", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({}),
+			});
+			const data = await res.json();
+			if (data.success) {
+				const count =
+					data.ingested !== undefined || data.updated !== undefined
+						? (data.ingested || 0) + (data.updated || 0)
+						: data.rows?.length || 0;
+				const tabMsg = data.tabName ? ` [Tab: ${data.tabName}]` : "";
+				showToast(
+					`✓ Đã đồng bộ thành công ${count} khách vào CSDL!${tabMsg}`,
+					"success",
+				);
+			} else if (!options?.silent) {
+				showToast(
+					`Lỗi kéo dữ liệu: ${data.message || "Không có dữ liệu mới"}`,
+					"error",
+				);
+			}
+		} catch (err) {
+			if (!options?.silent) {
+				showToast("Lỗi khi kết nối đồng bộ dữ liệu", "error");
+			}
+		} finally {
+			clearLocalCache();
+			await refreshDashboard(true);
+			loading = false;
+			pullInFlight = null;
 		}
-	} catch (err) {
-		if (!options?.silent) {
-			showToast("Lỗi khi kết nối đồng bộ dữ liệu", "error");
-		}
-	} finally {
-		clearLocalCache();
-		await loadStays(true);
-		await loadStats(true);
-		loading = false;
-	}
+	})();
+
+	return pullInFlight;
 }
 
 async function loadAuditLogs() {
