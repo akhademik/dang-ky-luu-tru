@@ -377,6 +377,19 @@ let reRegisterDepartureDate = $state("");
 let showDeleteModal = $state(false);
 let deleteTargetStay = $state<StayDetail | null>(null);
 let deletingIds = $state<Set<string>>(new Set());
+let busyEntryIds = $state<Set<string>>(new Set());
+
+function markEntryBusy(id: string) {
+	const next = new Set(busyEntryIds);
+	next.add(id);
+	busyEntryIds = next;
+}
+
+function unmarkEntryBusy(id: string) {
+	const next = new Set(busyEntryIds);
+	next.delete(id);
+	busyEntryIds = next;
+}
 
 let showPayloadModal = $state(false);
 let selectedLog = $state<KbttLog | null>(null);
@@ -710,6 +723,11 @@ async function switchEnv(env: "dev" | "prod") {
 
 // Single Register
 async function registerStay(stayId: string) {
+	if (busyEntryIds.has(stayId)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
+
 	const stay = rawStays.find((s) => s.id === stayId);
 	if (stay) {
 		const val = validateStayDetail(stay);
@@ -724,6 +742,7 @@ async function registerStay(stayId: string) {
 		}
 	}
 
+	markEntryBusy(stayId);
 	try {
 		showToast("Đang gửi khai báo lên Cổng KBTT Bộ Công An...", "info");
 		const res = await fetch("/api/stays/register", {
@@ -756,12 +775,14 @@ async function registerStay(stayId: string) {
 	} catch (err: unknown) {
 		const msg = err instanceof Error ? err.message : String(err);
 		showToast(`Lỗi kết nối: ${msg}`, "error");
+	} finally {
+		unmarkEntryBusy(stayId);
 	}
 }
 
 // Batch Register
 async function registerAllReady() {
-	const readyStays = rawStays.filter((s) => s.status === "READY_TO_SYNC");
+	const readyStays = rawStays.filter((s) => s.status === "READY_TO_SYNC" && !busyEntryIds.has(s.id));
 	if (readyStays.length === 0) {
 		showToast("Không có khách nào đang chờ đăng ký", "info");
 		return;
@@ -779,6 +800,7 @@ async function registerAllReady() {
 		return;
 	}
 
+	readyStays.forEach((s) => markEntryBusy(s.id));
 	try {
 		showToast(
 			"Đang gửi đăng ký hàng loạt cho tất cả khách sẵn sàng...",
@@ -800,11 +822,17 @@ async function registerAllReady() {
 	} catch (err: unknown) {
 		const msg = err instanceof Error ? err.message : String(err);
 		showToast(`Lỗi kết nối: ${msg}`, "error");
+	} finally {
+		readyStays.forEach((s) => unmarkEntryBusy(s.id));
 	}
 }
 
 // Extend Stay
 function openExtendModal(stay: StayDetail) {
+	if (busyEntryIds.has(stay.id)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
 	if (stay.status !== "SYNCED_KBTT" && stay.status !== "EXTENDED") {
 		showToast(
 			"Chỉ có thể gia hạn cho khách đã khai báo lưu trú thành công!",
@@ -823,6 +851,7 @@ async function submitExtend() {
 	const newDate = extendNewDate;
 	showExtendModal = false;
 
+	markEntryBusy(targetId);
 	clearLocalCache();
 	// Optimistically update
 	rawStays = rawStays.map((s) =>
@@ -856,11 +885,17 @@ async function submitExtend() {
 		showToast("Lỗi khi gia hạn", "error");
 		clearLocalCache();
 		await loadStays(true);
+	} finally {
+		unmarkEntryBusy(targetId);
 	}
 }
 
 // Checkout
 function openCheckoutModal(stay: StayDetail) {
+	if (busyEntryIds.has(stay.id)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
 	if (stay.status === "CHECKED_OUT") {
 		showToast("Khách này đã trả phòng trước đó!", "info");
 		return;
@@ -874,6 +909,7 @@ async function submitCheckout() {
 	const targetId = checkoutTargetStay.id;
 	showCheckoutModal = false;
 
+	markEntryBusy(targetId);
 	clearLocalCache();
 	// Optimistically update
 	if (activeTab === "inhouse" || activeTab === "register") {
@@ -906,11 +942,17 @@ async function submitCheckout() {
 		showToast("Lỗi khi checkout", "error");
 		clearLocalCache();
 		await loadStays(true);
+	} finally {
+		unmarkEntryBusy(targetId);
 	}
 }
 
 // Overwrite / Change Stay Status in DB
 function openStatusModal(stay: StayDetail) {
+	if (busyEntryIds.has(stay.id)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
 	statusTargetStay = stay;
 	selectedNewStatus = stay.status;
 	showStatusModal = true;
@@ -922,6 +964,7 @@ async function submitStatusOverride() {
 	const newStatus = selectedNewStatus;
 	showStatusModal = false;
 
+	markEntryBusy(targetId);
 	clearLocalCache();
 	// Optimistically update
 	rawStays = rawStays.map((s) =>
@@ -950,11 +993,17 @@ async function submitStatusOverride() {
 		showToast("Lỗi khi cập nhật trạng thái", "error");
 		clearLocalCache();
 		await loadStays(true);
+	} finally {
+		unmarkEntryBusy(targetId);
 	}
 }
 
 // Re-Register Stay (Lượt mới / Khách quay lại / Tự động gửi BCA ngay)
 function openReRegisterModal(stay: StayDetail) {
+	if (busyEntryIds.has(stay.id)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
 	reRegisterTargetStay = stay;
 	reRegisterRoom = stay.so_phong || "1";
 
@@ -974,6 +1023,8 @@ async function submitReRegister() {
 	if (!reRegisterTargetStay) return;
 	const targetId = reRegisterTargetStay.id;
 	showReRegisterModal = false;
+
+	markEntryBusy(targetId);
 	showToast("⚡ Đang tạo lượt lưu trú mới và gửi báo cáo Công An...", "info");
 
 	try {
@@ -1006,11 +1057,17 @@ async function submitReRegister() {
 	} catch {
 		showToast("Lỗi kết nối khi gửi khai báo lại", "error");
 		await loadStays(true);
+	} finally {
+		unmarkEntryBusy(targetId);
 	}
 }
 
 // Delete Stay with Strikethrough and Non-blocking Async Execution
 function openDeleteModal(stay: StayDetail) {
+	if (busyEntryIds.has(stay.id)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
 	deleteTargetStay = stay;
 	showDeleteModal = true;
 }
@@ -1022,6 +1079,7 @@ async function submitDelete() {
 
 	// Immediate visual feedback: strikethrough row & disable function buttons
 	deletingIds = new Set([...deletingIds, deletedId]);
+	markEntryBusy(deletedId);
 	showToast("Đang xóa bản ghi khỏi CSDL...", "info");
 
 	try {
@@ -1043,6 +1101,7 @@ async function submitDelete() {
 		const next = new Set(deletingIds);
 		next.delete(deletedId);
 		deletingIds = next;
+		unmarkEntryBusy(deletedId);
 	}
 }
 
@@ -1526,6 +1585,10 @@ function validateStayDetail(stay: StayDetail): {
 
 // Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
+	if (busyEntryIds.has(stay.id)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
 	const fullAddr = getFullAddress(stay);
 
 	editStay = {
@@ -1665,6 +1728,12 @@ async function submitEdit() {
 		showToast("Vui lòng kiểm tra và sửa các trường báo đỏ", "error");
 		return;
 	}
+	const stayId = editStay.id;
+	if (busyEntryIds.has(stayId)) {
+		showToast("Bản ghi này đang được xử lý, vui lòng chờ...", "info");
+		return;
+	}
+
 	const updatedItem = {
 		...editStay,
 		ngay_sinh: formatDateDisplay(editStay.ngay_sinh),
@@ -1679,6 +1748,7 @@ async function submitEdit() {
 	};
 	showEditModal = false;
 
+	markEntryBusy(stayId);
 	clearLocalCache();
 	// Optimistically update local array immediately
 	rawStays = rawStays.map((s) =>
@@ -1707,6 +1777,8 @@ async function submitEdit() {
 		showToast("Lỗi kết nối khi lưu thông tin", "error");
 		clearLocalCache();
 		await loadStays(true);
+	} finally {
+		unmarkEntryBusy(stayId);
 	}
 }
 
@@ -2459,11 +2531,12 @@ onMount(async () => {
 							{:else}
 								{#each stays as stay (stay.id)}
 									{@const isDeleting = deletingIds.has(stay.id)}
+									{@const isBusy = busyEntryIds.has(stay.id) || isDeleting}
 									{@const val = validateStayDetail(stay)}
 									{@const fullAddr = getFullAddress(stay)}
 									{@const shortAddr = getShortAddress(stay)}
 									{@const countryFullName = getCountryFullName(stay.quoc_tich)}
-									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isBusy ? 'opacity-40 bg-slate-900/60 select-none grayscale cursor-not-allowed' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''} {val.hasErrors && !isBusy ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
 											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
 											{#if val.errors.ho_ten}
@@ -2537,12 +2610,17 @@ onMount(async () => {
 										<td class="p-3.5 text-center">
 											{#if isDeleting}
 												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
+											{:else if isBusy}
+												<span class="text-[11px] text-sky-400 italic animate-pulse flex items-center justify-center gap-1">
+													<span>⏳</span> Đang xử lý...
+												</span>
 											{:else}
 												<div class="flex items-center justify-center gap-1.5">
 													<button
 														type="button"
 														onclick={() => registerStay(stay.id)}
-														class="px-2.5 py-1 {val.hasErrors ? 'bg-rose-900/70 hover:bg-rose-800 text-rose-200 border border-rose-600' : 'bg-emerald-600 hover:bg-emerald-500 text-white font-semibold'} rounded text-[11px] shadow transition-all flex items-center gap-1"
+														disabled={isBusy}
+														class="px-2.5 py-1 {val.hasErrors ? 'bg-rose-900/70 hover:bg-rose-800 text-rose-200 border border-rose-600' : 'bg-emerald-600 hover:bg-emerald-500 text-white font-semibold'} disabled:opacity-50 disabled:cursor-not-allowed rounded text-[11px] shadow transition-all flex items-center gap-1"
 														title={val.hasErrors ? 'Dữ liệu chưa hợp lệ - Bấm để xem và sửa lỗi' : 'Gửi khai báo lên Bộ Công An'}
 													>
 														{#if val.hasErrors}
@@ -2554,14 +2632,16 @@ onMount(async () => {
 													<button
 														type="button"
 														onclick={() => openEdit(stay)}
-														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
+														disabled={isBusy}
+														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded text-[11px] transition-all"
 													>
 														Sửa ✎
 													</button>
 													<button
 														type="button"
 														onclick={() => openDeleteModal(stay)}
-														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
+														disabled={isBusy}
+														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 disabled:opacity-50 disabled:cursor-not-allowed text-rose-200 rounded text-[11px] transition-all"
 													>
 														Xóa ✕
 													</button>
@@ -2601,9 +2681,10 @@ onMount(async () => {
 							{:else}
 								{#each stays as stay (stay.id)}
 									{@const isDeleting = deletingIds.has(stay.id)}
+									{@const isBusy = busyEntryIds.has(stay.id) || isDeleting}
 									{@const val = validateStayDetail(stay)}
 									{@const badge = getStatusBadge(stay.status, val.hasErrors)}
-									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30 select-none pointer-events-none' : ''} {val.hasErrors ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
+									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isBusy ? 'opacity-40 bg-slate-900/60 select-none grayscale cursor-not-allowed' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''} {val.hasErrors && !isBusy ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
 											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
 											{#if val.errors.ho_ten}
@@ -2657,7 +2738,8 @@ onMount(async () => {
 											<button
 												type="button"
 												onclick={() => openStatusModal(stay)}
-												class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+												disabled={isBusy}
+												class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
 												title="Bấm để ghi đè / đổi trạng thái CSDL"
 											>
 												<span>{badge.label}</span>
@@ -2667,20 +2749,26 @@ onMount(async () => {
 										<td class="p-3.5 text-center">
 											{#if isDeleting}
 												<span class="text-[11px] text-rose-400 italic animate-pulse">Đang xóa...</span>
+											{:else if isBusy}
+												<span class="text-[11px] text-sky-400 italic animate-pulse flex items-center justify-center gap-1">
+													<span>⏳</span> Đang xử lý...
+												</span>
 											{:else}
 												<div class="flex items-center justify-center gap-1.5">
 													{#if stay.status !== 'CHECKED_OUT'}
 														<button
 															type="button"
 															onclick={() => openExtendModal(stay)}
-															class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded text-[11px] transition-all"
+															disabled={isBusy}
+															class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded text-[11px] transition-all"
 														>
 															Gia Hạn ⏱
 														</button>
 														<button
 															type="button"
 															onclick={() => openCheckoutModal(stay)}
-															class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white font-medium rounded text-[11px] transition-all"
+															disabled={isBusy}
+															class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded text-[11px] transition-all"
 														>
 															Checkout 🚪
 														</button>
@@ -2688,14 +2776,16 @@ onMount(async () => {
 													<button
 														type="button"
 														onclick={() => openEdit(stay)}
-														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
+														disabled={isBusy}
+														class="px-2 py-1 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded text-[11px] transition-all"
 													>
 														✎
 													</button>
 													<button
 														type="button"
 														onclick={() => openDeleteModal(stay)}
-														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
+														disabled={isBusy}
+														class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 disabled:opacity-50 disabled:cursor-not-allowed text-rose-200 rounded text-[11px] transition-all"
 													>
 														✕
 													</button>
@@ -2761,9 +2851,10 @@ onMount(async () => {
 							{#if group.stay_count === 1}
 								{@const stay = group.latestStay}
 								{@const isDeleting = deletingIds.has(stay.id)}
+								{@const isBusy = busyEntryIds.has(stay.id) || isDeleting}
 								{@const val = validateStayDetail(stay)}
 								{@const badge = getStatusBadge(stay.status, val.hasErrors)}
-								<div class="border border-slate-700/80 rounded-xl bg-slate-900/60 overflow-hidden transition-all duration-200 hover:border-slate-600 shadow-md p-3 flex items-center justify-between gap-3 overflow-x-auto {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
+								<div class="border border-slate-700/80 rounded-xl bg-slate-900/60 overflow-hidden transition-all duration-200 hover:border-slate-600 shadow-md p-3 flex items-center justify-between gap-3 overflow-x-auto {isBusy ? 'opacity-40 bg-slate-950/80 select-none grayscale cursor-not-allowed' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
 									<!-- Col 1: STT, Họ Tên, Giới Tính -->
 									<div class="w-60 min-w-[15rem] max-w-[15rem] flex items-center gap-2 flex-shrink-0">
 										<span class="text-xs font-mono text-slate-500 w-6 flex-shrink-0">#{gIdx + 1}</span>
@@ -2812,7 +2903,8 @@ onMount(async () => {
 										<button
 											type="button"
 											onclick={(e) => { e.stopPropagation(); openStatusModal(stay); }}
-											class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+											disabled={isBusy}
+											class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
 											title="Bấm để ghi đè / đổi trạng thái CSDL"
 										>
 											<span>{badge.label}</span>
@@ -2822,32 +2914,40 @@ onMount(async () => {
 
 									<!-- Col 6: Thao tác -->
 									<div class="flex items-center justify-end gap-1.5 flex-shrink-0 min-w-[13rem]">
-										<button
-											type="button"
-											onclick={() => openReRegisterModal(stay)}
-											class="px-2.5 py-1 bg-purple-700 hover:bg-purple-600 text-white font-semibold rounded text-[11px] shadow transition-all flex items-center gap-1"
-											title="Khai báo lại lượt mới và tự động gửi BCA ngay"
-										>
-											<span>🔄</span> Khai Báo Lại
-										</button>
-										<button
-											type="button"
-											onclick={() => openEdit(stay)}
-											class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[11px] transition-all"
-										>
-											Sửa ✎
-										</button>
-										<button
-											type="button"
-											onclick={() => openDeleteModal(stay)}
-											class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[11px] transition-all"
-										>
-											Xóa ✕
-										</button>
+										{#if isBusy}
+											<span class="text-[11px] text-sky-400 italic animate-pulse">⏳ Đang xử lý...</span>
+										{:else}
+											<button
+												type="button"
+												onclick={() => openReRegisterModal(stay)}
+												disabled={isBusy}
+												class="px-2.5 py-1 bg-purple-700 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded text-[11px] shadow transition-all flex items-center gap-1"
+												title="Khai báo lại lượt mới và tự động gửi BCA ngay"
+											>
+												<span>🔄</span> Khai Báo Lại
+											</button>
+											<button
+												type="button"
+												onclick={() => openEdit(stay)}
+												disabled={isBusy}
+												class="px-2 py-1 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded text-[11px] transition-all"
+											>
+												Sửa ✎
+											</button>
+											<button
+												type="button"
+												onclick={() => openDeleteModal(stay)}
+												disabled={isBusy}
+												class="px-2 py-1 bg-rose-900/60 hover:bg-rose-800 disabled:opacity-50 disabled:cursor-not-allowed text-rose-200 rounded text-[11px] transition-all"
+											>
+												Xóa ✕
+											</button>
+										{/if}
 									</div>
 								</div>
 							{:else}
 								<!-- Multiple stays: Accordion Dropdown -->
+								{@const latestIsBusy = busyEntryIds.has(group.latestStay.id) || deletingIds.has(group.latestStay.id)}
 								<div class="border border-slate-700/80 rounded-xl bg-slate-900/60 overflow-hidden transition-all duration-200 hover:border-slate-600 shadow-md">
 									<!-- Header Accordion Row -->
 									<div
@@ -2855,7 +2955,7 @@ onMount(async () => {
 										tabindex="0"
 										onclick={() => toggleGuestExpand(group.guest_id)}
 										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleGuestExpand(group.guest_id); }}
-										class="p-3 flex items-center justify-between gap-3 cursor-pointer select-none bg-slate-900/90 hover:bg-slate-800/80 transition-colors overflow-x-auto"
+										class="p-3 flex items-center justify-between gap-3 cursor-pointer select-none bg-slate-900/90 hover:bg-slate-800/80 transition-colors overflow-x-auto {latestIsBusy ? 'opacity-50 grayscale' : ''}"
 									>
 										<!-- Col 1: Arrow, STT, Họ Tên, Giới Tính, Lượt ở -->
 										<div class="w-60 min-w-[15rem] max-w-[15rem] flex items-center gap-2 flex-shrink-0">
@@ -2911,7 +3011,8 @@ onMount(async () => {
 											<button
 												type="button"
 												onclick={() => openStatusModal(group.latestStay)}
-												class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {latestBadge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+												disabled={latestIsBusy}
+												class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {latestBadge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
 												title="Bấm để ghi đè / đổi trạng thái CSDL"
 											>
 												<span>{latestBadge.label}</span>
@@ -2921,21 +3022,26 @@ onMount(async () => {
 
 										<!-- Col 6: Thao tác -->
 										<div class="flex items-center justify-end gap-1.5 flex-shrink-0 min-w-[13rem]" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="toolbar" tabindex="-1">
-											<button
-												type="button"
-												onclick={() => openReRegisterModal(group.latestStay)}
-												class="px-2.5 py-1 bg-purple-700 hover:bg-purple-600 text-white font-semibold rounded text-[11px] shadow transition-all flex items-center gap-1"
-												title="Khai báo lại lượt mới và tự động gửi BCA ngay"
-											>
-												<span>🔄</span> Khai Báo Lại
-											</button>
-											<button
-												type="button"
-												onclick={() => toggleGuestExpand(group.guest_id)}
-												class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-all border border-slate-700 flex items-center gap-1"
-											>
-												<span>{isExpanded ? 'Thu gọn ▲' : `Lịch sử (${group.stay_count}) ▼`}</span>
-											</button>
+											{#if latestIsBusy}
+												<span class="text-[11px] text-sky-400 italic animate-pulse">⏳ Đang xử lý...</span>
+											{:else}
+												<button
+													type="button"
+													onclick={() => openReRegisterModal(group.latestStay)}
+													disabled={latestIsBusy}
+													class="px-2.5 py-1 bg-purple-700 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded text-[11px] shadow transition-all flex items-center gap-1"
+													title="Khai báo lại lượt mới và tự động gửi BCA ngay"
+												>
+													<span>🔄</span> Khai Báo Lại
+												</button>
+												<button
+													type="button"
+													onclick={() => toggleGuestExpand(group.guest_id)}
+													class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-all border border-slate-700 flex items-center gap-1"
+												>
+													<span>{isExpanded ? 'Thu gọn ▲' : `Lịch sử (${group.stay_count}) ▼`}</span>
+												</button>
+											{/if}
 										</div>
 									</div>
 
@@ -2962,9 +3068,10 @@ onMount(async () => {
 													<tbody class="divide-y divide-slate-800/80 font-mono">
 														{#each group.stays as stay, sIdx (stay.id)}
 															{@const isDeleting = deletingIds.has(stay.id)}
+															{@const isStayBusy = busyEntryIds.has(stay.id) || isDeleting}
 															{@const val = validateStayDetail(stay)}
 															{@const badge = getStatusBadge(stay.status, val.hasErrors)}
-															<tr class="hover:bg-slate-800/40 transition-colors {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
+															<tr class="hover:bg-slate-800/40 transition-colors {isStayBusy ? 'opacity-40 select-none grayscale cursor-not-allowed' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
 																<td class="p-2.5 text-center text-slate-500 font-bold">
 																	#{group.stays.length - sIdx}
 																	{#if sIdx === 0}
@@ -2995,7 +3102,8 @@ onMount(async () => {
 																	<button
 																		type="button"
 																		onclick={() => openStatusModal(stay)}
-																		class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
+																		disabled={isStayBusy}
+																		class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class} hover:ring-2 hover:ring-sky-400 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer inline-flex items-center gap-1 group/badge"
 																		title="Bấm để ghi đè / đổi trạng thái CSDL"
 																	>
 																		<span>{badge.label}</span>
@@ -3006,22 +3114,28 @@ onMount(async () => {
 																	{stay.ghi_chu || '-'}
 																</td>
 																<td class="p-2.5 text-center font-sans">
-																	<div class="flex items-center justify-center gap-1">
-																		<button
-																			type="button"
-																			onclick={() => openEdit(stay)}
-																			class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-[10px] transition-all"
-																		>
-																			Sửa ✎
-																		</button>
-																		<button
-																			type="button"
-																			onclick={() => openDeleteModal(stay)}
-																			class="px-2 py-0.5 bg-rose-900/60 hover:bg-rose-800 text-rose-200 rounded text-[10px] transition-all"
-																		>
-																			Xóa ✕
-																		</button>
-																	</div>
+																	{#if isStayBusy}
+																		<span class="text-[10px] text-sky-400 italic animate-pulse">⏳ Đang xử lý...</span>
+																	{:else}
+																		<div class="flex items-center justify-center gap-1">
+																			<button
+																				type="button"
+																				onclick={() => openEdit(stay)}
+																				disabled={isStayBusy}
+																				class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded text-[10px] transition-all"
+																			>
+																				Sửa ✎
+																			</button>
+																			<button
+																				type="button"
+																				onclick={() => openDeleteModal(stay)}
+																				disabled={isStayBusy}
+																				class="px-2 py-0.5 bg-rose-900/60 hover:bg-rose-800 disabled:opacity-50 disabled:cursor-not-allowed text-rose-200 rounded text-[10px] transition-all"
+																			>
+																				Xóa ✕
+																			</button>
+																		</div>
+																	{/if}
 																</td>
 															</tr>
 														{/each}
