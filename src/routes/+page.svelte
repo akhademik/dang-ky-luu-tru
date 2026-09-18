@@ -1729,6 +1729,150 @@ function getStatusBadge(status: string, hasErrors = false) {
 	}
 }
 
+function formatAuditAction(endpoint?: string): { name: string; class: string } {
+	const ep = (endpoint || "").toUpperCase();
+	if (
+		ep.includes("API_5_VN") ||
+		ep.includes("API_4_NN") ||
+		ep.includes("REGISTER") ||
+		ep.includes("CHECKIN")
+	) {
+		return {
+			name: "checkin",
+			class: "bg-sky-950/90 text-sky-300 border-sky-700/80",
+		};
+	}
+	if (ep.includes("CHECKOUT")) {
+		return {
+			name: "checkout",
+			class: "bg-slate-900 text-slate-300 border-slate-700",
+		};
+	}
+	if (ep.includes("EXTEND")) {
+		return {
+			name: "extend",
+			class: "bg-indigo-950/90 text-indigo-300 border-indigo-700/80",
+		};
+	}
+	return {
+		name: (endpoint || "-").toLowerCase(),
+		class: "bg-slate-800 text-slate-300 border-slate-700",
+	};
+}
+
+function getAuditLogFailureReason(log: KbttLog): string {
+	if (log.is_success) return "";
+
+	// 1. Check response_payload or error_message from server
+	let serverMsg = (log.error_message || "").trim();
+	if (log.response_payload) {
+		try {
+			const res = JSON.parse(log.response_payload);
+			if (
+				res.message &&
+				typeof res.message === "string" &&
+				res.message.trim() &&
+				res.message !== "Lỗi khi gọi API KBTT"
+			) {
+				serverMsg = res.message.trim();
+			} else if (
+				res.resData?.message &&
+				typeof res.resData.message === "string"
+			) {
+				serverMsg = res.resData.message.trim();
+			} else if (res.error && typeof res.error === "string") {
+				serverMsg = res.error.trim();
+			}
+		} catch {}
+	}
+
+	// 2. If server returned informative message, interpret or return it
+	if (serverMsg) {
+		if (serverMsg.includes("đang tạm trú tại CSLT và chưa checkout")) {
+			return "Khách đang có lượt lưu trú tại cơ sở và chưa checkout lượt cũ.";
+		}
+		if (
+			serverMsg.includes("Hết hạn") ||
+			serverMsg.includes("token") ||
+			serverMsg.includes("unauthorized") ||
+			log.code === "401" ||
+			log.http_status === 401
+		) {
+			return "Hết hạn phiên làm việc hoặc Token API không hợp lệ.";
+		}
+		if (
+			serverMsg !== "Lỗi khi gọi API KBTT" &&
+			serverMsg !== "ERR" &&
+			serverMsg !== "Error"
+		) {
+			return serverMsg;
+		}
+	}
+
+	// 3. Fallback logic based on request payload analysis
+	if (log.request_payload) {
+		try {
+			let req = JSON.parse(log.request_payload);
+			if (Array.isArray(req) && req.length > 0) {
+				req = req[0];
+			}
+			const ep = (log.api_endpoint || "").toUpperCase();
+			const isForeign =
+				ep.includes("4_NN") ||
+				(req.quocTich && req.quocTich !== "VNM") ||
+				req.soHoChieu !== undefined;
+
+			if (isForeign) {
+				if (
+					!req.thoiHanTamTruStr &&
+					!req.thoiHanThiThuc &&
+					!req.ngayTamTruDenStr &&
+					!req.thoi_han_thi_thuc
+				) {
+					return "Thiếu thông tin thời hạn visa / thị thực tạm trú cho khách nước ngoài.";
+				}
+				if (!req.soHoChieu && !req.soGiayTo) {
+					return "Thiếu số hộ chiếu của khách nước ngoài.";
+				}
+				if (!req.quocTich) {
+					return "Thiếu thông tin quốc tịch.";
+				}
+				if (!req.ngaySinhStr && !req.ngayThangNamSinhStr && !req.ngaySinh) {
+					return "Thiếu ngày tháng năm sinh.";
+				}
+			} else {
+				// Vietnamese guest
+				if (!req.soGiayTo) {
+					return "Thiếu số CCCD / giấy tờ tùy thân.";
+				}
+				if (!req.hoTen) {
+					return "Thiếu họ và tên khách lưu trú.";
+				}
+				if (!req.ngayDenCsltStr && !req.ngayDen) {
+					return "Thiếu thời gian nhận phòng.";
+				}
+				if (!req.ngayDiDuKienStr && !req.ngayDiDuKien) {
+					return "Thiếu ngày đi dự kiến.";
+				}
+			}
+
+			if (!req.soPhong) {
+				return "Thiếu thông tin số phòng lưu trú.";
+			}
+		} catch {}
+	}
+
+	// 4. Fallback on HTTP / error code
+	if (log.http_status === 500 || log.code === "500") {
+		return "Lỗi máy chủ kết nối hoặc hệ thống BCA tạm thời gián đoạn.";
+	}
+	if (log.code === "400" || log.http_status === 400) {
+		return "Dữ liệu gửi lên không đúng định dạng quy định của Cổng Dịch Vụ Công BCA.";
+	}
+
+	return serverMsg || `Yêu cầu thất bại (Mã lỗi: ${log.code || "ERR"})`;
+}
+
 // Svelte 5 Effects
 $effect(() => {
 	if (activeTab === "audit") {
@@ -1905,19 +2049,19 @@ onMount(async () => {
 	<!-- Metric Cards -->
 	<section class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6">
 		<div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-xl shadow-md">
-			<div class="text-xs text-amber-400 font-medium">Chờ Khai Báo (OCR)</div>
+			<div class="text-xs text-amber-400 font-medium">Chưa Đăng Ký</div>
 			<div class="text-2xl font-bold mt-1 text-amber-300">{stats.readyToSync}</div>
-			<div class="text-[11px] text-slate-400 mt-0.5">Sẵn sàng gửi API KBTT</div>
+			<div class="text-[11px] text-slate-400 mt-0.5">Sẵn sàng gửi khai báo</div>
 		</div>
 
 		<div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-xl shadow-md">
-			<div class="text-xs text-sky-400 font-medium">Đang Ở Trong Nhà</div>
+			<div class="text-xs text-sky-400 font-medium">Đang Ở</div>
 			<div class="text-2xl font-bold mt-1 text-sky-300">{stats.inHouse}</div>
 			<div class="text-[11px] text-slate-400 mt-0.5">Khách đang lưu trú</div>
 		</div>
 
 		<div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-xl shadow-md">
-			<div class="text-xs text-emerald-400 font-medium">Đã Đăng Ký BCA</div>
+			<div class="text-xs text-emerald-400 font-medium">Đã Đăng Ký</div>
 			<div class="text-2xl font-bold mt-1 text-emerald-300">{stats.syncedKbtt}</div>
 			<div class="text-[11px] text-slate-400 mt-0.5">Hồ sơ đã đồng bộ thành công</div>
 		</div>
@@ -2630,13 +2774,13 @@ onMount(async () => {
 					<table class="w-full text-left text-xs border-collapse">
 						<thead class="bg-slate-900/90 text-slate-300 uppercase font-semibold border-b border-slate-700">
 							<tr>
-								<th class="p-3.5">Thời Gian</th>
-								<th class="p-3.5">Hành Động / Endpoint</th>
-								<th class="p-3.5">Khách Hàng</th>
-								<th class="p-3.5">Phòng</th>
-								<th class="p-3.5">CCCD / Hộ Chiếu</th>
-								<th class="p-3.5">Kết Quả</th>
-								<th class="p-3.5 text-center">Payload Chi Tiết</th>
+								<th class="p-3.5 whitespace-nowrap">Thời Gian</th>
+								<th class="p-3.5 whitespace-nowrap">Hành Động</th>
+								<th class="p-3.5 whitespace-nowrap">Khách Hàng</th>
+								<th class="p-3.5 whitespace-nowrap">Phòng</th>
+								<th class="p-3.5 whitespace-nowrap">CCCD / Hộ Chiếu</th>
+								<th class="p-3.5">Kết Quả & Lý Do</th>
+								<th class="p-3.5 text-center whitespace-nowrap">Payload Chi Tiết</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-slate-700/60">
@@ -2646,24 +2790,37 @@ onMount(async () => {
 								</tr>
 							{:else}
 								{#each auditLogs as log (log.id)}
+									{@const act = formatAuditAction(log.api_endpoint)}
 									<tr class="hover:bg-slate-700/30 transition-colors">
-										<td class="p-3.5 text-slate-400 font-mono">{formatDateTimeDisplay(log.created_at)}</td>
-										<td class="p-3.5 font-bold font-mono text-sky-400">{log.api_endpoint}</td>
-										<td class="p-3.5 font-semibold text-slate-200">{log.guest_name || '-'}</td>
-										<td class="p-3.5 font-mono text-slate-300">{log.so_phong || '-'}</td>
-										<td class="p-3.5 font-mono text-slate-300">{log.so_giay_to || '-'}</td>
+										<td class="p-3.5 text-slate-400 font-mono whitespace-nowrap">{formatDateTimeDisplay(log.created_at)}</td>
+										<td class="p-3.5 whitespace-nowrap">
+											<span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] border {act.class}">
+												{act.name}
+											</span>
+										</td>
+										<td class="p-3.5 font-semibold text-slate-200 whitespace-nowrap">{log.guest_name || '-'}</td>
+										<td class="p-3.5 font-mono text-sky-400 whitespace-nowrap">{log.so_phong ? `Phòng ${log.so_phong}` : '-'}</td>
+										<td class="p-3.5 font-mono text-slate-300 whitespace-nowrap">{log.so_giay_to || '-'}</td>
 										<td class="p-3.5">
 											{#if log.is_success}
-												<span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 font-medium text-[10px]">
+												<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 font-medium text-[10px]">
 													✓ Thành công
 												</span>
 											{:else}
-												<span class="px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-700 font-medium text-[10px]" title={log.error_message || ''}>
-													✕ Thất bại: {log.code || 'ERR'}
-												</span>
+												{@const failReason = getAuditLogFailureReason(log)}
+												<div class="flex flex-col gap-1 max-w-sm md:max-w-md">
+													<div class="flex items-center gap-1.5">
+														<span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-[10px]">
+															✕ Thất bại ({log.code || 'ERR'})
+														</span>
+													</div>
+													<span class="text-rose-300/90 text-[11px] leading-snug font-normal">
+														{failReason}
+													</span>
+												</div>
 											{/if}
 										</td>
-										<td class="p-3.5 text-center">
+										<td class="p-3.5 text-center whitespace-nowrap">
 											<button
 												type="button"
 												onclick={() => openPayloadViewer(log)}
@@ -3129,14 +3286,25 @@ onMount(async () => {
 
 	<!-- MODAL: JSON PAYLOAD INSPECTOR -->
 	{#if showPayloadModal && selectedLog}
+		{@const modalAct = formatAuditAction(selectedLog.api_endpoint)}
 		<div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
 			<div class="bg-slate-800 border border-slate-700 w-full max-w-3xl rounded-2xl p-6 shadow-2xl max-h-[85vh] flex flex-col">
 				<div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
 					<h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
-						<span>🔍</span> Chi Tiết Audit Log: {selectedLog.api_endpoint}
+						<span>🔍</span> Chi Tiết Audit Log: <span class="px-2 py-0.5 rounded font-mono font-bold text-xs border {modalAct.class}">{modalAct.name}</span>
+						{#if selectedLog.guest_name}
+							<span class="text-slate-300 font-normal">({selectedLog.guest_name})</span>
+						{/if}
 					</h3>
 					<button type="button" onclick={() => { showPayloadModal = false; }} class="text-slate-400 hover:text-white text-xl">✕</button>
 				</div>
+
+				{#if !selectedLog.is_success}
+					<div class="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-200 text-xs flex items-start gap-2">
+						<span class="text-rose-400 font-bold flex-shrink-0">⚠️ Lý do thất bại:</span>
+						<span>{getAuditLogFailureReason(selectedLog)}</span>
+					</div>
+				{/if}
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto text-xs font-mono">
 					<div>

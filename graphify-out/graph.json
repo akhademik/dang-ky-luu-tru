@@ -11929,8 +11929,20 @@
       "source_file": "test/test-pipeline.ts",
       "source_location": "L235",
       "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
+      "target": "src_lib_server_logger_logger_log",
+      "relation": "indirect_call",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "argument",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L2810",
+      "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0b20c95871a71dc1856f15874a8006b206a8de7e"
+  "built_at_commit": "b710fee4e21b548055de9ef9960dc142b69fe0a2"
 }
