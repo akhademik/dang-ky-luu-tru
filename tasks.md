@@ -1,685 +1,768 @@
-Nhưng có một vấn đề tôi muốn bạn chú ý:
+Đúng. Với code hiện tại, chuyển Tab vẫn có thể gọi API/đọc D1 lại. Cơ chế hiện tại chủ yếu là in-flight dedup + TTL cho stats, chưa phải một cơ chế kiểu:
 
-⚠️ Logic Pull Google Sheet hiện tại vẫn có thể gọi dư
+“Đã lấy dữ liệu → giữ làm source hiển thị trong session → chỉ đọc DB lại khi dữ liệu có khả năng đã thay đổi.”
 
-Tôi đã kiểm tra trực tiếp:
+Và ý tưởng bạn mô tả hoàn toàn làm được, thậm chí với app này tôi nghĩ đây là kiến trúc phù hợp hơn.
 
-+page.svelte
+1. Hiện tại đang hoạt động thế nào?
+
+Ví dụ:
+
+Tab Đăng ký
 ↓
-pullFromGoogleSheets()
+GET /api/stays?status=READY_TO_SYNC
 ↓
-POST /api/sheets/pull
+D1
+
+↓ chuyển sang Tab Đang ở
+
+GET /api/stays?status=IN_HOUSE
 ↓
-fetchSheetTabs()
+D1
+
+↓ quay lại Tab Đăng ký
+
+GET /api/stays?status=READY_TO_SYNC
 ↓
-fetchSheetData()
+D1 lần nữa
+
+loadStays() hiện có staysInFlight, nhưng nó chỉ chống:
+
+Request A đang chạy
+Request B đến cùng lúc
 ↓
-fetchSheetTabs() nếu gid = 0
+dùng chung Promise
+
+Nó không phải cache dữ liệu.
+
+Stats thì hiện có TTL 15 giây, nhưng đó cũng chỉ là cache ngắn hạn.
+
+2. Ý tưởng của bạn thực chất là một "client-side session cache"
+
+Tôi sẽ thiết kế nó theo hướng:
+
+                 ┌──────────────────────┐
+                 │   SESSION DATA STORE │
+                 │                      │
+                 │ guests               │
+                 │ stays                │
+                 │ stats                │
+                 │ catalogs             │
+                 │ lastSync              │
+                 │ version               │
+                 └──────────┬───────────┘
+                            │
+              ┌─────────────┼─────────────┐
+              ↓             ↓             ↓
+          Tab Register   Tab Inhouse   Tab All Guests
+
+Sau khi lần đầu lấy dữ liệu:
+
+D1
 ↓
-Google Sheets CSV
+API
+↓
+Session Cache
+↓
+UI
+
+Các Tab không cần đọc D1 lại nếu cache còn hợp lệ.
+
+3. Quan trọng: tôi không dùng localStorage làm source chính
+
+Bạn hiện đã có:
+
+localStorage
+
+với TTL 10 phút.
+
+Nhưng đối với dữ liệu nghiệp vụ của app này, tôi sẽ tách thành:
+
+Memory cache
+Browser session
+↓
+Memory Store
+
+làm nguồn hiển thị chính.
+
+Ưu điểm:
+
+cực nhanh
+không serialize/deserialize liên tục
+không stale giữa các thao tác trong cùng trang
+dễ cập nhật optimistic
+không cần gọi D1
+
+Nếu F5 thì memory mất.
+
+Lúc đó có thể:
+
+F5
+↓
+sessionStorage / IndexedDB
+↓
+hiển thị stale ngay
+↓
+background revalidate
+
+Đây mới là mô hình tôi nghĩ bạn đang muốn.
+
+4. Tôi đề xuất mô hình: Stale-While-Revalidate
+
+Ví dụ người dùng mở app lần đầu:
+
+GET /api/stays
+↓
+D1
+↓
+Cache
+↓
+UI
+
+Sau đó chuyển:
+
+Register → In-house → All Guests → Register
+
+thì:
+
+Cache
+↓
+UI ngay lập tức
+
+Không cần D1.
+
+5. Nhưng khi có thay đổi thì sao?
+
+Đây là phần quan trọng nhất trong ý tưởng của bạn.
+
+Ví dụ sửa:
+
+Phòng: 101 → 102
+
+Flow:
+
+User Edit
+↓
+PATCH /api/stays/xxx
+↓
+D1 UPDATE
+↓
+Server trả về record mới
+↓
+UPDATE SESSION CACHE
+↓
+UI
+
+Tức là:
+
+               ┌──────→ D1
+               │
+
+Edit ──────────┤
+│
+└──────→ Cache update
+
+Không cần GET lại toàn bộ danh sách.
+
+Ví dụ:
+
+cache.updateStay(updatedStay);
+
+là đủ.
+
+6. Thêm khách cũng tương tự
+   POST /api/stays
+   ↓
+   D1 INSERT
+   ↓
+   returnedStay
+   ↓
+   cache.addStay(returnedStay)
+   ↓
+   UI
+
+Không:
+
+POST
+↓
+GET /api/stays
+↓
+GET /api/stats
+
+nếu không cần.
+
+7. Xóa khách
+   DELETE /api/stays/123
+   ↓
+   D1 DELETE
+   ↓
+   cache.removeStay("123")
+   ↓
+   UI
+
+Không cần reload cả DB.
+
+8. Checkout
+
+Ví dụ:
+
+IN_HOUSE
+↓
+CHECKED_OUT
+
+API trả:
+
+{
+"id": "123",
+"status": "CHECKED_OUT",
+...
+}
+
+Cache:
+
+cache.updateStay(stay)
+
+Sau đó các derived views tự thay đổi:
+
+In-house
+↓
+không còn record
+
+All guests
+↓
+vẫn còn record
+
+Stats
+↓
+inHouse - 1
+checkedOut + 1
+Đây là điểm cực kỳ mạnh.
+
+Bạn không cần:
+
+checkout
+↓
+GET /api/stays
+↓
+GET /api/stats 9. Stats cũng có thể được cập nhật ngay trong cache
+
+Ví dụ:
+
+READY_TO_SYNC → SYNCED_KBTT
+
+thì cache biết:
+
+readyToSync--
+syncedKbtt++
+inHouse++
+
+Như vậy dashboard phản ứng ngay lập tức.
+
+Nhưng tôi có một lưu ý quan trọng:
+
+Không nên tự tính stats bằng cách cộng/trừ mù quáng ở mọi mutation.
+
+Vì app có state machine:
+
+PENDING_VALIDATION
+READY_TO_SYNC
+NOT_CHECKED_IN
+SYNCED_KBTT
+CHECKED_IN
+EXTENDED
+CHECKED_OUT
+ERROR
+CANCELLED
+
+Nếu logic cache tự cập nhật stats bằng hàng chục if/else, rất dễ sau này xảy ra:
+
+DB = 127 khách
+Cache = 126 khách
+
+Do đó tôi thích cách:
+
+mutation thành công
+↓
+record mới
+↓
+cache update
+↓
+stats derived từ cache
+
+hoặc có một recalculateStatsFromCache().
+
+10. Tôi còn đề xuất một bước tốt hơn: cache toàn bộ stays
+
+Thay vì cache riêng:
+
+READY_TO_SYNC
+IN_HOUSE
+ALL_GUESTS
+
+hãy cache:
+
+ALL STAYS
+
+một lần.
+
+Sau đó Tab chỉ là filter.
+
+Ví dụ:
+
+Cache
+└── stays[]
+
+Tab Register:
+
+stays.filter(...)
+
+Tab In-house:
+
+stays.filter(...)
+
+Tab All:
+
+stays.filter(...)
+
+Bạn thực tế đã có phần này rồi:
+
+let rawStays = $state<StayDetail[]>([]);
+
+và:
+
+let stays = $derived.by(...)
+
+Vậy kiến trúc hiện tại rất thuận lợi để chuyển sang mô hình này.
+
+11. Nhưng có một vấn đề: hiện tại mỗi Tab đang query DB theo status
+
+Ví dụ:
+
+Register
+→ ?status=READY_TO_SYNC
+
+In-house
+→ ?status=IN_HOUSE
+
+Nếu chuyển sang cache toàn bộ:
+
+GET /api/stays
+
+một lần:
+
+D1
+↓
+ALL STAYS
+↓
+rawStays
+
+rồi client filter.
+
+Nhưng nếu database rất lớn, lấy toàn bộ stays mỗi lần initial load cũng không lý tưởng.
+
+Với app của bạn
+
+Nếu đây là hệ thống một cơ sở lưu trú và số stay không lên đến hàng trăm nghìn, tôi nghiêng về:
+
+Load một lần toàn bộ dataset cần cho dashboard/session rồi giữ cache.
+
+Nó đơn giản và giảm rất nhiều D1 query.
+
+12. Có thể làm "session cache + dirty state"
+
+Tôi sẽ thiết kế store khoảng như sau:
+
+AppDataStore
+
+├── stays
+├── catalogs
+├── stats
+│
+├── loaded
+├── loading
+├── lastLoadedAt
+├── dirty
+└── version
+
+Ví dụ lần đầu:
+
+loaded = false
+↓
+GET database
+↓
+loaded = true
+dirty = false
+
+Sau edit:
+
+PATCH DB
+↓
+success
+↓
+update cache
+↓
+dirty = false 13. Và có một khái niệm cực kỳ quan trọng: revision
+
+Tôi khuyên app có:
+
+dataRevision
+
+Ví dụ:
+
+revision = 100
+
+Pull Sheet:
+
+revision = 101
+
+Edit:
+
+revision = 102
+
+Cache biết:
+
+cache.revision = 102
+
+Nếu một lúc nào đó server báo:
+
+serverRevision = 103
+
+thì client biết:
+
+Cache của mình đã cũ.
+
+14. Điều này giải quyết vấn đề nhiều browser
+
+Đây mới là phần "đảm bảo" mà bạn hỏi.
+
+Ví dụ:
+
+Browser A
+cache revision 20
+
+Browser B
+edit khách
+↓
+D1 revision 21
+
+Browser A vẫn đang hiển thị cache revision 20.
+
+Nếu chỉ có memory cache thì A không biết B đã sửa.
+
+Do đó cần một cơ chế revalidation.
+
+Có nhiều cách.
+
+Cách đơn giản nhất
+
+Mỗi X phút:
+
+GET /api/sync/version
+
+chỉ trả:
+
+{
+"revision": 21
+}
+
+Query này cực nhẹ.
+
+Nếu:
+
+local = 20
+server = 21
+
+thì:
+
+cache invalid
+↓
+GET /api/stays 15. Nhưng thậm chí không cần poll liên tục
+
+Có thể làm:
+
+App mở
+↓
+cache hiện ngay
+↓
+background revalidate
+
+Ví dụ:
+
+focus window
+online event
+chuyển tab trình duyệt
+sau 60–120 giây
+
+mới check revision.
+
+Như vậy người dùng bình thường:
+
+click Tab
+click Tab
+click Tab
+search
+xem khách
+xem phòng
+
+không phát sinh D1 request.
+
+16. Pull Sheet là một trường hợp đặc biệt
+
+Khi:
+
+Kéo Sheet vào DB
+
+thì không được chỉ update một vài record.
+
+Flow nên là:
+
+Pull Sheet
+↓
+Server ingest
+↓
+D1
+↓
+new revision
+↓
+return changed records / revision
+↓
+invalidate cache
+↓
+fetch dataset mới
+
+Hoặc tốt hơn:
+
+Pull
+↓
+API trả:
+{
+revision: 123,
+changedStays: [...]
+}
+↓
+cache.patch(changedStays)
+
+Nếu ingest hàng trăm dòng thì cách này có thể rất hiệu quả.
+
+17. Tôi sẽ không dùng "stale database" theo nghĩa DB stale
+
+Nên phân biệt:
+
+Database
+
+Source of truth
+
+D1 = authoritative
+Cache
+
+Read model / UI snapshot
+
+Browser cache = nhanh
+
+Không nên để:
+
+Browser cache → tự coi là database
+
+Mà:
+
+                 ┌───────────────┐
+                 │      D1       │
+                 │ Source Truth  │
+                 └───────┬───────┘
+                         │
+                    initial sync
+                         │
+                         ▼
+                 ┌───────────────┐
+                 │ Session Cache │
+                 │ UI Read Model │
+                 └───────┬───────┘
+                         │
+                    all tabs
+                         │
+                         ▼
+                        UI
+
+Mutation:
+
+UI
+↓
+API
+↓
+D1
+↓ success
+Cache update
+↓
+UI
+
+Đây là mô hình rất phù hợp.
+
+18. Tôi đề xuất kiến trúc cuối cùng cho project này
+    Tầng 1 — D1
+
+Source of truth
+
+Cloudflare D1
+Tầng 2 — Server
+GET /api/stays
+GET /api/catalogs
+GET /api/stats
+
+có cache/in-flight protection thích hợp.
+
+Tầng 3 — Client Session Store
+AppStore
+│
+├── stays[]
+├── catalogs
+├── stats
+├── revision
+├── loaded
+└── lastValidatedAt
+Tầng 4 — UI
+Register
+In-house
+All guests
+Audit
+Catalogs
+
+không tự gọi DB khi đổi Tab.
+
+19. Flow sau khi làm xong sẽ như thế này
+    Mở app lần đầu
+    Browser
+    ↓
+    GET stays
+    GET catalogs
+    GET stats
+    ↓
+    D1
+    ↓
+    Session Store
+    ↓
+    UI
+    Chuyển 10 lần giữa các Tab
+    Session Store
+    ↓
+    UI
+
+D1 calls = 0
+Xem danh sách
+Cache → UI
+Sửa khách
+UI
+↓
+PATCH
+↓
+D1
+↓
+updated record
+↓
+Cache update
+↓
+UI
+Checkout
+UI
+↓
+POST/PATCH
+↓
+D1
+↓
+updated record
+↓
+Cache update
+Pull Sheet
+Sheet
 ↓
 D1 ingest
 ↓
-loadStays()
+revision++
 ↓
-loadStats()
-
-Có một điểm đã được cache tốt, nhưng một điểm khác vẫn đáng tối ưu.
-
-1. fetchSheetTabs() đã có cache — tốt
-
-Trong GoogleSheetService hiện có:
-
-private tabsCache = new Map(...)
-
-và:
-
-if (!forceRefresh && this.tabsCache.has(cacheKey)) {
-...
-if (cached && now - cached.time < 60000) {
-return cached.data;
-}
-}
-
-Tức là danh sách tab chỉ được fetch lại tối đa khoảng 1 lần / 60 giây / Sheet ID.
-
-Đây là một cải tiến đúng.
-
-Ví dụ:
-
-request 1
-↓
-Google htmlview
-↓
-cache 60s
-
-request 2
-↓
-CACHE
-
-request 3
-↓
-CACHE
-
-=> không phải mỗi lần Pull đều quét danh sách tab.
-
-2. Nhưng có một vấn đề quan trọng: fetchSheetTabs() có thể bị gọi 2 lần trong cùng một request
-
-Trong:
-
-/api/sheets/pull
-
-bạn có:
-
-if (!gid) {
-const tabsRes =
-await syncPipeline.googleSheetService.fetchSheetTabs(sheetId);
-...
-}
-
-Sau đó lại:
-
-const resData =
-await syncPipeline.googleSheetService.fetchSheetData(
-sheetId,
-gid,
-apiKey,
-);
-
-Trong fetchSheetData():
-
-if (!specificGid || gid === "0") {
-const tabsRes = await this.fetchSheetTabs(sheetId);
-...
-}
-Trường hợp nguy hiểm:
-
-Nếu:
-
-gid = undefined
-
-thì:
-
-/api/sheets/pull
-↓
-fetchSheetTabs()
-↓
-gid = defaultGid
-↓
-fetchSheetData(sheetId, gid)
-
-thì lần thứ hai không xảy ra nếu gid đã được resolve thành non-zero.
-
-Nhưng nếu:
-
-defaultGid = "0"
-
-thì:
-
-fetchSheetTabs()
-↓
-gid = "0"
-
-fetchSheetData()
-↓
-gid === "0"
-↓
-fetchSheetTabs() AGAIN
-
-Cache 60 giây sẽ ngăn network request thứ hai, nhưng vẫn là logic thừa.
-
-Không nghiêm trọng, nhưng có thể làm code khó hiểu.
-
-3. Quan trọng hơn: Pull Sheet không phải là Pull DB
-
-Đây là chỗ cần phân biệt.
-
-Bạn đang có:
-
-Google Sheet
-Google Sheets
-↓
-/api/sheets/pull
-↓
-GoogleSheetService
-↓
-CSV
-↓
-D1
-Sau đó UI lại đọc DB:
-D1
-↓
-/api/stays
+cache refresh/patch
 ↓
 UI
-
-Điều này không có nghĩa /api/stays đang gọi Google Sheet.
-
-Vì vậy các thao tác:
-
-Làm mới DB
-Đổi tab
-Mở audit
-...
-
-không nhất thiết làm Google Sheet bị gọi.
-
-Đây là điểm tốt.
-
-4. Nhưng D1 vẫn đang bị đọc khá nhiều
-
-Trong +page.svelte:
-
-async function loadStays(\_force = false) {
-...
-const res = await fetch("/api/stays");
-...
-loadStats(true);
-}
-
-Tức là:
-
-loadStays()
+Browser bị mở lâu
+Cache
 ↓
-GET /api/stays
-
+background revision check
 ↓
-loadStats()
+unchanged → làm gì cũng không
+
+Nếu revision thay đổi:
+
+revision changed
 ↓
-GET /api/stats
-
-Một lần refresh bình thường đã là:
-
-1 × D1 stays
-1 × D1 stats
-
-Sau Pull:
-
-clearLocalCache();
-await loadStays(true);
-await loadStats(true);
-
-nhưng loadStays() đã tự gọi loadStats(true) bên trong.
-
-Do đó Pull hiện tại thực tế có:
-
-POST /api/sheets/pull
-
-GET /api/stays
-GET /api/stats ← từ loadStays()
-GET /api/stats ← lại từ pullFromGoogleSheets()
-🔴 Đây là một duplicate request thật.
-
-Không phải lý thuyết.
-
-Đoạn này:
-
-async function loadStays(\_force = false) {
-...
-if (data.success) {
-rawStays = data.data || [];
-}
-
-    loadStats(true);
-
-}
-
-và:
-
-finally {
-clearLocalCache();
-await loadStays(true);
-await loadStats(true);
-loading = false;
-}
-
-đang tạo:
-
-Pull
-│
-├── loadStays()
-│ └── loadStats()
-│
-└── loadStats()
-Nên sửa thành:
-finally {
-clearLocalCache();
-await loadStays(true);
-loading = false;
-}
-
-Nếu loadStays() luôn chịu trách nhiệm refresh stats.
-
-Hoặc tốt hơn nữa, tôi sẽ thay đổi kiến trúc một chút.
-
-5. Tôi khuyên tách trách nhiệm loadStays() và loadStats()
-
-Hiện tại tên:
-
-loadStays()
-
-nhưng bên trong lại:
-
-loadStats()
-
-Đây là coupling không cần thiết.
-
-Nên:
-
-async function loadStays() {
-// chỉ GET /api/stays
-}
-
-async function refreshDashboard() {
-await Promise.all([
-loadStays(),
-loadStats(),
-]);
-}
-
-Sau đó:
-
-Initial load
-await refreshDashboard();
-Refresh button
-await refreshDashboard();
-Sau Pull
-await refreshDashboard();
-Khi đổi tab
-await loadStays();
-
-hoặc chỉ load thứ cần thiết.
-
-Như vậy flow rõ ràng:
-
-                    refreshDashboard()
-                     /              \
-                    ↓                ↓
-              GET /stays        GET /stats
-
-thay vì:
-
-loadStays()
+revalidate
 ↓
-loadStats()
-
-refresh code
+cache mới
 ↓
-loadStats() AGAIN 6. Có một vấn đề lớn hơn về Cloudflare: loadStats() chưa thực sự cache
+UI 20. Một điểm rất quan trọng: đừng chỉ dùng sessionStorage
 
-Bạn có:
+Nếu bạn nói "cached ở session", có hai nghĩa.
 
-let statsInFlight: Promise<void> | null = null;
+sessionStorage
 
-Đây là in-flight deduplication, rất tốt.
+Tồn tại qua reload trong cùng tab, nhưng:
 
-Nó chống:
+giới hạn kích thước
+stringify JSON
+không phải state store tốt
+mỗi tab có sessionStorage riêng
+Memory store
 
-request A ─┐
-request B ─┼──→ 1 HTTP request
-request C ─┘
+Tốt hơn cho app hiện tại:
 
-nhưng chỉ trong lúc request đang chạy.
+rawStays = $state(...)
 
-Sau khi request kết thúc:
+vì bạn đã dùng Svelte 5.
 
-statsInFlight = null;
+Tôi sẽ dùng:
 
-lần sau lại gọi D1.
+Svelte 5 State +
+sessionStorage/IndexedDB optional persistence
 
-Tức là:
+chứ không lấy sessionStorage làm kiến trúc chính.
 
-10:00:00 GET stats
-10:00:01 GET stats
-10:00:02 GET stats
+Kết luận
 
-vẫn là 3 lần D1.
+Đúng, ý tưởng của bạn tốt hơn cơ chế hiện tại.
 
-7. Nếu mục tiêu là tránh "hết limit Cloudflare", tôi khuyên thêm TTL cache
+Hiện tại:
 
-Ví dụ Dashboard stats:
-
-TTL = 10–30 giây
-
-thì:
-
-10:00:00
-GET /api/stats
+Tab change
+↓
+API
 ↓
 D1
 
-10:00:02
-GET /api/stats
-↓
-CACHE
-
-10:00:05
-GET /api/stats
-↓
-CACHE
-
-10:00:20
-GET /api/stats
-↓
-D1
-
-Với dashboard quản lý lưu trú, vài giây stale cho thống kê thường không có vấn đề.
-
-8. Nhưng stays thì tôi KHÔNG khuyên cache mạnh
-
-Đây là dữ liệu nghiệp vụ.
-
-Ví dụ:
-
-Checkout
-↓
-DB CHECKED_OUT
-↓
-UI phải thấy ngay
-
-Nếu cache 30–60 giây:
-
-DB đã checkout
-UI vẫn thấy khách đang ở
-
-không tốt.
-
-Do đó tôi sẽ chia:
-
-stats
-in-flight dedupe
-
-- TTL 10–30s
-  stays
-  in-flight dedupe
-- no/very-short TTL
-- explicit invalidation sau mutation
-
-9. Pull Google Sheet còn có thể tối ưu mạnh hơn
-
-Hiện tại mỗi lần nhấn:
-
-Kéo từ Sheet vào DB
-
-thì:
-
-Google Sheet CSV
-↓
-download TOÀN BỘ tab
-↓
-parse toàn bộ
-↓
-ingestOcrRows()
-↓
-so sánh từng record
-↓
-D1
-
-Cho vài chục khách thì không vấn đề.
-
-Nhưng nếu Sheet có:
-
-500
-1000
-5000 rows
-
-thì mỗi lần click Pull sẽ rất lãng phí.
-
-Có thể làm:
-Sheet
-↓
-hash / last modified / content fingerprint
-↓
-không đổi?
-├── YES → không ingest
-└── NO → ingest
-
-Hoặc đơn giản hơn:
-
-lastPullFingerprint
-
-trong memory/cache.
-
-10. Nhưng đừng chỉ dùng memory cache nếu deploy Cloudflare
-
-Điểm này rất quan trọng.
-
-Bạn đang có:
-
-private tabsCache = new Map()
-
-Nó hữu ích, nhưng trên Cloudflare:
-
-Request A
-↓
-Worker instance A
-↓
-cache
-
-Request B
-↓
-Worker instance B
-↓
-không có cache
-
-Không được xem Map là distributed cache.
-
-Nó chỉ là:
-
-best-effort isolate-local cache.
-
-Với fetchSheetTabs() thì hoàn toàn ổn.
-
-Nhưng nếu muốn chắc chắn giảm Google/D1 requests trên toàn hệ thống, cần một tầng cache có phạm vi phù hợp, ví dụ Cloudflare Cache API/KV tùy nhu cầu.
-
-11. Có một điều tôi sẽ KHÔNG làm
-
-Tôi không khuyên biến mọi API thành:
-
-Cache everything for 60 seconds
-
-vì app của bạn là hệ thống quản lý lưu trú.
-
-Có những thao tác cần:
-
-write
-↓
-read immediately
-
-Đặc biệt:
-
-register
-checkout
-extend
-re-register
-status override
-
-Nên sau mutation:
-
-invalidate relevant cache
-
-thay vì chờ TTL.
-
-12. Kiến trúc tôi đề xuất cho Pull/DB
-
-Tôi sẽ hướng tới:
-
-                    ┌───────────────┐
-                    │ Google Sheet  │
-                    └───────┬───────┘
-                            │
-                       explicit Pull
-                            │
-                            ▼
-                  ┌───────────────────┐
-                  │ Sheet Pull Guard  │
-                  │                   │
-                  │ in-flight lock    │
-                  │ cooldown         │
-                  │ fingerprint       │
-                  └─────────┬─────────┘
-                            │
-                       only if needed
-                            ▼
-                  ┌───────────────────┐
-                  │ GoogleSheetService│
-                  └─────────┬─────────┘
-                            │
-                            ▼
-                           D1
-
-UI
-│
-├── GET /stays ───────────────→ D1
-│
-└── GET /stats ──→ TTL cache ─→ D1
-
-Và quan trọng nhất:
-
-Pull đang chạy
-↓
-người dùng click Pull lần 2
-↓
-KHÔNG gọi Google lần 2
-↓
-reuse cùng Promise
-
-Hiện tại pullFromGoogleSheets() chưa có in-flight lock như loadStays() và loadStats().
-
-Đây là điểm tôi muốn bổ sung.
-
-13. Thứ tự tôi khuyên bạn sửa
-
-Không cần refactor lớn.
-
-🔴 P0 — sửa ngay
-
-Duplicate /api/stats:
-
-loadStays()
-↓
-loadStats()
-
-pullFromGoogleSheets()
-↓
-loadStats() AGAIN
-
-Bỏ một lần.
-
-🔴 P0 — chống double Pull
-
-Thêm:
-
-let pullInFlight: Promise<void> | null = null;
-
-để hai click liên tiếp không tạo:
-
-POST /api/sheets/pull
-POST /api/sheets/pull
-🟠 P1 — stats TTL
-
-Ví dụ:
-
-10–30 seconds
-🟠 P1 — chống concurrent server-side Sheet Pull
-
-Không chỉ frontend.
-
-Nếu:
-
-Browser A → POST pull
-Browser B → POST pull
-
-thì frontend lock không giúp gì.
-
-Server phải có cơ chế:
-
-same sheet + same gid
-↓
-already pulling?
-↓
-reuse / reject / cooldown
-🟡 P2 — fingerprint Sheet
-
-Đây mới là tối ưu sâu hơn.
-
-14. Một điểm nữa: force hiện đang không làm gì
-
-Tôi thấy:
-
-async function loadStats(\_force = false)
+Cơ chế nên chuyển thành:
+
+                    ┌─────────────┐
+                    │     D1      │
+                    │ source truth│
+                    └──────┬──────┘
+                           │
+                    initial/revalidate
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │ Session/App │
+                    │    Cache    │
+                    └──────┬──────┘
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+          Register      In-house     All Guests
 
 và:
 
-async function loadStays(\_force = false)
+Không có mutation → dùng cache.
+Có mutation thành công → cập nhật D1 + cập nhật cache.
+Có Pull → invalidate/patch cache.
+Có khả năng browser bị stale → kiểm tra revision nhẹ theo sự kiện/thời gian, không đọc toàn bộ DB.
 
-nhưng \_force không được sử dụng.
+Đây sẽ vừa nhanh hơn rất nhiều, vừa giảm đáng kể D1 reads.
 
-Ví dụ:
+Tuy nhiên tôi sẽ không sửa ngay theo kiểu "thêm cache vào +page.svelte".
 
-loadStats(true)
-
-và:
-
-loadStats()
-
-hiện tại hành vi thực tế giống nhau.
-
-Điều này là dấu hiệu cho thấy bạn đã bắt đầu xây cơ chế cache/dedup nhưng API chưa hoàn thiện.
-
-Nếu chưa dùng:
-
-\_force
-
-thì nên bỏ.
-
-Hoặc nếu sắp thêm TTL:
-
-loadStats(force = false)
-
-thì giữ lại và cho nó ý nghĩa:
-
-force = false
-↓
-TTL còn → cache
-
-force = true
-↓
-bypass TTL
-Kết luận lần này
-
-Project hiện tại tôi nâng lên khoảng 8.9/10.
-
-Phần architecture/security/testing đã khá vững. Tôi không khuyên bạn tiếp tục refactor lớn.
-
-Nhưng riêng câu hỏi về Cloudflare limit, tôi phát hiện một vấn đề thực tế:
-
-Bạn đã có in-flight deduplication, nhưng chưa có một chiến lược cache/cooldown hoàn chỉnh.
-
-Và có ít nhất một duplicate D1 request chắc chắn sau mỗi lần Pull:
-
-Pull
-├─ loadStays()
-│ └─ loadStats()
-└─ loadStats() ← DUPLICATE
-
-Ngoài ra:
-
-Pull × 2 nhanh
-↓
-2 POST /api/sheets/pull
-↓
-2 lần download Google Sheet
-↓
-2 lần ingest/DB processing
-
-là thứ tôi ưu tiên chặn.
-
-Tôi sẽ sửa 4 điểm này trước khi bạn tiếp tục thêm feature:
-
-bỏ duplicate loadStats();
-in-flight lock cho pullFromGoogleSheets();
-server-side cooldown/in-flight protection cho /api/sheets/pull;
-TTL cache cho /api/stats.
-
-Sau 4 điểm đó, hệ thống sẽ có mô hình "chỉ gọi khi thật sự cần" tốt hơn rất nhiều, thay vì chỉ dedupe các request xảy ra đồng thời.
+Nên làm thành một DataStore/Repository phía client riêng, vì nếu nhét thêm cache vào +page.svelte thì vài tháng nữa file này sẽ thành một đống loadX(), cacheX(), invalidateX() rất khó bảo trì.
