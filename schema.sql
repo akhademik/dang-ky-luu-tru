@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS stays (
 CREATE INDEX IF NOT EXISTS idx_stays_guest_id ON stays (guest_id);
 CREATE INDEX IF NOT EXISTS idx_stays_so_phong ON stays (so_phong);
 CREATE INDEX IF NOT EXISTS idx_stays_status ON stays (status);
+CREATE INDEX IF NOT EXISTS idx_stays_status_ngay_di ON stays (status, ngay_di_du_kien);
 CREATE INDEX IF NOT EXISTS idx_stays_ngay_den ON stays (ngay_den);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_stays_active_guest ON stays (guest_id) WHERE status != 'CHECKED_OUT';
 
