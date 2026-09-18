@@ -7,15 +7,16 @@ export const GET: RequestHandler = async ({ url, platform }) => {
 		const status = url.searchParams.get("status") || "ALL";
 		const room = url.searchParams.get("room") || "";
 		const search = url.searchParams.get("search") || "";
-		const limit = parseInt(url.searchParams.get("limit") || "100", 10);
+		const limitParam = url.searchParams.get("limit");
+		const limit = limitParam !== null ? parseInt(limitParam, 10) : undefined;
 		const offset = parseInt(url.searchParams.get("offset") || "0", 10);
 
 		const stays = await getStays(db, {
 			status,
 			room,
 			search,
-			limit,
-			offset,
+			limit: limit && limit > 0 ? limit : undefined,
+			offset: offset > 0 ? offset : undefined,
 		});
 
 		return json({

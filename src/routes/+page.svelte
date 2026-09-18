@@ -461,55 +461,8 @@ let newGuestForm = $state({
 	ghi_chu: "",
 });
 
-const CACHE_KEY_PREFIX = "kbtt_stays_cache_v2_";
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-interface CacheEntry<T> {
-	timestamp: number;
-	data: T;
-}
-
-function getLocalCache<T>(key: string): T | null {
-	if (typeof window === "undefined" || !window.localStorage) return null;
-	try {
-		const raw = localStorage.getItem(CACHE_KEY_PREFIX + key);
-		if (!raw) return null;
-		const parsed: CacheEntry<T> = JSON.parse(raw);
-		if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
-			return parsed.data;
-		}
-		localStorage.removeItem(CACHE_KEY_PREFIX + key);
-		return null;
-	} catch {
-		return null;
-	}
-}
-
-function setLocalCache<T>(key: string, data: T) {
-	if (typeof window === "undefined" || !window.localStorage) return;
-	try {
-		const entry: CacheEntry<T> = {
-			timestamp: Date.now(),
-			data,
-		};
-		localStorage.setItem(CACHE_KEY_PREFIX + key, JSON.stringify(entry));
-	} catch {}
-}
-
 function clearLocalCache() {
-	if (typeof window === "undefined" || !window.localStorage) return;
-	try {
-		const toRemove: string[] = [];
-		for (let i = 0; i < localStorage.length; i++) {
-			const k = localStorage.key(i);
-			if (k?.startsWith(CACHE_KEY_PREFIX)) {
-				toRemove.push(k);
-			}
-		}
-		for (const k of toRemove) {
-			localStorage.removeItem(k);
-		}
-	} catch {}
+	// In-memory store (rawStays) is the single source of truth for the session
 }
 
 function showToast(
@@ -849,12 +802,43 @@ async function registerAllReady() {
 		});
 		const data = await res.json();
 		if (data.success) {
-			clearLocalCache();
 			showToast(data.message || "Đăng ký hàng loạt thành công!", "success");
+			const batchResults: Array<{ stayId: string; success: boolean }> =
+				data.data?.results || [];
+			if (batchResults.length > 0) {
+				const successIdSet = new Set(
+					batchResults.filter((r) => r.success).map((r) => r.stayId),
+				);
+				rawStays = rawStays.map((s) =>
+					successIdSet.has(s.id) ? { ...s, status: "SYNCED_KBTT" } : s,
+				);
+			} else {
+				// Fallback: mark all currently ready stays as synced
+				const readyIdSet = new Set(readyStays.map((s) => s.id));
+				rawStays = rawStays.map((s) =>
+					readyIdSet.has(s.id) ? { ...s, status: "SYNCED_KBTT" } : s,
+				);
+			}
 		} else {
 			showToast(data.message || "Có lỗi trong quá trình đăng ký", "error");
+			if (data.data?.results) {
+				const successIdSet = new Set(
+					(
+						data.data.results as Array<{
+							stayId: string;
+							success: boolean;
+						}>
+					)
+						.filter((r) => r.success)
+						.map((r) => r.stayId),
+				);
+				if (successIdSet.size > 0) {
+					rawStays = rawStays.map((s) =>
+						successIdSet.has(s.id) ? { ...s, status: "SYNCED_KBTT" } : s,
+					);
+				}
+			}
 		}
-		await loadStays(true);
 	} catch (err: unknown) {
 		const msg = err instanceof Error ? err.message : String(err);
 		showToast(`Lỗi kết nối: ${msg}`, "error");
@@ -1142,8 +1126,6 @@ async function submitDelete() {
 		if (data.success) {
 			showToast("✓ Đã xóa lượt lưu trú thành công", "success");
 			rawStays = rawStays.filter((s) => s.id !== deletedId);
-			setLocalCache(`stays_master_${activeTab}`, rawStays);
-			loadStats();
 		} else {
 			showToast(`Lỗi xóa: ${data.message}`, "error");
 		}
@@ -1885,10 +1867,8 @@ async function submitAddGuest() {
 				} else {
 					rawStays = [newDetail, ...rawStays];
 				}
-				setLocalCache(`stays_master_${activeTab}`, rawStays);
 			}
 			showAddModal = false;
-			loadStats();
 		} else {
 			showToast(`Lỗi: ${data.message}`, "error");
 		}
