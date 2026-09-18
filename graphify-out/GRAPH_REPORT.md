@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 439 nodes · 892 edges · 24 communities (15 shown, 3 thin omitted)
+- 438 nodes · 891 edges · 26 communities (16 shown, 4 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `da532d2d`
+- Built from commit: `de5ae12e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,13 +23,15 @@
 - devDependencies
 - GoogleSheetService
 - catalogManager.ts
+- dataTransformer.ts
 - CatalogManager
 - biome.json
-- auth.ts
 - time.ts
 - validator.ts
+- TokenManager
 - wrangler.json
 - apps_script_onedit.js
+- app.d.ts
 - svelte-deprecation.test.ts
 - svelte.config.js
 
@@ -60,15 +62,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (24 total, 3 thin omitted)
+## Communities (26 total, 4 thin omitted)
 
 ### Community 0 - "db.ts"
-Cohesion: 0.08
-Nodes (38): App, Locals, Platform, clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction() (+30 more)
+Cohesion: 0.10
+Nodes (32): clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest(), upsertGuest() (+24 more)
 
 ### Community 1 - "syncPipeline.ts"
-Cohesion: 0.08
-Nodes (9): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, SyncPipeline, TokenManager (+1 more)
+Cohesion: 0.09
+Nodes (9): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, SyncPipeline, RawOcrRow (+1 more)
 
 ### Community 2 - "compilerOptions"
 Cohesion: 0.06
@@ -98,13 +100,13 @@ Nodes (4): GoogleSheetService, KbttClient, TabInfo, runLiveBcaPipelineTests()
 Cohesion: 0.12
 Nodes (11): LOAI_GIAY_TO_DATA, LY_DO_CU_TRU_DATA, QUOC_TICH_DATA, StandardCatalogItem, CatalogItem, COUNTRY_OPTIONS, countryNameMap, LOAI_GIAY_TO_OPTIONS (+3 more)
 
-### Community 10 - "biome.json"
+### Community 9 - "dataTransformer.ts"
+Cohesion: 0.22
+Nodes (12): handle(), getIngestApiKey(), getServerPassword(), verifySession(), verifyWebhookAuth(), CompletenessResult, TransformedRowResult, GET() (+4 more)
+
+### Community 11 - "biome.json"
 Cohesion: 0.11
 Nodes (17): source, assist, actions, noUnusedVariables, files, formatter, enabled, indentStyle (+9 more)
-
-### Community 11 - "auth.ts"
-Cohesion: 0.27
-Nodes (10): handle(), getIngestApiKey(), getServerPassword(), verifySession(), verifyWebhookAuth(), GET(), POST(), POST() (+2 more)
 
 ### Community 12 - "time.ts"
 Cohesion: 0.40
@@ -114,33 +116,37 @@ Nodes (13): formatDateTimeToGmt7(), formatDateToGmt7(), getNowGmt7Date(), getNow
 Cohesion: 0.37
 Nodes (11): ALLOWED_STATUS_TRANSITIONS, assertValidTransition(), isValidCccd(), isValidPassport(), isValidStayStatusTransition(), validateStayCheckoutInput(), validateStayExtensionInput(), validateStayRegistrationInput() (+3 more)
 
-### Community 14 - "wrangler.json"
+### Community 15 - "wrangler.json"
 Cohesion: 0.25
 Nodes (7): nodejs_compat, compatibility_date, compatibility_flags, d1_databases, name, pages_build_output_dir, $schema
 
-### Community 15 - "apps_script_onedit.js"
+### Community 16 - "apps_script_onedit.js"
 Cohesion: 0.32
 Nodes (3): handleSheetChange(), handleSheetEdit(), syncRowToCloudflare()
 
+### Community 17 - "app.d.ts"
+Cohesion: 0.40
+Nodes (3): App, Locals, Platform
+
 ## Knowledge Gaps
-- **98 isolated node(s):** `Locals`, `Platform`, `DashboardStats`, `IngestResultItem`, `Row` (+93 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 157 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **98 isolated node(s):** `DashboardStats`, `IngestResultItem`, `Row`, `ApiResponse`, `LogEntry` (+93 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 156 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `CatalogManager` connect `CatalogManager` to `catalogManager.ts`, `syncPipeline.ts`, `db.ts`?**
+- **Why does `CatalogManager` connect `CatalogManager` to `catalogManager.ts`, `syncPipeline.ts`, `dataTransformer.ts`, `db.ts`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
-- **Why does `DataTransformer` connect `DataTransformer` to `db.ts`, `syncPipeline.ts`, `GoogleSheetService`?**
+- **Why does `DataTransformer` connect `DataTransformer` to `db.ts`, `syncPipeline.ts`, `dataTransformer.ts`, `GoogleSheetService`?**
   _High betweenness centrality (0.052) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `compilerOptions`, `scripts`?**
   _High betweenness centrality (0.047) - this node is a cross-community bridge._
-- **What connects `Locals`, `Platform`, `DashboardStats` to the rest of the system?**
+- **What connects `DashboardStats`, `IngestResultItem`, `Row` to the rest of the system?**
   _98 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07596153846153846 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1033182503770739 - nodes in this community are weakly interconnected._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08116883116883117 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09098039215686274 - nodes in this community are weakly interconnected._
 - **Should `compilerOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.05855855855855856 - nodes in this community are weakly interconnected._

@@ -18,6 +18,24 @@ async function main() {
 			encoding: "utf8",
 			stdio: "inherit",
 		});
+
+		// 1.1 Đảm bảo migration cho các cột mới nếu SQLite local file đã tồn tại từ trước
+		try {
+			const checkColArgs = isDirectBin
+				? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(stays);", "--json"]
+				: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(stays);", "--json"];
+			const colStdout = cp.execFileSync(execCmd, checkColArgs, { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
+			const colParsed = JSON.parse(colStdout);
+			const cols: Array<{ name: string }> = colParsed?.[0]?.results || [];
+			const hasThoiHanThiThuc = cols.some((c) => c.name === "thoi_han_thi_thuc");
+			if (!hasThoiHanThiThuc) {
+				const alterArgs = isDirectBin
+					? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "ALTER TABLE stays ADD COLUMN thoi_han_thi_thuc TEXT;"]
+					: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "ALTER TABLE stays ADD COLUMN thoi_han_thi_thuc TEXT;"];
+				cp.execFileSync(execCmd, alterArgs, { encoding: "utf8", stdio: "inherit" });
+			}
+		} catch {}
+
 		console.log("✅ Local SQLite database đã sẵn sàng với đầy đủ bảng biểu và indexes!");
 
 		// 2. Tùy chọn fetch remote data snapshot nếu chưa có dữ liệu và không bị rate limit
