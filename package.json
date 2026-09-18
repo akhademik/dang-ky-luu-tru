@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "vite dev --host",
+    "dev": "NODE_OPTIONS=\"--dns-result-order=ipv4first\" vite dev --host",
     "build": "vite build",
     "preview": "vite preview",
     "check:svelte": "svelte-check --tsconfig ./tsconfig.json",
