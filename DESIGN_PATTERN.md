@@ -25,6 +25,18 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
 - **Giờ checkout chuẩn**: Mặc định là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` làm sai lệch logic tự động trả phòng (auto-checkout).
 - **Vòng đời khách**: Khách chỉ bị auto-checkout khi giờ thực tế GMT+7 đã vượt quá 12:00:00 trưa ngày đi.
 
+### 1.5. Network & Connection Protocols (Quy Chuẩn Kết Nối Mạng & API)
+- **Bắt buộc IPv4 Only cho Node.js Runtime**:
+  - Máy chủ Sandbox BCA (`api-kbtt.ai-vlab.com`) và Cloudflare Proxy trả về cả 2 bản ghi IPv4 và IPv6. Để chống lỗi treo `ETIMEDOUT / fetch failed` do mạng nội bộ không định tuyến IPv6, bắt buộc:
+    1. Runtime: Gọi `net.setDefaultAutoSelectFamily(false)` và `dns.setDefaultResultOrder("ipv4first")` trong [`config.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/config.ts).
+    2. CLI/Scripts: Truyền `NODE_OPTIONS="--dns-result-order=ipv4first --no-network-family-autoselection"` trong `package.json`.
+- **Tương thích chuẩn HTTP/2 (RFC 7540)**:
+  - Tuyệt đối không gửi header hop-by-hop `Connection: "close"` khi gọi API tới Cloudflare Proxy.
+- **Cơ chế Tự Động Thử Lại (Exponential Backoff Retry)**:
+  - Mọi yêu cầu HTTP ra bên ngoài ([`TokenManager`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/tokenManager.ts), [`KbttClient`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClient.ts)) phải có vòng lặp retry tối thiểu 3 lần kèm độ trễ giãn cách (`attempt * 1000ms`) để triệt tiêu lỗi chập chờn.
+- **Bảo mật Dữ liệu & Ghi chú Nội bộ**:
+  - Ghi chú (`ghi_chu`) của khách sạn là dữ liệu lưu hành nội bộ trong DB D1. Khi đóng gói payload gửi API C06 BCA, trường `ghiChu` bắt buộc phải để chuỗi rỗng `""`.
+
 ---
 
 ## 2. COLOR CODE & THEME PALETTE (BẢNG MÃ MÀU CHUẨN)

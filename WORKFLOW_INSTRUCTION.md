@@ -52,3 +52,14 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
 ## 5. Quy Định UI Modal & Xác Nhận (No Native Browser Dialogs)
 - **Tuyệt đối KHÔNG sử dụng `window.alert()`, `window.confirm()`, `window.prompt()`**.
 - Toàn bộ hộp thoại xác nhận, cảnh báo và form thao tác BẮT BUỘC phải dùng Custom Modal Svelte Reactive kết hợp Tailwind CSS với backdrop mờ và giao diện đồng nhất.
+
+## 6. Quy Định Kết Nối Mạng & Giao Tiếp API (Network Protocols)
+- **Bắt buộc IPv4 & Tắt Network Family Auto-selection**:
+  - Không để Node.js Happy Eyeballs auto-select IPv6 trên máy chủ chưa có route IPv6, gây `ETIMEDOUT`.
+  - Luôn duy trì `net.setDefaultAutoSelectFamily(false)` và `dns.setDefaultResultOrder("ipv4first")` trong `config.ts` cũng như cờ `--dns-result-order=ipv4first --no-network-family-autoselection` trong `package.json`.
+- **Tuyệt đối không dùng hop-by-hop headers**:
+  - Không truyền `Connection: close` trên HTTP/2 endpoints (Cloudflare).
+- **Vòng lặp Retry**:
+  - Bắt buộc bọc các lệnh gọi `fetch()` tới API C06 BCA bằng vòng lặp retry 3 lần với exponential backoff.
+- **Dữ liệu nhạy cảm**:
+  - `ghiChu` gửi tới API BCA luôn là rỗng `""`, chỉ lưu trữ nội bộ trên Cloudflare D1.
