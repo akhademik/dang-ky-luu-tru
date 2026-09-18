@@ -6,6 +6,7 @@ export interface ApiResponse<T = unknown> {
 	success: boolean;
 	code: string | number;
 	message: string;
+	requestId?: string;
 	raw?: T;
 }
 
@@ -68,9 +69,10 @@ export class KbttClient {
 		payloads: unknown[],
 		actionName: string,
 	): Promise<ApiResponse> {
+		const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 		const token = await this.tokenManager.getValidToken();
 		if (!token) {
-			const errMsg = "Không tìm thấy hoặc không thể lấy AccessToken hợp lệ";
+			const errMsg = `[${requestId}] Không tìm thấy hoặc không thể lấy AccessToken hợp lệ`;
 			logger.error("KbttClient", errMsg);
 			throw new Error(errMsg);
 		}
@@ -78,8 +80,8 @@ export class KbttClient {
 		const url = `${CONFIG.BASE_URL}${endpoint}`;
 		logger.info(
 			"KbttClient",
-			`[${CONFIG.currentEnv.toUpperCase()}] Gửi ${actionName} tới: ${url} (${payloads.length} bản ghi)`,
-			{ payloads },
+			`[${requestId}] [${CONFIG.currentEnv.toUpperCase()}] Gửi ${actionName} tới: ${url} (${payloads.length} bản ghi)`,
+			{ requestId, payloads },
 		);
 
 		let res: Response | null = null;
@@ -91,6 +93,7 @@ export class KbttClient {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
+						"X-Request-ID": requestId,
 					},
 					body: JSON.stringify(payloads),
 				});
@@ -100,7 +103,7 @@ export class KbttClient {
 				if (attempt < 3) {
 					logger.warn(
 						"KbttClient",
-						`Kết nối tới KBTT Server lần ${attempt} thất bại (${lastError.message}), đang thử lại lần ${attempt + 1}...`,
+						`[${requestId}] Kết nối tới KBTT Server lần ${attempt} thất bại (${lastError.message}), đang thử lại lần ${attempt + 1}...`,
 					);
 					await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
 				}
@@ -108,7 +111,7 @@ export class KbttClient {
 		}
 
 		if (!res) {
-			const errMsg = `Lỗi mạng khi kết nối tới KBTT Server: ${lastError?.message || "Không thể kết nối"}`;
+			const errMsg = `[${requestId}] Lỗi mạng khi kết nối tới KBTT Server: ${lastError?.message || "Không thể kết nối"}`;
 			logger.error("KbttClient", errMsg);
 			throw new Error(errMsg);
 		}
@@ -139,14 +142,14 @@ export class KbttClient {
 		if (isSuccess) {
 			logger.info(
 				"KbttClient",
-				`[${CONFIG.currentEnv.toUpperCase()}] ${actionName} THÀNH CÔNG! (HTTP ${res.status}): ${responseMessage}`,
-				{ resData },
+				`[${requestId}] [${CONFIG.currentEnv.toUpperCase()}] ${actionName} THÀNH CÔNG! (HTTP ${res.status}): ${responseMessage}`,
+				{ requestId, resData },
 			);
 		} else {
 			logger.error(
 				"KbttClient",
-				`[${CONFIG.currentEnv.toUpperCase()}] ${actionName} THẤT BẠI (HTTP ${res.status}, code: ${resData.code}): ${responseMessage}`,
-				{ resData, payloads },
+				`[${requestId}] [${CONFIG.currentEnv.toUpperCase()}] ${actionName} THẤT BẠI (HTTP ${res.status}, code: ${resData.code}): ${responseMessage}`,
+				{ requestId, resData, payloads },
 			);
 		}
 
@@ -154,6 +157,7 @@ export class KbttClient {
 			success: isSuccess,
 			code: (resData.code as string | number) || res.status,
 			message: responseMessage,
+			requestId,
 			raw: resData,
 		};
 	}

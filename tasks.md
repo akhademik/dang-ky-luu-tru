@@ -29,14 +29,16 @@ Authenticated
 ├── checkout
 ├── extend
 └── environment
-Phase 2 — Data integrity 🟠
-Add DB constraints where appropriate.
-Enforce valid status transitions.
-Centralize date/time logic.
-Add request IDs to BCA operations.
-Make audit logs append-only.
-Review retry/idempotency behavior.
-Validate all API inputs centrally.
+Phase 2 — Data integrity 🟠 [COMPLETED]
+
+- [x] Add DB constraints where appropriate (Unique active stays per guest, foreign key cascade).
+- [x] Enforce valid status transitions (`src/lib/server/validator.ts` State Machine).
+- [x] Centralize date/time logic (`src/lib/server/time.ts` GMT+7).
+- [x] Add request IDs to BCA operations (`src/lib/server/kbttClient.ts`).
+- [x] Make audit logs append-only (Immutable audit logs in Production mode).
+- [x] Review retry/idempotency behavior (Exponential backoff & Request ID tracking).
+- [x] Validate all API inputs centrally (`src/lib/server/validator.ts`).
+- [x] Add data integrity tests (`test/data-integrity.test.ts`).
 Phase 3 — Testing 🟠
 
 Split:

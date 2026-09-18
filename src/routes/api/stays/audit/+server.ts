@@ -1,10 +1,11 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
+import { CONFIG } from "../../../../lib/server/config.js";
 import {
 	clearAuditLogs,
 	deleteAuditLog,
 	getAuditLogs,
 	getDb,
-} from "$lib/server/db.js";
+} from "../../../../lib/server/db.js";
 
 export const GET: RequestHandler = async ({ url, platform }) => {
 	try {
@@ -32,6 +33,18 @@ export const GET: RequestHandler = async ({ url, platform }) => {
 
 export const DELETE: RequestHandler = async ({ url, platform }) => {
 	try {
+		// Ngăn chặn xóa Audit Logs trên môi trường Production (Append-only)
+		if (CONFIG.isProdMode) {
+			return json(
+				{
+					success: false,
+					error:
+						"Nhật ký kiểm toán (Audit Logs) là bất biến (Append-only) và không được phép xóa trên môi trường Production.",
+				},
+				{ status: 403 },
+			);
+		}
+
 		const db = getDb(platform);
 		const isClearAll = url.searchParams.get("clear") === "true";
 		const id = url.searchParams.get("id");

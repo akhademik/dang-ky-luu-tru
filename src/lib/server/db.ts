@@ -11,6 +11,8 @@ import type {
 	StayDetail,
 	StayStatus,
 } from "../types/index.js";
+import { getNowGmt7DateTimeString } from "./time.js";
+import { assertValidTransition } from "./validator.js";
 
 export type { D1DatabaseLike, Guest, KbttLog, Stay, StayDetail, StayStatus };
 
@@ -590,6 +592,12 @@ export async function extendStay(
 	stayId: string,
 	newNgayDi: string,
 ): Promise<boolean> {
+	// Kiểm tra trạng thái hiện tại trước khi gia hạn
+	const stay = await getStayById(db, stayId);
+	if (!stay) return false;
+
+	assertValidTransition(stay.status as StayStatus, "EXTENDED");
+
 	const res = await db
 		.prepare(`
 			UPDATE stays
@@ -606,12 +614,13 @@ export async function checkoutStay(
 	stayId: string,
 	ngayDiThucTe?: string,
 ): Promise<boolean> {
-	const actualOut =
-		ngayDiThucTe ||
-		new Date(Date.now() + 7 * 3600 * 1000)
-			.toISOString()
-			.replace("T", " ")
-			.substring(0, 19);
+	// Kiểm tra trạng thái hiện tại trước khi checkout
+	const stay = await getStayById(db, stayId);
+	if (!stay) return false;
+
+	assertValidTransition(stay.status as StayStatus, "CHECKED_OUT");
+
+	const actualOut = ngayDiThucTe || getNowGmt7DateTimeString();
 	const res = await db
 		.prepare(`
 			UPDATE stays
