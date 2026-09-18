@@ -1702,8 +1702,9 @@ function getStatusBadge(status: string, hasErrors = false) {
 			};
 		case "SYNCED_KBTT":
 			return {
-				label: "✓ Đã khai báo BCA",
-				class: "bg-emerald-100 text-emerald-800 border-emerald-300",
+				label: "Đang ở",
+				class:
+					"bg-emerald-950/80 text-emerald-300 border-emerald-600 font-semibold",
 			};
 		case "EXTENDED":
 			return {
@@ -2365,56 +2366,59 @@ onMount(async () => {
 								{@const isDeleting = deletingIds.has(stay.id)}
 								{@const val = validateStayDetail(stay)}
 								{@const badge = getStatusBadge(stay.status, val.hasErrors)}
-								<div class="border border-slate-700/80 rounded-xl bg-slate-900/60 overflow-hidden transition-all duration-200 hover:border-slate-600 shadow-md p-3.5 flex flex-wrap items-center justify-between gap-3 {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
-									<!-- Left: Number, Name, Gender -->
-									<div class="flex items-center gap-2.5 min-w-[200px]">
-										<span class="text-xs font-mono text-slate-500">#{gIdx + 1}</span>
-										<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5">
-											<span>{group.ho_ten}</span>
+								<div class="border border-slate-700/80 rounded-xl bg-slate-900/60 overflow-hidden transition-all duration-200 hover:border-slate-600 shadow-md p-3 flex items-center justify-between gap-3 overflow-x-auto {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
+									<!-- Col 1: STT, Họ Tên, Giới Tính -->
+									<div class="w-60 min-w-[15rem] max-w-[15rem] flex items-center gap-2 flex-shrink-0">
+										<span class="text-xs font-mono text-slate-500 w-6 flex-shrink-0">#{gIdx + 1}</span>
+										<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5 min-w-0">
+											<span class="truncate max-w-[130px]" title={group.ho_ten}>{group.ho_ten}</span>
 											{#if group.gioi_tinh === 'F'}
-												<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40">Nữ ♀</span>
+												<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40 flex-shrink-0">Nữ ♀</span>
 											{:else}
-												<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40">Nam ♂</span>
+												<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40 flex-shrink-0">Nam ♂</span>
 											{/if}
 										</div>
 									</div>
 
-									<!-- Middle: Doc, Nat, Room, CheckIn -> CheckOut, Status -->
-									<div class="flex flex-wrap items-center gap-3 text-xs">
-										<div class="font-mono text-slate-300">
-											<span>{group.so_giay_to}</span>
-											<span class="text-[11px] font-semibold ml-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 {group.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}" title={countryFullName || ''}>
-												{group.quoc_tich}
-											</span>
-										</div>
-
-										<span class="font-bold text-sky-400 font-mono">
-											Phòng {stay.so_phong}
+									<!-- Col 2: Số giấy tờ & Quốc tịch -->
+									<div class="w-44 min-w-[11rem] max-w-[11rem] flex items-center gap-1 flex-shrink-0 font-mono text-xs text-slate-300">
+										<span class="truncate max-w-[105px]">{group.so_giay_to}</span>
+										<span class="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 flex-shrink-0 {group.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}" title={countryFullName || ''}>
+											{group.quoc_tich}
 										</span>
+									</div>
 
-										<div class="flex items-center gap-1.5 font-mono text-[11px]">
-											<span class="px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800">
-												In: {formatDateTimeDisplay(stay.ngay_den)}
+									<!-- Col 3: Phòng -->
+									<div class="w-24 min-w-[6rem] max-w-[6rem] flex-shrink-0 font-mono font-bold text-sky-400 text-xs">
+										Phòng {stay.so_phong}
+									</div>
+
+									<!-- Col 4: Cặp Ngày In / Out -->
+									<div class="w-56 min-w-[14rem] max-w-[14rem] flex items-center gap-1.5 flex-shrink-0 font-mono text-[11px]">
+										<span class="px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800">
+											In: {formatDateDisplay(stay.ngay_den)}
+										</span>
+										<span class="text-slate-500 font-bold">➔</span>
+										{#if stay.ngay_di_thuc_te}
+											<span class="px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700">
+												Out: {formatDateDisplay(stay.ngay_di_thuc_te)}
 											</span>
-											<span class="text-slate-500 font-bold">➔</span>
-											{#if stay.ngay_di_thuc_te}
-												<span class="px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700">
-													Out: {formatDateTimeDisplay(stay.ngay_di_thuc_te)}
-												</span>
-											{:else}
-												<span class="px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800">
-													Dự kiến: {formatDepartureDisplay(stay.ngay_di_du_kien)}
-												</span>
-											{/if}
-										</div>
+										{:else}
+											<span class="px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800">
+												Out(DK): {formatDateDisplay(stay.ngay_di_du_kien)}
+											</span>
+										{/if}
+									</div>
 
+									<!-- Col 5: Trạng thái -->
+									<div class="w-32 min-w-[8rem] max-w-[8rem] flex-shrink-0">
 										<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {badge.class}">
 											{badge.label}
 										</span>
 									</div>
 
-									<!-- Right: Actions -->
-									<div class="flex items-center gap-1.5">
+									<!-- Col 6: Thao tác -->
+									<div class="flex items-center justify-end gap-1.5 flex-shrink-0 min-w-[13rem]">
 										<button
 											type="button"
 											onclick={() => openReRegisterModal(stay)}
@@ -2448,45 +2452,66 @@ onMount(async () => {
 										tabindex="0"
 										onclick={() => toggleGuestExpand(group.guest_id)}
 										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleGuestExpand(group.guest_id); }}
-										class="p-3.5 flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none bg-slate-900/90 hover:bg-slate-800/80 transition-colors"
+										class="p-3 flex items-center justify-between gap-3 cursor-pointer select-none bg-slate-900/90 hover:bg-slate-800/80 transition-colors overflow-x-auto"
 									>
-										<!-- Left: Name, Gender, Stay Count Badge -->
-										<div class="flex items-center gap-2.5 min-w-[240px]">
+										<!-- Col 1: Arrow, STT, Họ Tên, Giới Tính, Lượt ở -->
+										<div class="w-60 min-w-[15rem] max-w-[15rem] flex items-center gap-2 flex-shrink-0">
 											<span class="text-slate-400 text-xs font-mono transition-transform duration-200 {isExpanded ? 'rotate-90 text-amber-400' : ''}">
 												▶
 											</span>
-											<span class="text-xs font-mono text-slate-500">#{gIdx + 1}</span>
-											<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5">
-												<span>{group.ho_ten}</span>
+											<span class="text-xs font-mono text-slate-500 w-5 flex-shrink-0">#{gIdx + 1}</span>
+											<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5 min-w-0">
+												<span class="truncate max-w-[95px]" title={group.ho_ten}>{group.ho_ten}</span>
 												{#if group.gioi_tinh === 'F'}
-													<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40">Nữ ♀</span>
+													<span class="text-[10px] px-1 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40 flex-shrink-0">Nữ ♀</span>
 												{:else}
-													<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40">Nam ♂</span>
+													<span class="text-[10px] px-1 py-0.2 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40 flex-shrink-0">Nam ♂</span>
 												{/if}
 											</div>
-
-											<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
-												🏨 {group.stay_count} lượt ở
+											<span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex-shrink-0 animate-pulse">
+												{group.stay_count} lượt
 											</span>
 										</div>
 
-										<!-- Middle: Doc, Nat, Latest Status Badge -->
-										<div class="flex flex-wrap items-center gap-3 text-xs">
-											<div class="font-mono text-slate-300">
-												<span>{group.so_giay_to}</span>
-												<span class="text-[11px] font-semibold ml-1 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 {group.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}" title={countryFullName || ''}>
-													{group.quoc_tich}
-												</span>
-											</div>
+										<!-- Col 2: Số giấy tờ & Quốc tịch -->
+										<div class="w-44 min-w-[11rem] max-w-[11rem] flex items-center gap-1 flex-shrink-0 font-mono text-xs text-slate-300">
+											<span class="truncate max-w-[105px]">{group.so_giay_to}</span>
+											<span class="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 flex-shrink-0 {group.quoc_tich === 'VNM' ? 'text-emerald-400' : 'text-amber-400'}" title={countryFullName || ''}>
+												{group.quoc_tich}
+											</span>
+										</div>
 
-											<!-- Latest Status Badge -->
+										<!-- Col 3: Phòng gần nhất -->
+										<div class="w-24 min-w-[6rem] max-w-[6rem] flex-shrink-0 font-mono font-bold text-sky-400 text-xs">
+											Phòng {group.latestStay.so_phong}
+										</div>
+
+										<!-- Col 4: Cặp Ngày gần nhất -->
+										<div class="w-56 min-w-[14rem] max-w-[14rem] flex items-center gap-1.5 flex-shrink-0 font-mono text-[11px]">
+											<span class="px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800">
+												In: {formatDateDisplay(group.latestStay.ngay_den)}
+											</span>
+											<span class="text-slate-500 font-bold">➔</span>
+											{#if group.latestStay.ngay_di_thuc_te}
+												<span class="px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700">
+													Out: {formatDateDisplay(group.latestStay.ngay_di_thuc_te)}
+												</span>
+											{:else}
+												<span class="px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800">
+													Out(DK): {formatDateDisplay(group.latestStay.ngay_di_du_kien)}
+												</span>
+											{/if}
+										</div>
+
+										<!-- Col 5: Trạng thái gần nhất -->
+										<div class="w-32 min-w-[8rem] max-w-[8rem] flex-shrink-0">
 											<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {latestBadge.class}">
 												{latestBadge.label}
 											</span>
 										</div>
 
-										<!-- Right Action Buttons -->
-										<div class="flex items-center gap-1.5" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="toolbar" tabindex="-1">
+										<!-- Col 6: Thao tác -->
+										<div class="flex items-center justify-end gap-1.5 flex-shrink-0 min-w-[13rem]" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="toolbar" tabindex="-1">
 											<button
 												type="button"
 												onclick={() => openReRegisterModal(group.latestStay)}
@@ -2498,9 +2523,9 @@ onMount(async () => {
 											<button
 												type="button"
 												onclick={() => toggleGuestExpand(group.guest_id)}
-												class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-all border border-slate-700"
+												class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-all border border-slate-700 flex items-center gap-1"
 											>
-												{isExpanded ? 'Thu gọn ▲' : `Lịch sử (${group.stay_count}) ▼`}
+												<span>{isExpanded ? 'Thu gọn ▲' : `Lịch sử (${group.stay_count}) ▼`}</span>
 											</button>
 										</div>
 									</div>
@@ -2541,18 +2566,18 @@ onMount(async () => {
 																	Phòng {stay.so_phong}
 																</td>
 																<td class="p-2.5">
-																	<div class="flex items-center gap-1.5 flex-wrap">
-																		<span class="px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800 text-[11px]">
-																			In: {formatDateTimeDisplay(stay.ngay_den)}
+																	<div class="flex items-center gap-1.5 flex-wrap font-mono text-[11px]">
+																		<span class="px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800">
+																			In: {formatDateDisplay(stay.ngay_den)}
 																		</span>
 																		<span class="text-slate-500 font-bold">➔</span>
 																		{#if stay.ngay_di_thuc_te}
-																			<span class="px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700 text-[11px]">
-																				Out: {formatDateTimeDisplay(stay.ngay_di_thuc_te)}
+																			<span class="px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700">
+																				Out: {formatDateDisplay(stay.ngay_di_thuc_te)}
 																			</span>
 																		{:else}
-																			<span class="px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800 text-[11px]">
-																				Dự kiến: {formatDepartureDisplay(stay.ngay_di_du_kien)}
+																			<span class="px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800">
+																				Out(DK): {formatDateDisplay(stay.ngay_di_du_kien)}
 																			</span>
 																		{/if}
 																	</div>
