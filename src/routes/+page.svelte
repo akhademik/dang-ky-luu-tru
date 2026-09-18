@@ -1763,7 +1763,60 @@ function formatAuditAction(endpoint?: string): { name: string; class: string } {
 function getAuditLogFailureReason(log: KbttLog): string {
 	if (log.is_success) return "";
 
-	// 1. Check response_payload or error_message from server
+	// 1. Check request payload first for missing required fields (domain constraint analysis)
+	if (log.request_payload) {
+		try {
+			let req = JSON.parse(log.request_payload);
+			if (Array.isArray(req) && req.length > 0) {
+				req = req[0];
+			}
+			const ep = (log.api_endpoint || "").toUpperCase();
+			const isForeign =
+				ep.includes("4_NN") ||
+				(req.quocTich && req.quocTich !== "VNM") ||
+				req.soHoChieu !== undefined;
+
+			if (isForeign) {
+				const visa =
+					req.thoiHanTamTruStr ||
+					req.thoiHanThiThuc ||
+					req.ngayTamTruDenStr ||
+					req.thoi_han_thi_thuc;
+				if (!visa || String(visa).trim() === "") {
+					return "Thiếu ngày hiệu lực của thị thực (visa)";
+				}
+				if (!req.soHoChieu && !req.soGiayTo) {
+					return "Thiếu số hộ chiếu của khách nước ngoài";
+				}
+				if (!req.quocTich) {
+					return "Thiếu thông tin quốc tịch";
+				}
+				if (!req.ngaySinhStr && !req.ngayThangNamSinhStr && !req.ngaySinh) {
+					return "Thiếu ngày tháng năm sinh";
+				}
+			} else {
+				// Vietnamese guest
+				if (!req.soGiayTo) {
+					return "Thiếu số CCCD / giấy tờ tùy thân";
+				}
+				if (!req.hoTen) {
+					return "Thiếu họ và tên khách lưu trú";
+				}
+				if (!req.ngayDenCsltStr && !req.ngayDen) {
+					return "Thiếu thời gian nhận phòng";
+				}
+				if (!req.ngayDiDuKienStr && !req.ngayDiDuKien) {
+					return "Thiếu ngày đi dự kiến";
+				}
+			}
+
+			if (!req.soPhong) {
+				return "Thiếu thông tin số phòng lưu trú";
+			}
+		} catch {}
+	}
+
+	// 2. Check response_payload or server error_message for explicit messages
 	let serverMsg = (log.error_message || "").trim();
 	if (log.response_payload) {
 		try {
@@ -1786,7 +1839,6 @@ function getAuditLogFailureReason(log: KbttLog): string {
 		} catch {}
 	}
 
-	// 2. If server returned informative message, interpret or return it
 	if (serverMsg) {
 		if (serverMsg.includes("đang tạm trú tại CSLT và chưa checkout")) {
 			return "Khách đang có lượt lưu trú tại cơ sở và chưa checkout lượt cũ.";
@@ -1800,69 +1852,31 @@ function getAuditLogFailureReason(log: KbttLog): string {
 		) {
 			return "Hết hạn phiên làm việc hoặc Token API không hợp lệ.";
 		}
+		// Clean technical prefixes
 		if (
+			serverMsg.startsWith("Lỗi HTTP 500:") ||
+			serverMsg.startsWith("Lỗi HTTP 400:")
+		) {
+			const clean = serverMsg.replace(/^Lỗi HTTP \d+:\s*/, "").trim();
+			if (
+				clean &&
+				clean !== "Internal Server Error" &&
+				clean !== "ERR" &&
+				clean !== "Error"
+			) {
+				return clean;
+			}
+		} else if (
 			serverMsg !== "Lỗi khi gọi API KBTT" &&
 			serverMsg !== "ERR" &&
-			serverMsg !== "Error"
+			serverMsg !== "Error" &&
+			!serverMsg.toLowerCase().includes("internal server error")
 		) {
 			return serverMsg;
 		}
 	}
 
-	// 3. Fallback logic based on request payload analysis
-	if (log.request_payload) {
-		try {
-			let req = JSON.parse(log.request_payload);
-			if (Array.isArray(req) && req.length > 0) {
-				req = req[0];
-			}
-			const ep = (log.api_endpoint || "").toUpperCase();
-			const isForeign =
-				ep.includes("4_NN") ||
-				(req.quocTich && req.quocTich !== "VNM") ||
-				req.soHoChieu !== undefined;
-
-			if (isForeign) {
-				if (
-					!req.thoiHanTamTruStr &&
-					!req.thoiHanThiThuc &&
-					!req.ngayTamTruDenStr &&
-					!req.thoi_han_thi_thuc
-				) {
-					return "Thiếu thông tin thời hạn visa / thị thực tạm trú cho khách nước ngoài.";
-				}
-				if (!req.soHoChieu && !req.soGiayTo) {
-					return "Thiếu số hộ chiếu của khách nước ngoài.";
-				}
-				if (!req.quocTich) {
-					return "Thiếu thông tin quốc tịch.";
-				}
-				if (!req.ngaySinhStr && !req.ngayThangNamSinhStr && !req.ngaySinh) {
-					return "Thiếu ngày tháng năm sinh.";
-				}
-			} else {
-				// Vietnamese guest
-				if (!req.soGiayTo) {
-					return "Thiếu số CCCD / giấy tờ tùy thân.";
-				}
-				if (!req.hoTen) {
-					return "Thiếu họ và tên khách lưu trú.";
-				}
-				if (!req.ngayDenCsltStr && !req.ngayDen) {
-					return "Thiếu thời gian nhận phòng.";
-				}
-				if (!req.ngayDiDuKienStr && !req.ngayDiDuKien) {
-					return "Thiếu ngày đi dự kiến.";
-				}
-			}
-
-			if (!req.soPhong) {
-				return "Thiếu thông tin số phòng lưu trú.";
-			}
-		} catch {}
-	}
-
-	// 4. Fallback on HTTP / error code
+	// 3. Fallback on HTTP / error code
 	if (log.http_status === 500 || log.code === "500") {
 		return "Lỗi máy chủ kết nối hoặc hệ thống BCA tạm thời gián đoạn.";
 	}
@@ -1870,7 +1884,55 @@ function getAuditLogFailureReason(log: KbttLog): string {
 		return "Dữ liệu gửi lên không đúng định dạng quy định của Cổng Dịch Vụ Công BCA.";
 	}
 
-	return serverMsg || `Yêu cầu thất bại (Mã lỗi: ${log.code || "ERR"})`;
+	return "Yêu cầu không thành công";
+}
+
+async function deleteAuditLogItem(logId: string) {
+	if (
+		!confirm(
+			"Bạn có chắc chắn muốn xóa bản ghi log này khỏi Dev Logs? (Không ảnh hưởng đến thông tin khách lưu trú)",
+		)
+	) {
+		return;
+	}
+	try {
+		const res = await fetch(`/api/stays/audit?id=${logId}`, {
+			method: "DELETE",
+		});
+		const data = await res.json();
+		if (data.success) {
+			auditLogs = auditLogs.filter((l) => l.id !== logId);
+			showToast("✓ Đã xóa bản ghi nhật ký khỏi Dev Logs", "success");
+		} else {
+			showToast(`Không thể xóa log: ${data.error || "Lỗi"}`, "error");
+		}
+	} catch {
+		showToast("Lỗi khi kết nối xóa log", "error");
+	}
+}
+
+async function clearAllAuditLogs() {
+	if (
+		!confirm(
+			"Bạn có chắc chắn muốn xóa TOÀN BỘ nhật ký Dev Logs? (Không ảnh hưởng đến thông tin khách lưu trú)",
+		)
+	) {
+		return;
+	}
+	try {
+		const res = await fetch("/api/stays/audit?clear=true", {
+			method: "DELETE",
+		});
+		const data = await res.json();
+		if (data.success) {
+			auditLogs = [];
+			showToast("✓ Đã xóa toàn bộ nhật ký Dev Logs", "success");
+		} else {
+			showToast(`Không thể xóa logs: ${data.error || "Lỗi"}`, "error");
+		}
+	} catch {
+		showToast("Lỗi khi xóa logs", "error");
+	}
 }
 
 // Svelte 5 Effects
@@ -2769,71 +2831,119 @@ onMount(async () => {
 
 		<!-- TAB 4: AUDIT TRAIL & LOGS -->
 		{#if activeTab === "audit"}
-			<div class="bg-slate-800/80 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
-				<div class="overflow-x-auto">
-					<table class="w-full text-left text-xs border-collapse">
-						<thead class="bg-slate-900/90 text-slate-300 uppercase font-semibold border-b border-slate-700">
-							<tr>
-								<th class="p-3.5 whitespace-nowrap">Thời Gian</th>
-								<th class="p-3.5 whitespace-nowrap">Hành Động</th>
-								<th class="p-3.5 whitespace-nowrap">Khách Hàng</th>
-								<th class="p-3.5 whitespace-nowrap">Phòng</th>
-								<th class="p-3.5 whitespace-nowrap">CCCD / Hộ Chiếu</th>
-								<th class="p-3.5">Kết Quả & Lý Do</th>
-								<th class="p-3.5 text-center whitespace-nowrap">Payload Chi Tiết</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-slate-700/60">
-							{#if auditLogs.length === 0}
+			<div class="space-y-3">
+				<!-- Top Bar Actions for Logs -->
+				<div class="flex items-center justify-between bg-slate-800/80 p-3 px-4 rounded-xl border border-slate-700">
+					<div class="flex items-center gap-2">
+						<span class="text-xs font-bold uppercase tracking-wider text-slate-300">Nhật Ký Dev Logs</span>
+						<span class="text-xs font-mono font-bold bg-slate-950 text-sky-400 border border-slate-700 px-2 py-0.5 rounded-full">
+							{auditLogs.length} bản ghi
+						</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							onclick={loadAuditLogs}
+							class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold transition-all border border-slate-600 flex items-center gap-1"
+						>
+							<span>🔄</span> Làm mới
+						</button>
+						{#if auditLogs.length > 0}
+							<button
+								type="button"
+								onclick={clearAllAuditLogs}
+								class="px-2.5 py-1.5 bg-rose-950/60 hover:bg-rose-900 text-rose-300 hover:text-white rounded-lg text-xs font-semibold transition-all border border-rose-800 flex items-center gap-1"
+								title="Xóa toàn bộ các bản ghi nhật ký trong Dev Logs (không ảnh hưởng thông tin khách)"
+							>
+								<span>🗑️</span> Xóa toàn bộ logs
+							</button>
+						{/if}
+					</div>
+				</div>
+
+				<div class="bg-slate-800/80 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
+					<div class="overflow-x-auto">
+						<table class="w-full text-left text-xs border-collapse">
+							<thead class="bg-slate-900/90 text-slate-300 uppercase font-semibold border-b border-slate-700">
 								<tr>
-									<td colspan="7" class="p-8 text-center text-slate-400">Chưa có bản ghi nhật ký nào.</td>
+									<th class="p-3.5 whitespace-nowrap">Thời Gian</th>
+									<th class="p-3.5 whitespace-nowrap">Hành Động</th>
+									<th class="p-3.5 whitespace-nowrap">Khách Hàng</th>
+									<th class="p-3.5 whitespace-nowrap">Phòng</th>
+									<th class="p-3.5 whitespace-nowrap">CCCD / Hộ Chiếu</th>
+									<th class="p-3.5">Kết Quả & Lý Do</th>
+									<th class="p-3.5 text-center whitespace-nowrap">Thao Tác</th>
 								</tr>
-							{:else}
-								{#each auditLogs as log (log.id)}
-									{@const act = formatAuditAction(log.api_endpoint)}
-									<tr class="hover:bg-slate-700/30 transition-colors">
-										<td class="p-3.5 text-slate-400 font-mono whitespace-nowrap">{formatDateTimeDisplay(log.created_at)}</td>
-										<td class="p-3.5 whitespace-nowrap">
-											<span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] border {act.class}">
-												{act.name}
-											</span>
-										</td>
-										<td class="p-3.5 font-semibold text-slate-200 whitespace-nowrap">{log.guest_name || '-'}</td>
-										<td class="p-3.5 font-mono text-sky-400 whitespace-nowrap">{log.so_phong ? `Phòng ${log.so_phong}` : '-'}</td>
-										<td class="p-3.5 font-mono text-slate-300 whitespace-nowrap">{log.so_giay_to || '-'}</td>
-										<td class="p-3.5">
-											{#if log.is_success}
-												<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 font-medium text-[10px]">
-													✓ Thành công
+							</thead>
+							<tbody class="divide-y divide-slate-700/60">
+								{#if auditLogs.length === 0}
+									<tr>
+										<td colspan="7" class="p-8 text-center text-slate-400">Chưa có bản ghi nhật ký nào.</td>
+									</tr>
+								{:else}
+									{#each auditLogs as log (log.id)}
+										{@const act = formatAuditAction(log.api_endpoint)}
+										<tr class="hover:bg-slate-700/30 transition-colors">
+											<td class="p-3.5 text-slate-400 font-mono whitespace-nowrap">{formatDateTimeDisplay(log.created_at)}</td>
+											<td class="p-3.5 whitespace-nowrap">
+												<span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] border {act.class}">
+													{act.name}
 												</span>
-											{:else}
-												{@const failReason = getAuditLogFailureReason(log)}
-												<div class="flex flex-col gap-1 max-w-sm md:max-w-md">
-													<div class="flex items-center gap-1.5">
-														<span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-[10px]">
-															✕ Thất bại ({log.code || 'ERR'})
+											</td>
+											<td class="p-3.5 font-semibold text-slate-200 whitespace-nowrap">{log.guest_name || '-'}</td>
+											<td class="p-3.5 font-mono text-sky-400 whitespace-nowrap">{log.so_phong ? `Phòng ${log.so_phong}` : '-'}</td>
+											<td class="p-3.5 font-mono text-slate-300 whitespace-nowrap">{log.so_giay_to || '-'}</td>
+											<td class="p-3.5">
+												{#if log.is_success}
+													<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 font-medium text-[10px]">
+														✓ Thành công
+													</span>
+												{:else}
+													{@const failReason = getAuditLogFailureReason(log)}
+													<div class="flex flex-col gap-1 max-w-sm md:max-w-md">
+														<div class="flex items-center gap-1.5">
+															<span
+																class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-[10px] cursor-help"
+																title={log.error_message ? `Lý do: ${failReason}\n(Chi tiết kỹ thuật: ${log.error_message})` : `Lý do: ${failReason}`}
+															>
+																✕ Thất bại ({log.code || '500'})
+															</span>
+														</div>
+														<span
+															class="text-rose-300/90 text-[11px] leading-snug font-normal cursor-help"
+															title={log.error_message ? `Chi tiết kỹ thuật: ${log.error_message}` : ''}
+														>
+															{failReason}
 														</span>
 													</div>
-													<span class="text-rose-300/90 text-[11px] leading-snug font-normal">
-														{failReason}
-													</span>
+												{/if}
+											</td>
+											<td class="p-3.5 text-center whitespace-nowrap">
+												<div class="flex items-center justify-center gap-1.5">
+													<button
+														type="button"
+														onclick={() => openPayloadViewer(log)}
+														class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-mono text-[11px] rounded transition-all"
+														title="Xem chi tiết Request / Response JSON"
+													>
+														{`{ } JSON`}
+													</button>
+													<button
+														type="button"
+														onclick={() => deleteAuditLogItem(log.id)}
+														class="p-1 px-1.5 bg-rose-950/40 hover:bg-rose-900 text-rose-400 hover:text-white rounded border border-rose-800/60 transition-all text-xs"
+														title="Xóa bản ghi nhật ký này khỏi Dev Logs (không ảnh hưởng dữ liệu khách)"
+													>
+														🗑️
+													</button>
 												</div>
-											{/if}
-										</td>
-										<td class="p-3.5 text-center whitespace-nowrap">
-											<button
-												type="button"
-												onclick={() => openPayloadViewer(log)}
-												class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-mono text-[11px] rounded transition-all"
-											>
-												{`{ } JSON`}
-											</button>
-										</td>
-									</tr>
-								{/each}
-							{/if}
-						</tbody>
-					</table>
+											</td>
+										</tr>
+									{/each}
+								{/if}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		{/if}

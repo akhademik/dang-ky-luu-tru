@@ -629,7 +629,7 @@ export class DataTransformer {
 					row["Số giấy tờ"],
 			),
 			anhHoChieuB64: "",
-			ghiChu: String(row.ghiChu || row.ghi_chu || row["Ghi chú"] || "").trim(),
+			ghiChu: "",
 		};
 	}
 

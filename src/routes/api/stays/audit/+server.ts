@@ -1,5 +1,10 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { getAuditLogs, getDb } from "$lib/server/db.js";
+import {
+	clearAuditLogs,
+	deleteAuditLog,
+	getAuditLogs,
+	getDb,
+} from "$lib/server/db.js";
 
 export const GET: RequestHandler = async ({ url, platform }) => {
 	try {
@@ -18,6 +23,45 @@ export const GET: RequestHandler = async ({ url, platform }) => {
 			success: true,
 			data: logs,
 			total: logs.length,
+		});
+	} catch (err: unknown) {
+		const errMsg = err instanceof Error ? err.message : String(err);
+		return json({ success: false, error: errMsg }, { status: 500 });
+	}
+};
+
+export const DELETE: RequestHandler = async ({ url, platform }) => {
+	try {
+		const db = getDb(platform);
+		const isClearAll = url.searchParams.get("clear") === "true";
+		const id = url.searchParams.get("id");
+
+		if (isClearAll) {
+			await clearAuditLogs(db);
+			return json({
+				success: true,
+				message: "Đã xóa toàn bộ nhật ký Dev Logs",
+			});
+		}
+
+		if (!id) {
+			return json(
+				{ success: false, error: "Thiếu ID bản ghi cần xóa" },
+				{ status: 400 },
+			);
+		}
+
+		const deleted = await deleteAuditLog(db, id);
+		if (!deleted) {
+			return json(
+				{ success: false, error: "Không tìm thấy bản ghi cần xóa" },
+				{ status: 404 },
+			);
+		}
+
+		return json({
+			success: true,
+			message: "Đã xóa bản ghi nhật ký thành công",
 		});
 	} catch (err: unknown) {
 		const errMsg = err instanceof Error ? err.message : String(err);

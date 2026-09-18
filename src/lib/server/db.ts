@@ -695,6 +695,22 @@ export async function getAuditLogs(
 	return res.results || [];
 }
 
+export async function deleteAuditLog(
+	db: D1DatabaseLike,
+	logId: string,
+): Promise<boolean> {
+	const res = await db
+		.prepare("DELETE FROM kbtt_logs WHERE id = ?")
+		.bind(logId)
+		.run();
+	return res.meta.changes > 0;
+}
+
+export async function clearAuditLogs(db: D1DatabaseLike): Promise<boolean> {
+	await db.prepare("DELETE FROM kbtt_logs").run();
+	return true;
+}
+
 export async function getDashboardStats(db: D1DatabaseLike): Promise<{
 	totalGuests: number;
 	totalStays: number;
