@@ -1,16 +1,34 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 import { CONFIG } from "$lib/server/config.js";
 
+// Helper to resolve APP_PASSWORD across Cloudflare Pages, Workers, Node.js and .env
+function getAppPassword(platform?: App.Platform): string {
+	const platformEnv = platform?.env || {};
+	return String(
+		platformEnv.APP_PASSWORD ||
+			platformEnv.PASSWORD ||
+			(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
+			(typeof process !== "undefined" && process.env?.PASSWORD) ||
+			CONFIG.APP_PASSWORD ||
+			"",
+	).trim();
+}
+
+// Helper to resolve KBTT_ENV
+function getKbttEnv(platform?: App.Platform): string {
+	const platformEnv = platform?.env || {};
+	return String(
+		platformEnv.KBTT_ENV ||
+			(typeof process !== "undefined" && process.env?.KBTT_ENV) ||
+			CONFIG.currentEnv ||
+			"dev",
+	).toLowerCase();
+}
+
 // Verify password and set session cookie
 export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 	try {
-		const env = (platform?.env || {}) as Record<string, unknown>;
-		const serverPass = String(
-			env.APP_PASSWORD ||
-				(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
-				CONFIG.APP_PASSWORD ||
-				"",
-		).trim();
+		const serverPass = getAppPassword(platform);
 		const body = await request.json().catch(() => ({}));
 		const password = String(body.password || "").trim();
 
@@ -49,19 +67,8 @@ export const POST: RequestHandler = async ({ request, cookies, platform }) => {
 
 // Check session status
 export const GET: RequestHandler = async ({ cookies, platform }) => {
-	const env = (platform?.env || {}) as Record<string, unknown>;
-	const serverPass = String(
-		env.APP_PASSWORD ||
-			(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
-			CONFIG.APP_PASSWORD ||
-			"",
-	).trim();
-	const kbttEnv = String(
-		env.KBTT_ENV ||
-			(typeof process !== "undefined" && process.env?.KBTT_ENV) ||
-			CONFIG.currentEnv ||
-			"dev",
-	).toLowerCase();
+	const serverPass = getAppPassword(platform);
+	const kbttEnv = getKbttEnv(platform);
 	const isProd = kbttEnv === "prod";
 
 	// If NO APP_PASSWORD is configured on the server, allow access
