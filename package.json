@@ -13,7 +13,7 @@
     "lint:biome": "biome check src test",
     "lint": "pnpm run check:svelte",
     "knip": "pnpm dlx knip",
-    "test:unit": "node --import jiti/register test/unit/catalog.test.ts && node --import jiti/register test/unit/transformer.test.ts && node --import jiti/register test/unit/time.test.ts && node --import jiti/register test/unit/validator.test.ts",
+    "test:unit": "node --import jiti/register test/unit/catalog.test.ts && node --import jiti/register test/unit/transformer.test.ts && node --import jiti/register test/unit/time.test.ts && node --import jiti/register test/unit/validator.test.ts && node --import jiti/register test/unit/svelte-deprecation.test.ts",
     "test:api": "node --import jiti/register test/api/auth-security.test.ts",
     "test:integration": "node --import jiti/register test/integration/stay-service.test.ts",
     "test:e2e": "node --import jiti/register test/playwright-test.ts",

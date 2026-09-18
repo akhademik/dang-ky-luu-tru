@@ -1,9 +1,13 @@
 <script lang="ts">
 import { getStayStatusBadgeClass } from "$lib/utils/format";
 
-export let status: string | undefined | null = undefined;
+interface Props {
+	status?: string | null;
+}
 
-$: badge = getStayStatusBadgeClass(status);
+let { status = undefined }: Props = $props();
+
+let badge = $derived(getStayStatusBadgeClass(status));
 </script>
 
 <span
