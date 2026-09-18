@@ -3,6 +3,9 @@
   "entry": [
     "src/routes/**/+*.{js,ts,svelte}",
     "src/lib/types/index.ts",
+    "src/lib/server/repositories/index.ts",
+    "src/lib/utils/format.ts",
+    "src/lib/components/*.svelte",
     "test/**/*.ts"
   ],
   "project": [

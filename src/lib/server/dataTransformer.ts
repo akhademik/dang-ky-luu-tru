@@ -8,7 +8,7 @@ import { type CatalogManager, catalogManager } from "./catalogManager.js";
 export type { CompletenessResult, RawOcrRow, TransformedRowResult };
 
 export class DataTransformer {
-	private catalogManager: CatalogManager;
+	public catalogManager: CatalogManager;
 
 	public constructor(catalog: CatalogManager = catalogManager) {
 		this.catalogManager = catalog;

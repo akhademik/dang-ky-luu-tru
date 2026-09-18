@@ -51,26 +51,16 @@ Split test hierarchy:
 Verification guarantee:
 - [x] `pnpm test` executes unified unit, API, and offline integration suites (100% offline-capable, never requires live BCA credentials or production remote infra).
 
-Phase 4 — Architecture cleanup 🟡
+Phase 4 — Architecture cleanup 🟡 [COMPLETED]
 
-Refactor:
-
-+page.svelte
-db.ts
-stayService.ts
-
-into smaller units.
-
-Especially:
-
-time.ts
-validation/
-repositories/
-services/
-API schemas
-components/
-
-Don't over-engineer it.
+Refactor into smaller modular units:
+- [x] **time.ts**: Centralized GMT+7 date-time handling service.
+- [x] **validator.ts**: Centralized business validations and Stay State Machine.
+- [x] **repositories/**: Modular domain repositories (`guestRepository`, `stayRepository`, `auditRepository`, `statsRepository`).
+- [x] **services/**: Modular domain services (`stayService`, `kbttClient`, `tokenManager`, `catalogManager`, `dataTransformer`).
+- [x] **utils/format.ts**: Extracted shared UI formatting helpers, country resolvers, and options.
+- [x] **components/**: Modular UI components (`ConfirmModal.svelte`, `StayStatusBadge.svelte`).
+- [x] **db.ts**: Clean facade delegating to modular repository implementations.
 
 Phase 5 — CI/CD 🟡
 

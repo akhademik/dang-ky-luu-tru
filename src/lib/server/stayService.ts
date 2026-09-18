@@ -1,7 +1,6 @@
 import type {
 	D1DatabaseLike,
 	IngestResult,
-	IngestResultItem,
 	RawOcrRow,
 	StayDetail,
 	StayStatus,
@@ -12,7 +11,6 @@ import {
 	checkoutStay as dbCheckoutStay,
 	extendStay as dbExtendStay,
 	updateStay as dbUpdateStay,
-	generateId,
 	getStayById,
 	getStays,
 	logKbttAction,
@@ -809,31 +807,17 @@ class StayService {
 			await dbCheckoutStay(db, stayId);
 		}
 
-		// Insert new stay with READY_TO_SYNC
-		const newStayId = generateId();
-		await db
-			.prepare(
-				`
-				INSERT INTO stays (
-					id, guest_id, so_phong, ngay_den, ngay_di_du_kien,
-					thoi_han_thi_thuc, ly_do_luu_tru, status, ma_ho_so_kbtt, ghi_chu,
-					created_at, updated_at
-				) VALUES (?, ?, ?, ?, ?, ?, ?, 'READY_TO_SYNC', '', ?, ?, ?)
-			`,
-			)
-			.bind(
-				newStayId,
-				existingStay.guest_id,
-				newSoPhong,
-				newNgayDen,
-				newNgayDi,
-				existingStay.thoi_han_thi_thuc || null,
-				existingStay.ly_do_luu_tru || 1,
-				existingStay.ghi_chu || "",
-				vnNow.fullStr,
-				vnNow.fullStr,
-			)
-			.run();
+		// Insert new stay with READY_TO_SYNC via upsertStay
+		const newStayRecord = await upsertStay(db, existingStay.guest_id, {
+			so_phong: newSoPhong,
+			ngay_den: newNgayDen,
+			ngay_di_du_kien: newNgayDi,
+			thoi_han_thi_thuc: existingStay.thoi_han_thi_thuc || "",
+			ly_do_luu_tru: existingStay.ly_do_luu_tru || 1,
+			ghi_chu: existingStay.ghi_chu || "",
+			status: "READY_TO_SYNC",
+		});
+		const newStayId = newStayRecord.id;
 
 		await logKbttAction(db, {
 			stay_id: newStayId,

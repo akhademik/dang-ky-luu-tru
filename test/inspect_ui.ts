@@ -21,7 +21,7 @@ async function main() {
 	await page.screenshot({ path: "tab_all_guests.png", fullPage: true });
 
 	const allGuestsText = await page.locator("main").innerText();
-	console.log("📄 All Guests Tab content text:\n" + allGuestsText);
+	console.log(`📄 All Guests Tab content text:\n${allGuestsText}`);
 
 	await browser.close();
 	console.log("✅ Inspection finished.");

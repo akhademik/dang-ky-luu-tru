@@ -1,48 +1,12 @@
 <script lang="ts">
 import { onMount } from "svelte";
-import { QUOC_TICH_DATA } from "$lib/data/catalogs";
 
-const ROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
-const LOAI_GIAY_TO_OPTIONS = [
-	{ id: "1", name: "1 - Thẻ CCCD (1)" },
-	{ id: "2", name: "2 - Thẻ CMND (2)" },
-	{ id: "3", name: "3 - Giấy phép lái xe (3)" },
-	{ id: "4", name: "4 - Hộ chiếu / Passport (4)" },
-	{ id: "8", name: "8 - Thẻ Căn Cước (8)" },
-];
-
-const COUNTRY_OPTIONS = [...QUOC_TICH_DATA].map((c) => {
-	const code = String(c.maQT || "")
-		.trim()
-		.toUpperCase();
-	const rawName = String(c.tenQTEn || c.name || c.tenQT || "").trim();
-	const name = code === "VNM" ? "Vietnam" : rawName;
-	return {
-		maQT: code,
-		name,
-		label: `${code} - ${name}`,
-	};
-});
-const countryNameMap = new Map<string, string>();
-for (const opt of COUNTRY_OPTIONS) {
-	countryNameMap.set(opt.maQT, opt.name);
-}
-
-function getCountryFullName(code?: string | null): string {
-	if (!code) return "";
-	const upper = code.trim().toUpperCase();
-	if (upper === "USA" || upper === "MỸ" || upper === "HOA KỲ")
-		return "United States of America";
-	if (
-		upper === "VNM" ||
-		upper === "VN" ||
-		upper === "VIỆT NAM" ||
-		upper === "VIETNAM"
-	)
-		return "Vietnam";
-	return countryNameMap.get(upper) || upper;
-}
+import {
+	COUNTRY_OPTIONS,
+	getCountryFullName,
+	LOAI_GIAY_TO_OPTIONS,
+	ROOM_OPTIONS,
+} from "$lib/utils/format";
 
 function getFullAddress(
 	stay:
@@ -95,7 +59,7 @@ function getShortAddress(
 		| undefined,
 ): string {
 	if (!stay) return "-";
-	if (stay.tinh_thanh && stay.tinh_thanh.trim()) {
+	if (stay.tinh_thanh?.trim()) {
 		return stay.tinh_thanh.trim();
 	}
 	const full = getFullAddress(stay);
@@ -342,9 +306,11 @@ let guestGroups = $derived.by(() => {
 				stays: [],
 			});
 		}
-		const group = map.get(gKey)!;
-		group.stay_count += 1;
-		group.stays.push(s);
+		const group = map.get(gKey);
+		if (group) {
+			group.stay_count += 1;
+			group.stays.push(s);
+		}
 	}
 
 	for (const group of map.values()) {
