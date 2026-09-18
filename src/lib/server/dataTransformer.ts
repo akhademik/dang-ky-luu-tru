@@ -1,25 +1,11 @@
+import type {
+	CompletenessResult,
+	RawOcrRow,
+	TransformedRowResult,
+} from "../types/index.js";
 import { type CatalogManager, catalogManager } from "./catalogManager.js";
 
-export interface RawOcrRow {
-	[key: string]: string | number | undefined;
-}
-
-export interface CompletenessResult {
-	isComplete: boolean;
-	missingFields: string[];
-	fieldStatus: Record<
-		string,
-		{ valid: boolean; value: unknown; error?: string }
-	>;
-}
-
-export interface TransformedRowResult {
-	branch: "VN" | "FOREIGN";
-	payload: Record<string, unknown>;
-	completeness: CompletenessResult;
-	validationError?: string;
-	originalRow: RawOcrRow;
-}
+export type { RawOcrRow, CompletenessResult, TransformedRowResult };
 
 export class DataTransformer {
 	private catalogManager: CatalogManager;
@@ -62,6 +48,24 @@ export class DataTransformer {
 		if (!dateRaw) return null;
 		const str = String(dateRaw).trim();
 		if (!str) return null;
+
+		// Handle UTC ISO strings with Z or explicit offset -> convert to GMT+7 (Asia/Ho_Chi_Minh)
+		if (str.endsWith("Z") || /[+-]\d{2}:?\d{2}$/.test(str)) {
+			const parsedUtc = new Date(str);
+			if (!Number.isNaN(parsedUtc.getTime())) {
+				const vnMillis = parsedUtc.getTime() + 7 * 3600 * 1000;
+				const vnDate = new Date(vnMillis);
+				return {
+					year: vnDate.getUTCFullYear(),
+					month: vnDate.getUTCMonth() + 1,
+					day: vnDate.getUTCDate(),
+					hour: vnDate.getUTCHours(),
+					minute: vnDate.getUTCMinutes(),
+					second: vnDate.getUTCSeconds(),
+					date: vnDate,
+				};
+			}
+		}
 
 		// Try DD/MM/YYYY or DD-MM-YYYY with optional time
 		const dmyMatch = str.match(
@@ -727,8 +731,13 @@ export class DataTransformer {
 				const m = String(parsedDi.month).padStart(2, "0");
 				const d = String(parsedDi.day).padStart(2, "0");
 				const rawStr = String(ngayDiRaw).trim();
-				const hasTime = rawStr.includes(":");
-				if (hasTime) {
+				const hasCustomExplicitTime =
+					rawStr.includes(":") &&
+					!rawStr.includes("05:00:00") &&
+					!rawStr.includes("00:00:00") &&
+					!(parsedDi.hour === 5 && parsedDi.minute === 0) &&
+					!(parsedDi.hour === 0 && parsedDi.minute === 0);
+				if (hasCustomExplicitTime) {
 					const hh = String(parsedDi.hour).padStart(2, "0");
 					const mm = String(parsedDi.minute).padStart(2, "0");
 					const ss = String(parsedDi.second).padStart(2, "0");

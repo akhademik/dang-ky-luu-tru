@@ -1,7 +1,14 @@
+import type {
+	D1DatabaseLike,
+	IngestResult,
+	IngestResultItem,
+	RawOcrRow,
+	StayDetail,
+	StayStatus,
+} from "../types/index.js";
 import { CatalogManager } from "./catalogManager.js";
-import { DataTransformer, type RawOcrRow } from "./dataTransformer.js";
+import { DataTransformer } from "./dataTransformer.js";
 import {
-	type D1DatabaseLike,
 	checkoutStay as dbCheckoutStay,
 	extendStay as dbExtendStay,
 	updateStay as dbUpdateStay,
@@ -9,32 +16,12 @@ import {
 	getStayById,
 	getStays,
 	logKbttAction,
-	type StayDetail,
-	type StayStatus,
 	updateGuest,
 	upsertGuest,
 	upsertStay,
 } from "./db.js";
 import { KbttClient } from "./kbttClient.js";
 import { tokenManager } from "./tokenManager.js";
-
-interface IngestResultItem {
-	guestId: string;
-	stayId: string;
-	hoTen: string;
-	soPhong: string;
-	status: string;
-	isNew: boolean;
-}
-
-interface IngestResult {
-	success: boolean;
-	total: number;
-	created: number;
-	updated: number;
-	items: IngestResultItem[];
-	errors: string[];
-}
 
 class StayService {
 	private catalog: CatalogManager;
@@ -153,10 +140,14 @@ class StayService {
 					fullCombinedAddress = addrParts[0];
 				}
 
-				const loaiGtNum = this.catalog.findLoaiGiayTo(
-					row.loaiGiayTo || row["Loại giấy tờ"] || 1,
-				);
-				const loaiGiayToStr = loaiGtNum === 4 ? "HO_CHIEU" : "CCCD";
+				const isForeign = quocTich !== "VNM";
+				const loaiGtNum = isForeign
+					? 4
+					: this.catalog.findLoaiGiayTo(
+							row.loaiGiayTo || row["Loại giấy tờ"] || 1,
+						);
+				const loaiGiayToStr =
+					loaiGtNum === 4 || isForeign ? "HO_CHIEU" : "CCCD";
 
 				// 1. Upsert guest record
 				const guest = await upsertGuest(db, {

@@ -52,11 +52,13 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 				.toUpperCase(),
 		);
 
+		const loaiGiayTo = !isVN ? "HO_CHIEU" : body.loai_giay_to || "CCCD";
+
 		const guest = await upsertGuest(db, {
 			ho_ten: hoTen,
 			so_giay_to: soGiayTo,
 			quoc_tich: body.quoc_tich || "VNM",
-			loai_giay_to: body.loai_giay_to || (isVN ? "CCCD" : "HO_CHIEU"),
+			loai_giay_to: loaiGiayTo,
 			ngay_sinh: body.ngay_sinh || "",
 			gioi_tinh: body.gioi_tinh || "M",
 			dia_chi_chi_tiet: body.dia_chi_chi_tiet || "",

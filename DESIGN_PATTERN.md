@@ -20,6 +20,11 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
 - Side-effects: Dùng `$effect()` đồng bộ dữ liệu theo tab hoạt động (`activeTab`).
 - Component Props: Dùng `let { ... } = $props()`.
 
+### 1.4. Strict GMT+7 Timezone Policy (Chính Sách Múi Giờ Bắt Buộc)
+- **Múi giờ duy nhất**: Tất cả thời gian lưu trữ trong Cloudflare D1, xử lý logic, đồng bộ Sheets, gửi API BCA và hiển thị giao diện bắt buộc dùng **GMT+7 (`Asia/Ho_Chi_Minh`)**.
+- **Giờ checkout chuẩn**: Mặc định là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` làm sai lệch logic tự động trả phòng (auto-checkout).
+- **Vòng đời khách**: Khách chỉ bị auto-checkout khi giờ thực tế GMT+7 đã vượt quá 12:00:00 trưa ngày đi.
+
 ---
 
 ## 2. COLOR CODE & THEME PALETTE (BẢNG MÃ MÀU CHUẨN)

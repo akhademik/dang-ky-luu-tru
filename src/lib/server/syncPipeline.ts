@@ -1,19 +1,9 @@
+import type { RawOcrRow, SyncResult } from "../types/index.js";
 import { type CatalogManager, catalogManager } from "./catalogManager.js";
-import { DataTransformer, type RawOcrRow } from "./dataTransformer.js";
+import { DataTransformer } from "./dataTransformer.js";
 import { GoogleSheetService } from "./googleSheetService.js";
 import { KbttClient } from "./kbttClient.js";
 import { type TokenManager, tokenManager } from "./tokenManager.js";
-
-interface SyncResult {
-	step: string;
-	success: boolean;
-	status: string;
-	message: string;
-	row?: RawOcrRow;
-	branch?: "VN" | "FOREIGN";
-	payload?: Record<string, unknown>;
-	response?: unknown;
-}
 
 export class SyncPipeline {
 	public catalogManager: CatalogManager;

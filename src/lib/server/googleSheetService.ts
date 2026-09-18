@@ -1,13 +1,8 @@
+import type { TabInfo } from "../types/index.js";
 import { CONFIG } from "./config.js";
 import { logger } from "./logger.js";
 
-export interface TabInfo {
-	name: string;
-	gid: string;
-	dateStr?: string | null;
-	isDateTab?: boolean;
-	isDefault?: boolean;
-}
+export type { TabInfo };
 
 export class GoogleSheetService {
 	public sheetId: string;

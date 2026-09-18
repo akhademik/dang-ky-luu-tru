@@ -2,95 +2,17 @@ import cp from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-export interface Guest {
-	id: string;
-	loai_giay_to: string;
-	so_giay_to: string;
-	ho_ten: string;
-	ngay_sinh?: string;
-	gioi_tinh?: string;
-	quoc_tich: string;
-	dia_chi_chi_tiet?: string;
-	phuong_xa?: string;
-	quan_huyen?: string;
-	tinh_thanh?: string;
-	created_at?: string;
-	updated_at?: string;
-}
+import type {
+	D1DatabaseLike,
+	D1PreparedStatement,
+	Guest,
+	KbttLog,
+	Stay,
+	StayDetail,
+	StayStatus,
+} from "../types/index.js";
 
-export type StayStatus =
-	| "PENDING_VALIDATION"
-	| "READY_TO_SYNC"
-	| "NOT_CHECKED_IN"
-	| "SYNCED_KBTT"
-	| "CHECKED_IN"
-	| "EXTENDED"
-	| "CHECKED_OUT"
-	| "ERROR"
-	| "CANCELLED";
-
-export interface Stay {
-	id: string;
-	guest_id: string;
-	so_phong: string;
-	ngay_den: string;
-	ngay_di_du_kien?: string;
-	ngay_di_thuc_te?: string;
-	thoi_han_thi_thuc?: string;
-	ly_do_luu_tru?: number;
-	status: StayStatus;
-	ma_ho_so_kbtt?: string;
-	ghi_chu?: string;
-	source_sheet_tab?: string;
-	source_sheet_row?: number;
-	created_at?: string;
-	updated_at?: string;
-}
-
-export interface StayDetail extends Stay {
-	loai_giay_to: string;
-	so_giay_to: string;
-	ho_ten: string;
-	ngay_sinh?: string;
-	gioi_tinh?: string;
-	quoc_tich: string;
-	dia_chi_chi_tiet?: string;
-	phuong_xa?: string;
-	quan_huyen?: string;
-	tinh_thanh?: string;
-	thoi_han_thi_thuc?: string;
-}
-
-export interface KbttLog {
-	id: string;
-	stay_id?: string;
-	api_endpoint: string;
-	guest_name?: string;
-	so_giay_to?: string;
-	so_phong?: string;
-	request_payload?: string;
-	response_payload?: string;
-	http_status?: number;
-	code?: string;
-	is_success: number;
-	error_message?: string;
-	created_at?: string;
-}
-
-export interface D1DatabaseLike {
-	prepare(query: string): D1PreparedStatement;
-	exec(query: string): Promise<unknown>;
-}
-
-export interface D1PreparedStatement {
-	bind(...params: unknown[]): D1PreparedStatement;
-	all<T = unknown>(): Promise<{ results: T[]; success: boolean }>;
-	first<T = unknown>(colName?: string): Promise<T | null>;
-	run(): Promise<{
-		success: boolean;
-		meta: { changes: number; last_row_id?: number };
-	}>;
-}
+export type { Guest, StayStatus, Stay, StayDetail, KbttLog, D1DatabaseLike };
 
 class RemoteD1Database implements D1DatabaseLike {
 	private dbName = "dang-ky-luu-tru-db";
@@ -165,7 +87,9 @@ class RemoteD1Database implements D1DatabaseLike {
 					parsed.error
 				) {
 					const errText =
-						typeof parsed.error === "object" && parsed.error !== null && "text" in parsed.error
+						typeof parsed.error === "object" &&
+						parsed.error !== null &&
+						"text" in parsed.error
 							? String(parsed.error.text)
 							: JSON.stringify(parsed.error);
 					throw new Error(errText);
@@ -190,7 +114,10 @@ class RemoteD1Database implements D1DatabaseLike {
 			}
 		}
 
-		console.error("Cloudflare D1 Remote query failed after retries:", lastError);
+		console.error(
+			"Cloudflare D1 Remote query failed after retries:",
+			lastError,
+		);
 		throw lastError;
 	}
 
@@ -261,6 +188,10 @@ export async function upsertGuest(
 	const quocTich = String(guest.quoc_tich || "VNM")
 		.trim()
 		.toUpperCase();
+	const isForeign = quocTich !== "VNM";
+	const effectiveLoaiGiayTo = isForeign
+		? "HO_CHIEU"
+		: guest.loai_giay_to || "CCCD";
 
 	// Check if guest exists by matching so_giay_to (primary identifier)
 	const existing = await db
@@ -271,6 +202,11 @@ export async function upsertGuest(
 		.first<Guest>();
 
 	if (existing) {
+		const existingIsForeign = (quocTich || existing.quoc_tich) !== "VNM";
+		const finalLoaiGiayTo = existingIsForeign
+			? "HO_CHIEU"
+			: guest.loai_giay_to || existing.loai_giay_to || "CCCD";
+
 		await db
 			.prepare(`
 				UPDATE guests
@@ -281,7 +217,7 @@ export async function upsertGuest(
 			`)
 			.bind(
 				guest.ho_ten.toUpperCase().trim(),
-				guest.loai_giay_to || existing.loai_giay_to,
+				finalLoaiGiayTo,
 				guest.ngay_sinh || existing.ngay_sinh || "",
 				guest.gioi_tinh || existing.gioi_tinh || "",
 				quocTich || existing.quoc_tich,
@@ -299,6 +235,7 @@ export async function upsertGuest(
 			id: existing.id,
 			so_giay_to: soGiayTo,
 			quoc_tich: quocTich || existing.quoc_tich,
+			loai_giay_to: finalLoaiGiayTo,
 			ho_ten: guest.ho_ten.toUpperCase().trim(),
 		};
 	}
@@ -313,7 +250,7 @@ export async function upsertGuest(
 		`)
 		.bind(
 			id,
-			guest.loai_giay_to || "CCCD",
+			effectiveLoaiGiayTo,
 			soGiayTo,
 			guest.ho_ten.toUpperCase().trim(),
 			guest.ngay_sinh || "",
@@ -475,9 +412,7 @@ export async function upsertStay(
 
 let lastAutoCheckoutTimestamp = 0;
 
-export async function autoCheckoutExpiredStays(
-	db: D1DatabaseLike,
-): Promise<number> {
+async function autoCheckoutExpiredStays(db: D1DatabaseLike): Promise<number> {
 	const now = Date.now();
 	if (now - lastAutoCheckoutTimestamp < 60_000) {
 		return 0;
@@ -501,6 +436,8 @@ export async function autoCheckoutExpiredStays(
 				  AND datetime(
 				      case 
 				          when length(trim(ngay_di_du_kien)) = 10 then trim(ngay_di_du_kien) || ' 12:00:00'
+				          when trim(ngay_di_du_kien) like '% 05:00:00' then substr(trim(ngay_di_du_kien), 1, 10) || ' 12:00:00'
+				          when trim(ngay_di_du_kien) like '% 00:00:00' then substr(trim(ngay_di_du_kien), 1, 10) || ' 12:00:00'
 				          else trim(ngay_di_du_kien)
 				      end
 				  ) <= datetime('now', '+7 hours')

@@ -149,11 +149,14 @@ stateDiagram-v2
 
 ## 4. Các Quy Chuẩn Nghiệp Vụ Quan Trọng (Critical Business Rules)
 
-### 4.1. Múi Giờ Chuẩn GMT+7 (Asia/Ho_Chi_Minh)
-- Toàn bộ thao tác tính toán ngày giờ hiện tại, ngày đi dự kiến, tab Google Sheet, và log audit đều sử dụng mốc **GMT+7** (`UTC + 7 hours`).
-- Khi tạo lượt lưu trú mới:
+### 4.1. Múi Giờ Chuẩn GMT+7 (Asia/Ho_Chi_Minh) - BẮT BUỘC 100%
+- **Nguyên tắc tuyệt đối**: Toàn bộ thao tác tính toán ngày giờ hiện tại, ngày đi dự kiến, bóc tách OCR từ Google Sheets, lưu trữ Cloudflare D1, và log audit đều phải **CHẶT CHẼ TUÂN THỦ MÚI GIỜ GMT+7** (`Asia/Ho_Chi_Minh`, `UTC + 7 hours`).
+- **Giờ Trả Phòng Mặc Định (Check-out Time)**: Luôn luôn là **12:00:00 (Trưa) GMT+7**. Tuyệt đối không lưu trữ hoặc tính toán theo UTC `05:00:00`.
+- **Khi tạo hoặc nạp lượt lưu trú mới**:
   - `ngay_den` = Thời gian hiện tại GMT+7 (`YYYY-MM-DD HH:mm:ss`).
-  - `ngay_di_du_kien` = Ngày hôm sau lúc 12:00:00 GMT+7 (`YYYY-MM-DD 12:00:00`).
+  - `ngay_di_du_kien` = Ngày đi lúc 12:00:00 GMT+7 (`YYYY-MM-DD 12:00:00`).
+- **Quy tắc Tự động Checkout (Auto Checkout)**:
+  - Hệ thống chỉ tự động chuyển trạng thái sang `CHECKED_OUT` khi thời gian thực tế hiện tại (GMT+7) đã vượt qua mốc `ngay_di_du_kien` (12:00:00 trưa ngày đi). Trước 12:00 trưa, khách vẫn ở trạng thái đang lưu trú (`SYNCED_KBTT` / `IN_HOUSE`).
 
 ### 4.2. Quy Tắc Validation & Điều Kiện Bắt Buộc
 1. **Ngày đến (`ngay_den`)**: Bắt buộc là **Hôm nay hoặc Hôm qua** (không được ở tương lai, không được quá 1 ngày trong quá khứ).

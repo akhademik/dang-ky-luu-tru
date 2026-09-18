@@ -43,3 +43,8 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
 - `src/lib/server/syncPipeline.ts`: Điều phối toàn bộ quy trình đồng bộ tự động.
 - `src/routes/+page.svelte`: Giao diện chính Svelte 5 (Runes), Live-check Modal toàn diện, phản hồi lỗi thời gian thực, bảng dữ liệu tối ưu, tab điều phối.
 - `src/routes/api/`: RESTful endpoints xử lý proxy cho frontend (`sheets`, `sync`, `catalogs`, `token`, `transform`, `events`).
+
+## 4. Chuẩn Hóa Múi Giờ GMT+7 (Asia/Ho_Chi_Minh) Bắt Buộc
+- **Toàn bộ logic thời gian, tính toán ngày đến/ngày đi, SQL trigger, auto-checkout, OCR ingestion, và hiển thị UI** BẮT BUỘC phải cố định theo **GMT+7** (`Asia/Ho_Chi_Minh`).
+- **Giờ checkout mặc định**: Luôn luôn là **12:00:00 GMT+7 (Trưa)**. Tuyệt đối không lưu theo UTC `05:00:00` gây lỗi checkout sớm.
+- Khách chỉ chuyển sang `CHECKED_OUT` tự động khi thời gian hiện tại GMT+7 đã qua 12:00:00 trưa ngày đi.
