@@ -11,6 +11,13 @@ if (
 			dns.setDefaultResultOrder("ipv4first");
 		}
 
+		const net = process.getBuiltinModule("node:net") as {
+			setDefaultAutoSelectFamily?: (val: boolean) => void;
+		};
+		if (net && typeof net.setDefaultAutoSelectFamily === "function") {
+			net.setDefaultAutoSelectFamily(false);
+		}
+
 		const fs = process.getBuiltinModule("node:fs") as {
 			existsSync: (p: string) => boolean;
 			readFileSync: (p: string, enc: string) => string;

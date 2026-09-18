@@ -85,8 +85,11 @@ export class TokenManager {
 				return this.accessToken;
 			} catch (fetchErr) {
 				lastErr = fetchErr;
+				const cause = (fetchErr as { cause?: unknown })?.cause;
 				const rawMsg =
-					fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+					fetchErr instanceof Error
+						? `${fetchErr.message}${cause ? ` (cause: ${JSON.stringify(cause)})` : ""}`
+						: String(fetchErr);
 				if (attempt <= retries) {
 					logger.warn(
 						"TokenManager",
@@ -97,7 +100,11 @@ export class TokenManager {
 			}
 		}
 
-		const rawMsg = lastErr instanceof Error ? lastErr.message : String(lastErr);
+		const cause = (lastErr as { cause?: unknown })?.cause;
+		const rawMsg =
+			lastErr instanceof Error
+				? `${lastErr.message}${cause ? ` (cause: ${JSON.stringify(cause)})` : ""}`
+				: String(lastErr);
 		const errMsg = `Không thể kết nối đến máy chủ OAuth BCA (${url}): ${rawMsg}`;
 		logger.error("TokenManager", errMsg);
 		throw new Error(errMsg);

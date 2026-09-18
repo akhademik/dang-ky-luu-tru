@@ -9,7 +9,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `676ce45c`
+- Built from commit: `e2e8f4eb`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -92,7 +92,7 @@ Cohesion: 0.32
 Nodes (3): handleSheetChange(), handleSheetEdit(), syncRowToCloudflare()
 
 ## Knowledge Gaps
-- **74 isolated node(s):** `LogEntry`, `LogLevel`, `ApiResponse`, `CatalogItem`, `Platform` (+69 more)
+- **74 isolated node(s):** `ApiResponse`, `LogEntry`, `LogLevel`, `CatalogItem`, `Platform` (+69 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 126 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -107,7 +107,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `runTests()` (e.g. with `.fetchSheetData()` and `.fetchSheetTabs()`) actually correct?**
   _`runTests()` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `LogEntry`, `LogLevel`, `ApiResponse` to the rest of the system?**
+- **What connects `ApiResponse`, `LogEntry`, `LogLevel` to the rest of the system?**
   _74 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.0848982785602504 - nodes in this community are weakly interconnected._

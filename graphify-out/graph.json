@@ -183,7 +183,7 @@
       "file_type": "code",
       "norm_label": "apienvironment",
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L43"
+      "source_location": "L50"
     },
     {
       "id": "src_lib_server_kbttclient_apiresponse",
@@ -2011,7 +2011,7 @@
       "file_type": "code",
       "norm_label": ".clear()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L191"
+      "source_location": "L198"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getinstance",
@@ -2035,7 +2035,7 @@
       "file_type": "code",
       "norm_label": ".getstatus()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L197"
+      "source_location": "L204"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
@@ -2071,7 +2071,7 @@
       "file_type": "code",
       "norm_label": ".refresh()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L106"
+      "source_location": "L113"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_revoke",
@@ -2083,7 +2083,7 @@
       "file_type": "code",
       "norm_label": ".revoke()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L128"
+      "source_location": "L135"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_revoketoken",
@@ -2095,7 +2095,7 @@
       "file_type": "code",
       "norm_label": ".revoketoken()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L147"
+      "source_location": "L154"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_savetoken",
@@ -2107,7 +2107,7 @@
       "file_type": "code",
       "norm_label": ".savetoken()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L151"
+      "source_location": "L158"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
@@ -2426,7 +2426,7 @@
       "file_type": "code",
       "norm_label": "config",
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L71"
+      "source_location": "L78"
     },
     {
       "id": "src_lib_server_googlesheetservice",
@@ -5547,7 +5547,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L117",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -5559,7 +5559,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L121",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -5571,7 +5571,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L139",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -5583,7 +5583,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L148",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -10019,7 +10019,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L43",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -10030,7 +10030,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L71",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -10338,7 +10338,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L212",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -11973,7 +11973,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L106",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -11984,7 +11984,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L128",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -11995,7 +11995,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L147",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -12006,7 +12006,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L151",
+      "source_location": "L158",
       "weight": 1.0
     },
     {
@@ -12028,7 +12028,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L191",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -12039,7 +12039,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L197",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -12181,5 +12181,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "676ce45c2d18f186e47a7725405a8dabde824d59"
+  "built_at_commit": "e2e8f4eb7dac1789d905d4671e4f023401c1ee9d"
 }
