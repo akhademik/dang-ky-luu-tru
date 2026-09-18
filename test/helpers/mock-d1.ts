@@ -232,13 +232,29 @@ export class MockD1Database implements D1DatabaseLike {
 
 				if (/WHERE guest_id = \?/i.test(trimmed)) {
 					const guestId = String(params[0] || "");
-					const stay = stays
-						.filter((s) => s.guest_id === guestId)
-						.sort((a, b) =>
-							String(b.created_at || "").localeCompare(
-								String(a.created_at || ""),
-							),
-						)[0];
+					let stayCandidates = stays.filter((s) => s.guest_id === guestId);
+
+					// Check if deduplication query: (status != 'CHECKED_OUT' OR ngay_den LIKE ?)
+					if (/status != 'CHECKED_OUT'/i.test(trimmed) && params.length >= 2) {
+						const datePrefix = String(params[1] || "").replace(/%/g, "");
+						stayCandidates = stayCandidates.filter(
+							(s) =>
+								s.status !== "CHECKED_OUT" ||
+								(datePrefix && String(s.ngay_den || "").startsWith(datePrefix)),
+						);
+					} else if (/thoi_han_thi_thuc IS NOT NULL/i.test(trimmed)) {
+						stayCandidates = stayCandidates.filter(
+							(s) =>
+								s.thoi_han_thi_thuc &&
+								String(s.thoi_han_thi_thuc).trim() !== "",
+						);
+					}
+
+					const stay = stayCandidates.sort((a, b) =>
+						String(b.created_at || "").localeCompare(
+							String(a.created_at || ""),
+						),
+					)[0];
 					return {
 						results: stay ? ([stay] as T[]) : [],
 						success: true,
@@ -477,16 +493,22 @@ export class MockD1Database implements D1DatabaseLike {
 						stay.status = "CHECKED_OUT";
 					} else {
 						// Dynamic SET assignment
-						const setPartMatch = trimmed.match(/SET\s+(.+)\s+WHERE/i);
+						const setPartMatch = trimmed.match(/SET\s+([\s\S]+?)\s+WHERE/i);
 						if (setPartMatch) {
 							const assignments = setPartMatch[1]
 								.split(",")
 								.map((s) => s.trim());
 							let paramIdx = 0;
 							for (const assignment of assignments) {
-								if (assignment.includes("=?") || assignment.includes("= ?")) {
+								if (assignment.includes("?")) {
 									const col = assignment.split("=")[0].trim();
-									stay[col] = params[paramIdx++];
+									const val = params[paramIdx++];
+									if (assignment.includes("COALESCE")) {
+										stay[col] =
+											val !== null && val !== undefined ? val : stay[col];
+									} else {
+										stay[col] = val;
+									}
 								}
 							}
 						}

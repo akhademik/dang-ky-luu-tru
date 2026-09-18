@@ -19,6 +19,8 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			so_phong: body.so_phong,
 			ngay_den: body.ngay_den,
 			ngay_di_du_kien: body.ngay_di_du_kien,
+			thoi_han_thi_thuc: body.thoi_han_thi_thuc,
+			autoSendToKbtt: body.autoSendToKbtt,
 		});
 
 		return json(result, { status: result.success ? 200 : 400 });

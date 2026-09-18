@@ -11,6 +11,7 @@ import {
 	checkoutStay as dbCheckoutStay,
 	extendStay as dbExtendStay,
 	updateStay as dbUpdateStay,
+	getLatestVisaByGuestId,
 	getStayById,
 	getStays,
 	logKbttAction,
@@ -234,6 +235,18 @@ class StayService {
 			};
 		}
 
+		let effectiveVisa = stay.thoi_han_thi_thuc || "";
+		const quocTichClean = (stay.quoc_tich || "VNM").toUpperCase().trim();
+		const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM"].includes(quocTichClean);
+		if (!isVN && !effectiveVisa?.trim()) {
+			const fallbackVisa = await getLatestVisaByGuestId(db, stay.guest_id);
+			if (fallbackVisa) {
+				effectiveVisa = fallbackVisa;
+				// Persist back to the current stay record so DB stays consistent
+				await dbUpdateStay(db, stay.id, { thoi_han_thi_thuc: fallbackVisa });
+			}
+		}
+
 		// Convert stay + guest to RawOcrRow for transformer
 		const mockRow: RawOcrRow = {
 			"Họ tên": stay.ho_ten,
@@ -249,9 +262,9 @@ class StayService {
 			"(từ ngày)": stay.ngay_den,
 			"(đến ngày)": stay.ngay_di_du_kien,
 			"Số phòng": stay.so_phong,
-			thoi_han_thi_thuc: stay.thoi_han_thi_thuc,
-			thoiHanTamTru: stay.thoi_han_thi_thuc,
-			"Thời hạn thị thực": stay.thoi_han_thi_thuc,
+			thoi_han_thi_thuc: effectiveVisa,
+			thoiHanTamTru: effectiveVisa,
+			"Thời hạn thị thực": effectiveVisa,
 		};
 
 		const transformed = await this.transformer.transformRow(mockRow);
@@ -746,6 +759,7 @@ class StayService {
 			so_phong?: string;
 			ngay_den?: string;
 			ngay_di_du_kien?: string;
+			thoi_han_thi_thuc?: string;
 			autoSendToKbtt?: boolean;
 		},
 	): Promise<{
@@ -807,12 +821,19 @@ class StayService {
 			await dbCheckoutStay(db, stayId);
 		}
 
+		// Ensure visa expiry date for foreign guest is retained
+		const visaToUse =
+			options?.thoi_han_thi_thuc?.trim() ||
+			existingStay.thoi_han_thi_thuc?.trim() ||
+			(await getLatestVisaByGuestId(db, existingStay.guest_id)) ||
+			"";
+
 		// Insert new stay with READY_TO_SYNC via upsertStay
 		const newStayRecord = await upsertStay(db, existingStay.guest_id, {
 			so_phong: newSoPhong,
 			ngay_den: newNgayDen,
 			ngay_di_du_kien: newNgayDi,
-			thoi_han_thi_thuc: existingStay.thoi_han_thi_thuc || "",
+			thoi_han_thi_thuc: visaToUse,
 			ly_do_luu_tru: existingStay.ly_do_luu_tru || 1,
 			ghi_chu: existingStay.ghi_chu || "",
 			status: "READY_TO_SYNC",

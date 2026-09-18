@@ -138,9 +138,51 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 	assert.equal(ingestResult.created, 2);
 	assert.equal(ingestResult.errors.length, 0);
 
+	// 10. Test Foreign Guest Visa Retention across stays & re-registration
+	const foreignGuest = await upsertGuest(db, {
+		ho_ten: "TEST FOREIGN GUEST",
+		so_giay_to: "PASS999888",
+		quoc_tich: "USA",
+		loai_giay_to: "Hộ chiếu",
+		ngay_sinh: "1990-01-01",
+		gioi_tinh: "M",
+	});
+	const foreignStay1 = await upsertStay(db, foreignGuest.id, {
+		so_phong: "2",
+		ngay_den: "2026-09-17 10:00:00",
+		ngay_di_du_kien: "2026-09-19",
+		thoi_han_thi_thuc: "2027-05-30",
+		status: "SYNCED_KBTT",
+	});
+	assert.equal(foreignStay1.thoi_han_thi_thuc, "2027-05-30");
+
+	// Checkout foreign guest
+	await checkoutStay(db, foreignStay1.id);
+
+	// Re-register foreign guest without specifying visa in options -> should retain 2027-05-30
+	const reRegResult = await stayService.reRegisterStay(db, foreignStay1.id, {
+		so_phong: "3",
+		autoSendToKbtt: false,
+	});
+	assert.equal(reRegResult.success, true);
+	assert.ok(reRegResult.stayId);
+	const newStayId = String(reRegResult.stayId || "");
+	const reRegStay = await getStayById(db, newStayId);
+	assert.equal(reRegStay?.thoi_han_thi_thuc, "2027-05-30");
+	assert.equal(reRegStay?.so_phong, "3");
+
+	// Upsert new stay for same guest with blank visa -> should fallback and preserve 2027-05-30
+	const foreignStay2 = await upsertStay(db, foreignGuest.id, {
+		so_phong: "4",
+		ngay_den: "2026-10-01 12:00:00",
+		ngay_di_du_kien: "2026-10-05",
+		thoi_han_thi_thuc: "",
+	});
+	assert.equal(foreignStay2.thoi_han_thi_thuc, "2027-05-30");
+
 	// Cleanup test fixtures
 	await db.exec(
-		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE');",
+		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST');",
 	);
 
 	console.log("✅ [Integration] D1 Database & StayService tests passed!");

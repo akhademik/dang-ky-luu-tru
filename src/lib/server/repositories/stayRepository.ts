@@ -57,6 +57,23 @@ export async function autoCheckoutExpiredStays(
 	}
 }
 
+export async function getLatestVisaByGuestId(
+	db: D1DatabaseLike,
+	guestId: string,
+): Promise<string | null> {
+	try {
+		const res = await db
+			.prepare(
+				"SELECT thoi_han_thi_thuc FROM stays WHERE guest_id = ? AND thoi_han_thi_thuc IS NOT NULL AND trim(thoi_han_thi_thuc) != '' ORDER BY created_at DESC LIMIT 1",
+			)
+			.bind(guestId)
+			.first<{ thoi_han_thi_thuc?: string }>();
+		return res?.thoi_han_thi_thuc?.trim() || null;
+	} catch {
+		return null;
+	}
+}
+
 export async function upsertStay(
 	db: D1DatabaseLike,
 	guestId: string,
@@ -93,6 +110,12 @@ export async function upsertStay(
 					? existing.status
 					: stayData.status || existing.status;
 
+		const preservedVisa =
+			stayData.thoi_han_thi_thuc?.trim() ||
+			existing.thoi_han_thi_thuc ||
+			(await getLatestVisaByGuestId(db, guestId)) ||
+			null;
+
 		await db
 			.prepare(`
 				UPDATE stays
@@ -106,7 +129,7 @@ export async function upsertStay(
 			.bind(
 				soPhong || existing.so_phong,
 				stayData.ngay_di_du_kien ?? existing.ngay_di_du_kien,
-				stayData.thoi_han_thi_thuc ?? existing.thoi_han_thi_thuc,
+				preservedVisa,
 				stayData.ly_do_luu_tru ?? existing.ly_do_luu_tru,
 				stayData.ghi_chu ?? existing.ghi_chu,
 				targetStatus,
@@ -119,6 +142,7 @@ export async function upsertStay(
 		return {
 			...existing,
 			...stayData,
+			thoi_han_thi_thuc: preservedVisa || undefined,
 			id: existing.id,
 			guest_id: guestId,
 			status: targetStatus,
@@ -129,6 +153,10 @@ export async function upsertStay(
 
 	const id = generateId();
 	const initialStatus: StayStatus = stayData.status || "READY_TO_SYNC";
+	const initialVisa =
+		stayData.thoi_han_thi_thuc?.trim() ||
+		(await getLatestVisaByGuestId(db, guestId)) ||
+		null;
 
 	try {
 		await db
@@ -146,7 +174,7 @@ export async function upsertStay(
 				ngayDen,
 				stayData.ngay_di_du_kien || "",
 				stayData.ngay_di_thuc_te || null,
-				stayData.thoi_han_thi_thuc || null,
+				initialVisa,
 				stayData.ly_do_luu_tru || 1,
 				initialStatus,
 				stayData.ma_ho_so_kbtt || "",
@@ -163,7 +191,7 @@ export async function upsertStay(
 			ngay_den: ngayDen,
 			ngay_di_du_kien: stayData.ngay_di_du_kien,
 			ngay_di_thuc_te: stayData.ngay_di_thuc_te,
-			thoi_han_thi_thuc: stayData.thoi_han_thi_thuc,
+			thoi_han_thi_thuc: initialVisa || undefined,
 			ly_do_luu_tru: stayData.ly_do_luu_tru || 1,
 			status: initialStatus,
 			ma_ho_so_kbtt: stayData.ma_ho_so_kbtt,

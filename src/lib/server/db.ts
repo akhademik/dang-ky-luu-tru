@@ -22,6 +22,7 @@ export {
 	checkoutStay,
 	deleteStay,
 	extendStay,
+	getLatestVisaByGuestId,
 	getStayById,
 	getStays,
 	updateStay,

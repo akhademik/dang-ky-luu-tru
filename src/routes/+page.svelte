@@ -373,6 +373,7 @@ let reRegisterTargetStay = $state<StayDetail | null>(null);
 let reRegisterRoom = $state("1");
 let reRegisterArrivalDate = $state("");
 let reRegisterDepartureDate = $state("");
+let reRegisterVisaDate = $state("");
 
 let showDeleteModal = $state(false);
 let deleteTargetStay = $state<StayDetail | null>(null);
@@ -1016,12 +1017,25 @@ function openReRegisterModal(stay: StayDetail) {
 
 	reRegisterArrivalDate = nowStr;
 	reRegisterDepartureDate = nextDayDateInput;
+	reRegisterVisaDate = stay.thoi_han_thi_thuc
+		? formatDateDisplay(stay.thoi_han_thi_thuc)
+		: "";
 	showReRegisterModal = true;
 }
 
 async function submitReRegister() {
 	if (!reRegisterTargetStay) return;
 	const targetId = reRegisterTargetStay.id;
+
+	const isForeign = reRegisterTargetStay.quoc_tich !== "VNM";
+	if (isForeign && !reRegisterVisaDate.trim()) {
+		showToast(
+			"Vui lòng nhập thời hạn thị thực (visa) cho khách nước ngoài!",
+			"error",
+		);
+		return;
+	}
+
 	showReRegisterModal = false;
 
 	markEntryBusy(targetId);
@@ -1036,6 +1050,9 @@ async function submitReRegister() {
 				so_phong: reRegisterRoom,
 				ngay_den: reRegisterArrivalDate,
 				ngay_di_du_kien: reRegisterDepartureDate,
+				thoi_han_thi_thuc: isForeign
+					? formatDateDisplay(reRegisterVisaDate)
+					: undefined,
 				autoSendToKbtt: true,
 			}),
 		});
@@ -3802,6 +3819,21 @@ onMount(async () => {
 							<label for="rereg_departure" class="block text-slate-400 mb-1 font-medium">Ngày Đi Dự Kiến <span class="text-slate-500 font-normal">(Giờ trả phòng tự động là 12:00:00)</span></label>
 							<input id="rereg_departure" type="date" bind:value={reRegisterDepartureDate} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500" />
 						</div>
+
+						{#if reRegisterTargetStay.quoc_tich !== "VNM"}
+							<div class="sm:col-span-2">
+								<label for="rereg_visa" class="block text-slate-400 mb-1 font-medium">
+									Thời hạn thị thực / Visa (DD/MM/YYYY) <span class="text-rose-400 font-bold">*</span>
+								</label>
+								<input
+									id="rereg_visa"
+									type="text"
+									placeholder="DD/MM/YYYY"
+									bind:value={reRegisterVisaDate}
+									class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500"
+								/>
+							</div>
+						{/if}
 					</div>
 				</div>
 
