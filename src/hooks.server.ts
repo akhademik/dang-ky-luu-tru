@@ -3,7 +3,7 @@ import { verifySession, verifyWebhookAuth } from "./lib/server/auth.js";
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const pathname = event.url.pathname;
-	const isAuth = verifySession(event.cookies);
+	const isAuth = await verifySession(event.cookies, event.platform);
 	event.locals.authenticated = isAuth;
 
 	// 1. CSRF check for state-modifying requests (POST, PUT, PATCH, DELETE) from browsers
@@ -46,7 +46,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		// B. Webhook endpoint is protected by API key / secret or active session
 		if (pathname.startsWith("/api/ingest/ocr")) {
-			const isValidWebhook = verifyWebhookAuth(
+			const isValidWebhook = await verifyWebhookAuth(
 				event.request,
 				event.cookies,
 				event.platform,
@@ -64,7 +64,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return resolve(event);
 		}
 
-		// C. All other /api/* endpoints require authenticated session
+		// C. All other /api/* endpoints require authenticated session in PROD (bypassed in DEV)
 		if (!isAuth) {
 			return json(
 				{

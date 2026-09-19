@@ -1,15 +1,59 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { getServerPassword, verifySession } from "$lib/server/auth.js";
-import { CONFIG } from "$lib/server/config.js";
+import {
+	checkLoginRateLimit,
+	createSessionToken,
+	getServerPassword,
+	isProduction,
+	recordFailedLogin,
+	resetLoginRateLimit,
+	SESSION_TTL_SECONDS,
+	timingSafeEqualStr,
+	verifySession,
+} from "../../../../lib/server/auth.js";
 
-// Verify username + password and set session cookie
+// Verify username + password and set short-lived session cookie (15 mins)
 export const POST: RequestHandler = async ({
 	request,
 	cookies,
 	platform,
 	url,
+	getClientAddress,
 }) => {
 	try {
+		const isProd = isProduction(platform);
+
+		// 1. In DEV mode: Bypass authentication entirely
+		if (!isProd) {
+			return json({
+				success: true,
+				username: "dev",
+				message: "Đăng nhập thành công (DEV Mode bypass)",
+			});
+		}
+
+		// 2. Client IP extraction for Rate Limiting / Brute-force protection
+		let clientIp = "unknown";
+		try {
+			clientIp =
+				request.headers.get("cf-connecting-ip") ||
+				request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+				getClientAddress() ||
+				"unknown";
+		} catch {
+			clientIp = request.headers.get("cf-connecting-ip") || "unknown";
+		}
+
+		const rateLimit = checkLoginRateLimit(clientIp);
+		if (!rateLimit.allowed) {
+			return json(
+				{
+					success: false,
+					message: `Quá nhiều lần thử sai. Vui lòng thử lại sau ${rateLimit.waitSeconds || 120} giây!`,
+				},
+				{ status: 429 },
+			);
+		}
+
 		const serverPass = getServerPassword(platform);
 		const body = await request.json().catch(() => ({}));
 		const username = String(body.username || "").trim();
@@ -21,6 +65,7 @@ export const POST: RequestHandler = async ({
 			username.toLowerCase() !== "root" &&
 			username.toLowerCase() !== "admin"
 		) {
+			recordFailedLogin(clientIp);
 			return json(
 				{
 					success: false,
@@ -30,6 +75,7 @@ export const POST: RequestHandler = async ({
 			);
 		}
 
+		// Fail safely if APP_PASSWORD is not configured on Cloudflare / Server
 		if (!serverPass) {
 			return json(
 				{
@@ -41,25 +87,33 @@ export const POST: RequestHandler = async ({
 			);
 		}
 
-		if (!password || password !== serverPass) {
+		// Constant-time password validation
+		if (!password || !timingSafeEqualStr(password, serverPass)) {
+			recordFailedLogin(clientIp);
 			return json(
 				{ success: false, message: "Mật khẩu truy cập không chính xác!" },
 				{ status: 401 },
 			);
 		}
 
+		// Success -> reset rate limiting counter
+		resetLoginRateLimit(clientIp);
+
 		const isHttps =
 			url.protocol === "https:" ||
 			request.headers.get("x-forwarded-proto") === "https" ||
-			process.env?.NODE_ENV === "production";
+			isProd;
 
-		// Set session cookie valid for 30 days
-		cookies.set("app_session", "authenticated", {
+		// Generate cryptographically signed random session token
+		const sessionToken = await createSessionToken(platform);
+
+		// Set session cookie valid for 15 minutes (900 seconds)
+		cookies.set("app_session", sessionToken, {
 			path: "/",
 			httpOnly: true,
 			sameSite: "lax",
 			secure: isHttps,
-			maxAge: 60 * 60 * 24 * 30, // 30 days
+			maxAge: SESSION_TTL_SECONDS,
 		});
 
 		return json({
@@ -74,18 +128,20 @@ export const POST: RequestHandler = async ({
 };
 
 // Check session status
-export const GET: RequestHandler = async ({ cookies }) => {
-	const authenticated = verifySession(cookies);
+export const GET: RequestHandler = async ({ cookies, platform }) => {
+	const authenticated = await verifySession(cookies, platform);
+	const isProd = isProduction(platform);
 
 	return json({
 		authenticated,
-		username: "root",
-		env: CONFIG.currentEnv,
+		username: isProd ? "root" : "dev",
+		env: isProd ? "prod" : "dev",
+		isDevBypass: !isProd,
 	});
 };
 
 // Logout / Clear session
 export const DELETE: RequestHandler = async ({ cookies }) => {
 	cookies.delete("app_session", { path: "/" });
-	return json({ success: true });
+	return json({ success: true, message: "Đã đăng xuất" });
 };

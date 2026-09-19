@@ -477,6 +477,24 @@ function showToast(
 
 let statsInFlight: Promise<void> | null = null;
 let lastStatsFetchTime = 0;
+async function apiFetch(
+	input: RequestInfo | URL,
+	init?: RequestInit,
+): Promise<Response> {
+	const res = await fetch(input, init);
+	if (res.status === 401) {
+		const isLoginApi =
+			typeof input === "string" && input.includes("/api/auth/login");
+		if (!isLoginApi && isAuthenticated) {
+			isAuthenticated = false;
+			authError =
+				"Phiên làm việc đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.";
+			showToast("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.", "error");
+		}
+	}
+	return res;
+}
+
 const CLIENT_STATS_CACHE_TTL_MS = 60_000; // 60s fallback
 
 async function loadStats(force = false) {

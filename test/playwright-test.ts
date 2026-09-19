@@ -47,7 +47,9 @@ async function runE2ETest() {
 
 		// Check if table has guests in initial tab (Khai Báo Lưu Trú Mới)
 		const initialRows = await page.$$("table tbody tr");
-		console.log(`📊 Tab [Khai Báo Lưu Trú Mới]: Found ${initialRows.length} rows.`);
+		console.log(
+			`📊 Tab [Khai Báo Lưu Trú Mới]: Found ${initialRows.length} rows.`,
+		);
 
 		// Click "Khách Đang Ở" tab
 		const inhouseTab = await page.getByText("Khách Đang Ở");
@@ -65,7 +67,9 @@ async function runE2ETest() {
 			console.log("✅ Clicked on Danh sách guests tab.");
 			await page.waitForTimeout(1000);
 			const guestCards = await page.$$("div.space-y-3 > div.border");
-			console.log(`📊 Tab [Danh sách guests]: Found ${guestCards.length} guest cards.`);
+			console.log(
+				`📊 Tab [Danh sách guests]: Found ${guestCards.length} guest cards.`,
+			);
 
 			// Check if interactive status badge exists and click it
 			const statusBadge = await page.$("button[title*='ghi đè']");
