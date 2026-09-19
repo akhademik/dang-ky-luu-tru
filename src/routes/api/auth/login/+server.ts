@@ -1,11 +1,8 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 import {
-	checkLoginRateLimit,
 	createSessionToken,
 	getServerPassword,
 	isProduction,
-	recordFailedLogin,
-	resetLoginRateLimit,
 	SESSION_TTL_SECONDS,
 	timingSafeEqualStr,
 	verifySession,
@@ -17,7 +14,6 @@ export const POST: RequestHandler = async ({
 	cookies,
 	platform,
 	url,
-	getClientAddress,
 }) => {
 	try {
 		const isProd = isProduction(platform);
@@ -31,29 +27,6 @@ export const POST: RequestHandler = async ({
 			});
 		}
 
-		// 2. Client IP extraction for Rate Limiting / Brute-force protection
-		let clientIp = "unknown";
-		try {
-			clientIp =
-				request.headers.get("cf-connecting-ip") ||
-				request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-				getClientAddress() ||
-				"unknown";
-		} catch {
-			clientIp = request.headers.get("cf-connecting-ip") || "unknown";
-		}
-
-		const rateLimit = checkLoginRateLimit(clientIp);
-		if (!rateLimit.allowed) {
-			return json(
-				{
-					success: false,
-					message: `Quá nhiều lần thử sai. Vui lòng thử lại sau ${rateLimit.waitSeconds || 120} giây!`,
-				},
-				{ status: 429 },
-			);
-		}
-
 		const serverPass = getServerPassword(platform);
 		const body = await request.json().catch(() => ({}));
 		const username = String(body.username || "").trim();
@@ -65,7 +38,6 @@ export const POST: RequestHandler = async ({
 			username.toLowerCase() !== "root" &&
 			username.toLowerCase() !== "admin"
 		) {
-			recordFailedLogin(clientIp);
 			return json(
 				{
 					success: false,
@@ -89,15 +61,11 @@ export const POST: RequestHandler = async ({
 
 		// Constant-time password validation
 		if (!password || !timingSafeEqualStr(password, serverPass)) {
-			recordFailedLogin(clientIp);
 			return json(
 				{ success: false, message: "Mật khẩu truy cập không chính xác!" },
 				{ status: 401 },
 			);
 		}
-
-		// Success -> reset rate limiting counter
-		resetLoginRateLimit(clientIp);
 
 		const isHttps =
 			url.protocol === "https:" ||

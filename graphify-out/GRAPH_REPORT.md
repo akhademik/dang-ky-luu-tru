@@ -4,32 +4,33 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 451 nodes · 935 edges · 24 communities (13 shown, 5 thin omitted)
+- 445 nodes · 923 edges · 25 communities (15 shown, 4 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6b7d8969`
+- Built from commit: `798f52e7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- stayService.ts
 - db.ts
+- syncPipeline.ts
 - compilerOptions
 - scripts
 - getDb
-- validator.ts
 - devDependencies
-- auth.ts
 - DataTransformer
+- auth.ts
 - GoogleSheetService
 - catalogManager.ts
 - CatalogManager
 - biome.json
-- TokenManager
+- time.ts
+- validator.ts
 - wrangler.json
 - apps_script_onedit.js
+- app.d.ts
 - svelte-deprecation.test.ts
 - svelte.config.js
 
@@ -54,21 +55,21 @@
   test/live/live-bca-pipeline.test.ts → src/lib/server/googleSheetService.ts
 - `runLiveBcaPipelineTests()` --calls--> `KbttClient`  [EXTRACTED]
   test/live/live-bca-pipeline.test.ts → src/lib/server/kbttClient.ts
-- `runStayServiceIntegrationTests()` --calls--> `getStayById()`  [EXTRACTED]
+- `runStayServiceIntegrationTests()` --calls--> `checkoutStay()`  [EXTRACTED]
   test/integration/stay-service.test.ts → src/lib/server/repositories/stayRepository.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (24 total, 5 thin omitted)
+## Communities (25 total, 4 thin omitted)
 
-### Community 0 - "stayService.ts"
-Cohesion: 0.07
-Nodes (18): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, SyncPipeline, CompletenessResult (+10 more)
-
-### Community 1 - "db.ts"
+### Community 0 - "db.ts"
 Cohesion: 0.08
-Nodes (31): App, Locals, Platform, clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction() (+23 more)
+Nodes (37): clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest(), upsertGuest() (+29 more)
+
+### Community 1 - "syncPipeline.ts"
+Cohesion: 0.08
+Nodes (9): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, SyncPipeline, TokenManager (+1 more)
 
 ### Community 2 - "compilerOptions"
 Cohesion: 0.06
@@ -82,29 +83,33 @@ Nodes (33): author, description, keywords, license, main, name, scripts, build (
 Cohesion: 0.11
 Nodes (16): getDb(), RemoteD1Database, POST(), GET(), DELETE(), GET(), POST(), POST() (+8 more)
 
-### Community 5 - "validator.ts"
-Cohesion: 0.20
-Nodes (24): formatDateTimeToGmt7(), formatDateToGmt7(), getNowGmt7Date(), getNowGmt7DateString(), getNowGmt7DateTimeString(), getNowGmt7IsoString(), isPastNoonGmt7(), isSameOrPastCheckoutTimeGmt7() (+16 more)
-
-### Community 6 - "devDependencies"
+### Community 5 - "devDependencies"
 Cohesion: 0.07
 Nodes (27): @biomejs/biome, jiti, devDependencies, @biomejs/biome, jiti, @playwright/test, svelte, svelte-check (+19 more)
 
 ### Community 7 - "auth.ts"
-Cohesion: 0.23
-Nodes (22): handle(), base64UrlDecode(), base64UrlEncode(), checkLoginRateLimit(), createSessionToken(), getIngestApiKey(), getServerPassword(), getSigningKey() (+14 more)
+Cohesion: 0.26
+Nodes (18): handle(), base64UrlDecode(), base64UrlEncode(), createSessionToken(), getIngestApiKey(), getServerPassword(), getSigningKey(), isProduction() (+10 more)
 
-### Community 9 - "GoogleSheetService"
+### Community 8 - "GoogleSheetService"
 Cohesion: 0.15
 Nodes (4): GoogleSheetService, KbttClient, TabInfo, runLiveBcaPipelineTests()
 
-### Community 10 - "catalogManager.ts"
+### Community 9 - "catalogManager.ts"
 Cohesion: 0.12
 Nodes (11): LOAI_GIAY_TO_DATA, LY_DO_CU_TRU_DATA, QUOC_TICH_DATA, StandardCatalogItem, CatalogItem, COUNTRY_OPTIONS, countryNameMap, LOAI_GIAY_TO_OPTIONS (+3 more)
 
-### Community 12 - "biome.json"
+### Community 11 - "biome.json"
 Cohesion: 0.11
 Nodes (17): source, assist, actions, noUnusedVariables, files, formatter, enabled, indentStyle (+9 more)
+
+### Community 12 - "time.ts"
+Cohesion: 0.40
+Nodes (13): formatDateTimeToGmt7(), formatDateToGmt7(), getNowGmt7Date(), getNowGmt7DateString(), getNowGmt7DateTimeString(), getNowGmt7IsoString(), isPastNoonGmt7(), isSameOrPastCheckoutTimeGmt7() (+5 more)
+
+### Community 13 - "validator.ts"
+Cohesion: 0.37
+Nodes (11): ALLOWED_STATUS_TRANSITIONS, assertValidTransition(), isValidCccd(), isValidPassport(), isValidStayStatusTransition(), validateStayCheckoutInput(), validateStayExtensionInput(), validateStayRegistrationInput() (+3 more)
 
 ### Community 14 - "wrangler.json"
 Cohesion: 0.25
@@ -114,25 +119,29 @@ Nodes (7): nodejs_compat, compatibility_date, compatibility_flags, d1_databases,
 Cohesion: 0.32
 Nodes (3): handleSheetChange(), handleSheetEdit(), syncRowToCloudflare()
 
+### Community 16 - "app.d.ts"
+Cohesion: 0.40
+Nodes (3): App, Locals, Platform
+
 ## Knowledge Gaps
-- **100 isolated node(s):** `IngestResultItem`, `ApiResponse`, `LogEntry`, `LogLevel`, `Locals` (+95 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 158 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **98 isolated node(s):** `DashboardStats`, `Row`, `IngestResultItem`, `ApiResponse`, `LogEntry` (+93 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 155 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `CatalogManager` connect `CatalogManager` to `stayService.ts`, `catalogManager.ts`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
-- **Why does `DataTransformer` connect `DataTransformer` to `stayService.ts`, `GoogleSheetService`?**
+- **Why does `CatalogManager` connect `CatalogManager` to `db.ts`, `syncPipeline.ts`, `catalogManager.ts`?**
+  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+- **Why does `DataTransformer` connect `DataTransformer` to `db.ts`, `syncPipeline.ts`, `GoogleSheetService`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `compilerOptions`, `scripts`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
-- **What connects `IngestResultItem`, `ApiResponse`, `LogEntry` to the rest of the system?**
-  _100 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `stayService.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0744047619047619 - nodes in this community are weakly interconnected._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+- **What connects `DashboardStats`, `Row`, `IngestResultItem` to the rest of the system?**
+  _98 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08458646616541353 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08095884215287201 - nodes in this community are weakly interconnected._
+- **Should `syncPipeline.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.08116883116883117 - nodes in this community are weakly interconnected._
 - **Should `compilerOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.05855855855855856 - nodes in this community are weakly interconnected._

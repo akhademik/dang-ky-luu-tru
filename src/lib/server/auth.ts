@@ -6,9 +6,18 @@ export const SESSION_TTL_SECONDS = 15 * 60; // 15 minutes TTL
  * Xác định môi trường thực thi là Production hay Development:
  * - DEV (pnpm run dev / local): Không bắt buộc đăng nhập, bypass hoàn toàn.
  * - PROD (Cloudflare Pages / PROD build / KBTT_ENV=prod): Bắt buộc xác thực qua APP_PASSWORD.
+ *
+ * Thiết kế Fail-safe cho Cloudflare:
+ * - Nếu đang chạy trên Cloudflare platform (platform.env tồn tại): Mặc định là PROD,
+ *   trừ khi được chỉ định rõ ràng KBTT_ENV='dev'.
+ * - Nếu đang chạy trên Node.js/Local: Chỉ là PROD khi KBTT_ENV='prod' hoặc NODE_ENV='production'.
  */
 export function isProduction(platform?: App.Platform): boolean {
 	const platformEnv = (platform?.env || {}) as Record<string, unknown>;
+	const hasPlatformEnv = Boolean(
+		platform?.env && Object.keys(platformEnv).length > 0,
+	);
+
 	const kbttEnv = String(
 		platformEnv.KBTT_ENV ||
 			(typeof process !== "undefined" && process.env?.KBTT_ENV) ||
@@ -24,6 +33,12 @@ export function isProduction(platform?: App.Platform): boolean {
 		.toLowerCase()
 		.trim();
 
+	if (hasPlatformEnv) {
+		// Trên Cloudflare Pages/Workers: Mặc định PROD trừ khi set rõ ràng KBTT_ENV=dev
+		return kbttEnv !== "dev";
+	}
+
+	// Trên Local Node runtime / Test runner
 	return kbttEnv === "prod" || nodeEnv === "production";
 }
 
@@ -226,60 +241,6 @@ export async function verifySession(
 	} catch {
 		return false;
 	}
-}
-
-/**
- * Quản lý Rate Limiting đăng nhập thất bại (chống Brute-force)
- */
-interface RateLimitRecord {
-	attempts: number;
-	lockUntil: number;
-	lastAttempt: number;
-}
-const loginAttemptsMap = new Map<string, RateLimitRecord>();
-
-export function checkLoginRateLimit(ip: string): {
-	allowed: boolean;
-	waitSeconds?: number;
-} {
-	const now = Date.now();
-	const record = loginAttemptsMap.get(ip);
-	if (!record) return { allowed: true };
-
-	if (record.lockUntil > now) {
-		const waitSeconds = Math.ceil((record.lockUntil - now) / 1000);
-		return { allowed: false, waitSeconds };
-	}
-
-	// Nếu qua 10 phút không thử lại thì xóa bản ghi
-	if (now - record.lastAttempt > 10 * 60 * 1000) {
-		loginAttemptsMap.delete(ip);
-		return { allowed: true };
-	}
-
-	return { allowed: true };
-}
-
-export function recordFailedLogin(ip: string): void {
-	const now = Date.now();
-	const record = loginAttemptsMap.get(ip) || {
-		attempts: 0,
-		lockUntil: 0,
-		lastAttempt: now,
-	};
-	record.attempts += 1;
-	record.lastAttempt = now;
-
-	// Sau 5 lần nhập sai, tạm khóa IP trong 2 phút (120s)
-	if (record.attempts >= 5) {
-		record.lockUntil = now + 2 * 60 * 1000;
-	}
-
-	loginAttemptsMap.set(ip, record);
-}
-
-export function resetLoginRateLimit(ip: string): void {
-	loginAttemptsMap.delete(ip);
 }
 
 /**
