@@ -37,7 +37,7 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
 
 ## 3. Kiến trúc mã nguồn SvelteKit + TypeScript tích hợp KBTT
 - `src/hooks.server.ts`: Centralized API Gateway Authentication, CSRF protection, secure cookie handling.
-- `src/lib/server/auth.ts`: Authentication helpers, session verification, constant-time password comparison.
+- `src/lib/server/auth.ts`: Authentication helpers, stateless HMAC-SHA256 session management (15m TTL), Cloudflare native rate limiting, constant-time password comparison, và DEV/PROD single source of truth.
 - `src/lib/server/time.ts`: Centralized GMT+7 (`Asia/Ho_Chi_Minh`) Date/Time Service.
 - `src/lib/server/validator.ts`: Central input validation and Stay Lifecycle State Machine transition rules.
 - `src/lib/server/config.ts`: Tham số môi trường, endpoints, tài khoản và cấu hình token.

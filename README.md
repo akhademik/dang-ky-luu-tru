@@ -8,7 +8,12 @@ Hệ thống quản lý và tự động hóa đồng bộ hồ sơ khách lưu 
 
 - **Framework**: SvelteKit 2 + Svelte 5 (Runes `$state`, `$derived`, `$props`, Callback Props) + TypeScript + Tailwind CSS.
 - **Cơ sở dữ liệu**: **Cloudflare D1 Database** (Nguồn dữ liệu chân thực duy nhất - Single Source of Truth) kết hợp tầng **Modular Repositories** chuyên biệt.
-- **Bảo mật**: Centralized API Gateway Auth (`hooks.server.ts`), HttpOnly SameSite=Strict secure cookies, CSRF protection, Webhook API Key.
+- **Bảo mật & Phân quyền**:
+  - **Môi trường DEV (`KBTT_ENV=dev`)**: Tự động bypass 100% authentication & rate limit, vào thẳng Dashboard phục vụ phát triển nhanh chóng.
+  - **Môi trường PROD (`KBTT_ENV=prod`)**: Bắt buộc xác thực mật khẩu duy nhất qua biến môi trường `APP_PASSWORD`.
+  - **Session Token bảo mật**: Cấp token ngẫu nhiên ký số HMAC-SHA256, thời hạn sống ngắn **15 phút** (`SESSION_TTL_SECONDS = 900`), cookie `HttpOnly`, `SameSite=Lax`, `Secure`.
+  - **Cloudflare Native Rate Limiter**: Tích hợp binding `RATE_LIMITER` ở tầng Edge Network (`5 requests / 60s`), trả HTTP 429 khi bị brute-force mà không dùng RAM in-memory.
+  - **Centralized Gateway**: Kiểm soát tập trung tại `hooks.server.ts`, CSRF origin protection và Webhook API Key độc lập.
 - **Độ tin cậy dữ liệu**: State Machine kiểm soát chuyển đổi trạng thái lưu trú (`validator.ts`), dịch vụ múi giờ tập trung **GMT+7 (Asia/Ho_Chi_Minh)** (`time.ts`), Request ID tracking, và Append-only audit logs trong Production.
 - **Chuẩn API**: Tuân thủ 100% đặc tả API Khai báo tạm trú v1.4 của Bộ Công An (OAuth 2.0, API 4 Khách Nước ngoài, API 5 Khách Việt Nam, API 12 Thay đổi ngày đi / Gia hạn / Trả phòng sớm).
 - **Package Manager**: **`pnpm`** (Bắt buộc cho mọi thao tác).
@@ -40,7 +45,7 @@ Hệ thống quản lý và tự động hóa đồng bộ hồ sơ khách lưu 
 ## 📂 Cấu Trúc Dự Án & Tài Liệu Kỹ Thuật
 
 Vui lòng tham khảo tài liệu chi tiết:
-- **[Tài Liệu Kiến Trúc & Kỹ Thuật (ARCHITECTURE.md)](file:///home/hajtran/dev/dang-ky-luu-tru/ARCHITECTURE.md)**: Chi tiết Schema Cloudflare D1, Modular Repositories, State Machine, Quy tắc Validation, Danh mục API, và Hướng dẫn mở rộng tính năng.
+- **[Tài Liệu Kiến Trúc & Kỹ Thuật (ARCHITECTURE.md)](file:///home/hajtran/dev/dang-ky-luu-tru/ARCHITECTURE.md)**: Chi tiết Schema Cloudflare D1, Modular Repositories, State Machine, Quy tắc Validation, Danh mục API, Cơ chế Authentication & Rate Limiting, và Hướng dẫn mở rộng tính năng.
 - **[Quy Chuẩn Thiết Kế & Style Guide (DESIGN_PATTERN.md)](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_PATTERN.md)**: Các architectural patterns, UI components, và bảng mã màu Dark Slate Glassmorphism.
 - **[Quy Chuẩn Phát Triển & Kiểm Thử (WORKFLOW_INSTRUCTION.md)](file:///home/hajtran/dev/dang-ky-luu-tru/WORKFLOW_INSTRUCTION.md)**: Quy trình kiểm tra chất lượng code và testing 6 bước.
 
@@ -52,7 +57,7 @@ Vui lòng tham khảo tài liệu chi tiết:
 # 1. Cài đặt dependencies
 pnpm install
 
-# 2. Chạy môi trường phát triển cục bộ
+# 2. Chạy môi trường phát triển cục bộ (Tự động bypass auth)
 pnpm run dev
 
 # 3. Kiểm tra định dạng & Linting Biome

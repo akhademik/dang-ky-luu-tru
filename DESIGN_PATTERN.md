@@ -21,10 +21,13 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
 - **Component Props**: Dùng `let { ... }: Props = $props()`.
 - **Event Handling**: Tuyệt đối không dùng `createEventDispatcher` hay `on:click`. Sử dụng **Callback Props** (`onconfirm?: () => void`) và standard HTML event attributes (`onclick`, `onchange`).
 
-### 1.4. Centralized Security Gateway & Auth Pattern
-- Toàn bộ browser endpoints `/api/*` đều được kiểm soát phiên làm việc tập trung tại `hooks.server.ts` thông qua `session_auth` HttpOnly, SameSite=Strict cookies.
-- Webhook `/api/ingest/ocr` được xác thực độc lập bằng `x-api-key` hoặc query token `?api_key=...`.
-- Xác thực mật khẩu sử dụng so sánh hằng số thời gian (`crypto.timingSafeEqual`) chống tấn công Timing Attacks.
+### 1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern
+- **Xác định môi trường (Single Source of Truth)**: Dùng `KBTT_ENV` (`dev` | `prod`). DEV tự động bypass 100% authentication & rate limit; PROD bắt buộc xác thực mật khẩu qua `APP_PASSWORD`.
+- **Stateless HMAC-SHA256 Session**: Token định dạng `<payloadBase64>.<signatureBase64>` gắn nonce ngẫu nhiên 16 bytes và thời hạn sống cố định **15 phút** (`SESSION_TTL_SECONDS = 900`).
+- **Cookie Security**: Lưu trong cookie `app_session` với các cờ `HttpOnly: true`, `SameSite: Lax`, `Secure: true` (HTTPS), `maxAge: 900`. Tuyệt đối không dùng cookie tĩnh `authenticated` hoặc cookie 30 ngày.
+- **Chống Timing Attacks**: So sánh mật khẩu và token bằng hàm so sánh hằng số thời gian (`timingSafeEqualStr`).
+- **Cloudflare Native Rate Limiter**: Tích hợp binding `RATE_LIMITER` phân tán tại Edge (`5 req / 60s`), trả HTTP 429 khi vượt ngưỡng mà không duy trì state trong RAM của Worker.
+- **Gateway Hooks**: Toàn bộ API browser được bảo vệ tập trung tại `hooks.server.ts`. Webhook `/api/ingest/ocr` được xác thực độc lập qua API Key. Giao diện client tự động chuyển hướng về form Login khi nhận mã `401 Unauthorized`.
 
 ### 1.5. Strict GMT+7 Timezone & Stay State Machine Policy
 - **Múi giờ duy nhất**: Tất cả thời gian lưu trữ trong Cloudflare D1, xử lý logic, đồng bộ Sheets, gửi API BCA và hiển thị giao diện bắt buộc dùng **GMT+7 (`Asia/Ho_Chi_Minh`)** được quản lý tập trung tại `src/lib/server/time.ts`.

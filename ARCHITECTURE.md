@@ -1,6 +1,6 @@
 # Kiến Trúc Hệ Thống & Tài Liệu Kỹ Thuật (System Architecture & Technical Guide)
 
-Tài liệu này mô tả toàn diện cấu trúc mã nguồn, mô hình dữ liệu Cloudflare D1, quy trình nghiệp vụ (Business Workflow), tích hợp API Khai Báo Tạm Trú (BCA KBTT API v1.4), và hướng dẫn phát triển mở rộng cho dự án **dang-ky-luu-tru**.
+Tài liệu này mô tả toàn diện cấu trúc mã nguồn, mô hình dữ liệu Cloudflare D1, quy trình nghiệp vụ (Business Workflow), tích hợp API Khai Báo Tạm Trú (BCA KBTT API v1.4), cơ chế bảo mật xác thực (Authentication & Rate Limiting), và hướng dẫn phát triển mở rộng cho dự án **dang-ky-luu-tru**.
 
 ---
 
@@ -10,6 +10,13 @@ Hệ thống hoạt động theo mô hình **SvelteKit 2 + Svelte 5 (Runes) + Cl
 
 ```mermaid
 flowchart TD
+    subgraph Client_Layer [Tầng Client & Xác Thực]
+        BROWSER[Web Browser / Dashboard]
+        GATEWAY[hooks.server.ts: API & Auth Gateway]
+        AUTH_SVC[auth.ts: HMAC-SHA256 Session & Fail-Safe Env]
+        RATE_LIMIT[Cloudflare Native RATE_LIMITER Binding]
+    end
+
     subgraph Input_Layer [Tầng Thu Thập & Nhập Liệu]
         GS[Google Sheets OCR - CSV Export]
         UI_ADD[Thêm Khách Thủ Công UI]
@@ -45,6 +52,10 @@ flowchart TD
         BCA_PROD[BCA Production]
     end
 
+    BROWSER --> GATEWAY
+    GATEWAY --> AUTH_SVC
+    AUTH_SVC --> RATE_LIMIT
+    GATEWAY --> Input_Layer
     Input_Layer --> Service_Layer
     Service_Layer --> Repository_Layer
     Repository_Layer --> Storage_Layer
@@ -150,7 +161,57 @@ stateDiagram-v2
 
 ---
 
-## 4. Cấu Trúc Thư Mục Dự Án (Project Structure)
+## 4. Cơ Chế Xác Thực & Bảo Vệ Hệ Thống (Authentication & Security Architecture)
+
+Hệ thống phân tách rõ ràng giữa **Authentication Dashboard** và **BCA OAuth Credentials**:
+
+```mermaid
+flowchart TD
+    subgraph Env_Resolution [Xác Định Môi Trường: Single Source of Truth]
+        KBTT_ENV{KBTT_ENV?}
+        KBTT_ENV -- prod --> PROD_MODE[PROD: Bắt buộc Login + Rate Limit]
+        KBTT_ENV -- dev --> DEV_MODE[DEV: Bypass hoàn toàn]
+    end
+
+    subgraph PROD_Flow [Luồng Xác Thực Production]
+        REQ[Client Request] --> RL_CHECK{RATE_LIMITER < 5 req/60s?}
+        RL_CHECK -- No --> HTTP_429[HTTP 429: Too Many Requests]
+        RL_CHECK -- Yes --> PASS_CHECK{Password == APP_PASSWORD?}
+        PASS_CHECK -- No --> HTTP_401[HTTP 401: Unauthorized]
+        PASS_CHECK -- Yes --> GEN_TOKEN[Sinh Token HMAC-SHA256: exp=15m, nonce=random]
+        GEN_TOKEN --> SET_COOKIE[Set Cookie app_session: HttpOnly, SameSite=Lax, Secure, maxAge=900]
+    end
+```
+
+### 4.1. Quy tắc Xác định Môi trường (Environment Resolution)
+- **Nguồn chân lý duy nhất**: Biến môi trường `KBTT_ENV` (`dev` | `prod`).
+- **DEV (`KBTT_ENV=dev`)**: Tự động bypass toàn bộ xác thực và rate limiting khi chạy `pnpm run dev`.
+- **PROD (`KBTT_ENV=prod`)**: Bắt buộc đăng nhập qua `APP_PASSWORD`. Tuyệt đối không suy diễn PROD dựa trên sự tồn tại của `platform.env`.
+
+### 4.2. Kiến Trúc Token Không Trạng Thái (Stateless HMAC-SHA256 Session)
+- **Cấu trúc Token**: `<payloadBase64>.<signatureBase64>`
+  - `payload`: `{ exp: timestamp, iat: timestamp, nonce: "random_16bytes" }`.
+  - `signature`: `HMAC-SHA256(secretKey, payloadBase64)` với secret phái sinh từ `APP_PASSWORD`.
+- **Thời hạn TTL**: Cố định **15 phút** (`SESSION_TTL_SECONDS = 900`). Server kiểm tra `Date.now() > exp` trên từng request.
+- **Bảo mật Cookie**: `HttpOnly`, `SameSite=Lax`, `Secure` trên HTTPS, `maxAge: 900` (loại bỏ hoàn toàn cookie tĩnh và cookie 30 ngày).
+
+### 4.3. Cloudflare-Native Rate Limiting (`wrangler.json`)
+- Tích hợp Cloudflare Rate Limiting binding `RATE_LIMITER` ở tầng Edge Network:
+  ```json
+  "ratelimits": [
+    {
+      "name": "RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 5, "period": 60 }
+    }
+  ]
+  ```
+- **Không dùng RAM in-memory Map** trong Worker isolate.
+- Giới hạn 5 lần yêu cầu / 60 giây theo Client IP (`cf-connecting-ip`), trả về mã `HTTP 429`.
+
+---
+
+## 5. Cấu Trúc Thư Mục Dự Án (Project Structure)
 
 ```
 .
@@ -158,7 +219,7 @@ stateDiagram-v2
 │   └── workflows/
 │       └── ci.yml                    # GitHub Actions CI Workflow (Biome, Svelte, Knip, Test, Build)
 ├── src/
-│   ├── app.d.ts                      # Định nghĩa SvelteKit & Cloudflare Platform bindings
+│   ├── app.d.ts                      # Định nghĩa SvelteKit & Cloudflare Platform bindings (DB, RATE_LIMITER)
 │   ├── hooks.server.ts               # Central API Gateway Auth, CSRF & Cookie security
 │   ├── lib/
 │   │   ├── components/               # Modular UI Components (Svelte 5 Runes & Callback Props)
@@ -171,7 +232,7 @@ stateDiagram-v2
 │   │   ├── utils/
 │   │   │   └── format.ts             # Trích xuất formatting helpers, options, country resolvers
 │   │   └── server/
-│   │       ├── auth.ts               # Core authentication, cookie helpers, constant-time comparison
+│   │       ├── auth.ts               # Core authentication, HMAC session, timing-safe compare, rate limiter
 │   │       ├── catalogManager.ts     # Tra cứu & chuẩn hóa Quốc tịch, Tỉnh thành, Loại giấy tờ
 │   │       ├── config.ts             # Quản lý cấu hình .env (DEV/PROD URLs, Credentials)
 │   │       ├── dataTransformer.ts    # Bóc tách OCR, chuẩn hóa ngày giờ GMT+7, validate payload
@@ -191,10 +252,11 @@ stateDiagram-v2
 │   │           ├── statsRepository.ts# Thống kê Dashboard
 │   │           └── stayRepository.ts # Lượt lưu trú & auto-checkout
 │   └── routes/
-│       ├── +page.svelte              # Giao diện chính (5 Tabs, Modals, Optimistic UI)
+│       ├── +page.svelte              # Giao diện chính (SPA conditional Auth Gate, 5 Tabs, Modals)
+│       ├── +page.server.ts           # SSR load authenticated status
 │       ├── +layout.svelte            # Layout khung giao diện
 │       └── api/
-│           ├── auth/                 # POST /api/auth/login, POST /api/auth/logout, GET /api/auth/session
+│           ├── auth/login/           # POST (Login), GET (Session status), DELETE (Logout)
 │           ├── catalogs/             # GET /api/catalogs
 │           ├── env/                  # GET / POST /api/env
 │           ├── ingest/ocr/           # POST /api/ingest/ocr (Webhook protected)
@@ -212,25 +274,26 @@ stateDiagram-v2
 │           └── transform/            # POST /api/transform
 ├── test/
 │   ├── unit/                         # Unit tests (Catalog, Transformer, Time, Validator, Svelte 5 anti-deprecation)
-│   ├── api/                          # API security & authentication tests
+│   ├── api/                          # API security & authentication tests (HMAC session, Rate limit, Webhook, CSRF)
 │   ├── integration/                  # D1 Database & StayService offline integration tests
 │   ├── playwright-test.ts            # E2E test browser automation
 │   └── live/                         # Live BCA pipeline tests (Manual / Opt-in)
-├── wrangler.json                     # Cấu hình Cloudflare D1 & Workers deployment
+├── wrangler.json                     # Cấu hình Cloudflare D1 & RATE_LIMITER binding
 └── package.json                      # pnpm dependencies & scripts
 ```
 
 ---
 
-## 5. Hướng Dẫn Phát Triển & Kiểm Thử (Developer & Testing Guide)
+## 6. Hướng Dẫn Phát Triển & Kiểm Thử (Developer & Testing Guide)
 
-### 5.1. Thêm tính năng mới
+### 6.1. Thêm tính năng mới
 1. Mọi truy vấn cơ sở dữ liệu mới phải được đặt trong thư mục `src/lib/server/repositories/`.
 2. Mọi chuyển đổi trạng thái lưu trú phải tuân thủ State Machine trong `src/lib/server/validator.ts`.
 3. Toàn bộ tính toán ngày giờ phải sử dụng `src/lib/server/time.ts`.
 4. Giao diện UI viết theo chuẩn Svelte 5 (Runes `$state`, `$derived`, `$props`, Callback Props).
+5. Mọi API gọi từ client phải đi qua wrapper bắt `401 Unauthorized` để tự động chuyển về màn hình đăng nhập.
 
-### 5.2. Chạy quy trình kiểm tra chất lượng trước khi commit
+### 6.2. Chạy quy trình kiểm tra chất lượng trước khi commit
 ```bash
 # 1. Type-check Svelte & TypeScript
 pnpm run check:svelte
