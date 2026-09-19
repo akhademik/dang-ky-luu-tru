@@ -251,6 +251,53 @@ async function runAuthSecurityApiTests(): Promise<void> {
 	assert.equal(logoutRes.status, 200);
 	assert.equal(deletedCookieName, "app_session");
 
+	// E. Cloudflare-native Rate Limiter Binding Test
+	const rateLimitedPlatform = {
+		env: {
+			KBTT_ENV: "prod",
+			APP_PASSWORD: "SuperSecretProdPassword123!",
+			RATE_LIMITER: {
+				limit: async () => ({ success: false }),
+			},
+		},
+	} as unknown as App.Platform;
+
+	const rateLimitedRes = await POST({
+		request: correctPassReq,
+		cookies: mockCookies as unknown as RequestEvent["cookies"],
+		platform: rateLimitedPlatform,
+		url: new URL("https://example.com/api/auth/login"),
+		getClientAddress: () => "1.2.3.4",
+	} as unknown as RequestEvent);
+	assert.equal(
+		rateLimitedRes.status,
+		429,
+		"Rate-limited IP must receive HTTP 429",
+	);
+
+	// In DEV: rate limit must not block
+	const devRateLimitPlatform = {
+		env: {
+			KBTT_ENV: "dev",
+			RATE_LIMITER: {
+				limit: async () => ({ success: false }),
+			},
+		},
+	} as unknown as App.Platform;
+
+	const devRateLimitRes = await POST({
+		request: correctPassReq,
+		cookies: mockCookies as unknown as RequestEvent["cookies"],
+		platform: devRateLimitPlatform,
+		url: new URL("https://example.com/api/auth/login"),
+		getClientAddress: () => "1.2.3.4",
+	} as unknown as RequestEvent);
+	assert.equal(
+		devRateLimitRes.status,
+		200,
+		"DEV mode must never be rate-limited",
+	);
+
 	// 4. Webhook Authentication Tests
 	const mockPlatformWithKey = {
 		env: {

@@ -13,6 +13,9 @@ declare global {
 		interface Platform {
 			env?: {
 				DB?: D1DatabaseLike;
+				RATE_LIMITER?: {
+					limit(options: { key: string }): Promise<{ success: boolean }>;
+				};
 				KBTT_ENV?: string;
 				APP_PASSWORD?: string;
 				GOOGLE_SHEET_ID?: string;

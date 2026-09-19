@@ -1,5 +1,6 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 import {
+	checkRateLimit,
 	createSessionToken,
 	getServerPassword,
 	isProduction,
@@ -14,6 +15,7 @@ export const POST: RequestHandler = async ({
 	cookies,
 	platform,
 	url,
+	getClientAddress,
 }) => {
 	try {
 		const isProd = isProduction(platform);
@@ -25,6 +27,29 @@ export const POST: RequestHandler = async ({
 				username: "dev",
 				message: "Đăng nhập thành công (DEV Mode bypass)",
 			});
+		}
+
+		// 2. Client IP & Cloudflare-native Rate Limiting
+		let clientIp = "unknown";
+		try {
+			clientIp =
+				request.headers.get("cf-connecting-ip") ||
+				request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+				getClientAddress() ||
+				"unknown";
+		} catch {
+			clientIp = request.headers.get("cf-connecting-ip") || "unknown";
+		}
+
+		const rateLimit = await checkRateLimit(platform, clientIp);
+		if (!rateLimit.allowed) {
+			return json(
+				{
+					success: false,
+					message: `Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau ${rateLimit.waitSeconds || 60} giây!`,
+				},
+				{ status: 429 },
+			);
 		}
 
 		const serverPass = getServerPassword(platform);

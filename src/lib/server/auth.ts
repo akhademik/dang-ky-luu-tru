@@ -4,19 +4,14 @@ export const SESSION_TTL_SECONDS = 15 * 60; // 15 minutes TTL
 
 /**
  * Xác định môi trường thực thi là Production hay Development:
- * - DEV (pnpm run dev / local): Không bắt buộc đăng nhập, bypass hoàn toàn.
- * - PROD (Cloudflare Pages / PROD build / KBTT_ENV=prod): Bắt buộc xác thực qua APP_PASSWORD.
- *
- * Thiết kế Fail-safe cho Cloudflare:
- * - Nếu đang chạy trên Cloudflare platform (platform.env tồn tại): Mặc định là PROD,
- *   trừ khi được chỉ định rõ ràng KBTT_ENV='dev'.
- * - Nếu đang chạy trên Node.js/Local: Chỉ là PROD khi KBTT_ENV='prod' hoặc NODE_ENV='production'.
+ * - Dùng KBTT_ENV=dev hoặc KBTT_ENV=prod làm nguồn xác định môi trường rõ ràng.
+ * - PROD phải xác định explicit là 'prod' (KBTT_ENV === 'prod').
+ * - Tuyệt đối không dựa vào việc platform.env tồn tại hay không để suy diễn PROD.
+ * - Mặc định là DEV nếu không khai báo rõ ràng 'prod' -> Đảm bảo 'pnpm run dev' luôn bypass auth 100%.
+ * - Khi deploy Cloudflare Production, bắt buộc cấu hình KBTT_ENV='prod' để kích hoạt xác thực.
  */
 export function isProduction(platform?: App.Platform): boolean {
 	const platformEnv = (platform?.env || {}) as Record<string, unknown>;
-	const hasPlatformEnv = Boolean(
-		platform?.env && Object.keys(platformEnv).length > 0,
-	);
 
 	const kbttEnv = String(
 		platformEnv.KBTT_ENV ||
@@ -33,13 +28,16 @@ export function isProduction(platform?: App.Platform): boolean {
 		.toLowerCase()
 		.trim();
 
-	if (hasPlatformEnv) {
-		// Trên Cloudflare Pages/Workers: Mặc định PROD trừ khi set rõ ràng KBTT_ENV=dev
-		return kbttEnv !== "dev";
+	if (kbttEnv === "prod") {
+		return true;
 	}
 
-	// Trên Local Node runtime / Test runner
-	return kbttEnv === "prod" || nodeEnv === "production";
+	if (kbttEnv === "dev") {
+		return false;
+	}
+
+	// Chỉ coi là PROD khi NODE_ENV xác định rõ ràng là 'production'
+	return nodeEnv === "production";
 }
 
 /**
@@ -96,6 +94,38 @@ export function timingSafeEqualStr(a: string, b: string): boolean {
 		mismatch |= bufA[i] ^ bufB[i];
 	}
 	return mismatch === 0;
+}
+
+/**
+ * Kiểm tra Rate Limiting đăng nhập chống Brute-Force:
+ * - DEV Mode: Không bao giờ bị Rate Limit.
+ * - PROD Mode: Sử dụng Cloudflare-native Rate Limiting binding (platform.env.RATE_LIMITER)
+ *   phân tán ở tầng Edge mà không phụ thuộc in-memory isolate.
+ */
+export async function checkRateLimit(
+	platform: App.Platform | undefined,
+	clientIp: string,
+): Promise<{ allowed: boolean; waitSeconds?: number }> {
+	// DEV mode không bị rate limit
+	if (!isProduction(platform)) {
+		return { allowed: true };
+	}
+
+	// Sử dụng Cloudflare-native Rate Limiter binding nếu có
+	const rateLimiter = platform?.env?.RATE_LIMITER;
+	if (rateLimiter && typeof rateLimiter.limit === "function") {
+		try {
+			const res = await rateLimiter.limit({ key: clientIp });
+			if (!res.success) {
+				return { allowed: false, waitSeconds: 60 };
+			}
+		} catch {
+			// Fail-open nếu binding gặp sự cố tạm thời
+			return { allowed: true };
+		}
+	}
+
+	return { allowed: true };
 }
 
 /**

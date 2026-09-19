@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 445 nodes · 923 edges · 25 communities (15 shown, 4 thin omitted)
+- 447 nodes · 928 edges · 26 communities (15 shown, 5 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `798f52e7`
+- Built from commit: `6c7e4a98`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,9 +18,9 @@
 - syncPipeline.ts
 - compilerOptions
 - scripts
-- getDb
 - devDependencies
 - DataTransformer
+- getDb
 - auth.ts
 - GoogleSheetService
 - catalogManager.ts
@@ -28,6 +28,7 @@
 - biome.json
 - time.ts
 - validator.ts
+- TokenManager
 - wrangler.json
 - apps_script_onedit.js
 - app.d.ts
@@ -61,15 +62,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (25 total, 4 thin omitted)
+## Communities (26 total, 5 thin omitted)
 
 ### Community 0 - "db.ts"
 Cohesion: 0.08
-Nodes (37): clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest(), upsertGuest() (+29 more)
+Nodes (38): clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest(), upsertGuest() (+30 more)
 
 ### Community 1 - "syncPipeline.ts"
-Cohesion: 0.08
-Nodes (9): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, SyncPipeline, TokenManager (+1 more)
+Cohesion: 0.09
+Nodes (9): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, SyncPipeline, RawOcrRow (+1 more)
 
 ### Community 2 - "compilerOptions"
 Cohesion: 0.06
@@ -79,21 +80,21 @@ Nodes (35): includes, entry, ignoreDependencies, project, $schema, tailwindcss, 
 Cohesion: 0.06
 Nodes (33): author, description, keywords, license, main, name, scripts, build (+25 more)
 
-### Community 4 - "getDb"
-Cohesion: 0.11
-Nodes (16): getDb(), RemoteD1Database, POST(), GET(), DELETE(), GET(), POST(), POST() (+8 more)
-
-### Community 5 - "devDependencies"
+### Community 4 - "devDependencies"
 Cohesion: 0.07
 Nodes (27): @biomejs/biome, jiti, devDependencies, @biomejs/biome, jiti, @playwright/test, svelte, svelte-check (+19 more)
 
+### Community 6 - "getDb"
+Cohesion: 0.12
+Nodes (16): getDb(), RemoteD1Database, POST(), GET(), DELETE(), GET(), POST(), POST() (+8 more)
+
 ### Community 7 - "auth.ts"
-Cohesion: 0.26
-Nodes (18): handle(), base64UrlDecode(), base64UrlEncode(), createSessionToken(), getIngestApiKey(), getServerPassword(), getSigningKey(), isProduction() (+10 more)
+Cohesion: 0.29
+Nodes (18): handle(), base64UrlDecode(), base64UrlEncode(), checkRateLimit(), createSessionToken(), getIngestApiKey(), getServerPassword(), getSigningKey() (+10 more)
 
 ### Community 8 - "GoogleSheetService"
-Cohesion: 0.15
-Nodes (4): GoogleSheetService, KbttClient, TabInfo, runLiveBcaPipelineTests()
+Cohesion: 0.16
+Nodes (3): GoogleSheetService, KbttClient, runLiveBcaPipelineTests()
 
 ### Community 9 - "catalogManager.ts"
 Cohesion: 0.12
@@ -111,37 +112,37 @@ Nodes (13): formatDateTimeToGmt7(), formatDateToGmt7(), getNowGmt7Date(), getNow
 Cohesion: 0.37
 Nodes (11): ALLOWED_STATUS_TRANSITIONS, assertValidTransition(), isValidCccd(), isValidPassport(), isValidStayStatusTransition(), validateStayCheckoutInput(), validateStayExtensionInput(), validateStayRegistrationInput() (+3 more)
 
-### Community 14 - "wrangler.json"
+### Community 15 - "wrangler.json"
 Cohesion: 0.25
 Nodes (7): nodejs_compat, compatibility_date, compatibility_flags, d1_databases, name, pages_build_output_dir, $schema
 
-### Community 15 - "apps_script_onedit.js"
+### Community 16 - "apps_script_onedit.js"
 Cohesion: 0.32
 Nodes (3): handleSheetChange(), handleSheetEdit(), syncRowToCloudflare()
 
-### Community 16 - "app.d.ts"
-Cohesion: 0.40
+### Community 17 - "app.d.ts"
+Cohesion: 0.33
 Nodes (3): App, Locals, Platform
 
 ## Knowledge Gaps
-- **98 isolated node(s):** `DashboardStats`, `Row`, `IngestResultItem`, `ApiResponse`, `LogEntry` (+93 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 155 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **98 isolated node(s):** `DashboardStats`, `IngestResultItem`, `Row`, `ApiResponse`, `LogEntry` (+93 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 156 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `CatalogManager` connect `CatalogManager` to `db.ts`, `syncPipeline.ts`, `catalogManager.ts`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+  _High betweenness centrality (0.055) - this node is a cross-community bridge._
 - **Why does `DataTransformer` connect `DataTransformer` to `db.ts`, `syncPipeline.ts`, `GoogleSheetService`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `compilerOptions`, `scripts`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
-- **What connects `DashboardStats`, `Row`, `IngestResultItem` to the rest of the system?**
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+- **What connects `DashboardStats`, `IngestResultItem`, `Row` to the rest of the system?**
   _98 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08095884215287201 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08056265984654731 - nodes in this community are weakly interconnected._
 - **Should `syncPipeline.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08116883116883117 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09098039215686274 - nodes in this community are weakly interconnected._
 - **Should `compilerOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.05855855855855856 - nodes in this community are weakly interconnected._
