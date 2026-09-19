@@ -116,7 +116,7 @@ export class TokenManager {
 		const res = await fetch(url, {
 			method: "POST",
 			headers: {
-				Authorization: "Basic QVBJX0MwNjp4aGhtUWE2eVZJbGZDRHA=",
+				Authorization: CONFIG.AUTH.BASIC_AUTH,
 			},
 		});
 
@@ -140,7 +140,7 @@ export class TokenManager {
 			const res = await fetch(url, {
 				method: "DELETE",
 				headers: {
-					Authorization: "Basic QVBJX0MwNjp4aGhtUWE2eVZJbGZDRHA=",
+					Authorization: CONFIG.AUTH.BASIC_AUTH,
 				},
 			});
 			this.clear();

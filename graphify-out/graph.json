@@ -2460,7 +2460,7 @@
       "file_type": "code",
       "norm_label": "handle()",
       "source_file": "src/hooks.server.ts",
-      "source_location": "L4"
+      "source_location": "L5"
     },
     {
       "id": "src_lib_server_auth_base64urldecode",
@@ -3185,7 +3185,7 @@
       "file_type": "code",
       "norm_label": "config",
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L78"
+      "source_location": "L81"
     },
     {
       "id": "src_lib_server_googlesheetservice",
@@ -5228,18 +5228,6 @@
     },
     {
       "source": "src_hooks_server_handle",
-      "target": "src_lib_server_auth_verifywebhookauth",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/hooks.server.ts",
-      "source_location": "L49",
-      "weight": 1.0
-    },
-    {
-      "source": "src_hooks_server_handle",
       "target": "src_lib_server_auth_verifysession",
       "relation": "calls",
       "_origin": "ast",
@@ -5247,7 +5235,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/hooks.server.ts",
-      "source_location": "L6",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hooks_server_handle",
+      "target": "src_lib_server_auth_verifywebhookauth",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/hooks.server.ts",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -8689,6 +8689,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_hooks_server",
+      "target": "src_lib_server_config_config",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/hooks.server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_auth",
       "target": "src_lib_server_config_config",
       "relation": "imports",
@@ -10571,6 +10583,18 @@
       "context": "import",
       "source_file": "src/hooks.server.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hooks_server",
+      "target": "src_lib_server_config",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/hooks.server.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -12881,7 +12905,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/hooks.server.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -13101,7 +13125,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/config.ts",
-      "source_location": "L78",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -16024,5 +16048,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ff7d77e2347d9756d4529bf7726377332bdad12c"
+  "built_at_commit": "1baa7aa1c9243bc478982996b41570cdc540a7d5"
 }

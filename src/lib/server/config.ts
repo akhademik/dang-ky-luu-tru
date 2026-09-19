@@ -49,6 +49,9 @@ if (
 
 export type ApiEnvironment = "dev" | "prod";
 
+const DEFAULT_BCA_BASIC_AUTH = "Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ";
+const DEFAULT_BCA_GRANT_TYPE = "api_cslt";
+
 const DEV_BASE_URL =
 	(typeof process !== "undefined" && process.env?.KBTT_DEV_BASE_URL) ||
 	(typeof process !== "undefined" &&
@@ -107,41 +110,51 @@ export const CONFIG = {
 			return {
 				USERNAME:
 					(typeof process !== "undefined" &&
-						(process.env?.PROD_AUTH_USERNAME || process.env?.AUTH_USERNAME)) ||
+						(process.env?.PROD_AUTH_USERNAME ||
+							process.env?.AUTH_USERNAME ||
+							process.env?.PROD_USERNAME ||
+							process.env?.USERNAME)) ||
 					"",
 				PASSWORD:
 					(typeof process !== "undefined" &&
-						(process.env?.PROD_AUTH_PASSWORD || process.env?.AUTH_PASSWORD)) ||
+						(process.env?.PROD_AUTH_PASSWORD ||
+							process.env?.AUTH_PASSWORD ||
+							process.env?.PROD_PASSWORD ||
+							process.env?.PASSWORD)) ||
 					"",
 				BASIC_AUTH:
 					(typeof process !== "undefined" &&
 						(process.env?.PROD_AUTH_BASIC_AUTH ||
 							process.env?.AUTH_BASIC_AUTH)) ||
-					"",
+					DEFAULT_BCA_BASIC_AUTH,
 				GRANT_TYPE:
 					(typeof process !== "undefined" &&
 						(process.env?.PROD_AUTH_GRANT_TYPE ||
 							process.env?.AUTH_GRANT_TYPE)) ||
-					"api_cslt",
+					DEFAULT_BCA_GRANT_TYPE,
 			};
 		}
 		return {
 			USERNAME:
 				(typeof process !== "undefined" &&
-					(process.env?.DEV_AUTH_USERNAME || process.env?.AUTH_USERNAME)) ||
+					(process.env?.DEV_AUTH_USERNAME ||
+						process.env?.AUTH_USERNAME ||
+						process.env?.DEV_USERNAME)) ||
 				"demo_tich_hop",
 			PASSWORD:
 				(typeof process !== "undefined" &&
-					(process.env?.DEV_AUTH_PASSWORD || process.env?.AUTH_PASSWORD)) ||
+					(process.env?.DEV_AUTH_PASSWORD ||
+						process.env?.AUTH_PASSWORD ||
+						process.env?.DEV_PASSWORD)) ||
 				"Demo@#$12345",
 			BASIC_AUTH:
 				(typeof process !== "undefined" &&
 					(process.env?.DEV_AUTH_BASIC_AUTH || process.env?.AUTH_BASIC_AUTH)) ||
-				"Basic QVBJX0NTTFQ6aTJuVnhCZEdGcjdqMTNkT3FJ",
+				DEFAULT_BCA_BASIC_AUTH,
 			GRANT_TYPE:
 				(typeof process !== "undefined" &&
 					(process.env?.DEV_AUTH_GRANT_TYPE || process.env?.AUTH_GRANT_TYPE)) ||
-				"api_cslt",
+				DEFAULT_BCA_GRANT_TYPE,
 		};
 	},
 	ENDPOINTS: {

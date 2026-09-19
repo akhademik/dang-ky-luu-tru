@@ -1,7 +1,23 @@
 import { type Handle, json } from "@sveltejs/kit";
 import { verifySession, verifyWebhookAuth } from "./lib/server/auth.js";
+import { CONFIG } from "./lib/server/config.js";
 
 export const handle: Handle = async ({ event, resolve }) => {
+	// Sync platform.env on Cloudflare Pages to process.env and CONFIG
+	if (event.platform?.env) {
+		const penv = event.platform.env as Record<string, unknown>;
+		if (typeof process !== "undefined" && process.env) {
+			for (const [k, v] of Object.entries(penv)) {
+				if (typeof v === "string" && v && !process.env[k]) {
+					process.env[k] = v;
+				}
+			}
+		}
+		if (penv.KBTT_ENV === "prod" || penv.KBTT_ENV === "dev") {
+			CONFIG.setEnv(penv.KBTT_ENV);
+		}
+	}
+
 	const pathname = event.url.pathname;
 	const isAuth = await verifySession(event.cookies, event.platform);
 	event.locals.authenticated = isAuth;
