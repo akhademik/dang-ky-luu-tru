@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import type { RequestEvent } from "@sveltejs/kit";
 import { handle } from "../../src/hooks.server.js";
 import {
@@ -13,6 +15,31 @@ import { DELETE, GET, POST } from "../../src/routes/api/auth/login/+server.js";
 async function runAuthSecurityApiTests(): Promise<void> {
 	console.log(
 		"🔒 [API] Chạy kiểm thử Authentication, Session Tokens, Webhook & CSRF...",
+	);
+
+	// 0. Verify wrangler.json Cloudflare Native Rate Limiting Configuration
+	const wranglerPath = path.resolve(process.cwd(), "wrangler.json");
+	const wranglerContent = JSON.parse(fs.readFileSync(wranglerPath, "utf-8"));
+	assert.ok(
+		Array.isArray(wranglerContent.ratelimits),
+		"wrangler.json must configure ratelimits array",
+	);
+	const rateLimiterConfig = wranglerContent.ratelimits.find(
+		(r: { name: string }) => r.name === "RATE_LIMITER",
+	);
+	assert.ok(
+		rateLimiterConfig,
+		"wrangler.json must configure RATE_LIMITER binding",
+	);
+	assert.equal(
+		rateLimiterConfig.simple.limit,
+		5,
+		"RATE_LIMITER limit must be 5 requests",
+	);
+	assert.equal(
+		rateLimiterConfig.simple.period,
+		60,
+		"RATE_LIMITER period must be 60 seconds",
 	);
 
 	const prodPlatform = {

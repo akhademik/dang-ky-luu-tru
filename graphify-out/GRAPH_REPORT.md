@@ -4,12 +4,12 @@
 - cluster-only mode — file stats not available
 
 ## Summary
-- 447 nodes · 928 edges · 26 communities (15 shown, 5 thin omitted)
+- 447 nodes · 929 edges · 25 communities (14 shown, 5 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6c7e4a98`
+- Built from commit: `b24251c0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -17,8 +17,8 @@
 - db.ts
 - syncPipeline.ts
 - compilerOptions
-- scripts
 - devDependencies
+- scripts
 - DataTransformer
 - getDb
 - auth.ts
@@ -29,7 +29,6 @@
 - time.ts
 - validator.ts
 - TokenManager
-- wrangler.json
 - apps_script_onedit.js
 - app.d.ts
 - svelte-deprecation.test.ts
@@ -62,7 +61,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (26 total, 5 thin omitted)
+## Communities (25 total, 5 thin omitted)
 
 ### Community 0 - "db.ts"
 Cohesion: 0.08
@@ -76,13 +75,13 @@ Nodes (9): ApiEnvironment, CONFIG, ApiResponse, LogEntry, Logger, LogLevel, Sync
 Cohesion: 0.06
 Nodes (35): includes, entry, ignoreDependencies, project, $schema, tailwindcss, node_modules/**, public/** (+27 more)
 
-### Community 3 - "scripts"
+### Community 3 - "devDependencies"
+Cohesion: 0.06
+Nodes (34): @biomejs/biome, jiti, devDependencies, @biomejs/biome, jiti, @playwright/test, svelte, svelte-check (+26 more)
+
+### Community 4 - "scripts"
 Cohesion: 0.06
 Nodes (33): author, description, keywords, license, main, name, scripts, build (+25 more)
-
-### Community 4 - "devDependencies"
-Cohesion: 0.07
-Nodes (27): @biomejs/biome, jiti, devDependencies, @biomejs/biome, jiti, @playwright/test, svelte, svelte-check (+19 more)
 
 ### Community 6 - "getDb"
 Cohesion: 0.12
@@ -112,15 +111,11 @@ Nodes (13): formatDateTimeToGmt7(), formatDateToGmt7(), getNowGmt7Date(), getNow
 Cohesion: 0.37
 Nodes (11): ALLOWED_STATUS_TRANSITIONS, assertValidTransition(), isValidCccd(), isValidPassport(), isValidStayStatusTransition(), validateStayCheckoutInput(), validateStayExtensionInput(), validateStayRegistrationInput() (+3 more)
 
-### Community 15 - "wrangler.json"
-Cohesion: 0.25
-Nodes (7): nodejs_compat, compatibility_date, compatibility_flags, d1_databases, name, pages_build_output_dir, $schema
-
-### Community 16 - "apps_script_onedit.js"
+### Community 15 - "apps_script_onedit.js"
 Cohesion: 0.32
 Nodes (3): handleSheetChange(), handleSheetEdit(), syncRowToCloudflare()
 
-### Community 17 - "app.d.ts"
+### Community 16 - "app.d.ts"
 Cohesion: 0.33
 Nodes (3): App, Locals, Platform
 
@@ -134,10 +129,10 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `CatalogManager` connect `CatalogManager` to `db.ts`, `syncPipeline.ts`, `catalogManager.ts`?**
   _High betweenness centrality (0.055) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `compilerOptions`, `scripts`?**
+  _High betweenness centrality (0.054) - this node is a cross-community bridge._
 - **Why does `DataTransformer` connect `DataTransformer` to `db.ts`, `syncPipeline.ts`, `GoogleSheetService`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `devDependencies` to `compilerOptions`, `scripts`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **What connects `DashboardStats`, `IngestResultItem`, `Row` to the rest of the system?**
   _98 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
