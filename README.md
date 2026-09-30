@@ -81,8 +81,8 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-09-30 08:53 (GMT+7)
-- Đã hoàn thành: Chuẩn hóa 100% các ô nhập và hiển thị ngày tháng trên UI theo định dạng `DD/MM/YYYY` thông qua component dùng chung `DatePicker.svelte` (hỗ trợ nhập text và chọn qua lịch HTML5). Tự động gắn giờ thực tế lúc tạo mới cho Ngày đến, cập nhật lại giờ thực tế tại thời điểm chỉnh sửa nếu đổi ngày đến, và luôn cố định `12:00:00` cho Ngày đi dự kiến. Backend tự động chuẩn hóa hai chiều giữa `DD/MM/YYYY` và `YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss` trước khi lưu vào CSDL D1 và trước khi gửi API C06 BCA. Đã test live thành công trên BCA DEV Sandbox.
+- Cập nhật lần cuối: 2026-09-30 09:02 (GMT+7)
+- Đã hoàn thành: Chuẩn hóa 100% các ô nhập và hiển thị ngày tháng trên UI theo định dạng `DD/MM/YYYY` thông qua component dùng chung `DatePicker.svelte` (hỗ trợ nhập text và chọn qua lịch HTML5, tích hợp ràng buộc `min` & `max`). Tự động gắn giờ thực tế lúc tạo mới cho Ngày đến, disable không cho chọn các ngày trước hôm nay (`min=today`), cập nhật lại giờ thực tế tại thời điểm chỉnh sửa nếu đổi ngày đến, và luôn cố định `12:00:00` cho Ngày đi dự kiến. Backend tự động chuẩn hóa hai chiều giữa `DD/MM/YYYY` và `YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss` trước khi lưu vào CSDL D1 và trước khi gửi API C06 BCA. Đã test live thành công trên BCA DEV Sandbox.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Không có.
 
@@ -90,6 +90,7 @@ pnpm run build
 
 ### 2026-09-30
 
+- Cải tiến UI Date Picker & Ràng buộc Ngày đến: Bổ sung thuộc tính `min` và `max` cho [`src/lib/components/DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte), tự động vô hiệu hóa (disable) không cho phép người dùng chọn các ngày trong quá khứ (< ngày hiện tại hôm nay) cho trường `Ngày đến` trên lịch và form validation trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte).
 - Cải tiến UI Date Picker: Xây dựng và tích hợp component [`src/lib/components/DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte) cho toàn bộ các trường ngày tháng (`Ngày sinh`, `Ngày đến`, `Ngày đi dự kiến`, `Thời hạn thị thực`) trong Modal Sửa (Quick-Edit), Modal Thêm khách mới, Modal Gia hạn (Extend) và Modal Khai báo lại (Re-Register) đảm bảo UI luôn hiển thị và nhập theo định dạng `DD/MM/YYYY`.
 - Tự động hóa giờ Ngày đến & Ngày đi: Ngày đến tự động lấy giờ thực tế GMT+7 lúc nạp/tạo mới hoặc giờ tại thời điểm sửa đổi; Ngày đi dự kiến tự động hardcode `12:00:00` theo quy chuẩn BCA mà không cần hiển thị ô nhập giờ.
 - Backend Normalization: Bổ sung lớp chuẩn hóa dữ liệu ngày tháng hai chiều tại [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts) và [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts) đảm bảo CSDL D1 lưu trữ chuẩn (`YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss`) và payload gửi sang BCA (API 4, API 5, API 12) luôn chính xác 100%.

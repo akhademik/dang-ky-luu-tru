@@ -373,6 +373,14 @@ $effect(() => {
 	}
 });
 
+let todayDateDmy = $derived.by(() => {
+	const vnNow = new Date(Date.now() + 7 * 3600 * 1000);
+	const d = String(vnNow.getUTCDate()).padStart(2, "0");
+	const m = String(vnNow.getUTCMonth() + 1).padStart(2, "0");
+	const y = vnNow.getUTCFullYear();
+	return `${d}/${m}/${y}`;
+});
+
 let filterQuocTich = $state("");
 
 function copyCode(code?: string, name?: string) {
@@ -1333,34 +1341,20 @@ function validateArrivalDate(val?: string | null): {
 	const currentDay = new Date(
 		Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()),
 	);
-	const yesterday = new Date(
-		Date.UTC(
-			vnNow.getUTCFullYear(),
-			vnNow.getUTCMonth(),
-			vnNow.getUTCDate() - 1,
-		),
-	);
 
-	if (
-		arrivalDay.getTime() === currentDay.getTime() ||
-		arrivalDay.getTime() === yesterday.getTime()
-	) {
-		return { valid: true };
-	}
-	if (arrivalDay.getTime() < yesterday.getTime()) {
+	if (arrivalDay.getTime() < currentDay.getTime()) {
 		return {
 			valid: false,
-			error:
-				"Ngày đến không được quá 1 ngày trước hôm nay (chỉ chấp nhận hôm nay hoặc hôm qua)",
+			error: "Ngày đến không được trước ngày hiện tại (hôm nay)",
 		};
-	}
-	if (arrivalDay.getTime() > currentDay.getTime()) {
-		return { valid: false, error: "Ngày đến không được ở tương lai" };
 	}
 	return { valid: true };
 }
 
-function validateDepartureDate(val?: string | null): {
+function validateDepartureDate(
+	val?: string | null,
+	arrivalVal?: string | null,
+): {
 	valid: boolean;
 	error?: string;
 } {
@@ -1369,12 +1363,62 @@ function validateDepartureDate(val?: string | null): {
 	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
 	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
 
-	if (!dmy && !ymd) {
+	let day: number, month: number, year: number;
+	if (dmy) {
+		day = parseInt(dmy[1], 10);
+		month = parseInt(dmy[2], 10);
+		year = parseInt(dmy[3], 10);
+	} else if (ymd) {
+		year = parseInt(ymd[1], 10);
+		month = parseInt(ymd[2], 10);
+		day = parseInt(ymd[3], 10);
+	} else {
 		return {
 			valid: false,
 			error: "Ngày đi không hợp lệ",
 		};
 	}
+
+	const departureDay = new Date(Date.UTC(year, month - 1, day));
+	const vnNow = new Date(Date.now() + 7 * 3600 * 1000);
+	const currentDay = new Date(
+		Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()),
+	);
+
+	if (departureDay.getTime() < currentDay.getTime()) {
+		return {
+			valid: false,
+			error: "Ngày đi dự kiến không được trước ngày hiện tại (hôm nay)",
+		};
+	}
+
+	if (arrivalVal && String(arrivalVal).trim()) {
+		const arrStr = String(arrivalVal).trim();
+		const arrDmy = arrStr.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+		const arrYmd = arrStr.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+		let aDay: number | undefined;
+		let aMonth: number | undefined;
+		let aYear: number | undefined;
+		if (arrDmy) {
+			aDay = parseInt(arrDmy[1], 10);
+			aMonth = parseInt(arrDmy[2], 10);
+			aYear = parseInt(arrDmy[3], 10);
+		} else if (arrYmd) {
+			aYear = parseInt(arrYmd[1], 10);
+			aMonth = parseInt(arrYmd[2], 10);
+			aDay = parseInt(arrYmd[3], 10);
+		}
+		if (aDay && aMonth && aYear) {
+			const arrivalDateObj = new Date(Date.UTC(aYear, aMonth - 1, aDay));
+			if (departureDay.getTime() < arrivalDateObj.getTime()) {
+				return {
+					valid: false,
+					error: "Ngày đi dự kiến không được trước ngày đến",
+				};
+			}
+		}
+	}
+
 	return { valid: true };
 }
 
@@ -1787,7 +1831,10 @@ let editLiveVal = $derived.by(() => {
 		errors.ngay_den = arrCheck.error || "Ngày đến không hợp lệ";
 	}
 
-	const depCheck = validateDepartureDate(editStay.ngay_di_du_kien);
+	const depCheck = validateDepartureDate(
+		editStay.ngay_di_du_kien,
+		editStay.ngay_den,
+	);
 	if (!depCheck.valid) {
 		errors.ngay_di_du_kien = depCheck.error || "Ngày đi không hợp lệ";
 	}
@@ -3658,6 +3705,7 @@ onMount(async () => {
 						<DatePicker
 							id="edit_ngay_den"
 							bind:value={editStay.ngay_den}
+							min={todayDateDmy}
 							placeholder="DD/MM/YYYY"
 							hasError={Boolean(editLiveVal.errors.ngay_den)}
 						/>
@@ -3671,6 +3719,7 @@ onMount(async () => {
 						<DatePicker
 							id="edit_ngay_di_du_kien"
 							bind:value={editStay.ngay_di_du_kien}
+							min={editStay.ngay_den || todayDateDmy}
 							placeholder="DD/MM/YYYY"
 							hasError={Boolean(editLiveVal.errors.ngay_di_du_kien)}
 						/>
@@ -3874,6 +3923,7 @@ onMount(async () => {
 					<DatePicker
 						id="extend_new_date"
 						bind:value={extendNewDate}
+						min={todayDateDmy}
 						placeholder="DD/MM/YYYY"
 					/>
 				</div>
@@ -3954,6 +4004,7 @@ onMount(async () => {
 							<DatePicker
 								id="rereg_departure"
 								bind:value={reRegisterDepartureDate}
+								min={todayDateDmy}
 								placeholder="DD/MM/YYYY"
 							/>
 						</div>
@@ -4139,12 +4190,17 @@ onMount(async () => {
 
 					<div>
 						<label for="add_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY) <span class="text-rose-400">*</span></label>
-						<DatePicker id="add_ngay_den" bind:value={newGuestForm.ngay_den} placeholder="DD/MM/YYYY" />
+						<DatePicker id="add_ngay_den" bind:value={newGuestForm.ngay_den} min={todayDateDmy} placeholder="DD/MM/YYYY" />
 					</div>
 
 					<div>
 						<label for="add_ngay_di_du_kien" class="block text-slate-400 mb-1 font-medium">Ngày đi dự kiến (DD/MM/YYYY)</label>
-						<DatePicker id="add_ngay_di_du_kien" bind:value={newGuestForm.ngay_di_du_kien} placeholder="DD/MM/YYYY" />
+						<DatePicker
+							id="add_ngay_di_du_kien"
+							bind:value={newGuestForm.ngay_di_du_kien}
+							min={newGuestForm.ngay_den || todayDateDmy}
+							placeholder="DD/MM/YYYY"
+						/>
 					</div>
 
 					<div class="sm:col-span-2">
