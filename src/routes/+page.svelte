@@ -1,6 +1,7 @@
 <script lang="ts">
 import { onMount } from "svelte";
 import DatePicker from "$lib/components/DatePicker.svelte";
+import GuestTooltip from "$lib/components/GuestTooltip.svelte";
 
 import {
 	COUNTRY_OPTIONS,
@@ -1309,7 +1310,10 @@ function validateDateString(val?: string | null): boolean {
 	return false;
 }
 
-function validateArrivalDate(val?: string | null): {
+function validateArrivalDate(
+	val?: string | null,
+	options?: { allowPast?: boolean },
+): {
 	valid: boolean;
 	error?: string;
 } {
@@ -1342,7 +1346,7 @@ function validateArrivalDate(val?: string | null): {
 		Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()),
 	);
 
-	if (arrivalDay.getTime() < currentDay.getTime()) {
+	if (!options?.allowPast && arrivalDay.getTime() < currentDay.getTime()) {
 		return {
 			valid: false,
 			error: "Ngày đến không được trước ngày hiện tại (hôm nay)",
@@ -1354,6 +1358,7 @@ function validateArrivalDate(val?: string | null): {
 function validateDepartureDate(
 	val?: string | null,
 	arrivalVal?: string | null,
+	options?: { allowPast?: boolean },
 ): {
 	valid: boolean;
 	error?: string;
@@ -1385,7 +1390,7 @@ function validateDepartureDate(
 		Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()),
 	);
 
-	if (departureDay.getTime() < currentDay.getTime()) {
+	if (!options?.allowPast && departureDay.getTime() < currentDay.getTime()) {
 		return {
 			valid: false,
 			error: "Ngày đi dự kiến không được trước ngày hiện tại (hôm nay)",
@@ -1692,13 +1697,25 @@ function validateStayDetail(stay: StayDetail): {
 		errors.ngay_sinh = "Ngày sinh sai định dạng (DD/MM/YYYY)";
 	}
 
-	const arrCheck = validateArrivalDate(stay.ngay_den);
+	// For guests currently in-house (SYNCED_KBTT, EXTENDED) or already checked out,
+	// their arrival date in the past is valid and normal.
+	// We only strictly block past arrival dates (< today) for new un-synced registrations (READY_TO_SYNC / PENDING_VALIDATION).
+	const isAlreadySyncedOrPast =
+		stay.status === "SYNCED_KBTT" ||
+		stay.status === "EXTENDED" ||
+		stay.status === "CHECKED_OUT";
+
+	const arrCheck = validateArrivalDate(stay.ngay_den, {
+		allowPast: isAlreadySyncedOrPast,
+	});
 	if (!arrCheck.valid) {
 		errors.ngay_den = arrCheck.error || "Ngày đến không hợp lệ";
 	}
 
 	if (stay.ngay_di_du_kien?.trim()) {
-		const depCheck = validateDepartureDate(stay.ngay_di_du_kien);
+		const depCheck = validateDepartureDate(stay.ngay_di_du_kien, stay.ngay_den, {
+			allowPast: isAlreadySyncedOrPast,
+		});
 		if (!depCheck.valid) {
 			errors.ngay_di_du_kien = depCheck.error || "Ngày đi không hợp lệ";
 		}
@@ -1826,7 +1843,14 @@ let editLiveVal = $derived.by(() => {
 			"Ngày sinh phải theo định dạng DD/MM/YYYY (ví dụ: 22/09/2002)";
 	}
 
-	const arrCheck = validateArrivalDate(editStay.ngay_den);
+	const isAlreadySyncedOrInhouse =
+		editStay.status === "SYNCED_KBTT" ||
+		editStay.status === "EXTENDED" ||
+		editStay.status === "CHECKED_OUT";
+
+	const arrCheck = validateArrivalDate(editStay.ngay_den, {
+		allowPast: isAlreadySyncedOrInhouse,
+	});
 	if (!arrCheck.valid) {
 		errors.ngay_den = arrCheck.error || "Ngày đến không hợp lệ";
 	}
@@ -1834,6 +1858,7 @@ let editLiveVal = $derived.by(() => {
 	const depCheck = validateDepartureDate(
 		editStay.ngay_di_du_kien,
 		editStay.ngay_den,
+		{ allowPast: isAlreadySyncedOrInhouse },
 	);
 	if (!depCheck.valid) {
 		errors.ngay_di_du_kien = depCheck.error || "Ngày đi không hợp lệ";
@@ -2759,7 +2784,9 @@ onMount(async () => {
 									{@const countryFullName = getCountryFullName(stay.quoc_tich)}
 									<tr class="hover:bg-slate-700/30 transition-all duration-300 {isBusy ? 'opacity-40 bg-slate-900/60 select-none grayscale cursor-not-allowed' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''} {val.hasErrors && !isBusy ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
-											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
+											<GuestTooltip {stay}>
+												<span class="cursor-help hover:text-sky-300 hover:underline transition-colors {val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
+											</GuestTooltip>
 											{#if val.errors.ho_ten}
 												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️ {val.errors.ho_ten}</span>
 											{/if}
@@ -2907,7 +2934,9 @@ onMount(async () => {
 									{@const badge = getStatusBadge(stay.status, val.hasErrors)}
 									<tr class="hover:bg-slate-700/30 transition-all duration-300 {stay.status === 'CHECKED_OUT' ? 'opacity-50' : ''} {isBusy ? 'opacity-40 bg-slate-900/60 select-none grayscale cursor-not-allowed' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''} {val.hasErrors && !isBusy ? 'border-l-4 border-l-rose-500 bg-rose-950/10' : ''}">
 										<td class="p-3.5 font-semibold text-slate-100 flex items-center gap-2">
-											<span class="{val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
+											<GuestTooltip {stay}>
+												<span class="cursor-help hover:text-sky-300 hover:underline transition-colors {val.errors.ho_ten ? 'text-rose-400 font-bold underline decoration-rose-500 decoration-wavy' : ''}">{stay.ho_ten}</span>
+											</GuestTooltip>
 											{#if val.errors.ho_ten}
 												<span class="text-[10px] px-1 py-0.5 rounded bg-rose-900/80 text-rose-200 border border-rose-700" title={val.errors.ho_ten}>⚠️</span>
 											{/if}
@@ -3080,7 +3109,9 @@ onMount(async () => {
 									<div class="w-60 min-w-[15rem] max-w-[15rem] flex items-center gap-2 flex-shrink-0">
 										<span class="text-xs font-mono text-slate-500 w-6 flex-shrink-0">#{gIdx + 1}</span>
 										<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5 min-w-0">
-											<span class="truncate max-w-[130px]" title={group.ho_ten}>{group.ho_ten}</span>
+											<GuestTooltip {stay}>
+												<span class="truncate max-w-[130px] cursor-help hover:text-sky-300 hover:underline transition-colors">{group.ho_ten}</span>
+											</GuestTooltip>
 											{#if group.gioi_tinh === 'F'}
 												<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40 flex-shrink-0">Nữ ♀</span>
 											{:else}
@@ -3185,7 +3216,9 @@ onMount(async () => {
 											</span>
 											<span class="text-xs font-mono text-slate-500 w-5 flex-shrink-0">#{gIdx + 1}</span>
 											<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5 min-w-0">
-												<span class="truncate max-w-[95px]" title={group.ho_ten}>{group.ho_ten}</span>
+												<GuestTooltip stay={group.latestStay}>
+													<span class="truncate max-w-[120px] cursor-help hover:text-sky-300 hover:underline transition-colors">{group.ho_ten}</span>
+												</GuestTooltip>
 												{#if group.gioi_tinh === 'F'}
 													<span class="text-[10px] px-1 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40 flex-shrink-0">Nữ ♀</span>
 												{:else}
@@ -3723,7 +3756,7 @@ onMount(async () => {
 						<DatePicker
 							id="edit_ngay_den"
 							bind:value={editStay.ngay_den}
-							min={todayDateDmy}
+							min={editStay.status === 'READY_TO_SYNC' ? todayDateDmy : undefined}
 							placeholder="DD/MM/YYYY"
 							hasError={Boolean(editLiveVal.errors.ngay_den)}
 						/>
@@ -3737,7 +3770,7 @@ onMount(async () => {
 						<DatePicker
 							id="edit_ngay_di_du_kien"
 							bind:value={editStay.ngay_di_du_kien}
-							min={editStay.ngay_den || todayDateDmy}
+							min={editStay.status === 'READY_TO_SYNC' ? (editStay.ngay_den || todayDateDmy) : editStay.ngay_den}
 							placeholder="DD/MM/YYYY"
 							hasError={Boolean(editLiveVal.errors.ngay_di_du_kien)}
 						/>

@@ -81,8 +81,8 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-09-30 09:18 (GMT+7)
-- Đã hoàn thành: Chuẩn hóa toàn bộ nhãn hiển thị trong Dev Logs với tiền tố phân biệt rõ ràng giữa thao tác nội bộ CSDL (`db-checkin`, `db-checkout`, `db-extend`, `db-status`) và các yêu cầu gọi trực tiếp Cổng API C06 BCA (`api-checkin`, `api-checkout`, `api-extend`). Chuẩn hóa 100% các ô nhập và hiển thị ngày tháng trên UI theo định dạng `DD/MM/YYYY`. Pipeline kiểm thử chất lượng code (Format, Lint, Svelte Check, Tests, Knip, Build) đều đạt 100% pass.
+- Cập nhật lần cuối: 2026-09-30 09:45 (GMT+7)
+- Đã hoàn thành: Tích hợp component bảng hover tooltip chi tiết [`GuestTooltip.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/GuestTooltip.svelte) khi rê chuột lên tên khách ở toàn bộ các Tab (Khai báo, Đang ở, Tất cả khách & Lịch sử) hiển thị đầy đủ thông tin khách hàng (Giới tính, Số phòng, CCCD/Hộ chiếu, Loại giấy tờ, Quốc tịch, Ngày sinh, Hạn visa cho khách nước ngoài, Địa chỉ chi tiết, Trạng thái lưu trú, Ghi chú - đã loại trừ Ngày đến & Ngày đi theo yêu cầu). Điều chỉnh quy tắc kiểm tra ngày đến: không còn bắt lỗi/khóa ngày quá khứ cho khách đang ở. Pipeline kiểm tra chất lượng code (`format`, `lint:biome`, `check:svelte`, `test`, `knip`) đều đạt 100% pass.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Không có.
 
@@ -90,6 +90,14 @@ pnpm run build
 
 ### 2026-09-30
 
+- Thêm Component Hover Tooltip Chi Tiết Khách Hàng:
+  - Xây dựng component [`src/lib/components/GuestTooltip.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/GuestTooltip.svelte) theo phong cách Modern Dark Slate Glassmorphism.
+  - Khi rê chuột (hover) vào tên khách, hiển thị bảng tooltip trực quan gồm: Họ tên, Giới tính, Số phòng, Số giấy tờ + Loại giấy tờ (`loai_giay_to`), Quốc tịch + Mã ISO (`quoc_tich`), Ngày sinh (`ngay_sinh`), Hạn thị thực/Visa (`thoi_han_thi_thuc`), Địa chỉ chi tiết (`dia_chi_chi_tiet`), Trạng thái lưu trú (`status`), và Ghi chú (`ghi_chu`).
+  - Áp dụng đồng bộ cho tất cả các bảng danh sách khách hàng trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte).
+- Tinh chỉnh Logic Validation Ngày đến theo Trạng thái Lưu trú:
+  - Cập nhật `validateArrivalDate` và `validateStayDetail` trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte): Bỏ cờ cảnh báo lỗi đối với khách có ngày đến trong quá khứ khi đang ở các trạng thái đã đồng bộ (`SYNCED_KBTT`, `EXTENDED`, `CHECKED_OUT`).
+  - Chỉ áp dụng ràng buộc nghiêm ngặt ngày đến $\ge$ hôm nay cho các lượt đăng ký mới (`READY_TO_SYNC`, `PENDING_VALIDATION`) để tránh bị BCA từ chối khi gửi API 4 / API 5.
+  - Cập nhật Modal Quick-Edit: Cho phép xem và chỉnh sửa ngày đến của khách đang ở mà không bị khóa chặn `min=today` trừ khi khách đó ở trạng thái chưa sync (`READY_TO_SYNC`).
 - Phân loại tiền tố Dev Logs (`db-` & `api-`): Cập nhật hàm `formatAuditAction` trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte) bổ sung các nhãn phân biệt trực quan:
   - `api-checkin`: Gửi hồ sơ khai báo lưu trú mới lên BCA (API 4 cho khách nước ngoài, API 5 cho khách Việt Nam).
   - `api-checkout`: Gửi yêu cầu trả phòng sớm lên BCA (API 12 - loại `TS`).
