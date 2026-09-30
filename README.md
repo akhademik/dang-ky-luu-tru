@@ -81,8 +81,8 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-09-30 09:02 (GMT+7)
-- Đã hoàn thành: Chuẩn hóa 100% các ô nhập và hiển thị ngày tháng trên UI theo định dạng `DD/MM/YYYY` thông qua component dùng chung `DatePicker.svelte` (hỗ trợ nhập text và chọn qua lịch HTML5, tích hợp ràng buộc `min` & `max`). Tự động gắn giờ thực tế lúc tạo mới cho Ngày đến, disable không cho chọn các ngày trước hôm nay (`min=today`), cập nhật lại giờ thực tế tại thời điểm chỉnh sửa nếu đổi ngày đến, và luôn cố định `12:00:00` cho Ngày đi dự kiến. Backend tự động chuẩn hóa hai chiều giữa `DD/MM/YYYY` và `YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss` trước khi lưu vào CSDL D1 và trước khi gửi API C06 BCA. Đã test live thành công trên BCA DEV Sandbox.
+- Cập nhật lần cuối: 2026-09-30 09:18 (GMT+7)
+- Đã hoàn thành: Chuẩn hóa toàn bộ nhãn hiển thị trong Dev Logs với tiền tố phân biệt rõ ràng giữa thao tác nội bộ CSDL (`db-checkin`, `db-checkout`, `db-extend`, `db-status`) và các yêu cầu gọi trực tiếp Cổng API C06 BCA (`api-checkin`, `api-checkout`, `api-extend`). Chuẩn hóa 100% các ô nhập và hiển thị ngày tháng trên UI theo định dạng `DD/MM/YYYY`. Pipeline kiểm thử chất lượng code (Format, Lint, Svelte Check, Tests, Knip, Build) đều đạt 100% pass.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Không có.
 
@@ -90,6 +90,14 @@ pnpm run build
 
 ### 2026-09-30
 
+- Phân loại tiền tố Dev Logs (`db-` & `api-`): Cập nhật hàm `formatAuditAction` trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte) bổ sung các nhãn phân biệt trực quan:
+  - `api-checkin`: Gửi hồ sơ khai báo lưu trú mới lên BCA (API 4 cho khách nước ngoài, API 5 cho khách Việt Nam).
+  - `api-checkout`: Gửi yêu cầu trả phòng sớm lên BCA (API 12 - loại `TS`).
+  - `api-extend`: Gửi yêu cầu gia hạn lưu trú lên BCA (API 12 - loại `GH`).
+  - `db-checkin`: Tạo lượt lưu trú mới trong CSDL D1 (đăng ký lại `RE_REGISTER_STAY`).
+  - `db-checkout`: Trả phòng nội bộ trong CSDL D1 (`CHECKOUT_STAY`).
+  - `db-extend`: Gia hạn nội bộ trong CSDL D1.
+  - `db-status`: Thao tác đổi/ghi đè trạng thái CSDL (`OVERWRITE_STATUS`).
 - Cải tiến UI Date Picker & Ràng buộc Ngày đến: Bổ sung thuộc tính `min` và `max` cho [`src/lib/components/DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte), tự động vô hiệu hóa (disable) không cho phép người dùng chọn các ngày trong quá khứ (< ngày hiện tại hôm nay) cho trường `Ngày đến` trên lịch và form validation trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte).
 - Cải tiến UI Date Picker: Xây dựng và tích hợp component [`src/lib/components/DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte) cho toàn bộ các trường ngày tháng (`Ngày sinh`, `Ngày đến`, `Ngày đi dự kiến`, `Thời hạn thị thực`) trong Modal Sửa (Quick-Edit), Modal Thêm khách mới, Modal Gia hạn (Extend) và Modal Khai báo lại (Re-Register) đảm bảo UI luôn hiển thị và nhập theo định dạng `DD/MM/YYYY`.
 - Tự động hóa giờ Ngày đến & Ngày đi: Ngày đến tự động lấy giờ thực tế GMT+7 lúc nạp/tạo mới hoặc giờ tại thời điểm sửa đổi; Ngày đi dự kiến tự động hardcode `12:00:00` theo quy chuẩn BCA mà không cần hiển thị ô nhập giờ.

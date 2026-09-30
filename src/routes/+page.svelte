@@ -2067,27 +2067,12 @@ function formatAuditAction(
 	requestPayload?: string,
 ): { name: string; class: string } {
 	const ep = (endpoint || "").toUpperCase();
-	if (
-		ep.includes("API_5_VN") ||
-		ep.includes("API_4_NN") ||
-		ep.includes("REGISTER") ||
-		ep.includes("CHECKIN")
-	) {
+
+	// 1. BCA External API Calls
+	if (ep.includes("API_5_VN") || ep.includes("API_4_NN")) {
 		return {
-			name: "checkin",
+			name: "api-checkin",
 			class: "bg-sky-950/90 text-sky-300 border-sky-700/80",
-		};
-	}
-	if (ep.includes("CHECKOUT")) {
-		return {
-			name: "checkout",
-			class: "bg-slate-900 text-slate-300 border-slate-700",
-		};
-	}
-	if (ep.includes("EXTEND")) {
-		return {
-			name: "extend",
-			class: "bg-indigo-950/90 text-indigo-300 border-indigo-700/80",
 		};
 	}
 	if (ep.includes("DOI_NGAY_TRA_PHONG")) {
@@ -2097,13 +2082,13 @@ function formatAuditAction(
 				const item = Array.isArray(parsed) ? parsed[0] : parsed;
 				if (item?.loai === "TS") {
 					return {
-						name: "checkout",
+						name: "api-checkout",
 						class: "bg-slate-900 text-slate-300 border-slate-700",
 					};
 				}
 				if (item?.loai === "GH") {
 					return {
-						name: "extend",
+						name: "api-extend",
 						class: "bg-indigo-950/90 text-indigo-300 border-indigo-700/80",
 					};
 				}
@@ -2112,10 +2097,43 @@ function formatAuditAction(
 			}
 		}
 		return {
-			name: "extend",
+			name: "api-extend",
 			class: "bg-indigo-950/90 text-indigo-300 border-indigo-700/80",
 		};
 	}
+
+	// 2. Internal Database Operations
+	if (ep === "RE_REGISTER_STAY" || ep.includes("RE_REGISTER")) {
+		return {
+			name: "db-checkin",
+			class: "bg-purple-950/90 text-purple-300 border-purple-700/80",
+		};
+	}
+	if (ep === "CHECKOUT_STAY" || ep.includes("CHECKOUT")) {
+		return {
+			name: "db-checkout",
+			class: "bg-slate-900 text-slate-400 border-slate-700",
+		};
+	}
+	if (ep.includes("EXTEND")) {
+		return {
+			name: "db-extend",
+			class: "bg-indigo-950/80 text-indigo-300 border-indigo-800/60",
+		};
+	}
+	if (ep.includes("OVERWRITE_STATUS")) {
+		return {
+			name: "db-status",
+			class: "bg-amber-950/80 text-amber-300 border-amber-700/80",
+		};
+	}
+	if (ep.includes("CHECKIN") || ep.includes("REGISTER")) {
+		return {
+			name: "db-checkin",
+			class: "bg-purple-950/90 text-purple-300 border-purple-700/80",
+		};
+	}
+
 	return {
 		name: (endpoint || "-").toLowerCase(),
 		class: "bg-slate-800 text-slate-300 border-slate-700",
