@@ -76,3 +76,20 @@ pnpm test
 # 7. Biên dịch production build
 pnpm run build
 ```
+
+---
+
+## Trạng thái hệ thống
+
+- Cập nhật lần cuối: 2026-09-30 07:49 (GMT+7)
+- Đã hoàn thành: Chuẩn hóa nhãn "Hành Động" (Audit Action badge) trên tab **Dev Logs** và Payload Inspector modal: ánh xạ `API_12_DOI_NGAY_TRA_PHONG` (với payload `loai: "GH"` khi gia hạn đêm ở / extend stayed night) sang hành động `extend`.
+- Đang dở: Không có.
+- Biết trước còn thiếu / nợ kỹ thuật: Không có.
+
+## Changelog
+
+### 2026-09-30
+
+- Sửa: Cập nhật hàm `formatAuditAction` trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte) để nhận diện `API_12_DOI_NGAY_TRA_PHONG` kết hợp kiểm tra `request_payload`, tự động hiển thị nhãn `extend` cho các lượt gia hạn lưu trú (loại `GH`) và `checkout` cho các lượt trả phòng sớm (loại `TS`).
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (100% pass) | knip ✅ | build ✅
+- File chính bị ảnh hưởng: [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md)

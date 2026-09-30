@@ -1943,7 +1943,10 @@ function getStatusBadge(status: string, hasErrors = false) {
 	}
 }
 
-function formatAuditAction(endpoint?: string): { name: string; class: string } {
+function formatAuditAction(
+	endpoint?: string,
+	requestPayload?: string,
+): { name: string; class: string } {
 	const ep = (endpoint || "").toUpperCase();
 	if (
 		ep.includes("API_5_VN") ||
@@ -1963,6 +1966,32 @@ function formatAuditAction(endpoint?: string): { name: string; class: string } {
 		};
 	}
 	if (ep.includes("EXTEND")) {
+		return {
+			name: "extend",
+			class: "bg-indigo-950/90 text-indigo-300 border-indigo-700/80",
+		};
+	}
+	if (ep.includes("DOI_NGAY_TRA_PHONG")) {
+		if (requestPayload) {
+			try {
+				const parsed = JSON.parse(requestPayload);
+				const item = Array.isArray(parsed) ? parsed[0] : parsed;
+				if (item?.loai === "TS") {
+					return {
+						name: "checkout",
+						class: "bg-slate-900 text-slate-300 border-slate-700",
+					};
+				}
+				if (item?.loai === "GH") {
+					return {
+						name: "extend",
+						class: "bg-indigo-950/90 text-indigo-300 border-indigo-700/80",
+					};
+				}
+			} catch {
+				// parse fallback
+			}
+		}
 		return {
 			name: "extend",
 			class: "bg-indigo-950/90 text-indigo-300 border-indigo-700/80",
@@ -3258,7 +3287,7 @@ onMount(async () => {
 									</tr>
 								{:else}
 									{#each auditLogs as log (log.id)}
-										{@const act = formatAuditAction(log.api_endpoint)}
+										{@const act = formatAuditAction(log.api_endpoint, log.request_payload)}
 										<tr class="hover:bg-slate-700/30 transition-colors">
 											<td class="p-3.5 text-slate-400 font-mono whitespace-nowrap">{formatDateTimeDisplay(log.created_at)}</td>
 											<td class="p-3.5 whitespace-nowrap">
@@ -3904,7 +3933,7 @@ onMount(async () => {
 
 	<!-- MODAL: JSON PAYLOAD INSPECTOR -->
 	{#if showPayloadModal && selectedLog}
-		{@const modalAct = formatAuditAction(selectedLog.api_endpoint)}
+		{@const modalAct = formatAuditAction(selectedLog.api_endpoint, selectedLog.request_payload)}
 		<div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
 			<div class="bg-slate-800 border border-slate-700 w-full max-w-3xl rounded-2xl p-6 shadow-2xl max-h-[85vh] flex flex-col">
 				<div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
