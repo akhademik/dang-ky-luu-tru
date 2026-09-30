@@ -15,45 +15,35 @@ function generateId(): string {
 				Math.random().toString(36).substring(2, 15);
 }
 
-let lastAutoCheckoutTimestamp = 0;
-
-export async function autoCheckoutExpiredStays(
+export async function getExpiredStays(
 	db: D1DatabaseLike,
-): Promise<number> {
-	const now = Date.now();
-	if (now - lastAutoCheckoutTimestamp < 60_000) {
-		return 0;
-	}
-	lastAutoCheckoutTimestamp = now;
-
+): Promise<StayDetail[]> {
 	try {
-		const nowStr = new Date(Date.now() + 7 * 3600 * 1000)
-			.toISOString()
-			.replace("T", " ")
-			.substring(0, 19);
 		const res = await db
 			.prepare(`
-				UPDATE stays
-				SET status = 'CHECKED_OUT',
-				    ngay_di_thuc_te = coalesce(nullif(ngay_di_du_kien, ''), ?),
-				    updated_at = ?
-				WHERE status IN ('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED')
-				  AND ngay_di_du_kien IS NOT NULL
-				  AND trim(ngay_di_du_kien) != ''
+				SELECT s.id, s.guest_id, s.so_phong, s.ngay_den, s.ngay_di_du_kien, s.ngay_di_thuc_te,
+				       s.thoi_han_thi_thuc, s.ly_do_luu_tru, s.status, s.ma_ho_so_kbtt, s.ghi_chu,
+				       s.source_sheet_tab, s.source_sheet_row, s.created_at, s.updated_at,
+				       g.loai_giay_to, g.so_giay_to, g.ho_ten, g.ngay_sinh, g.gioi_tinh,
+				       g.quoc_tich, g.dia_chi_chi_tiet, g.phuong_xa, g.quan_huyen, g.tinh_thanh
+				FROM stays s
+				JOIN guests g ON s.guest_id = g.id
+				WHERE s.status IN ('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED')
+				  AND s.ngay_di_du_kien IS NOT NULL
+				  AND trim(s.ngay_di_du_kien) != ''
 				  AND datetime(
 				      case 
-				          when length(trim(ngay_di_du_kien)) = 10 then trim(ngay_di_du_kien) || ' 12:00:00'
-				          when trim(ngay_di_du_kien) like '% 05:00:00' then substr(trim(ngay_di_du_kien), 1, 10) || ' 12:00:00'
-				          when trim(ngay_di_du_kien) like '% 00:00:00' then substr(trim(ngay_di_du_kien), 1, 10) || ' 12:00:00'
-				          else trim(ngay_di_du_kien)
+				          when length(trim(s.ngay_di_du_kien)) = 10 then trim(s.ngay_di_du_kien) || ' 12:00:00'
+				          when trim(s.ngay_di_du_kien) like '% 05:00:00' then substr(trim(s.ngay_di_du_kien), 1, 10) || ' 12:00:00'
+				          when trim(s.ngay_di_du_kien) like '% 00:00:00' then substr(trim(s.ngay_di_du_kien), 1, 10) || ' 12:00:00'
+				          else trim(s.ngay_di_du_kien)
 				      end
 				  ) <= datetime('now', '+7 hours')
 			`)
-			.bind(nowStr, nowStr)
-			.run();
-		return res?.meta?.changes || 0;
+			.all<StayDetail>();
+		return res?.results || [];
 	} catch {
-		return 0;
+		return [];
 	}
 }
 
@@ -233,8 +223,6 @@ export async function getStays(
 		offset?: number;
 	},
 ): Promise<StayDetail[]> {
-	await autoCheckoutExpiredStays(db);
-
 	let query = `
 		SELECT s.id, s.guest_id, s.so_phong, s.ngay_den, s.ngay_di_du_kien, s.ngay_di_thuc_te,
 		       s.thoi_han_thi_thuc, s.ly_do_luu_tru, s.status, s.ma_ho_so_kbtt, s.ghi_chu,

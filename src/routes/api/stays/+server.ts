@@ -1,9 +1,11 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 import { getDb, getStays, upsertGuest, upsertStay } from "$lib/server/db.js";
+import { stayService } from "$lib/server/stayService.js";
 
 export const GET: RequestHandler = async ({ url, platform }) => {
 	try {
 		const db = getDb(platform);
+		await stayService.autoCheckoutExpiredStays(db);
 		const status = url.searchParams.get("status") || "ALL";
 		const room = url.searchParams.get("room") || "";
 		const search = url.searchParams.get("search") || "";

@@ -269,7 +269,38 @@ export class MockD1Database implements D1DatabaseLike {
 				});
 
 				let filtered = joined;
-				if (/s\.status IN/i.test(trimmed) && params.length === 0) {
+				if (
+					/s\.status IN \('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED'\)/i.test(
+						trimmed,
+					)
+				) {
+					if (/datetime\(.*<= datetime\('now'/i.test(trimmed)) {
+						const nowGmt7 = new Date(Date.now() + 7 * 3600 * 1000)
+							.toISOString()
+							.replace("T", " ")
+							.substring(0, 19);
+						filtered = filtered.filter((s) => {
+							if (
+								!["SYNCED_KBTT", "CHECKED_IN", "EXTENDED"].includes(
+									String(s.status),
+								)
+							)
+								return false;
+							if (!s.ngay_di_du_kien) return false;
+							let dep = String(s.ngay_di_du_kien).trim();
+							if (dep.length === 10) dep += " 12:00:00";
+							else if (dep.endsWith(" 05:00:00") || dep.endsWith(" 00:00:00"))
+								dep = `${dep.substring(0, 10)} 12:00:00`;
+							return dep <= nowGmt7;
+						});
+					} else {
+						filtered = filtered.filter((s) =>
+							["SYNCED_KBTT", "CHECKED_IN", "EXTENDED"].includes(
+								String(s.status),
+							),
+						);
+					}
+				} else if (/s\.status IN/i.test(trimmed) && params.length === 0) {
 					filtered = filtered.filter((s) =>
 						[
 							"READY_TO_SYNC",

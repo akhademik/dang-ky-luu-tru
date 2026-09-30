@@ -81,8 +81,8 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-09-30 07:49 (GMT+7)
-- Đã hoàn thành: Chuẩn hóa nhãn "Hành Động" (Audit Action badge) trên tab **Dev Logs** và Payload Inspector modal: ánh xạ `API_12_DOI_NGAY_TRA_PHONG` (với payload `loai: "GH"` khi gia hạn đêm ở / extend stayed night) sang hành động `extend`.
+- Cập nhật lần cuối: 2026-09-30 08:20 (GMT+7)
+- Đã hoàn thành: Tích hợp logic tự động kiểm tra và checkout gửi API BCA (API 12) khi khách ở trạng thái "Đang ở" (`SYNCED_KBTT`, `EXTENDED`) và ngày đi dự kiến (`ngay_di_du_kien`) đã quá 12:00:00 (GMT+7). Cung cấp endpoint `POST /api/stays/auto-checkout` và tự động điều phối qua `stayService.autoCheckoutExpiredStays()`.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Không có.
 
@@ -90,6 +90,8 @@ pnpm run build
 
 ### 2026-09-30
 
+- Thêm: Triển khai logic auto-checkout cho khách đang ở (`SYNCED_KBTT`, `EXTENDED`) khi ngày đi dự kiến vượt quá 12:00 trưa GMT+7, tự động gửi API 12 đổi ngày trả phòng lên C06 BCA và cập nhật trạng thái `CHECKED_OUT`.
+- Thêm: API endpoint `POST /api/stays/auto-checkout` và tích hợp trigger tự động trong các luồng truy vấn `GET /api/stays` và `GET /api/stats`.
 - Sửa: Cập nhật hàm `formatAuditAction` trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte) để nhận diện `API_12_DOI_NGAY_TRA_PHONG` kết hợp kiểm tra `request_payload`, tự động hiển thị nhãn `extend` cho các lượt gia hạn lưu trú (loại `GH`) và `checkout` cho các lượt trả phòng sớm (loại `TS`).
 - Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (100% pass) | knip ✅ | build ✅
-- File chính bị ảnh hưởng: [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md)
+- File chính bị ảnh hưởng: [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`src/lib/server/repositories/stayRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/stayRepository.ts), [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts), [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts), [`src/routes/api/stats/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stats/+server.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md)

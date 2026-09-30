@@ -1,5 +1,6 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 import { getDashboardStats, getDb } from "$lib/server/db.js";
+import { stayService } from "$lib/server/stayService.js";
 
 let cachedStats: { data: unknown; time: number } | null = null;
 let statsInFlight: Promise<unknown> | null = null;
@@ -43,6 +44,7 @@ export const GET: RequestHandler = async ({ url, platform }) => {
 
 		statsInFlight = (async () => {
 			const db = getDb(platform);
+			await stayService.autoCheckoutExpiredStays(db);
 			const stats = await getDashboardStats(db);
 			cachedStats = { data: stats, time: Date.now() };
 			return stats;

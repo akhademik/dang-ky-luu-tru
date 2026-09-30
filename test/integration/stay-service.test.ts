@@ -180,9 +180,29 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 	});
 	assert.equal(foreignStay2.thoi_han_thi_thuc, "2027-05-30");
 
+	// 11. Test autoCheckoutExpiredStays when stay has passed 12:00
+	const expiredGuest = await upsertGuest(db, {
+		ho_ten: "TEST EXPIRED GUEST",
+		so_giay_to: "001099112233",
+		quoc_tich: "VNM",
+		loai_giay_to: "CCCD",
+		gioi_tinh: "M",
+	});
+	const expiredStay = await upsertStay(db, expiredGuest.id, {
+		so_phong: "5",
+		ngay_den: "2026-09-01 14:00:00",
+		ngay_di_du_kien: "2026-09-03 12:00:00", // Past date (passed 12:00)
+		status: "SYNCED_KBTT",
+	});
+
+	const autoCheckoutRes = await stayService.autoCheckoutExpiredStays(db, true);
+	assert.ok(autoCheckoutRes.checkedOutCount >= 1);
+	const checkedExpiredStay = await getStayById(db, expiredStay.id);
+	assert.equal(checkedExpiredStay?.status, "CHECKED_OUT");
+
 	// Cleanup test fixtures
 	await db.exec(
-		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST');",
+		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST');",
 	);
 
 	console.log("✅ [Integration] D1 Database & StayService tests passed!");

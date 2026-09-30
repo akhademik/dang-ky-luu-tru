@@ -11,6 +11,7 @@ import {
 	checkoutStay as dbCheckoutStay,
 	extendStay as dbExtendStay,
 	updateStay as dbUpdateStay,
+	getExpiredStays,
 	getLatestVisaByGuestId,
 	getStayById,
 	getStays,
@@ -501,6 +502,57 @@ class StayService {
 		return { success: false, message: "Không thể cập nhật thời hạn lưu trú" };
 	}
 
+	private lastAutoCheckoutTime = 0;
+
+	public async autoCheckoutExpiredStays(
+		db: D1DatabaseLike,
+		force = false,
+	): Promise<{
+		checkedOutCount: number;
+		results: Array<{ stayId: string; success: boolean; message: string }>;
+	}> {
+		const now = Date.now();
+		if (!force && now - this.lastAutoCheckoutTime < 15_000) {
+			return { checkedOutCount: 0, results: [] };
+		}
+		this.lastAutoCheckoutTime = now;
+
+		const expiredStays = await getExpiredStays(db);
+		if (!expiredStays || expiredStays.length === 0) {
+			return { checkedOutCount: 0, results: [] };
+		}
+
+		const results: Array<{
+			stayId: string;
+			success: boolean;
+			message: string;
+		}> = [];
+		let checkedOutCount = 0;
+
+		for (const stay of expiredStays) {
+			try {
+				const res = await this.checkoutStay(db, stay.id);
+				results.push({
+					stayId: stay.id,
+					success: res.success,
+					message: res.message,
+				});
+				if (res.success) {
+					checkedOutCount++;
+				}
+			} catch (err: unknown) {
+				const errMsg = err instanceof Error ? err.message : String(err);
+				results.push({
+					stayId: stay.id,
+					success: false,
+					message: `Lỗi auto-checkout: ${errMsg}`,
+				});
+			}
+		}
+
+		return { checkedOutCount, results };
+	}
+
 	public async checkoutStay(
 		db: D1DatabaseLike,
 		stayId: string,
@@ -519,29 +571,8 @@ class StayService {
 		const quocTich = (stay.quoc_tich || "VNM").toUpperCase().trim();
 		const isVN = ["VNM", "VN", "VIỆT NAM", "VIET NAM"].includes(quocTich);
 
-		// Kiểm tra thời gian: Trên hệ thống C06 (BCA), khách tự động checkout sau 12:00:00 ngày đi dự kiến.
-		// Chỉ khi khách checkout TRƯỚC 12:00 ngày đi dự kiến (Trả phòng sớm - TS) thì mới gửi API 12 lên BCA.
-		const vnNow = DataTransformer.getVnNow();
-		const nowDateTimeStr = vnNow.fullStr; // YYYY-MM-DD HH:mm:ss GMT+7
-
-		let isEarlyCheckout = true;
-		if (stay.ngay_di_du_kien) {
-			const departureDateTime = DataTransformer.formatDateTime(
-				stay.ngay_di_du_kien,
-				"12:00:00",
-			);
-			if (departureDateTime && departureDateTime <= nowDateTimeStr) {
-				// Đã quá 12:00 ngày đi dự kiến -> Trên hệ thống BCA đã tự động kết thúc lưu trú
-				isEarlyCheckout = false;
-			}
-		}
-
-		// Nếu khách đã đồng bộ lên BCA, là khách VN và đang checkout TRƯỚC 12:00 ngày đi -> gửi API 12 (TS)
-		if (
-			(stay.status === "SYNCED_KBTT" || stay.status === "EXTENDED") &&
-			isVN &&
-			isEarlyCheckout
-		) {
+		// Nếu khách đang ở (SYNCED_KBTT hoặc EXTENDED) và là khách VN -> gửi yêu cầu checkout lên BCA qua API 12
+		if ((stay.status === "SYNCED_KBTT" || stay.status === "EXTENDED") && isVN) {
 			// Lấy chính xác mã loại giấy tờ đã lưu từ lúc khai báo thành công (không đoán mò, không fallback lung tung)
 			const rawLoai = Number.parseInt(String(stay.loai_giay_to || "1"), 10);
 			const loaiGiayTo = Number.isNaN(rawLoai) || rawLoai <= 0 ? 1 : rawLoai;
@@ -610,20 +641,18 @@ class StayService {
 				}
 			}
 		} else {
-			// Trả phòng nội bộ (đối với khách NNN, khách chưa sync, hoặc khách trả phòng sau 12:00 đã tự động checkout trên BCA)
+			// Trả phòng nội bộ (đối với khách NNN hoặc khách chưa sync)
 			await logKbttAction(db, {
 				stay_id: stayId,
 				api_endpoint: "CHECKOUT_STAY",
 				guest_name: stay.ho_ten,
 				so_giay_to: stay.so_giay_to,
 				so_phong: stay.so_phong,
-				request_payload: JSON.stringify({ stayId, isEarlyCheckout }),
+				request_payload: JSON.stringify({ stayId }),
 				response_payload: JSON.stringify({
 					success: true,
 					status: "CHECKED_OUT",
-					note: isEarlyCheckout
-						? "Local checkout"
-						: "Auto checkout on BCA after 12:00",
+					note: "Local checkout",
 				}),
 				is_success: 1,
 			});

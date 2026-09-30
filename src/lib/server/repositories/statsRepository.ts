@@ -1,5 +1,4 @@
 import type { D1DatabaseLike } from "../../types/index.js";
-import { autoCheckoutExpiredStays } from "./stayRepository.js";
 
 export interface DashboardStats {
 	totalGuests: number;
@@ -13,8 +12,6 @@ export interface DashboardStats {
 export async function getDashboardStats(
 	db: D1DatabaseLike,
 ): Promise<DashboardStats> {
-	await autoCheckoutExpiredStays(db);
-
 	// 1-pass scan on stays table + guests count subquery
 	const query = `
 		SELECT 
