@@ -46,10 +46,12 @@ export function isProduction(platform?: App.Platform): boolean {
  */
 export function getServerPassword(platform?: App.Platform): string {
 	const platformEnv = (platform?.env || {}) as Record<string, unknown>;
+	if (platformEnv && "APP_PASSWORD" in platformEnv) {
+		return String(platformEnv.APP_PASSWORD || "").trim();
+	}
+
 	const pass = String(
-		platformEnv.APP_PASSWORD ||
-			(typeof process !== "undefined" && process.env?.APP_PASSWORD) ||
-			"",
+		(typeof process !== "undefined" && process.env?.APP_PASSWORD) || "",
 	).trim();
 
 	return pass;
