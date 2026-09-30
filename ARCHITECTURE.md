@@ -292,6 +292,7 @@ flowchart TD
 3. Toàn bộ tính toán ngày giờ phải sử dụng `src/lib/server/time.ts`.
 4. Giao diện UI viết theo chuẩn Svelte 5 (Runes `$state`, `$derived`, `$props`, Callback Props).
 5. Mọi API gọi từ client phải đi qua wrapper bắt `401 Unauthorized` để tự động chuyển về màn hình đăng nhập.
+6. **Quy tắc 3 tầng định dạng ngày tháng**: UI LUÔN LUÔN hiển thị/nhập dạng `DD/MM/YYYY`; Database D1 BẮT BUỘC lưu dạng chuẩn ISO `YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss`; Payload gửi API BCA C06 BẮT BUỘC tuân thủ đặc tả API v1.4 (`DD/MM/YYYY HH:mm:ss` / `DD/MM/YYYY`). Chuẩn hóa hai chiều tự động tại tầng backend.
 
 ### 6.2. Chạy quy trình kiểm tra chất lượng trước khi commit
 ```bash

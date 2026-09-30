@@ -221,18 +221,34 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 	const expiredStay = await upsertStay(db, expiredGuest.id, {
 		so_phong: "5",
 		ngay_den: "2026-09-01 14:00:00",
-		ngay_di_du_kien: "2026-09-03 12:00:00", // Past date (passed 12:00)
+		ngay_di_du_kien: "2026-09-03 12:00:00", // Past date (YYYY-MM-DD)
+		status: "SYNCED_KBTT",
+	});
+
+	const expiredGuest2 = await upsertGuest(db, {
+		ho_ten: "TEST EXPIRED GUEST 2",
+		so_giay_to: "001099112244",
+		quoc_tich: "VNM",
+		loai_giay_to: "CCCD",
+		gioi_tinh: "M",
+	});
+	const expiredStay2 = await upsertStay(db, expiredGuest2.id, {
+		so_phong: "6",
+		ngay_den: "01/09/2026 14:00:00",
+		ngay_di_du_kien: "03/09/2026 12:00:00", // Past date (DD/MM/YYYY)
 		status: "SYNCED_KBTT",
 	});
 
 	const autoCheckoutRes = await stayService.autoCheckoutExpiredStays(db, true);
-	assert.ok(autoCheckoutRes.checkedOutCount >= 1);
+	assert.ok(autoCheckoutRes.checkedOutCount >= 2);
 	const checkedExpiredStay = await getStayById(db, expiredStay.id);
 	assert.equal(checkedExpiredStay?.status, "CHECKED_OUT");
+	const checkedExpiredStay2 = await getStayById(db, expiredStay2.id);
+	assert.equal(checkedExpiredStay2?.status, "CHECKED_OUT");
 
 	// Cleanup test fixtures
 	await db.exec(
-		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST');",
+		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2');",
 	);
 
 	console.log("✅ [Integration] D1 Database & StayService tests passed!");

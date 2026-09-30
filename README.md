@@ -81,8 +81,8 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-09-30 09:45 (GMT+7)
-- Đã hoàn thành: Tích hợp component bảng hover tooltip chi tiết [`GuestTooltip.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/GuestTooltip.svelte) khi rê chuột lên tên khách ở toàn bộ các Tab (Khai báo, Đang ở, Tất cả khách & Lịch sử) hiển thị đầy đủ thông tin khách hàng (Giới tính, Số phòng, CCCD/Hộ chiếu, Loại giấy tờ, Quốc tịch, Ngày sinh, Hạn visa cho khách nước ngoài, Địa chỉ chi tiết, Trạng thái lưu trú, Ghi chú - đã loại trừ Ngày đến & Ngày đi theo yêu cầu). Điều chỉnh quy tắc kiểm tra ngày đến: không còn bắt lỗi/khóa ngày quá khứ cho khách đang ở. Pipeline kiểm tra chất lượng code (`format`, `lint:biome`, `check:svelte`, `test`, `knip`) đều đạt 100% pass.
+- Cập nhật lần cuối: 2026-09-30 14:55 (GMT+7)
+- Đã hoàn thành: Sửa lỗi nhận diện ngày hết hạn trong `getExpiredStays` tại [`src/lib/server/repositories/stayRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/stayRepository.ts), hỗ trợ lọc chuẩn xác 100% mọi định dạng ngày (`DD/MM/YYYY`, `YYYY-MM-DD`, có/không có giờ) qua hàm `isSameOrPastCheckoutTimeGmt7`. Khi qua mốc 12:00 ngày đi dự kiến, hệ thống tự động quét các khách tồn đọng, gửi API 12 (`TS`) sang C06 BCA và cập nhật trạng thái `CHECKED_OUT` kèm nhật ký chi tiết trong Dev Logs. Pipeline kiểm tra chất lượng code (`format`, `lint:biome`, `check:svelte`, `test`, `knip`, `build`, `graphify`) đều đạt 100% pass.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Không có.
 
@@ -90,6 +90,11 @@ pnpm run build
 
 ### 2026-09-30
 
+- Sửa Lỗi Tự Động Checkout Cho Đa Định Dạng Ngày (`DD/MM/YYYY` & `YYYY-MM-DD`):
+  - Khắc phục lỗi truy vấn SQL `datetime()` không đọc được chuỗi ngày `DD/MM/YYYY` trong [`src/lib/server/repositories/stayRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/stayRepository.ts).
+  - Tích hợp hàm `isSameOrPastCheckoutTimeGmt7` từ [`src/lib/server/time.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/time.ts) vào tầng Repository để lọc chính xác mọi khách đang ở (`SYNCED_KBTT`, `CHECKED_IN`, `EXTENDED`) đã vượt quá 12:00 trưa ngày đi dự kiến.
+  - Tự động gọi API 12 (`TS`) sang C06 BCA và ghi nhận audit logs đầy đủ trong CSDL D1 / Dev Logs.
+  - Bổ sung integration test kiểm thử cho cả 2 định dạng `YYYY-MM-DD` và `DD/MM/YYYY` trong [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts).
 - Thêm Component Hover Tooltip Chi Tiết Khách Hàng:
   - Xây dựng component [`src/lib/components/GuestTooltip.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/GuestTooltip.svelte) theo phong cách Modern Dark Slate Glassmorphism.
   - Khi rê chuột (hover) vào tên khách, hiển thị bảng tooltip trực quan gồm: Họ tên, Giới tính, Số phòng, Số giấy tờ + Loại giấy tờ (`loai_giay_to`), Quốc tịch + Mã ISO (`quoc_tich`), Ngày sinh (`ngay_sinh`), Hạn thị thực/Visa (`thoi_han_thi_thuc`), Địa chỉ chi tiết (`dia_chi_chi_tiet`), Trạng thái lưu trú (`status`), và Ghi chú (`ghi_chu`).
@@ -115,4 +120,5 @@ pnpm run build
 - Thêm: API endpoint `POST /api/stays/auto-checkout` và tích hợp trigger tự động trong các luồng truy vấn `GET /api/stays` và `GET /api/stats`.
 - Sửa: Cập nhật hàm `formatAuditAction` trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte) để nhận diện `API_12_DOI_NGAY_TRA_PHONG` kết hợp kiểm tra `request_payload`, tự động hiển thị nhãn `extend` cho các lượt gia hạn lưu trú (loại `GH`) và `checkout` cho các lượt trả phòng sớm (loại `TS`).
 - Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (100% pass) | knip ✅ | live BCA test ✅ (HTTP 200) | build ✅
-- File chính bị ảnh hưởng: [`src/lib/components/DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte), [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts), [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`DESIGN_PATTERN.md`](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_PATTERN.md), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md)
+- File chính bị ảnh hưởng: [`src/lib/server/repositories/stayRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/stayRepository.ts), [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md)
+

@@ -54,15 +54,18 @@ Mỗi lần code hoặc sửa đổi bất kỳ logic/giao diện nào xong, **B
 - `src/routes/+page.svelte`: Giao diện chính Svelte 5 (Runes `$state`, `$derived`, `$effect`, Callback Props).
 - `src/routes/api/`: RESTful endpoints xử lý nghiệp vụ cho frontend và webhook.
 
-## 4. Chuẩn Hóa Múi Giờ GMT+7 & Quy Chuẩn Payload Gửi API C06 (BCA)
+## 4. Chuẩn Hóa Múi Giờ GMT+7 & Quy Chuẩn Định Dạng Ngày Tháng / Payload API C06 (BCA)
 - **Toàn bộ logic thời gian, tính toán ngày đến/ngày đi, SQL trigger, auto-checkout, OCR ingestion, và hiển thị UI** BẮT BUỘC phải cố định theo **GMT+7** (`Asia/Ho_Chi_Minh`) qua `src/lib/server/time.ts`.
+- **Quy Tắc 3 Tầng Định Dạng Ngày Tháng (Strict 3-Tier Date Policy)**:
+  1. **UI Layer**: Người dùng **LUÔN LUÔN** nhìn thấy và nhập theo định dạng **`DD/MM/YYYY`** (hoặc `DD/MM/YYYY HH:mm:ss` khi có giờ). Tuyệt đối không hiển thị `YYYY-MM-DD` cho người dùng.
+  2. **Storage Layer (Cloudflare D1 Database)**: BẮT BUỘC lưu trữ chuẩn ISO **`YYYY-MM-DD`** (ngày sinh, hạn visa) và **`YYYY-MM-DD HH:mm:ss`** (ngày đến, ngày đi dự kiến, ngày đi thực tế) để các phép so sánh SQL và lọc thời gian luôn chính xác.
+  3. **BCA C06 API Layer**: BẮT BUỘC chuyển đổi sang định dạng chuỗi theo đúng quy chuẩn API v1.4 của Bộ Công An (`DD/MM/YYYY HH:mm:ss` cho ngày đến/ngày đi/gia hạn, `DD/MM/YYYY` cho ngày sinh/hạn tạm trú).
 - **Quy tắc Lưu trữ & Sử dụng Loại Giấy Tờ (`loai_giay_to`)**:
   - Khi khai báo thành công qua API 4/5, hệ thống lưu chính xác mã loại giấy tờ (ví dụ: `1` cho Thẻ CCCD, `8` cho Thẻ Căn cước mới, `4` cho Hộ chiếu).
   - Khi gọi API checkout (`TS`) hoặc gia hạn (`GH`), bắt buộc lấy đúng mã `loai_giay_to` đã lưu từ bản khai báo thành công.
-- **Quy tắc Tự động Checkout & Thời điểm Gửi API BCA**:
-  - Trên hệ thống của Bộ Công An (C06), hồ sơ lưu trú **tự động kết thúc sau 12:00:00 ngày đi dự kiến (`ngayDiDuKienStr`)**.
-  - Trên database nội bộ (Cloudflare D1), khi thời gian thực tế đã qua 12:00:00 ngày đi, DB tự động chuyển trạng thái thành `CHECKED_OUT` mà **KHÔNG** gửi API lên BCA.
-  - **Chỉ gửi API 12 (`doi-ngay-tra-phong` với `loai: "TS"`) khi người dùng bấm Checkout TRƯỚC 12:00:00 ngày đi dự kiến (Trả phòng sớm)**.
+- **Quy tắc Tự động Checkout & Gửi API BCA**:
+  - Khi thời gian thực tế GMT+7 vượt quá mốc 12:00 trưa của ngày đi dự kiến (từ 12:01 trở đi), hệ thống tự động quét các khách đang ở (`SYNCED_KBTT`, `CHECKED_IN`, `EXTENDED`) qua `autoCheckoutExpiredStays()`.
+  - Đối với khách Việt Nam đã đồng bộ KBTT, hệ thống tự động gửi API 12 (`doi-ngay-tra-phong` với `loai: "TS"`) lên BCA để cập nhật trạng thái hồ sơ trên C06 sang Đã trả phòng, cập nhật trạng thái trong D1 sang `CHECKED_OUT` và ghi nhận Dev Logs.
 
 ## 5. Quy Định UI Modal & Svelte 5 Anti-Deprecation
 - **Tuyệt đối KHÔNG sử dụng `window.alert()`, `window.confirm()`, `window.prompt()`**.

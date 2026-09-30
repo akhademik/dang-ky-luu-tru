@@ -4,7 +4,10 @@ import type {
 	StayDetail,
 	StayStatus,
 } from "../../types/index.js";
-import { getNowGmt7DateTimeString } from "../time.js";
+import {
+	getNowGmt7DateTimeString,
+	isSameOrPastCheckoutTimeGmt7,
+} from "../time.js";
 import { assertValidTransition } from "../validator.js";
 
 function generateId(): string {
@@ -31,17 +34,13 @@ export async function getExpiredStays(
 				WHERE s.status IN ('SYNCED_KBTT', 'CHECKED_IN', 'EXTENDED')
 				  AND s.ngay_di_du_kien IS NOT NULL
 				  AND trim(s.ngay_di_du_kien) != ''
-				  AND datetime(
-				      case 
-				          when length(trim(s.ngay_di_du_kien)) = 10 then trim(s.ngay_di_du_kien) || ' 12:00:00'
-				          when trim(s.ngay_di_du_kien) like '% 05:00:00' then substr(trim(s.ngay_di_du_kien), 1, 10) || ' 12:00:00'
-				          when trim(s.ngay_di_du_kien) like '% 00:00:00' then substr(trim(s.ngay_di_du_kien), 1, 10) || ' 12:00:00'
-				          else trim(s.ngay_di_du_kien)
-				      end
-				  ) <= datetime('now', '+7 hours')
 			`)
 			.all<StayDetail>();
-		return res?.results || [];
+
+		const activeStays = res?.results || [];
+		return activeStays.filter((stay) =>
+			isSameOrPastCheckoutTimeGmt7(stay.ngay_di_du_kien),
+		);
 	} catch {
 		return [];
 	}
