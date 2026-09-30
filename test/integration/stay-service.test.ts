@@ -181,6 +181,36 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 	assert.equal(foreignStay2.thoi_han_thi_thuc, "2027-05-30");
 
 	// 11. Test autoCheckoutExpiredStays when stay has passed 12:00
+	const mockKbttClient = {
+		doiNgayTraPhong: async () => ({
+			success: true,
+			code: "200",
+			message: "Thành công (Mock)",
+		}),
+		submitVietnameseGuests: async () => ({
+			success: true,
+			code: "200",
+			message: "Thành công (Mock)",
+		}),
+		submitForeignGuests: async () => ({
+			success: true,
+			code: "200",
+			message: "Thành công (Mock)",
+		}),
+		sendVietnam: async () => ({
+			success: true,
+			code: "200",
+			message: "Thành công (Mock)",
+		}),
+		sendForeign: async () => ({
+			success: true,
+			code: "200",
+			message: "Thành công (Mock)",
+		}),
+	};
+	// @ts-expect-error mock client for isolated testing
+	stayService.setKbttClient(mockKbttClient);
+
 	const expiredGuest = await upsertGuest(db, {
 		ho_ten: "TEST EXPIRED GUEST",
 		so_giay_to: "001099112233",

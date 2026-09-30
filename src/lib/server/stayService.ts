@@ -28,10 +28,20 @@ class StayService {
 	private transformer: DataTransformer;
 	private kbttClient: KbttClient;
 
-	public constructor() {
-		this.catalog = CatalogManager.getInstance();
-		this.transformer = new DataTransformer(this.catalog);
-		this.kbttClient = new KbttClient(tokenManager);
+	public constructor(
+		kbttClient: KbttClient = new KbttClient(tokenManager),
+		catalog: CatalogManager = CatalogManager.getInstance(),
+		transformer: DataTransformer = new DataTransformer(
+			CatalogManager.getInstance(),
+		),
+	) {
+		this.catalog = catalog;
+		this.transformer = transformer;
+		this.kbttClient = kbttClient;
+	}
+
+	public setKbttClient(client: KbttClient): void {
+		this.kbttClient = client;
 	}
 
 	public async ingestOcrRows(
