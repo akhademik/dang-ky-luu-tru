@@ -1,4 +1,5 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
+import { DataTransformer } from "$lib/server/dataTransformer.js";
 import { getDb, getStays, upsertGuest, upsertStay } from "$lib/server/db.js";
 import { stayService } from "$lib/server/stayService.js";
 
@@ -62,7 +63,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			so_giay_to: soGiayTo,
 			quoc_tich: body.quoc_tich || "VNM",
 			loai_giay_to: loaiGiayTo,
-			ngay_sinh: body.ngay_sinh || "",
+			ngay_sinh: DataTransformer.formatDateOnly(body.ngay_sinh),
 			gioi_tinh: body.gioi_tinh || "M",
 			dia_chi_chi_tiet: body.dia_chi_chi_tiet || "",
 			phuong_xa: body.phuong_xa || "",
@@ -70,16 +71,33 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			tinh_thanh: body.tinh_thanh || "",
 		});
 
+		const nowGmt7 = new Date(Date.now() + 7 * 3600 * 1000);
+		const currentTimeGmt7 = nowGmt7
+			.toISOString()
+			.replace("T", " ")
+			.substring(11, 19);
+		let finalNgayDen = String(body.ngay_den || "").trim();
+		if (!finalNgayDen) {
+			finalNgayDen = `${nowGmt7.toISOString().substring(0, 10)} ${currentTimeGmt7}`;
+		} else {
+			finalNgayDen = DataTransformer.formatDateTime(
+				finalNgayDen,
+				currentTimeGmt7,
+			);
+		}
+
+		let finalNgayDi = String(body.ngay_di_du_kien || "").trim();
+		if (finalNgayDi) {
+			finalNgayDi = DataTransformer.formatDateTime(finalNgayDi, "12:00:00");
+		}
+
 		const stay = await upsertStay(db, guest.id, {
 			so_phong: String(body.so_phong || "1").trim(),
-			ngay_den:
-				body.ngay_den ||
-				new Date(Date.now() + 7 * 3600 * 1000)
-					.toISOString()
-					.replace("T", " ")
-					.substring(0, 19),
-			ngay_di_du_kien: body.ngay_di_du_kien || "",
-			thoi_han_thi_thuc: isVN ? "" : body.thoi_han_thi_thuc || "",
+			ngay_den: finalNgayDen,
+			ngay_di_du_kien: finalNgayDi,
+			thoi_han_thi_thuc: isVN
+				? ""
+				: DataTransformer.formatDateOnly(body.thoi_han_thi_thuc),
 			ly_do_luu_tru: Number(body.ly_do_luu_tru || 1),
 			status: body.status || "READY_TO_SYNC",
 			ghi_chu: body.ghi_chu || "",

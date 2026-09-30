@@ -744,12 +744,17 @@ class StayService {
 		const stay = await getStayById(db, stayId);
 		if (!stay) return false;
 
+		const normalizedNgaySinh =
+			payload.ngay_sinh !== undefined
+				? DataTransformer.formatDateOnly(payload.ngay_sinh)
+				: undefined;
+
 		await updateGuest(db, stay.guest_id, {
 			ho_ten: payload.ho_ten,
 			so_giay_to: payload.so_giay_to,
 			quoc_tich: payload.quoc_tich,
 			loai_giay_to: payload.loai_giay_to,
-			ngay_sinh: payload.ngay_sinh,
+			ngay_sinh: normalizedNgaySinh,
 			gioi_tinh: payload.gioi_tinh,
 			dia_chi_chi_tiet: payload.dia_chi_chi_tiet,
 			phuong_xa: payload.phuong_xa,
@@ -766,13 +771,34 @@ class StayService {
 			currentQuocTich,
 		);
 
+		const normalizedNgayDen =
+			payload.ngay_den !== undefined
+				? DataTransformer.formatDateTime(payload.ngay_den)
+				: undefined;
+
+		const normalizedNgayDi =
+			payload.ngay_di_du_kien !== undefined
+				? payload.ngay_di_du_kien
+					? DataTransformer.formatDateTime(payload.ngay_di_du_kien, "12:00:00")
+					: ""
+				: undefined;
+
+		const normalizedVisa =
+			payload.thoi_han_thi_thuc !== undefined
+				? isVN
+					? ""
+					: DataTransformer.formatDateOnly(payload.thoi_han_thi_thuc)
+				: isVN
+					? ""
+					: undefined;
+
 		await dbUpdateStay(db, stayId, {
 			so_phong: payload.so_phong
 				? DataTransformer.cleanRoomNumber(payload.so_phong)
 				: stay.so_phong,
-			ngay_den: payload.ngay_den,
-			ngay_di_du_kien: payload.ngay_di_du_kien,
-			thoi_han_thi_thuc: isVN ? "" : payload.thoi_han_thi_thuc,
+			ngay_den: normalizedNgayDen,
+			ngay_di_du_kien: normalizedNgayDi,
+			thoi_han_thi_thuc: normalizedVisa,
 			ly_do_luu_tru: payload.ly_do_luu_tru,
 			ghi_chu: payload.ghi_chu,
 			status: payload.status,

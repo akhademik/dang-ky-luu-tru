@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount } from "svelte";
+import DatePicker from "$lib/components/DatePicker.svelte";
 
 import {
 	COUNTRY_OPTIONS,
@@ -879,7 +880,9 @@ function openExtendModal(stay: StayDetail) {
 		return;
 	}
 	extendTargetStay = stay;
-	extendNewDate = stay.ngay_di_du_kien || "";
+	extendNewDate = stay.ngay_di_du_kien
+		? formatDateDisplay(stay.ngay_di_du_kien)
+		: "";
 	showExtendModal = true;
 }
 
@@ -1040,10 +1043,10 @@ function openReRegisterModal(stay: StayDetail) {
 
 	const pad = (n: number) => String(n).padStart(2, "0");
 	const nowStr = `${pad(now.getUTCDate())}/${pad(now.getUTCMonth() + 1)}/${now.getUTCFullYear()} ${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
-	const nextDayDateInput = `${nextDay.getUTCFullYear()}-${pad(nextDay.getUTCMonth() + 1)}-${pad(nextDay.getUTCDate())}`;
+	const nextDayDmy = `${pad(nextDay.getUTCDate())}/${pad(nextDay.getUTCMonth() + 1)}/${nextDay.getUTCFullYear()}`;
 
 	reRegisterArrivalDate = nowStr;
-	reRegisterDepartureDate = nextDayDateInput;
+	reRegisterDepartureDate = nextDayDmy;
 	reRegisterVisaDate = stay.thoi_han_thi_thuc
 		? formatDateDisplay(stay.thoi_han_thi_thuc)
 		: "";
@@ -1158,6 +1161,44 @@ async function submitDelete() {
 }
 
 // Date Formatting & Validation Utilities (aligned with sheet-works)
+function formatForDateInput(val?: string | null): string {
+	if (!val) return "";
+	const str = String(val).trim();
+	const ymd = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+	if (ymd) {
+		const y = ymd[1];
+		const m = ymd[2].padStart(2, "0");
+		const d = ymd[3].padStart(2, "0");
+		return `${y}-${m}-${d}`;
+	}
+	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+	if (dmy) {
+		const d = dmy[1].padStart(2, "0");
+		const m = dmy[2].padStart(2, "0");
+		const y = dmy[3];
+		return `${y}-${m}-${d}`;
+	}
+	return "";
+}
+
+function extractTimeOrCurrent(val?: string | null): string {
+	if (val) {
+		const str = String(val).trim();
+		const match = str.match(/[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?/);
+		if (match) {
+			const hr = match[1].padStart(2, "0");
+			const min = match[2].padStart(2, "0");
+			const sec = (match[3] || "00").padStart(2, "0");
+			return `${hr}:${min}:${sec}`;
+		}
+	}
+	const vnNow = new Date(Date.now() + 7 * 3600 * 1000);
+	const hr = String(vnNow.getUTCHours()).padStart(2, "0");
+	const min = String(vnNow.getUTCMinutes()).padStart(2, "0");
+	const sec = String(vnNow.getUTCSeconds()).padStart(2, "0");
+	return `${hr}:${min}:${sec}`;
+}
+
 function formatDateDisplay(val?: string | null): string {
 	if (!val) return "-";
 	const str = String(val).trim();
@@ -1265,7 +1306,7 @@ function validateArrivalDate(val?: string | null): {
 	error?: string;
 } {
 	if (!val || !String(val).trim()) {
-		return { valid: false, error: "Vui lòng nhập ngày đến" };
+		return { valid: false, error: "Vui lòng chọn ngày đến" };
 	}
 	const str = String(val).trim();
 	const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
@@ -1283,7 +1324,7 @@ function validateArrivalDate(val?: string | null): {
 	} else {
 		return {
 			valid: false,
-			error: "Ngày đến phải theo định dạng DD/MM/YYYY HH:mm:ss",
+			error: "Ngày đến không hợp lệ",
 		};
 	}
 
@@ -1331,7 +1372,7 @@ function validateDepartureDate(val?: string | null): {
 	if (!dmy && !ymd) {
 		return {
 			valid: false,
-			error: "Ngày đi phải theo định dạng DD/MM/YYYY HH:mm:ss",
+			error: "Ngày đi không hợp lệ",
 		};
 	}
 	return { valid: true };
@@ -1635,6 +1676,9 @@ function validateStayDetail(stay: StayDetail): {
 	};
 }
 
+let originalEditNgayDenDate = "";
+let originalEditNgayDenTime = "";
+
 // Edit Stay with Instant Optimistic Update
 function openEdit(stay: StayDetail) {
 	if (busyEntryIds.has(stay.id)) {
@@ -1642,6 +1686,8 @@ function openEdit(stay: StayDetail) {
 		return;
 	}
 	const fullAddr = getFullAddress(stay);
+	originalEditNgayDenDate = formatDateDisplay(stay.ngay_den);
+	originalEditNgayDenTime = extractTimeOrCurrent(stay.ngay_den);
 
 	editStay = {
 		...stay,
@@ -1653,10 +1699,8 @@ function openEdit(stay: StayDetail) {
 			? formatDateDisplay(stay.thoi_han_thi_thuc)
 			: "",
 		ngay_sinh: formatDateDisplay(stay.ngay_sinh),
-		ngay_den: formatDateTimeDisplay(stay.ngay_den),
-		ngay_di_du_kien: stay.ngay_di_du_kien
-			? formatDepartureDisplay(stay.ngay_di_du_kien)
-			: "",
+		ngay_den: formatDateDisplay(stay.ngay_den),
+		ngay_di_du_kien: formatDateDisplay(stay.ngay_di_du_kien),
 	};
 	editErrors = {};
 	showEditModal = true;
@@ -1740,16 +1784,12 @@ let editLiveVal = $derived.by(() => {
 
 	const arrCheck = validateArrivalDate(editStay.ngay_den);
 	if (!arrCheck.valid) {
-		errors.ngay_den =
-			arrCheck.error ||
-			"Ngày đến phải theo định dạng DD/MM/YYYY HH:mm:ss (ví dụ: 17/09/2026 14:00:00)";
+		errors.ngay_den = arrCheck.error || "Ngày đến không hợp lệ";
 	}
 
 	const depCheck = validateDepartureDate(editStay.ngay_di_du_kien);
 	if (!depCheck.valid) {
-		errors.ngay_di_du_kien =
-			depCheck.error ||
-			"Ngày đi phải theo định dạng DD/MM/YYYY HH:mm:ss (ví dụ: 19/09/2026 12:00:00)";
+		errors.ngay_di_du_kien = depCheck.error || "Ngày đi không hợp lệ";
 	}
 
 	if (!isVN) {
@@ -1786,13 +1826,28 @@ async function submitEdit() {
 		return;
 	}
 
+	const selectedNgayDenDate = formatDateDisplay(editStay.ngay_den);
+	let finalNgayDenTime = originalEditNgayDenTime;
+	if (selectedNgayDenDate !== originalEditNgayDenDate || !finalNgayDenTime) {
+		// When edit date is changed, set HH:mm:ss to the current time of adjustment
+		const vnNow = new Date(Date.now() + 7 * 3600 * 1000);
+		const hr = String(vnNow.getUTCHours()).padStart(2, "0");
+		const min = String(vnNow.getUTCMinutes()).padStart(2, "0");
+		const sec = String(vnNow.getUTCSeconds()).padStart(2, "0");
+		finalNgayDenTime = `${hr}:${min}:${sec}`;
+	}
+	const finalNgayDen = selectedNgayDenDate
+		? `${selectedNgayDenDate} ${finalNgayDenTime}`
+		: "";
+
+	const selectedNgayDiDate = formatDateDisplay(editStay.ngay_di_du_kien);
+	const finalNgayDi = selectedNgayDiDate ? `${selectedNgayDiDate} 12:00:00` : "";
+
 	const updatedItem = {
 		...editStay,
 		ngay_sinh: formatDateDisplay(editStay.ngay_sinh),
-		ngay_den: formatDateTimeDisplay(editStay.ngay_den),
-		ngay_di_du_kien: editStay.ngay_di_du_kien
-			? formatDateTimeDisplay(editStay.ngay_di_du_kien)
-			: "",
+		ngay_den: finalNgayDen,
+		ngay_di_du_kien: finalNgayDi,
 		thoi_han_thi_thuc:
 			editStay.quoc_tich !== "VNM" && editStay.thoi_han_thi_thuc
 				? formatDateDisplay(editStay.thoi_han_thi_thuc)
@@ -1853,14 +1908,31 @@ async function submitAddGuest() {
 		);
 		return;
 	}
+
+	const vnNow = new Date(Date.now() + 7 * 3600 * 1000);
+	const hr = String(vnNow.getUTCHours()).padStart(2, "0");
+	const min = String(vnNow.getUTCMinutes()).padStart(2, "0");
+	const sec = String(vnNow.getUTCSeconds()).padStart(2, "0");
+	const currentTimeStr = `${hr}:${min}:${sec}`;
+
+	const selectedArrivalDate =
+		formatDateDisplay(newGuestForm.ngay_den) ||
+		formatDateDisplay(vnNow.toISOString().substring(0, 10));
+	const finalArrivalDateTime = `${selectedArrivalDate} ${currentTimeStr}`;
+
+	const selectedDepartureDate = formatDateDisplay(
+		newGuestForm.ngay_di_du_kien,
+	);
+	const finalDepartureDateTime = selectedDepartureDate
+		? `${selectedDepartureDate} 12:00:00`
+		: "";
+
 	try {
 		const payload = {
 			...newGuestForm,
 			ngay_sinh: formatDateDisplay(newGuestForm.ngay_sinh),
-			ngay_den: formatDateTimeDisplay(newGuestForm.ngay_den),
-			ngay_di_du_kien: newGuestForm.ngay_di_du_kien
-				? formatDateTimeDisplay(newGuestForm.ngay_di_du_kien)
-				: "",
+			ngay_den: finalArrivalDateTime,
+			ngay_di_du_kien: finalDepartureDateTime,
 			thoi_han_thi_thuc:
 				newGuestForm.quoc_tich !== "VNM" && newGuestForm.thoi_han_thi_thuc
 					? formatDateDisplay(newGuestForm.thoi_han_thi_thuc)
@@ -2235,9 +2307,11 @@ function clearAllAuditLogs() {
 onMount(async () => {
 	clearLocalCache();
 	const now = new Date(Date.now() + 7 * 3600 * 1000);
-	newGuestForm.ngay_den = now.toISOString().replace("T", " ").substring(0, 19);
+	newGuestForm.ngay_den = formatDateDisplay(now.toISOString().substring(0, 10));
 	const future = new Date(now.getTime() + 2 * 24 * 3600 * 1000);
-	newGuestForm.ngay_di_du_kien = future.toISOString().substring(0, 10);
+	newGuestForm.ngay_di_du_kien = formatDateDisplay(
+		future.toISOString().substring(0, 10),
+	);
 
 	await checkAuth();
 	await loadEnv();
@@ -3534,12 +3608,11 @@ onMount(async () => {
 
 					<div>
 						<label for="edit_ngay_sinh" class="block text-slate-400 mb-1 font-medium">Ngày sinh (DD/MM/YYYY)</label>
-						<input
+						<DatePicker
 							id="edit_ngay_sinh"
-							type="text"
 							bind:value={editStay.ngay_sinh}
-							placeholder="22/09/2002"
-							class="w-full bg-slate-900 border {editLiveVal.errors.ngay_sinh ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+							placeholder="DD/MM/YYYY"
+							hasError={Boolean(editLiveVal.errors.ngay_sinh)}
 						/>
 						{#if editLiveVal.errors.ngay_sinh}
 							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.ngay_sinh}</p>
@@ -3568,13 +3641,12 @@ onMount(async () => {
 
 					<div>
 						<label for="edit_thoi_han_thi_thuc" class="block text-slate-400 mb-1 font-medium">Thời hạn thị thực (DD/MM/YYYY)</label>
-						<input
+						<DatePicker
 							id="edit_thoi_han_thi_thuc"
-							type="text"
 							bind:value={editStay.thoi_han_thi_thuc}
 							disabled={editStay.quoc_tich === 'VNM'}
-							placeholder={editStay.quoc_tich === 'VNM' ? 'Không áp dụng (Việt Nam)' : '31/12/2026'}
-							class="w-full bg-slate-900 border {editLiveVal.errors.thoi_han_thi_thuc ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono {editStay.quoc_tich === 'VNM' ? 'opacity-40 cursor-not-allowed bg-slate-950/60' : ''} focus:outline-none focus:border-sky-500 transition-colors"
+							placeholder={editStay.quoc_tich === 'VNM' ? 'Không áp dụng (Việt Nam)' : 'DD/MM/YYYY'}
+							hasError={Boolean(editLiveVal.errors.thoi_han_thi_thuc)}
 						/>
 						{#if editLiveVal.errors.thoi_han_thi_thuc}
 							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.thoi_han_thi_thuc}</p>
@@ -3582,13 +3654,12 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="edit_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY HH:mm:ss) <span class="text-rose-400">*</span></label>
-						<input
+						<label for="edit_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY) <span class="text-rose-400">*</span></label>
+						<DatePicker
 							id="edit_ngay_den"
-							type="text"
 							bind:value={editStay.ngay_den}
-							placeholder="17/09/2026 14:00:00"
-							class="w-full bg-slate-900 border {editLiveVal.errors.ngay_den ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+							placeholder="DD/MM/YYYY"
+							hasError={Boolean(editLiveVal.errors.ngay_den)}
 						/>
 						{#if editLiveVal.errors.ngay_den}
 							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.ngay_den}</p>
@@ -3596,13 +3667,12 @@ onMount(async () => {
 					</div>
 
 					<div>
-						<label for="edit_ngay_di_du_kien" class="block text-slate-400 mb-1 font-medium">Ngày đi dự kiến (DD/MM/YYYY HH:mm:ss)</label>
-						<input
+						<label for="edit_ngay_di_du_kien" class="block text-slate-400 mb-1 font-medium">Ngày đi dự kiến (DD/MM/YYYY)</label>
+						<DatePicker
 							id="edit_ngay_di_du_kien"
-							type="text"
 							bind:value={editStay.ngay_di_du_kien}
-							placeholder="19/09/2026 12:00:00"
-							class="w-full bg-slate-900 border {editLiveVal.errors.ngay_di_du_kien ? 'border-rose-500 bg-rose-950/20' : 'border-slate-700'} rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500 transition-colors"
+							placeholder="DD/MM/YYYY"
+							hasError={Boolean(editLiveVal.errors.ngay_di_du_kien)}
 						/>
 						{#if editLiveVal.errors.ngay_di_du_kien}
 							<p class="text-rose-400 text-[11px] mt-1 font-medium flex items-center gap-1">⚠ {editLiveVal.errors.ngay_di_du_kien}</p>
@@ -3800,12 +3870,11 @@ onMount(async () => {
 				</p>
 
 				<div class="mb-4">
-					<label for="extend_new_date" class="block text-xs text-slate-400 mb-1">Ngày đi dự kiến mới (YYYY-MM-DD):</label>
-					<input
+					<label for="extend_new_date" class="block text-xs text-slate-400 mb-1">Ngày đi dự kiến mới (DD/MM/YYYY):</label>
+					<DatePicker
 						id="extend_new_date"
-						type="date"
 						bind:value={extendNewDate}
-						class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 text-xs focus:border-indigo-500 focus:outline-none"
+						placeholder="DD/MM/YYYY"
 					/>
 				</div>
 
@@ -3881,8 +3950,12 @@ onMount(async () => {
 						</div>
 
 						<div class="sm:col-span-2">
-							<label for="rereg_departure" class="block text-slate-400 mb-1 font-medium">Ngày Đi Dự Kiến <span class="text-slate-500 font-normal">(Giờ trả phòng tự động là 12:00:00)</span></label>
-							<input id="rereg_departure" type="date" bind:value={reRegisterDepartureDate} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500" />
+							<label for="rereg_departure" class="block text-slate-400 mb-1 font-medium">Ngày Đi Dự Kiến (DD/MM/YYYY) <span class="text-slate-500 font-normal">(Giờ trả phòng tự động là 12:00:00)</span></label>
+							<DatePicker
+								id="rereg_departure"
+								bind:value={reRegisterDepartureDate}
+								placeholder="DD/MM/YYYY"
+							/>
 						</div>
 
 						{#if reRegisterTargetStay.quoc_tich !== "VNM"}
@@ -3890,12 +3963,10 @@ onMount(async () => {
 								<label for="rereg_visa" class="block text-slate-400 mb-1 font-medium">
 									Thời hạn thị thực / Visa (DD/MM/YYYY) <span class="text-rose-400 font-bold">*</span>
 								</label>
-								<input
+								<DatePicker
 									id="rereg_visa"
-									type="text"
-									placeholder="DD/MM/YYYY"
 									bind:value={reRegisterVisaDate}
-									class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 font-mono focus:outline-none focus:border-purple-500"
+									placeholder="DD/MM/YYYY"
 								/>
 							</div>
 						{/if}
@@ -4033,7 +4104,7 @@ onMount(async () => {
 
 					<div>
 						<label for="add_ngay_sinh" class="block text-slate-400 mb-1 font-medium">Ngày sinh (DD/MM/YYYY)</label>
-						<input id="add_ngay_sinh" type="text" bind:value={newGuestForm.ngay_sinh} placeholder="01/01/2000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500" />
+						<DatePicker id="add_ngay_sinh" bind:value={newGuestForm.ngay_sinh} placeholder="DD/MM/YYYY" />
 					</div>
 
 					<div>
@@ -4058,24 +4129,22 @@ onMount(async () => {
 
 					<div>
 						<label for="add_thoi_han_thi_thuc" class="block text-slate-400 mb-1 font-medium">Thời hạn thị thực (DD/MM/YYYY)</label>
-						<input
+						<DatePicker
 							id="add_thoi_han_thi_thuc"
-							type="text"
 							bind:value={newGuestForm.thoi_han_thi_thuc}
 							disabled={newGuestForm.quoc_tich === 'VNM'}
-							placeholder={newGuestForm.quoc_tich === 'VNM' ? 'Không áp dụng (Việt Nam)' : '31/12/2026'}
-							class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono {newGuestForm.quoc_tich === 'VNM' ? 'opacity-40 cursor-not-allowed bg-slate-950/60' : ''} focus:outline-none focus:border-sky-500"
+							placeholder={newGuestForm.quoc_tich === 'VNM' ? 'Không áp dụng (Việt Nam)' : 'DD/MM/YYYY'}
 						/>
 					</div>
 
 					<div>
-						<label for="add_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY HH:mm:ss)</label>
-						<input id="add_ngay_den" type="text" bind:value={newGuestForm.ngay_den} placeholder="17/09/2026 14:00:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500" />
+						<label for="add_ngay_den" class="block text-slate-400 mb-1 font-medium">Ngày đến (DD/MM/YYYY) <span class="text-rose-400">*</span></label>
+						<DatePicker id="add_ngay_den" bind:value={newGuestForm.ngay_den} placeholder="DD/MM/YYYY" />
 					</div>
 
 					<div>
-						<label for="add_ngay_di_du_kien" class="block text-slate-400 mb-1 font-medium">Ngày đi dự kiến (DD/MM/YYYY HH:mm:ss)</label>
-						<input id="add_ngay_di_du_kien" type="text" bind:value={newGuestForm.ngay_di_du_kien} placeholder="19/09/2026 12:00:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 font-mono focus:outline-none focus:border-sky-500" />
+						<label for="add_ngay_di_du_kien" class="block text-slate-400 mb-1 font-medium">Ngày đi dự kiến (DD/MM/YYYY)</label>
+						<DatePicker id="add_ngay_di_du_kien" bind:value={newGuestForm.ngay_di_du_kien} placeholder="DD/MM/YYYY" />
 					</div>
 
 					<div class="sm:col-span-2">

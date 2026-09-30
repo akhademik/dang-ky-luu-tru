@@ -91,3 +91,10 @@ Dự án áp dụng phong cách **Modern Dark Slate Glassmorphism** hiện đạ
 ### 3.3. Custom Modals & Dialogs (No Native Browser Dialogs)
 - **CẤM SỬ DỤNG**: Tuyệt đối không sử dụng các hộp thoại mặc định `window.alert()`, `window.confirm()`.
 - **BẮT BUỘC CUSTOM MODAL**: Sử dụng [`ConfirmModal.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/ConfirmModal.svelte) hoặc modal custom Svelte 5 đồng bộ toàn hệ thống.
+
+### 3.4. Date & Time UI/UX Pattern (Chuẩn Định Dạng Ngày Tháng)
+- **Bắt buộc định dạng UI DD/MM/YYYY**: Toàn bộ các trường ngày tháng hiển thị và nhập liệu trên giao diện (Ngày sinh, Ngày đến, Ngày đi dự kiến, Thời hạn thị thực) **phải luôn theo định dạng `DD/MM/YYYY`** thông qua component chuẩn [`DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte).
+- **Quy tắc Ngày đến**: Tự động gắn giờ thực tế (`HH:mm:ss`) lúc tạo mới; khi chỉnh sửa nếu có đổi ngày đến thì giờ `HH:mm:ss` lấy theo đúng thời gian của phiên chỉnh sửa.
+- **Quy tắc Ngày đi dự kiến**: Luôn cố định là `12:00:00` (không cần hiển thị ô nhập giờ trên UI).
+- **Quy tắc Backend Normalization**: Tầng backend (`DataTransformer`, `stayService`, `api/stays`) tự động chuẩn hóa hai chiều giữa `DD/MM/YYYY` và `YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss` trước khi lưu CSDL D1 và trước khi gửi API BCA C06.
+

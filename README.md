@@ -81,8 +81,8 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-09-30 08:20 (GMT+7)
-- Đã hoàn thành: Tích hợp logic tự động kiểm tra và checkout gửi API BCA (API 12) khi khách ở trạng thái "Đang ở" (`SYNCED_KBTT`, `EXTENDED`) và ngày đi dự kiến (`ngay_di_du_kien`) đã quá 12:00:00 (GMT+7). Cung cấp endpoint `POST /api/stays/auto-checkout` và tự động điều phối qua `stayService.autoCheckoutExpiredStays()`.
+- Cập nhật lần cuối: 2026-09-30 08:53 (GMT+7)
+- Đã hoàn thành: Chuẩn hóa 100% các ô nhập và hiển thị ngày tháng trên UI theo định dạng `DD/MM/YYYY` thông qua component dùng chung `DatePicker.svelte` (hỗ trợ nhập text và chọn qua lịch HTML5). Tự động gắn giờ thực tế lúc tạo mới cho Ngày đến, cập nhật lại giờ thực tế tại thời điểm chỉnh sửa nếu đổi ngày đến, và luôn cố định `12:00:00` cho Ngày đi dự kiến. Backend tự động chuẩn hóa hai chiều giữa `DD/MM/YYYY` và `YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss` trước khi lưu vào CSDL D1 và trước khi gửi API C06 BCA. Đã test live thành công trên BCA DEV Sandbox.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Không có.
 
@@ -90,8 +90,12 @@ pnpm run build
 
 ### 2026-09-30
 
+- Cải tiến UI Date Picker: Xây dựng và tích hợp component [`src/lib/components/DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte) cho toàn bộ các trường ngày tháng (`Ngày sinh`, `Ngày đến`, `Ngày đi dự kiến`, `Thời hạn thị thực`) trong Modal Sửa (Quick-Edit), Modal Thêm khách mới, Modal Gia hạn (Extend) và Modal Khai báo lại (Re-Register) đảm bảo UI luôn hiển thị và nhập theo định dạng `DD/MM/YYYY`.
+- Tự động hóa giờ Ngày đến & Ngày đi: Ngày đến tự động lấy giờ thực tế GMT+7 lúc nạp/tạo mới hoặc giờ tại thời điểm sửa đổi; Ngày đi dự kiến tự động hardcode `12:00:00` theo quy chuẩn BCA mà không cần hiển thị ô nhập giờ.
+- Backend Normalization: Bổ sung lớp chuẩn hóa dữ liệu ngày tháng hai chiều tại [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts) và [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts) đảm bảo CSDL D1 lưu trữ chuẩn (`YYYY-MM-DD` / `YYYY-MM-DD HH:mm:ss`) và payload gửi sang BCA (API 4, API 5, API 12) luôn chính xác 100%.
+- Cập nhật tài liệu thiết kế: Ghi nhận quy định bắt buộc định dạng ngày tháng `DD/MM/YYYY` trên UI vào [`DESIGN_PATTERN.md`](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_PATTERN.md).
 - Thêm: Triển khai logic auto-checkout cho khách đang ở (`SYNCED_KBTT`, `EXTENDED`) khi ngày đi dự kiến vượt quá 12:00 trưa GMT+7, tự động gửi API 12 đổi ngày trả phòng lên C06 BCA và cập nhật trạng thái `CHECKED_OUT`.
 - Thêm: API endpoint `POST /api/stays/auto-checkout` và tích hợp trigger tự động trong các luồng truy vấn `GET /api/stays` và `GET /api/stats`.
 - Sửa: Cập nhật hàm `formatAuditAction` trong [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte) để nhận diện `API_12_DOI_NGAY_TRA_PHONG` kết hợp kiểm tra `request_payload`, tự động hiển thị nhãn `extend` cho các lượt gia hạn lưu trú (loại `GH`) và `checkout` cho các lượt trả phòng sớm (loại `TS`).
-- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (100% pass) | knip ✅ | build ✅
-- File chính bị ảnh hưởng: [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`src/lib/server/repositories/stayRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/stayRepository.ts), [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts), [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts), [`src/routes/api/stats/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stats/+server.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md)
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (100% pass) | knip ✅ | live BCA test ✅ (HTTP 200) | build ✅
+- File chính bị ảnh hưởng: [`src/lib/components/DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte), [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts), [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`DESIGN_PATTERN.md`](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_PATTERN.md), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md)
