@@ -96,6 +96,7 @@ export class KbttClient {
 						"X-Request-ID": requestId,
 					},
 					body: JSON.stringify(payloads),
+					signal: AbortSignal.timeout(60000),
 				});
 				break;
 			} catch (networkErr) {

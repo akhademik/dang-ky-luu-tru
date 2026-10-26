@@ -62,6 +62,7 @@ export class TokenManager {
 						Authorization: CONFIG.AUTH.BASIC_AUTH,
 					},
 					body: params.toString(),
+					signal: AbortSignal.timeout(30000),
 				});
 
 				if (!res.ok) {

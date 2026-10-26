@@ -210,21 +210,33 @@ let filterRoom = $state("");
 let debouncedSearchTerm = $state("");
 let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
+let auditSearchTerm = $state("");
+let auditDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 function onSearchInput() {
 	const val = searchTerm.trim();
 	if (!val) {
 		if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
 		debouncedSearchTerm = "";
-		if (activeTab === "audit") loadAuditLogs();
 		return;
 	}
 	if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
 	searchDebounceTimer = setTimeout(() => {
 		debouncedSearchTerm = val;
-		if (activeTab === "audit") {
-			loadAuditLogs();
-		}
 	}, 150);
+}
+
+function onAuditSearchInput() {
+	const val = auditSearchTerm.trim();
+	if (!val) {
+		if (auditDebounceTimer) clearTimeout(auditDebounceTimer);
+		loadAuditLogs();
+		return;
+	}
+	if (auditDebounceTimer) clearTimeout(auditDebounceTimer);
+	auditDebounceTimer = setTimeout(() => {
+		loadAuditLogs();
+	}, 200);
 }
 
 function stripVietnameseAccents(str?: string | null): string {
@@ -485,6 +497,41 @@ function showToast(
 	}, 4000);
 }
 
+let inFlightStatus = $state<{
+	active: boolean;
+	title: string;
+	subTitle: string;
+	seconds: number;
+} | null>(null);
+
+let inFlightTimer: ReturnType<typeof setInterval> | null = null;
+
+function startInFlight(
+	title: string,
+	subTitle = "Đang kết nối Cổng KBTT BCA C06, vui lòng giữ màn hình...",
+) {
+	if (inFlightTimer) clearInterval(inFlightTimer);
+	inFlightStatus = {
+		active: true,
+		title,
+		subTitle,
+		seconds: 0,
+	};
+	inFlightTimer = setInterval(() => {
+		if (inFlightStatus) {
+			inFlightStatus.seconds += 1;
+		}
+	}, 1000);
+}
+
+function stopInFlight() {
+	if (inFlightTimer) {
+		clearInterval(inFlightTimer);
+		inFlightTimer = null;
+	}
+	inFlightStatus = null;
+}
+
 let statsInFlight: Promise<void> | null = null;
 let lastStatsFetchTime = 0;
 async function apiFetch(
@@ -639,13 +686,16 @@ async function pullFromGoogleSheets(options?: { silent?: boolean }) {
 async function loadAuditLogs() {
 	try {
 		const url = new URL("/api/stays/audit", window.location.origin);
-		if (searchTerm) url.searchParams.set("search", searchTerm);
+		const q = auditSearchTerm.trim();
+		if (q) url.searchParams.set("search", q);
 		const res = await fetch(url.toString());
 		const data = await res.json();
 		if (data.success) {
 			auditLogs = data.data;
 		}
-	} catch {}
+	} catch (err) {
+		console.error("Lỗi khi tải Dev Logs:", err);
+	}
 }
 
 async function checkAuth() {
@@ -765,8 +815,14 @@ async function registerStay(stayId: string) {
 	}
 
 	markEntryBusy(stayId);
+	const guestDisplayName = stay
+		? `${stay.ho_ten || "Khách"} (Phòng ${stay.so_phong || ""})`
+		: "Khách";
+	startInFlight(
+		`Đang khai báo cho ${guestDisplayName}...`,
+		"Đang kết nối Cổng KBTT BCA C06, vui lòng giữ màn hình...",
+	);
 	try {
-		showToast("Đang gửi khai báo lên Cổng KBTT Bộ Công An...", "info");
 		const res = await fetch("/api/stays/register", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -775,7 +831,7 @@ async function registerStay(stayId: string) {
 		const data = await res.json();
 		if (data.success) {
 			clearLocalCache();
-			showToast("✓ Đăng ký lưu trú thành công!", "success");
+			showToast(data.message || "✓ Đăng ký lưu trú thành công!", "success");
 			const maHoSo = data.data?.maHoSo || data.maHoSo;
 			rawStays = rawStays.map((s) =>
 				s.id === stayId
@@ -793,6 +849,7 @@ async function registerStay(stayId: string) {
 		const msg = err instanceof Error ? err.message : String(err);
 		showToast(`Lỗi kết nối: ${msg}`, "error");
 	} finally {
+		stopInFlight();
 		unmarkEntryBusy(stayId);
 	}
 }
@@ -818,11 +875,11 @@ async function registerAllReady() {
 	}
 
 	readyStays.forEach((s) => markEntryBusy(s.id));
+	startInFlight(
+		`Đang khai báo hàng loạt cho ${readyStays.length} khách...`,
+		"Đang đồng bộ qua Cổng KBTT BCA C06 (tiến trình có thể mất 30-60 giây)...",
+	);
 	try {
-		showToast(
-			"Đang gửi đăng ký hàng loạt cho tất cả khách sẵn sàng...",
-			"info",
-		);
 		const res = await fetch("/api/stays/register", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -871,6 +928,7 @@ async function registerAllReady() {
 		const msg = err instanceof Error ? err.message : String(err);
 		showToast(`Lỗi kết nối: ${msg}`, "error");
 	} finally {
+		stopInFlight();
 		readyStays.forEach((s) => unmarkEntryBusy(s.id));
 	}
 }
@@ -934,6 +992,7 @@ async function submitExtend() {
 		clearLocalCache();
 		await loadStays(true);
 	} finally {
+		stopInFlight();
 		unmarkEntryBusy(targetId);
 	}
 }
@@ -985,6 +1044,7 @@ async function submitCheckout() {
 		clearLocalCache();
 		await loadStays(true);
 	} finally {
+		stopInFlight();
 		unmarkEntryBusy(targetId);
 	}
 }
@@ -1034,6 +1094,7 @@ async function submitStatusOverride() {
 		clearLocalCache();
 		await loadStays(true);
 	} finally {
+		stopInFlight();
 		unmarkEntryBusy(targetId);
 	}
 }
@@ -1078,7 +1139,11 @@ async function submitReRegister() {
 	showReRegisterModal = false;
 
 	markEntryBusy(targetId);
-	showToast("⚡ Đang tạo lượt lưu trú mới và gửi báo cáo Công An...", "info");
+	const guestName = reRegisterTargetStay.ho_ten || "Khách";
+	startInFlight(
+		`Đang khai báo lại cho ${guestName} (Phòng ${reRegisterRoom})...`,
+		"Đang tạo lượt lưu trú mới và gửi báo cáo Công An C06...",
+	);
 
 	try {
 		const res = await fetch("/api/stays/re-register", {
@@ -1124,6 +1189,7 @@ async function submitReRegister() {
 		showToast("Lỗi kết nối khi gửi khai báo lại", "error");
 		await loadStays(true);
 	} finally {
+		stopInFlight();
 		unmarkEntryBusy(targetId);
 	}
 }
@@ -2502,6 +2568,22 @@ onMount(async () => {
 	</div>
 {:else}
 <div class="min-h-screen bg-slate-900 text-slate-100 p-4 md:p-6 font-sans">
+	<!-- In-Flight Operation Live Banner -->
+	{#if inFlightStatus?.active}
+		<div class="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3.5 px-5 py-3 rounded-2xl shadow-2xl border border-sky-500/60 bg-slate-900/95 text-slate-100 backdrop-blur-xl">
+			<span class="inline-block animate-spin text-xl text-sky-400">⏳</span>
+			<div class="text-left">
+				<div class="flex items-center gap-2">
+					<p class="font-bold text-xs md:text-sm text-sky-100">{inFlightStatus.title}</p>
+					<span class="px-2 py-0.5 rounded-full font-mono font-bold text-[11px] bg-sky-950 text-sky-300 border border-sky-700/60">
+						{inFlightStatus.seconds}s
+					</span>
+				</div>
+				<p class="text-[11px] text-slate-400 mt-0.5">{inFlightStatus.subTitle}</p>
+			</div>
+		</div>
+	{/if}
+
 	<!-- Toast Notification -->
 	{#if notification}
 		<div class="fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border backdrop-blur-md transition-all duration-300 {notification.type === 'success' ? 'bg-emerald-950/90 text-emerald-200 border-emerald-600' : notification.type === 'error' ? 'bg-rose-950/90 text-rose-200 border-rose-600' : 'bg-sky-950/90 text-sky-200 border-sky-600'}">
@@ -2691,29 +2773,52 @@ onMount(async () => {
 		{#if activeTab !== "catalogs"}
 			<div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 mb-4 flex flex-col md:flex-row items-center justify-between gap-3">
 				<div class="flex flex-1 items-center gap-3 w-full">
-					<div class="relative flex-1">
-						<input
-							type="text"
-							bind:value={searchTerm}
-							oninput={onSearchInput}
-							placeholder="Tìm kiếm theo Họ tên, CCCD/Hộ chiếu, Số phòng, Quốc tịch, Địa chỉ..."
-							class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3.5 py-2 pr-8 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500"
-						/>
-						{#if searchTerm}
-							<button
-								type="button"
-								onclick={() => {
-									searchTerm = "";
-									onSearchInput();
-								}}
-								class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs px-1 rounded transition-colors"
-								title="Xóa tìm kiếm"
-							>
-								✕
-							</button>
-						{/if}
-					</div>
-					{#if activeTab !== 'audit'}
+					{#if activeTab === 'audit'}
+						<div class="relative flex-1">
+							<input
+								type="text"
+								bind:value={auditSearchTerm}
+								oninput={onAuditSearchInput}
+								placeholder="Tìm kiếm Dev Logs (Họ tên, CCCD/Hộ chiếu, Số phòng, Endpoint, v.v.)..."
+								class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3.5 py-2 pr-8 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-400"
+							/>
+							{#if auditSearchTerm}
+								<button
+									type="button"
+									onclick={() => {
+										auditSearchTerm = "";
+										onAuditSearchInput();
+									}}
+									class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs px-1 rounded transition-colors"
+									title="Xóa tìm kiếm log"
+								>
+									✕
+								</button>
+							{/if}
+						</div>
+					{:else}
+						<div class="relative flex-1">
+							<input
+								type="text"
+								bind:value={searchTerm}
+								oninput={onSearchInput}
+								placeholder="Tìm kiếm theo Họ tên, CCCD/Hộ chiếu, Số phòng, Quốc tịch, Địa chỉ..."
+								class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3.5 py-2 pr-8 text-xs md:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500"
+							/>
+							{#if searchTerm}
+								<button
+									type="button"
+									onclick={() => {
+										searchTerm = "";
+										onSearchInput();
+									}}
+									class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs px-1 rounded transition-colors"
+									title="Xóa tìm kiếm"
+								>
+									✕
+								</button>
+							{/if}
+						</div>
 						<div class="w-32 md:w-40">
 							<select
 								bind:value={filterRoom}

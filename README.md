@@ -81,12 +81,34 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-09-30 14:55 (GMT+7)
-- Đã hoàn thành: Sửa lỗi nhận diện ngày hết hạn trong `getExpiredStays` tại [`src/lib/server/repositories/stayRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/stayRepository.ts), hỗ trợ lọc chuẩn xác 100% mọi định dạng ngày (`DD/MM/YYYY`, `YYYY-MM-DD`, có/không có giờ) qua hàm `isSameOrPastCheckoutTimeGmt7`. Khi qua mốc 12:00 ngày đi dự kiến, hệ thống tự động quét các khách tồn đọng, gửi API 12 (`TS`) sang C06 BCA và cập nhật trạng thái `CHECKED_OUT` kèm nhật ký chi tiết trong Dev Logs. Pipeline kiểm tra chất lượng code (`format`, `lint:biome`, `check:svelte`, `test`, `knip`, `build`, `graphify`) đều đạt 100% pass.
+- Cập nhật lần cuối: 2026-10-26 18:15 (GMT+7)
+- Đã hoàn thành:
+  - Khắc phục lỗi kẹt trạng thái khai báo lưu trú khi Cổng BCA C06 phản hồi mã 400 kèm thông báo "Khách đã khai báo tạm trú ... tại cơ sở lưu trú này" qua cơ chế Smart Fallback trong [`stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), tự động chuyển trạng thái `SYNCED_KBTT` và ghi nhận Dev Logs thành công.
+  - Cải tiến giao diện: Bổ sung Live Banner đếm giây khi gọi API BCA (tránh hiện tượng mất Toast sau 4s và cảm giác "chạy ngầm"), phân tách hoàn toàn ô tìm kiếm của tab Dev Logs khỏi bộ lọc danh sách khách.
+  - Cấu hình Timeout an toàn 60s cho kết nối API C06 và 30s cho OAuth token.
+  - Đồng bộ thủ công lượt lưu trú của khách NGÔ THỊ KIM YẾN trên Remote D1 sang `SYNCED_KBTT`.
+  - Pipeline kiểm tra chất lượng code (`format`, `lint:biome`, `check:svelte`, `test`, `knip`, `build`, `graphify`) đạt 100% pass.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Không có.
 
 ## Changelog
+
+### 2026-10-26
+
+- Thêm Cơ chế Smart Fallback Tự Động Nhận Diện Hồ Sơ Đã Có Trên BCA:
+  - Khi Cổng C06 BCA phản hồi code `400` nhưng kèm thông báo *"Khách đã khai báo tạm trú..."* hoặc *"đang tạm trú tại CSLT và chưa checkout"*, [`stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts) tự động nhận diện hồ sơ đã được C06 lưu thành công trước đó (do độ trễ hoặc lỗi 520 của Cloudflare proxy phía BCA).
+  - Tự động cập nhật trạng thái lượt ở sang `SYNCED_KBTT`, ghi nhận audit log thành công (`is_success: 1`), hiển thị thông báo thành công cho người dùng thay vì báo lỗi.
+- Cải Tiến UI In-Flight Live Feedback & Timer:
+  - Bổ sung Floating Banner trực quan tại [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte) với bộ đếm giây thời gian thực (realtime elapsed timer) khi đang gọi API BCA (Single Register, Batch Register, Re-Register).
+  - Khắc phục triệt để hiện tượng Toast tự tắt sau 4s khiến người dùng tưởng hệ thống bị treo/chạy ngầm khi BCA phản hồi chậm 30–60s.
+- Tách Biệt Bộ Lọc Tìm Kiếm Tab Dev Logs:
+  - Tách `searchTerm` của danh sách khách và `auditSearchTerm` của tab Dev Logs, loại bỏ triệt để hiện tượng tìm kiếm khách làm ẩn danh sách nhật ký API.
+- Cấu Hình Timeout An Toàn Cho BCA HTTP Client & Token Manager:
+  - Thêm `AbortSignal.timeout(60000)` cho các request gửi payload khai báo và `AbortSignal.timeout(30000)` cho yêu cầu lấy OAuth token trong [`kbttClient.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClient.ts) và [`tokenManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/tokenManager.ts).
+- Cập Nhật Trạng Thái Cho Khách Hàng Chiều 26/10:
+  - Đồng bộ trạng thái lượt ở của khách NGÔ THỊ KIM YẾN trên Remote D1 sang `SYNCED_KBTT` kèm audit log `AUTO_RESOLVE_BCA`.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (100% pass) | knip ✅ | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`src/lib/server/kbttClient.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClient.ts), [`src/lib/server/tokenManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/tokenManager.ts), [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts)
 
 ### 2026-09-30
 

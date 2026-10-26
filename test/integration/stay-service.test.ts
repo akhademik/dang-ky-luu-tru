@@ -246,9 +246,51 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 	const checkedExpiredStay2 = await getStayById(db, expiredStay2.id);
 	assert.equal(checkedExpiredStay2?.status, "CHECKED_OUT");
 
+	// 9. Test Smart Fallback: Auto-resolve already registered guest from BCA response
+	const mockAlreadyRegisteredClient = {
+		sendVietnam: async () => ({
+			success: false,
+			code: "400",
+			message:
+				"Bản khai báo 1: Khách đã khai báo tạm trú từ 2026-10-26 đến 2026-10-27 tại cơ sở lưu trú này.",
+		}),
+		sendForeign: async () => ({
+			success: false,
+			code: "400",
+			message:
+				"Bản khai báo 1: Số hộ chiếu đang tạm trú tại CSLT và chưa checkout",
+		}),
+	};
+	// @ts-expect-error mock client
+	stayService.setKbttClient(mockAlreadyRegisteredClient);
+
+	const alreadyRegGuest = await upsertGuest(db, {
+		ho_ten: "TEST ALREADY REG GUEST",
+		so_giay_to: "001099998877",
+		quoc_tich: "VNM",
+		loai_giay_to: "CCCD",
+		ngay_sinh: "1995-05-15",
+		gioi_tinh: "F",
+	});
+	const alreadyRegStay = await upsertStay(db, alreadyRegGuest.id, {
+		so_phong: "3",
+		ngay_den: "2026-10-26 14:00:00",
+		ngay_di_du_kien: "2026-10-27 12:00:00",
+		status: "READY_TO_SYNC",
+	});
+
+	const resolveResult = await stayService.registerStayToKbtt(
+		db,
+		alreadyRegStay.id,
+	);
+	assert.equal(resolveResult.success, true);
+	assert.ok(resolveResult.message.includes("đã được ghi nhận"));
+	const updatedAlreadyRegStay = await getStayById(db, alreadyRegStay.id);
+	assert.equal(updatedAlreadyRegStay?.status, "SYNCED_KBTT");
+
 	// Cleanup test fixtures
 	await db.exec(
-		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2');",
+		"DELETE FROM kbtt_logs WHERE guest_name IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2', 'TEST ALREADY REG GUEST'); DELETE FROM stays WHERE guest_id IN (SELECT id FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2', 'TEST ALREADY REG GUEST')); DELETE FROM guests WHERE ho_ten IN ('TEST NGUYEN A', 'TEST TRAN B', 'TEST JOHN DOE', 'TEST FOREIGN GUEST', 'TEST EXPIRED GUEST', 'TEST EXPIRED GUEST 2', 'TEST ALREADY REG GUEST');",
 	);
 
 	console.log("✅ [Integration] D1 Database & StayService tests passed!");

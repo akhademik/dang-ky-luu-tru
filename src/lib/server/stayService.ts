@@ -23,6 +23,17 @@ import {
 import { KbttClient } from "./kbttClient.js";
 import { tokenManager } from "./tokenManager.js";
 
+function isBcaAlreadyRegisteredMessage(msg: string): boolean {
+	if (!msg) return false;
+	const lower = msg.toLowerCase();
+	return (
+		lower.includes("đã khai báo tạm trú") ||
+		lower.includes("đang tạm trú tại cslt") ||
+		lower.includes("tồn tại khai báo trùng thời gian") ||
+		lower.includes("trùng thời gian tại cslt")
+	);
+}
+
 class StayService {
 	private catalog: CatalogManager;
 	private transformer: DataTransformer;
@@ -297,6 +308,11 @@ class StayService {
 				? await this.kbttClient.sendForeign([transformed.payload])
 				: await this.kbttClient.sendVietnam([transformed.payload]);
 
+			const isAlreadyRegistered = isBcaAlreadyRegisteredMessage(
+				response.message || "",
+			);
+			const isSuccess = response.success || isAlreadyRegistered;
+
 			// Log action to kbtt_logs audit table
 			await logKbttAction(db, {
 				stay_id: stay.id,
@@ -307,12 +323,16 @@ class StayService {
 				request_payload: JSON.stringify(transformed.payload),
 				response_payload: JSON.stringify(response.raw || response),
 				http_status: 200,
-				code: String(response.code || "200"),
-				is_success: response.success ? 1 : 0,
-				error_message: response.success ? undefined : response.message,
+				code: String(response.code || (isAlreadyRegistered ? "200" : "400")),
+				is_success: isSuccess ? 1 : 0,
+				error_message: isAlreadyRegistered
+					? `(Tự động đồng bộ C06) ${response.message}`
+					: response.success
+						? undefined
+						: response.message,
 			});
 
-			if (response.success) {
+			if (isSuccess) {
 				const registeredLoaiGiayTo = transformed.payload.loaiGiayTo;
 				if (
 					registeredLoaiGiayTo !== undefined &&
@@ -324,12 +344,16 @@ class StayService {
 				}
 				await dbUpdateStay(db, stay.id, {
 					status: "SYNCED_KBTT",
-					ma_ho_so_kbtt: String(response.code || "OK"),
+					ma_ho_so_kbtt: isAlreadyRegistered
+						? "ALREADY_REGISTERED"
+						: String(response.code || "OK"),
 				});
 				return {
 					success: true,
 					code: String(response.code || "200"),
-					message: response.message || "Khai báo lưu trú thành công!",
+					message: isAlreadyRegistered
+						? "✓ Hồ sơ khách đã được ghi nhận trên Cổng BCA trước đó và đồng bộ thành công!"
+						: response.message || "Khai báo lưu trú thành công!",
 					stayId,
 					raw: response.raw,
 				};
