@@ -1,6 +1,7 @@
 import type {
 	D1DatabaseLike,
 	IngestResult,
+	KbttApiResponse,
 	RawOcrRow,
 	StayDetail,
 	StayStatus,
@@ -20,19 +21,12 @@ import {
 	upsertGuest,
 	upsertStay,
 } from "./db.js";
+import {
+	classifyKbttResponse,
+	isAlreadyRegisteredMessage,
+} from "./kbttClassifier.js";
 import { KbttClient } from "./kbttClient.js";
 import { tokenManager } from "./tokenManager.js";
-
-function isBcaAlreadyRegisteredMessage(msg: string): boolean {
-	if (!msg) return false;
-	const lower = msg.toLowerCase();
-	return (
-		lower.includes("đã khai báo tạm trú") ||
-		lower.includes("đang tạm trú tại cslt") ||
-		lower.includes("tồn tại khai báo trùng thời gian") ||
-		lower.includes("trùng thời gian tại cslt")
-	);
-}
 
 class StayService {
 	private catalog: CatalogManager;
@@ -308,10 +302,21 @@ class StayService {
 				? await this.kbttClient.sendForeign([transformed.payload])
 				: await this.kbttClient.sendVietnam([transformed.payload]);
 
-			const isAlreadyRegistered = isBcaAlreadyRegisteredMessage(
+			const isAlreadyRegistered = isAlreadyRegisteredMessage(
 				response.message || "",
 			);
 			const isSuccess = response.success || isAlreadyRegistered;
+			const realHttpStatus =
+				response.httpStatus ??
+				(isSuccess
+					? 200
+					: typeof response.code === "number"
+						? response.code
+						: 400);
+			const errorClass = isAlreadyRegistered
+				? "ALREADY_REGISTERED"
+				: response.errorClass || (isSuccess ? undefined : "BUSINESS_REJECT");
+			const outcomeUnknown = response.outcomeUnknown ? 1 : 0;
 
 			// Log action to kbtt_logs audit table
 			await logKbttAction(db, {
@@ -322,7 +327,7 @@ class StayService {
 				so_phong: stay.so_phong,
 				request_payload: JSON.stringify(transformed.payload),
 				response_payload: JSON.stringify(response.raw || response),
-				http_status: 200,
+				http_status: realHttpStatus,
 				code: String(response.code || (isAlreadyRegistered ? "200" : "400")),
 				is_success: isSuccess ? 1 : 0,
 				error_message: isAlreadyRegistered
@@ -330,6 +335,14 @@ class StayService {
 					: response.success
 						? undefined
 						: response.message,
+				error_class: errorClass,
+				outcome_unknown: outcomeUnknown,
+				duration_ms: response.durationMs,
+				ttfb_ms: response.ttfbMs,
+				cf_ray: response.cfRay,
+				server_header: response.serverHeader,
+				request_id: response.requestId,
+				host: response.host,
 			});
 
 			if (isSuccess) {
@@ -368,6 +381,7 @@ class StayService {
 			};
 		} catch (err: unknown) {
 			const errMsg = err instanceof Error ? err.message : String(err);
+			const classification = classifyKbttResponse({ error: err });
 			await logKbttAction(db, {
 				stay_id: stay.id,
 				api_endpoint: apiEndpointName,
@@ -380,6 +394,8 @@ class StayService {
 				code: "500",
 				is_success: 0,
 				error_message: errMsg,
+				error_class: classification.errorClass,
+				outcome_unknown: classification.outcomeUnknown ? 1 : 0,
 			});
 
 			return {
@@ -480,7 +496,7 @@ class StayService {
 				},
 			];
 
-			let bcaRes: import("./kbttClient.js").ApiResponse | null = null;
+			let bcaRes: KbttApiResponse | null = null;
 			try {
 				bcaRes = await this.kbttClient.doiNgayTraPhong(bcaPayload);
 			} catch (err: unknown) {
@@ -512,10 +528,20 @@ class StayService {
 				response_payload: JSON.stringify(
 					bcaRes.raw || { message: bcaRes.message, code: bcaRes.code },
 				),
-				http_status: typeof bcaRes.code === "number" ? bcaRes.code : 200,
+				http_status:
+					bcaRes.httpStatus ??
+					(typeof bcaRes.code === "number" ? bcaRes.code : 200),
 				code: String(bcaRes.code),
 				is_success: bcaRes.success ? 1 : 0,
 				error_message: bcaRes.success ? undefined : bcaRes.message,
+				error_class: bcaRes.errorClass,
+				outcome_unknown: bcaRes.outcomeUnknown ? 1 : 0,
+				duration_ms: bcaRes.durationMs,
+				ttfb_ms: bcaRes.ttfbMs,
+				cf_ray: bcaRes.cfRay,
+				server_header: bcaRes.serverHeader,
+				request_id: bcaRes.requestId,
+				host: bcaRes.host,
 			});
 
 			if (!bcaRes.success) {
@@ -622,7 +648,7 @@ class StayService {
 				},
 			];
 
-			let bcaRes: import("./kbttClient.js").ApiResponse | null = null;
+			let bcaRes: KbttApiResponse | null = null;
 			try {
 				bcaRes = await this.kbttClient.doiNgayTraPhong(bcaPayload);
 			} catch (err: unknown) {
@@ -654,10 +680,20 @@ class StayService {
 				response_payload: JSON.stringify(
 					bcaRes.raw || { message: bcaRes.message, code: bcaRes.code },
 				),
-				http_status: typeof bcaRes.code === "number" ? bcaRes.code : 200,
+				http_status:
+					bcaRes.httpStatus ??
+					(typeof bcaRes.code === "number" ? bcaRes.code : 200),
 				code: String(bcaRes.code),
 				is_success: bcaRes.success ? 1 : 0,
 				error_message: bcaRes.success ? undefined : bcaRes.message,
+				error_class: bcaRes.errorClass,
+				outcome_unknown: bcaRes.outcomeUnknown ? 1 : 0,
+				duration_ms: bcaRes.durationMs,
+				ttfb_ms: bcaRes.ttfbMs,
+				cf_ray: bcaRes.cfRay,
+				server_header: bcaRes.serverHeader,
+				request_id: bcaRes.requestId,
+				host: bcaRes.host,
 			});
 
 			if (!bcaRes.success) {

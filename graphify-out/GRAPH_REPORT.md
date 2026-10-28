@@ -1,17 +1,17 @@
-# Graph Report - dang-ky-luu-tru  (2026-10-26)
+# Graph Report - dang-ky-luu-tru  (2026-10-28)
 
 ## Corpus Check
-- 86 files · ~68,655 words
+- 93 files · ~71,875 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: .example 1, (none) 1, .css 1)
 
 ## Summary
-- 611 nodes · 1238 edges · 44 communities (36 shown, 8 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.83)
+- 632 nodes · 1310 edges · 46 communities (37 shown, 9 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4eaa2375`
+- Built from commit: `d81f1911`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -25,10 +25,10 @@
 - DataTransformer
 - auth.ts
 - catalogManager.ts
-- KbttClient
+- types/index.ts
 - catalogManager
 - biome.json
-- validator.ts
+- time.ts
 - Kiến Trúc Hệ Thống & Tài Liệu Kỹ Thuật (System Architecture & Technical Guide)
 - apps_script_onedit.js
 - scripts
@@ -59,16 +59,18 @@
 - Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1)
 - svelte.config.js
 - @playwright/test
+- tokenManager
+- app.d.ts
 
 ## God Nodes (most connected - your core abstractions)
 1. `DataTransformer` - 31 edges
 2. `catalogManager` - 29 edges
 3. `getDb()` - 29 edges
-4. `stayService` - 26 edges
-5. `@sveltejs/kit` - 25 edges
+4. `@sveltejs/kit` - 26 edges
+5. `stayService` - 26 edges
 6. `D1DatabaseLike` - 23 edges
 7. `logger` - 22 edges
-8. `KbttClient` - 19 edges
+8. `KbttClient` - 21 edges
 9. `getStayById()` - 19 edges
 10. `syncPipeline` - 19 edges
 
@@ -87,15 +89,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (44 total, 8 thin omitted)
+## Communities (46 total, 9 thin omitted)
 
 ### Community 0 - "db.ts"
-Cohesion: 0.08
-Nodes (52): App, Locals, Platform, src_lib_server_db_d1databaselike, getDb(), clearAuditLogs(), deleteAuditLog(), generateId() (+44 more)
+Cohesion: 0.10
+Nodes (42): getDb(), clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest() (+34 more)
 
 ### Community 1 - "@sveltejs/kit"
-Cohesion: 0.08
-Nodes (11): @sveltejs/kit, ApiEnvironment, CONFIG, src_lib_server_datatransformer_rawocrrow, ApiResponse, LogEntry, logger, LogLevel (+3 more)
+Cohesion: 0.06
+Nodes (18): ref_node_http, ref_node_net, @sveltejs/kit, ApiEnvironment, CONFIG, src_lib_server_datatransformer_rawocrrow, GoogleSheetService, ApiResponse (+10 more)
 
 ### Community 2 - "compilerOptions"
 Cohesion: 0.13
@@ -110,30 +112,30 @@ Cohesion: 0.11
 Nodes (18): author, description, keywords, license, main, name, type, version (+10 more)
 
 ### Community 5 - "D1PreparedStatement"
-Cohesion: 0.17
-Nodes (3): RemoteD1Database, D1PreparedStatement, MockD1Database
+Cohesion: 0.15
+Nodes (4): RemoteD1Database, D1PreparedStatement, MockD1Database, Row
 
 ### Community 6 - "DataTransformer"
-Cohesion: 0.21
-Nodes (6): DataTransformer, CompletenessResult, RawOcrRow, SyncResult, TransformedRowResult, runTransformerUnitTests()
+Cohesion: 0.20
+Nodes (6): DataTransformer, CompletenessResult, RawOcrRow, TransformedRowResult, POST(), runTransformerUnitTests()
 
 ### Community 7 - "auth.ts"
-Cohesion: 0.16
-Nodes (25): ref_node_child_process, ref_node_fs, ref_node_path, ref_types_js, handle(), base64UrlDecode(), base64UrlEncode(), checkRateLimit() (+17 more)
+Cohesion: 0.17
+Nodes (24): ref_node_child_process, ref_node_fs, ref_node_path, ref_types_js, handle(), base64UrlDecode(), base64UrlEncode(), checkRateLimit() (+16 more)
 
 ### Community 8 - "catalogManager.ts"
 Cohesion: 0.13
 Nodes (11): LOAI_GIAY_TO_DATA, LY_DO_CU_TRU_DATA, QUOC_TICH_DATA, StandardCatalogItem, CatalogItem, COUNTRY_OPTIONS, countryNameMap, LOAI_GIAY_TO_OPTIONS (+3 more)
 
-### Community 9 - "KbttClient"
-Cohesion: 0.14
-Nodes (4): GoogleSheetService, KbttClient, TabInfo, runLiveBcaPipelineTests()
+### Community 9 - "types/index.ts"
+Cohesion: 0.18
+Nodes (16): probeBcaConnection(), classifyKbttResponse(), isAlreadyRegisteredMessage(), Guest, IngestResult, IngestResultItem, KbttLog, SyncResult (+8 more)
 
 ### Community 11 - "biome.json"
 Cohesion: 0.11
 Nodes (18): source, assist, actions, noUnusedVariables, files, includes, formatter, enabled (+10 more)
 
-### Community 12 - "validator.ts"
+### Community 12 - "time.ts"
 Cohesion: 0.17
 Nodes (25): ref_node_assert, formatDateTimeToGmt7(), formatDateToGmt7(), getNowGmt7Date(), getNowGmt7DateString(), getNowGmt7DateTimeString(), getNowGmt7IsoString(), isPastNoonGmt7() (+17 more)
 
@@ -233,25 +235,29 @@ Nodes (9): 2026-09-30, 2026-10-26, Changelog, 🚀 Các Tính Năng Chính (Core
 Cohesion: 0.40
 Nodes (3): @sveltejs/adapter-cloudflare, @sveltejs/vite-plugin-svelte, config
 
+### Community 45 - "app.d.ts"
+Cohesion: 0.29
+Nodes (4): App, Locals, Platform, src_lib_server_db_d1databaselike
+
 ## Knowledge Gaps
-- **218 isolated node(s):** `$schema`, `includes`, `enabled`, `indentStyle`, `organizeImports` (+213 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 281 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **217 isolated node(s):** `$schema`, `includes`, `enabled`, `indentStyle`, `organizeImports` (+212 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 283 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `@sveltejs/kit` connect `@sveltejs/kit` to `db.ts`, `package.json`, `auth.ts`?**
-  _High betweenness centrality (0.141) - this node is a cross-community bridge._
-- **Why does `isSameOrPastCheckoutTimeGmt7()` connect `validator.ts` to `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1)`, `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `db.ts`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
-- **Why does `catalogManager` connect `catalogManager` to `db.ts`, `@sveltejs/kit`, `DataTransformer`, `catalogManager.ts`, `KbttClient`, `validator.ts`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+- **Why does `@sveltejs/kit` connect `@sveltejs/kit` to `db.ts`, `package.json`, `DataTransformer`, `auth.ts`, `types/index.ts`?**
+  _High betweenness centrality (0.140) - this node is a cross-community bridge._
+- **Why does `isSameOrPastCheckoutTimeGmt7()` connect `time.ts` to `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1)`, `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `db.ts`?**
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+- **Why does `catalogManager` connect `catalogManager` to `db.ts`, `@sveltejs/kit`, `DataTransformer`, `catalogManager.ts`, `time.ts`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **What connects `$schema`, `includes`, `enabled` to the rest of the system?**
-  _218 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _217 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `db.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07917383820998279 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10400682011935208 - nodes in this community are weakly interconnected._
 - **Should `@sveltejs/kit` be split into smaller, more focused modules?**
-  _Cohesion score 0.07773664727657324 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.058115025594700394 - nodes in this community are weakly interconnected._
 - **Should `compilerOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._

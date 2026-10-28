@@ -2,6 +2,7 @@
 import { onMount } from "svelte";
 import DatePicker from "$lib/components/DatePicker.svelte";
 import GuestTooltip from "$lib/components/GuestTooltip.svelte";
+import type { BcaHealthProbeResult, KbttLog } from "$lib/types/index.js";
 
 import {
 	COUNTRY_OPTIONS,
@@ -111,21 +112,6 @@ interface StayDetail {
 	tinh_thanh?: string;
 }
 
-interface KbttLog {
-	id: string;
-	stay_id?: string;
-	api_endpoint: string;
-	guest_name?: string;
-	so_giay_to?: string;
-	so_phong?: string;
-	request_payload?: string;
-	response_payload?: string;
-	http_status?: number;
-	code?: string;
-	is_success: number;
-	error_message?: string;
-	created_at?: string;
-}
 
 interface Stats {
 	totalGuests: number;
@@ -447,6 +433,31 @@ function unmarkEntryBusy(id: string) {
 
 let showPayloadModal = $state(false);
 let selectedLog = $state<KbttLog | null>(null);
+
+let isProbingBca = $state(false);
+let probeResult = $state<BcaHealthProbeResult | null>(null);
+let showProbeModal = $state(false);
+
+async function runBcaProbe() {
+	if (isProbingBca) return;
+	isProbingBca = true;
+	try {
+		showToast("Đang kiểm tra kết nối tới Cổng BCA...", "info");
+		const res = await fetch("/api/bca/probe");
+		const data = (await res.json()) as BcaHealthProbeResult;
+		probeResult = data;
+		showProbeModal = true;
+		if (data.success) {
+			showToast(`✓ Cổng BCA phản hồi bình thường (${data.latencyMs}ms)`, "success");
+		} else {
+			showToast(`⚠️ Cổng BCA gặp sự cố (HTTP ${data.httpStatus || 0})`, "error");
+		}
+	} catch (err) {
+		showToast(`Lỗi khi kiểm tra kết nối: ${(err as Error).message}`, "error");
+	} finally {
+		isProbingBca = false;
+	}
+}
 
 let showStatusModal = $state(false);
 let statusTargetStay = $state<StayDetail | null>(null);
@@ -2231,8 +2242,56 @@ function formatAuditAction(
 	};
 }
 
+function formatErrorClassBadge(errorClass?: string): { name: string; class: string } {
+	switch (errorClass) {
+		case "UPSTREAM_GATEWAY":
+			return { name: "Cổng C06 (Proxy)", class: "bg-purple-950/80 text-purple-300 border-purple-700/80" };
+		case "TIMEOUT":
+			return { name: "Timeout C06", class: "bg-amber-950/80 text-amber-300 border-amber-700/80" };
+		case "AUTH":
+			return { name: "Lỗi Xác Thực", class: "bg-red-950/80 text-red-300 border-red-700/80" };
+		case "NETWORK":
+			return { name: "Lỗi Mạng", class: "bg-orange-950/80 text-orange-300 border-orange-700/80" };
+		case "BUSINESS_REJECT":
+			return { name: "BCA Từ Chối", class: "bg-rose-950/80 text-rose-300 border-rose-700/80" };
+		case "ALREADY_REGISTERED":
+			return { name: "Đã Khai Báo", class: "bg-sky-950/80 text-sky-300 border-sky-700/80" };
+		case "SCHEMA_CHANGED":
+			return { name: "Sai Schema", class: "bg-yellow-950/80 text-yellow-300 border-yellow-700/80" };
+		case "APP_INTERNAL":
+			return { name: "Nội Bộ App", class: "bg-slate-800 text-slate-300 border-slate-700" };
+		default:
+			return { name: "Khác", class: "bg-slate-800 text-slate-400 border-slate-700" };
+	}
+}
+
+function formatDuration(ms?: number | null): string {
+	if (ms == null || ms === undefined) return "-";
+	if (ms < 1000) return `${ms}ms`;
+	return `${(ms / 1000).toFixed(1)}s`;
+}
+
 function getAuditLogFailureReason(log: KbttLog): string {
 	if (log.is_success) return "";
+
+	if (log.error_class === "UPSTREAM_GATEWAY") {
+		return "Cổng trung gian C06 (Cloudflare Gateway) gặp sự cố (HTTP 502/520). Kết quả chưa rõ - C06 có thể đã lưu hồ sơ.";
+	}
+	if (log.error_class === "TIMEOUT") {
+		return "Máy chủ C06 không phản hồi sau thời gian chờ (Timeout). Kết quả chưa rõ ràng - C06 có thể đang xử lý.";
+	}
+	if (log.error_class === "AUTH") {
+		return "Hết hạn phiên làm việc hoặc Token API C06 không hợp lệ.";
+	}
+	if (log.error_class === "NETWORK") {
+		return "Lỗi đường truyền mạng hoặc rớt kết nối tới máy chủ C06.";
+	}
+	if (log.error_class === "ALREADY_REGISTERED") {
+		return "Hồ sơ khách đã được ghi nhận trên hệ thống C06 trước đó.";
+	}
+	if (log.error_class === "SCHEMA_CHANGED") {
+		return "Cấu trúc phản hồi từ C06 bị thay đổi hoặc không phải JSON hợp lệ.";
+	}
 
 	// 1. Check request payload first for missing required fields (domain constraint analysis)
 	if (log.request_payload) {
@@ -3525,6 +3584,19 @@ onMount(async () => {
 					<div class="flex items-center gap-2">
 						<button
 							type="button"
+							onclick={runBcaProbe}
+							disabled={isProbingBca}
+							class="px-2.5 py-1.5 bg-sky-950/80 hover:bg-sky-900 disabled:opacity-50 text-sky-300 rounded-lg text-xs font-semibold transition-all border border-sky-800 flex items-center gap-1.5"
+							title="Kiểm tra kết nối và đo độ trễ tới Cổng BCA / C06 (Hoàn toàn read-only, không can thiệp CSDL)"
+						>
+							{#if isProbingBca}
+								<span class="inline-block animate-spin">⏳</span> Đang kiểm tra...
+							{:else}
+								<span>🌐</span> Kiểm tra kết nối BCA
+							{/if}
+						</button>
+						<button
+							type="button"
 							onclick={loadAuditLogs}
 							class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold transition-all border border-slate-600 flex items-center gap-1"
 						>
@@ -3576,19 +3648,48 @@ onMount(async () => {
 											<td class="p-3.5 font-mono text-sky-400 whitespace-nowrap">{log.so_phong ? `Phòng ${log.so_phong}` : '-'}</td>
 											<td class="p-3.5 font-mono text-slate-300 whitespace-nowrap">{log.so_giay_to || '-'}</td>
 											<td class="p-3.5 whitespace-nowrap">
-												{#if log.is_success}
-													<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 font-medium text-[10px]">
-														✓ Thành công
-													</span>
-												{:else}
-													{@const failReason = getAuditLogFailureReason(log)}
-													<span
-														class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-[10px] cursor-help hover:bg-rose-900 transition-all"
-														title={log.error_message && log.error_message !== failReason ? `${failReason}\n(Chi tiết kỹ thuật: ${log.error_message})` : failReason}
-													>
-														✕ Thất bại ({log.code || '500'})
-													</span>
-												{/if}
+												<div class="flex flex-col gap-1 items-start">
+													{#if log.is_success}
+														<div class="flex items-center gap-1.5">
+															<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700 font-medium text-[10px]">
+																✓ Thành công
+															</span>
+															{#if log.duration_ms}
+																<span class="text-[10px] font-mono text-slate-400" title="Thời gian phản hồi">
+																	{formatDuration(log.duration_ms)}
+																</span>
+															{/if}
+														</div>
+													{:else}
+														{@const failReason = getAuditLogFailureReason(log)}
+														{@const errBadge = formatErrorClassBadge(log.error_class)}
+														<div class="flex flex-col gap-1">
+															<div class="flex items-center gap-1.5 flex-wrap">
+																<span
+																	class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-[10px] cursor-help hover:bg-rose-900 transition-all"
+																	title={log.error_message && log.error_message !== failReason ? `${failReason}\n(Chi tiết kỹ thuật: ${log.error_message})` : failReason}
+																>
+																	✕ HTTP {log.http_status || log.code || '500'}
+																</span>
+																{#if log.error_class}
+																	<span class="px-1.5 py-0.5 rounded text-[10px] font-mono border {errBadge.class}">
+																		{errBadge.name}
+																	</span>
+																{/if}
+																{#if log.duration_ms}
+																	<span class="text-[10px] font-mono text-slate-400" title="Thời gian phản hồi">
+																		{formatDuration(log.duration_ms)}
+																	</span>
+																{/if}
+															</div>
+															{#if log.outcome_unknown}
+																<span class="inline-flex items-center gap-1 text-[10px] text-amber-300 font-medium bg-amber-950/70 border border-amber-800/80 px-1.5 py-0.5 rounded">
+																	⚠️ Chưa rõ BCA đã lưu
+																</span>
+															{/if}
+														</div>
+													{/if}
+												</div>
 											</td>
 											<td class="p-3.5 text-center whitespace-nowrap">
 												<div class="flex items-center justify-center gap-1.5">
@@ -4231,6 +4332,30 @@ onMount(async () => {
 					</div>
 				{/if}
 
+				<!-- Diagnostic Details Banner -->
+				<div class="mb-4 grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-slate-900 rounded-xl border border-slate-700/80 text-[11px] font-mono text-slate-300">
+					<div>Mã HTTP: <strong class="text-white">{selectedLog.http_status ?? '-'}</strong></div>
+					<div>Độ trễ: <strong class="text-amber-400">{formatDuration(selectedLog.duration_ms)}</strong></div>
+					{#if selectedLog.error_class}
+						{@const modalBadge = formatErrorClassBadge(selectedLog.error_class)}
+						<div>Phân loại: <span class="px-1.5 py-0.5 rounded text-[10px] border {modalBadge.class}">{modalBadge.name}</span></div>
+					{:else}
+						<div>Phân loại: <span class="text-slate-500">-</span></div>
+					{/if}
+					<div>Trạng thái: <strong class="{selectedLog.is_success ? 'text-emerald-400' : 'text-rose-400'}">{selectedLog.is_success ? 'Thành công' : 'Thất bại'}</strong></div>
+					{#if selectedLog.cf_ray}
+						<div class="col-span-2 truncate">CF-Ray: <span class="text-slate-400">{selectedLog.cf_ray}</span></div>
+					{/if}
+					{#if selectedLog.request_id}
+						<div class="col-span-2 truncate">Request ID: <span class="text-slate-400">{selectedLog.request_id}</span></div>
+					{/if}
+					{#if selectedLog.outcome_unknown}
+						<div class="col-span-2 sm:col-span-4 text-amber-300 font-sans font-semibold bg-amber-950/40 p-1.5 rounded border border-amber-800/60">
+							⚠️ Cổng proxy phản hồi lỗi nhưng C06 có thể đã lưu hồ sơ (Outcome Unknown).
+						</div>
+					{/if}
+				</div>
+
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto text-xs font-mono">
 					<div>
 						<div class="text-slate-400 font-bold mb-1">Request Payload (Gửi đi):</div>
@@ -4245,6 +4370,47 @@ onMount(async () => {
 
 				<div class="mt-4 pt-3 border-t border-slate-700 flex justify-end">
 					<button type="button" onclick={() => { showPayloadModal = false; }} class="px-4 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs">Đóng</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- MODAL: BCA HEALTH PROBE -->
+	{#if showProbeModal && probeResult}
+		<div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+			<div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+				<div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+					<h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
+						<span>🌐</span> Kết Quả Kiểm Tra Cổng BCA (Health Probe)
+					</h3>
+					<button type="button" onclick={() => { showProbeModal = false; }} class="text-slate-400 hover:text-white text-xl">✕</button>
+				</div>
+
+				<div class="space-y-3 text-xs">
+					<div class="p-3 rounded-xl border {probeResult.success ? 'bg-emerald-950/60 border-emerald-800 text-emerald-300' : 'bg-rose-950/60 border-rose-800 text-rose-300'}">
+						<div class="font-bold flex items-center gap-1.5 mb-1">
+							<span>{probeResult.success ? '✓ Cổng BCA phản hồi bình thường' : '✕ Cổng BCA gặp sự cố'}</span>
+						</div>
+						<div class="text-[11px] text-slate-300">{probeResult.message}</div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-2 text-slate-300 font-mono text-[11px] bg-slate-900 p-3 rounded-xl border border-slate-700/60">
+						<div>Môi trường: <strong class="text-sky-400 uppercase">{probeResult.env}</strong></div>
+						<div>Độ trễ: <strong class="text-amber-400">{probeResult.latencyMs}ms</strong></div>
+						<div>Mã HTTP: <strong class="text-white">{probeResult.httpStatus || '-'}</strong></div>
+						<div>Máy chủ: <span class="text-slate-400">{probeResult.serverHeader || '-'}</span></div>
+						{#if probeResult.cfRay}
+							<div class="col-span-2 truncate">CF-Ray: <span class="text-slate-400">{probeResult.cfRay}</span></div>
+						{/if}
+						<div class="col-span-2 truncate">Host: <span class="text-slate-400">{probeResult.host}</span></div>
+					</div>
+				</div>
+
+				<div class="mt-4 pt-3 border-t border-slate-700 flex justify-end gap-2">
+					<button type="button" onclick={runBcaProbe} disabled={isProbingBca} class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-xs font-semibold">
+						{#if isProbingBca}Đang đo...{:else}Đo lại 🔄{/if}
+					</button>
+					<button type="button" onclick={() => { showProbeModal = false; }} class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs">Đóng</button>
 				</div>
 			</div>
 		</div>

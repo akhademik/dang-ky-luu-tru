@@ -9,7 +9,58 @@ async function main() {
 	const execCmd = isDirectBin ? process.execPath : "pnpm";
 
 	try {
-		// 1. Áp dụng schema.sql vào Local D1
+		// 1. Đảm bảo migration cho các cột mới nếu SQLite local file đã tồn tại từ trước
+		try {
+			// 1.1 Kiểm tra bảng stays
+			const checkColArgs = isDirectBin
+				? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(stays);", "--json"]
+				: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(stays);", "--json"];
+			const colStdout = cp.execFileSync(execCmd, checkColArgs, { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
+			const colParsed = JSON.parse(colStdout);
+			const cols: Array<{ name: string }> = colParsed?.[0]?.results || [];
+			if (cols.length > 0) {
+				const hasThoiHanThiThuc = cols.some((c) => c.name === "thoi_han_thi_thuc");
+				if (!hasThoiHanThiThuc) {
+					const alterArgs = isDirectBin
+						? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "ALTER TABLE stays ADD COLUMN thoi_han_thi_thuc TEXT;"]
+						: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "ALTER TABLE stays ADD COLUMN thoi_han_thi_thuc TEXT;"];
+					cp.execFileSync(execCmd, alterArgs, { encoding: "utf8", stdio: "inherit" });
+				}
+			}
+
+			// 1.2 Kiểm tra bảng kbtt_logs
+			const checkLogColsArgs = isDirectBin
+				? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(kbtt_logs);", "--json"]
+				: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(kbtt_logs);", "--json"];
+			const logColsStdout = cp.execFileSync(execCmd, checkLogColsArgs, { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
+			const logColsParsed = JSON.parse(logColsStdout);
+			const logCols: Array<{ name: string }> = logColsParsed?.[0]?.results || [];
+			if (logCols.length > 0) {
+				const existingColNames = new Set(logCols.map((c) => c.name));
+				const newCols = [
+					{ name: "error_class", type: "TEXT" },
+					{ name: "outcome_unknown", type: "INTEGER DEFAULT 0" },
+					{ name: "duration_ms", type: "INTEGER" },
+					{ name: "ttfb_ms", type: "INTEGER" },
+					{ name: "cf_ray", type: "TEXT" },
+					{ name: "server_header", type: "TEXT" },
+					{ name: "request_id", type: "TEXT" },
+					{ name: "env", type: "TEXT" },
+					{ name: "host", type: "TEXT" },
+				];
+
+				for (const col of newCols) {
+					if (!existingColNames.has(col.name)) {
+						const alterLogArgs = isDirectBin
+							? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", `ALTER TABLE kbtt_logs ADD COLUMN ${col.name} ${col.type};`]
+							: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", `ALTER TABLE kbtt_logs ADD COLUMN ${col.name} ${col.type};`];
+						cp.execFileSync(execCmd, alterLogArgs, { encoding: "utf8", stdio: "inherit" });
+					}
+				}
+			}
+		} catch {}
+
+		// 2. Áp dụng schema.sql vào Local D1 (tạo bảng biểu mới nếu chưa có, và cập nhật toàn bộ index)
 		const applySchemaArgs = isDirectBin
 			? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--file=schema.sql"]
 			: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--file=schema.sql"];
@@ -18,23 +69,6 @@ async function main() {
 			encoding: "utf8",
 			stdio: "inherit",
 		});
-
-		// 1.1 Đảm bảo migration cho các cột mới nếu SQLite local file đã tồn tại từ trước
-		try {
-			const checkColArgs = isDirectBin
-				? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(stays);", "--json"]
-				: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "PRAGMA table_info(stays);", "--json"];
-			const colStdout = cp.execFileSync(execCmd, checkColArgs, { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
-			const colParsed = JSON.parse(colStdout);
-			const cols: Array<{ name: string }> = colParsed?.[0]?.results || [];
-			const hasThoiHanThiThuc = cols.some((c) => c.name === "thoi_han_thi_thuc");
-			if (!hasThoiHanThiThuc) {
-				const alterArgs = isDirectBin
-					? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "ALTER TABLE stays ADD COLUMN thoi_han_thi_thuc TEXT;"]
-					: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "ALTER TABLE stays ADD COLUMN thoi_han_thi_thuc TEXT;"];
-				cp.execFileSync(execCmd, alterArgs, { encoding: "utf8", stdio: "inherit" });
-			}
-		} catch {}
 
 		console.log("✅ Local SQLite database đã sẵn sàng với đầy đủ bảng biểu và indexes!");
 

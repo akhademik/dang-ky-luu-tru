@@ -1,7 +1,11 @@
 import { CONFIG } from "./config.js";
 import { logger } from "./logger.js";
 
-export class TokenManager {
+export interface ITokenManager {
+	getValidToken(): Promise<string>;
+}
+
+export class TokenManager implements ITokenManager {
 	private static instance: TokenManager;
 	public accessToken: string | null = null;
 	public refreshToken: string | null = null;

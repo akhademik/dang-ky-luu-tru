@@ -89,7 +89,7 @@ export const CONFIG = {
 		return currentEnv;
 	},
 	get BASE_URL(): string {
-		return currentEnv === "prod" ? PROD_BASE_URL : DEV_BASE_URL;
+		return currentEnv === "prod" ? this.PROD_BASE_URL : this.DEV_BASE_URL;
 	},
 	setEnv(env: ApiEnvironment) {
 		if (env === "dev" || env === "prod") {

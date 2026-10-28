@@ -6,7 +6,7 @@ import {
 } from "../data/catalogs.js";
 import { CONFIG } from "./config.js";
 
-export type CatalogItem = StandardCatalogItem;
+type CatalogItem = StandardCatalogItem;
 
 export class CatalogManager {
 	private static instance: CatalogManager;

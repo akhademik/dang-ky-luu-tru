@@ -81,19 +81,40 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-10-26 18:15 (GMT+7)
+- Cập nhật lần cuối: 2026-10-28 08:25 (GMT+7)
 - Đã hoàn thành:
-  - Khắc phục lỗi kẹt trạng thái khai báo lưu trú khi Cổng BCA C06 phản hồi mã 400 kèm thông báo "Khách đã khai báo tạm trú ... tại cơ sở lưu trú này" qua cơ chế Smart Fallback trong [`stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), tự động chuyển trạng thái `SYNCED_KBTT` và ghi nhận Dev Logs thành công.
-  - Cải tiến giao diện: Bổ sung Live Banner đếm giây khi gọi API BCA (tránh hiện tượng mất Toast sau 4s và cảm giác "chạy ngầm"), phân tách hoàn toàn ô tìm kiếm của tab Dev Logs khỏi bộ lọc danh sách khách.
-  - Cấu hình Timeout an toàn 60s cho kết nối API C06 và 30s cho OAuth token.
-  - Đồng bộ thủ công lượt lưu trú của khách NGÔ THỊ KIM YẾN trên Remote D1 sang `SYNCED_KBTT`.
-  - Pipeline kiểm tra chất lượng code (`format`, `lint:biome`, `check:svelte`, `test`, `knip`, `build`, `graphify`) đạt 100% pass.
+  - Khởi tạo Migration 0003 (`migrations/0003_enhance_kbtt_logs.sql`) mở rộng bảng `kbtt_logs` với các trường chẩn đoán chuyên sâu: mã HTTP thực tế (`http_status`), phân loại nguồn gốc lỗi (`error_class`), cờ kết quả chưa rõ (`outcome_unknown`), đo đạc thời gian (`duration_ms`, `ttfb_ms`), dấu vân tay Cloudflare (`cf_ray`, `server_header`), `request_id`, `host`, `env`.
+  - Xây dựng Module Phân loại lỗi tự động 8 nhóm (`UPSTREAM_GATEWAY`, `TIMEOUT`, `NETWORK`, `AUTH`, `BUSINESS_REJECT`, `SCHEMA_CHANGED`, `ALREADY_REGISTERED`, `APP_INTERNAL`) tại [`src/lib/server/kbttClassifier.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClassifier.ts).
+  - Khắc phục triệt để lỗi ghi cứng `http_status: 200` trong [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), ghi nhận chính xác HTTP code và độ trễ thực tế vào CSDL D1.
+  - Tích hợp Endpoint `/api/bca/probe` và Nút "Kiểm tra kết nối BCA" trên Tab Dev Logs (hoàn toàn read-only, an toàn tuyệt đối trên PROD & DEV, hiển thị trực quan độ trễ ms, HTTP code, CF-Ray, Server).
+  - Bổ sung bộ kiểm thử mô phỏng máy chủ BCA Offline (`test/integration/kbtt-mock-server.test.ts`) giả lập các kịch bản: 502 Cloudflare HTML, treo quá thời gian, thay đổi JSON schema, probe sức khỏe.
+  - Sửa lỗi date fixture trong `test/integration/stay-service.test.ts` dùng ngày động theo múi giờ GMT+7.
+  - Toàn bộ pipeline kiểm tra chất lượng (`format`, `lint:biome`, `check:svelte`, `test`, `knip`, `build`, `graphify`) đạt 100% pass.
 - Đang dở: Không có.
-- Biết trước còn thiếu / nợ kỹ thuật: Không có.
+- Biết trước còn thiếu / nợ kỹ thuật: Cần chạy `wrangler d1 migrations apply dang-ky-luu-tru-db --remote` khi deploy lên Cloudflare D1 Production.
+
+### Kế hoạch theo dõi thực tế & Xử lý tiếp theo (Phase 2):
+1. **Quan sát & Thu thập số liệu thực tế qua Dev Logs**:
+   - Theo dõi tần suất xuất hiện của nhóm `UPSTREAM_GATEWAY` (mã lỗi HTTP 502/520 trả về từ Cloudflare proxy của C06).
+   - Đo đạc độ trễ thực tế (`duration_ms`, `ttfb_ms`) khi BCA vào khung giờ cao điểm (thường từ 18:00 - 22:00).
+   - Thống kê tỷ lệ các ca `outcome_unknown = 1` (khách thực tế đã có trên C06 nhưng app nhận mã 502).
+2. **Kế hoạch xử lý hành vi dựa trên số liệu thực tế**:
+   - **Trạng thái "Đang xác minh" (Verifying)**: Với các lượt khai báo gặp `outcome_unknown = 1`, hiển thị nhãn "Đang xác minh với C06" thay vì báo lỗi dứt điểm.
+   - **Tự động đối soát / Thử lại an toàn**: Khi người dùng hoặc hệ thống gửi lại, cơ chế Smart Fallback sẽ bắt thông báo "Khách đã khai báo tạm trú..." và chuyển sang `SYNCED_KBTT`. Có thể mở rộng thêm cron/trigger tự động kiểm tra lại các ca này sau 1–2 phút.
+   - **Đối soát với C06**: Khi có sự cố kéo dài, sử dụng cặp mã `request_id` và `cf_ray` được ghi nhận trong Dev Logs để cung cấp cho bộ phận kỹ thuật C06 BCA tra cứu chính xác log phía họ.
 
 ## Changelog
 
-### 2026-10-26
+### 2026-10-28
+
+- Nâng Cấp Hệ Thống Chẩn Đoán, Phân Loại Lỗi C06 & Giám Sát Cổng BCA:
+  - Thêm Migration 0003 (`migrations/0003_enhance_kbtt_logs.sql`) bổ sung 9 cột chẩn đoán cho `kbtt_logs` phục vụ tra soát với C06 và phân tích nguyên nhân lỗi.
+  - Tách Module Phân loại lỗi độc lập [`src/lib/server/kbttClassifier.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClassifier.ts) tự động nhận diện `UPSTREAM_GATEWAY` (HTTP 502/520 proxy), `TIMEOUT`, `AUTH`, `NETWORK`, `SCHEMA_CHANGED`, `ALREADY_REGISTERED`, và gắn cờ `outcome_unknown = 1`.
+  - Cập nhật [`src/lib/server/kbttClient.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClient.ts) và [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts) đo lường chính xác `duration_ms`, `ttfb_ms`, lưu mã HTTP thật thay vì ghi cứng 200.
+  - Bổ sung endpoint read-only [`/api/bca/probe`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/bca/probe/+server.ts) và nút kiểm tra kết nối C06 thời gian thực trên giao diện Dev Logs của [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte).
+  - Bổ sung 2 bộ test: `test/unit/kbtt-classifier.test.ts` và `test/integration/kbtt-mock-server.test.ts` mô phỏng toàn diện các sự cố mạng và cổng BCA không cần gọi server thật.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`migrations/0003_enhance_kbtt_logs.sql`](file:///home/hajtran/dev/dang-ky-luu-tru/migrations/0003_enhance_kbtt_logs.sql), [`src/lib/server/kbttClassifier.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClassifier.ts), [`src/lib/server/kbttClient.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClient.ts), [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`src/lib/server/bcaProbe.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/bcaProbe.ts), [`src/routes/api/bca/probe/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/bca/probe/+server.ts), [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`test/unit/kbtt-classifier.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/unit/kbtt-classifier.test.ts), [`test/integration/kbtt-mock-server.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/kbtt-mock-server.test.ts).
 
 - Thêm Cơ chế Smart Fallback Tự Động Nhận Diện Hồ Sơ Đã Có Trên BCA:
   - Khi Cổng C06 BCA phản hồi code `400` nhưng kèm thông báo *"Khách đã khai báo tạm trú..."* hoặc *"đang tạm trú tại CSLT và chưa checkout"*, [`stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts) tự động nhận diện hồ sơ đã được C06 lưu thành công trước đó (do độ trễ hoặc lỗi 520 của Cloudflare proxy phía BCA).

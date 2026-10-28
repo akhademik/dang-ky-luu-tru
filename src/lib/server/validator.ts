@@ -1,4 +1,4 @@
-import type { StayStatus } from "../types/index.js";
+import type { StayStatus, ValidationResult } from "../types/index.js";
 import { parseToGmt7DateString } from "./time.js";
 
 /**
@@ -71,11 +71,6 @@ export function isValidPassport(soGiayTo?: string | null): boolean {
 	if (!soGiayTo) return false;
 	const clean = soGiayTo.replace(/\s+/g, "").toUpperCase();
 	return /^[A-Z0-9]{6,12}$/.test(clean);
-}
-
-export interface ValidationResult {
-	isValid: boolean;
-	errors: string[];
 }
 
 /**

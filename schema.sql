@@ -53,7 +53,18 @@ CREATE TABLE IF NOT EXISTS kbtt_logs (
 	code TEXT,
 	is_success INTEGER NOT NULL DEFAULT 0,
 	error_message TEXT,
+	error_class TEXT,
+	outcome_unknown INTEGER DEFAULT 0,
+	duration_ms INTEGER,
+	ttfb_ms INTEGER,
+	cf_ray TEXT,
+	server_header TEXT,
+	request_id TEXT,
+	env TEXT,
+	host TEXT,
 	created_at TEXT DEFAULT (datetime('now', '+7 hours'))
 );
 CREATE INDEX IF NOT EXISTS idx_kbtt_logs_stay_id ON kbtt_logs (stay_id);
 CREATE INDEX IF NOT EXISTS idx_kbtt_logs_created_at ON kbtt_logs (created_at);
+CREATE INDEX IF NOT EXISTS idx_kbtt_logs_error_class ON kbtt_logs (error_class);
+CREATE INDEX IF NOT EXISTS idx_kbtt_logs_outcome_unknown ON kbtt_logs (outcome_unknown);

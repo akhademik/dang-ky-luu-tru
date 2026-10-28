@@ -433,6 +433,15 @@ export class MockD1Database implements D1DatabaseLike {
 					code,
 					is_success,
 					error_message,
+					error_class,
+					outcome_unknown,
+					duration_ms,
+					ttfb_ms,
+					cf_ray,
+					server_header,
+					request_id,
+					env,
+					host,
 				] = params;
 				const now = new Date(Date.now() + 7 * 3600 * 1000)
 					.toISOString()
@@ -447,10 +456,19 @@ export class MockD1Database implements D1DatabaseLike {
 					so_phong: String(so_phong || ""),
 					request_payload: String(request_payload || ""),
 					response_payload: String(response_payload || ""),
-					http_status: Number(http_status || 200),
+					http_status: Number(http_status ?? 200),
 					code: String(code || ""),
 					is_success: Number(is_success || 0),
 					error_message: String(error_message || ""),
+					error_class: error_class ? String(error_class) : null,
+					outcome_unknown: Number(outcome_unknown || 0),
+					duration_ms: duration_ms != null ? Number(duration_ms) : null,
+					ttfb_ms: ttfb_ms != null ? Number(ttfb_ms) : null,
+					cf_ray: cf_ray ? String(cf_ray) : null,
+					server_header: server_header ? String(server_header) : null,
+					request_id: request_id ? String(request_id) : null,
+					env: env ? String(env) : null,
+					host: host ? String(host) : null,
 					created_at: now,
 				});
 				return {

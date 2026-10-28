@@ -14,6 +14,10 @@ import {
 	upsertStay,
 } from "../../src/lib/server/db.js";
 import { stayService } from "../../src/lib/server/stayService.js";
+import {
+	formatDateToGmt7,
+	getNowGmt7DateString,
+} from "../../src/lib/server/time.js";
 import { MockD1Database } from "../helpers/mock-d1.js";
 
 async function runStayServiceIntegrationTests(): Promise<void> {
@@ -272,10 +276,12 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 		ngay_sinh: "1995-05-15",
 		gioi_tinh: "F",
 	});
+	const todayStr = getNowGmt7DateString();
+	const tomorrowStr = formatDateToGmt7(new Date(Date.now() + 24 * 3600 * 1000));
 	const alreadyRegStay = await upsertStay(db, alreadyRegGuest.id, {
 		so_phong: "3",
-		ngay_den: "2026-10-26 14:00:00",
-		ngay_di_du_kien: "2026-10-27 12:00:00",
+		ngay_den: `${todayStr} 14:00:00`,
+		ngay_di_du_kien: `${tomorrowStr} 12:00:00`,
 		status: "READY_TO_SYNC",
 	});
 

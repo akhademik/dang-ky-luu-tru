@@ -2,8 +2,6 @@ import type { TabInfo } from "../types/index.js";
 import { CONFIG } from "./config.js";
 import { logger } from "./logger.js";
 
-export type { TabInfo };
-
 export class GoogleSheetService {
 	public sheetId: string;
 	private tabHeadersMap = new Map<string, string[]>();

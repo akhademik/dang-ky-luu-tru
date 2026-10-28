@@ -57,6 +57,15 @@ export interface StayDetail extends Stay {
 	thoi_han_thi_thuc?: string;
 }
 
+export type {
+	BcaHealthProbeResult,
+	ClassificationInput,
+	ClassificationResult,
+	KbttApiResponse,
+	KbttErrorClass,
+	ProbeOptions,
+} from "./kbtt.js";
+
 export interface KbttLog {
 	id: string;
 	stay_id?: string;
@@ -71,6 +80,15 @@ export interface KbttLog {
 	is_success: number;
 	error_message?: string;
 	created_at?: string;
+	error_class?: string;
+	outcome_unknown?: number;
+	duration_ms?: number;
+	ttfb_ms?: number;
+	cf_ray?: string;
+	server_header?: string;
+	request_id?: string;
+	env?: string;
+	host?: string;
 }
 
 export interface D1DatabaseLike {
@@ -86,6 +104,11 @@ export interface D1PreparedStatement {
 		success: boolean;
 		meta: { changes: number; last_row_id?: number };
 	}>;
+}
+
+export interface ValidationResult {
+	isValid: boolean;
+	errors: string[];
 }
 
 export interface RawOcrRow {

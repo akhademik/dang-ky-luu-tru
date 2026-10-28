@@ -13,8 +13,9 @@ export async function logKbttAction(
 		.prepare(`
 			INSERT INTO kbtt_logs (
 				id, stay_id, api_endpoint, guest_name, so_giay_to, so_phong,
-				request_payload, response_payload, http_status, code, is_success, error_message
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				request_payload, response_payload, http_status, code, is_success, error_message,
+				error_class, outcome_unknown, duration_ms, ttfb_ms, cf_ray, server_header, request_id, env, host
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`)
 		.bind(
 			id,
@@ -25,10 +26,19 @@ export async function logKbttAction(
 			log.so_phong || "",
 			log.request_payload || "",
 			log.response_payload || "",
-			log.http_status || 200,
+			log.http_status ?? 200,
 			log.code || "",
 			log.is_success ? 1 : 0,
 			log.error_message || "",
+			log.error_class || null,
+			log.outcome_unknown ? 1 : 0,
+			log.duration_ms ?? null,
+			log.ttfb_ms ?? null,
+			log.cf_ray || null,
+			log.server_header || null,
+			log.request_id || null,
+			log.env || null,
+			log.host || null,
 		)
 		.run();
 }
