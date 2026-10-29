@@ -16,7 +16,6 @@ export function isProduction(platform?: App.Platform): boolean {
 	const kbttEnv = String(
 		platformEnv.KBTT_ENV ||
 			(typeof process !== "undefined" && process.env?.KBTT_ENV) ||
-			CONFIG.currentEnv ||
 			"",
 	)
 		.toLowerCase()

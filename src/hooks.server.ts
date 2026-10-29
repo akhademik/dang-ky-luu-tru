@@ -2,8 +2,10 @@ import { type Handle, json } from "@sveltejs/kit";
 import { verifySession, verifyWebhookAuth } from "./lib/server/auth.js";
 import { CONFIG } from "./lib/server/config.js";
 
+let envInitialized = false;
+
 export const handle: Handle = async ({ event, resolve }) => {
-	// Sync platform.env on Cloudflare Pages to process.env and CONFIG
+	// Sync platform.env on Cloudflare Pages to process.env and CONFIG on startup
 	if (event.platform?.env) {
 		const penv = event.platform.env as Record<string, unknown>;
 		if (typeof process !== "undefined" && process.env) {
@@ -13,8 +15,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 				}
 			}
 		}
-		if (penv.KBTT_ENV === "prod" || penv.KBTT_ENV === "dev") {
-			CONFIG.setEnv(penv.KBTT_ENV);
+		if (!envInitialized) {
+			if (penv.KBTT_ENV === "prod" || penv.KBTT_ENV === "dev") {
+				CONFIG.setEnv(penv.KBTT_ENV);
+			}
+			envInitialized = true;
 		}
 	}
 

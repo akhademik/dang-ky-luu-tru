@@ -1,19 +1,28 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { type ApiEnvironment, CONFIG } from "$lib/server/config.js";
-import { logger } from "$lib/server/logger.js";
-import { syncPipeline } from "$lib/server/syncPipeline.js";
+import { type ApiEnvironment, CONFIG } from "../../../lib/server/config.js";
+import { logger } from "../../../lib/server/logger.js";
+import { syncPipeline } from "../../../lib/server/syncPipeline.js";
+
+function getDeployEnv(platform?: App.Platform): "dev" | "prod" {
+	const env = (platform?.env || {}) as Record<string, unknown>;
+	const val = String(
+		env.KBTT_ENV ||
+			(typeof process !== "undefined" && process.env?.KBTT_ENV) ||
+			"dev",
+	)
+		.toLowerCase()
+		.trim();
+	return val === "prod" ? "prod" : "dev";
+}
 
 export const GET: RequestHandler = async ({ platform }) => {
-	const env = (platform?.env || {}) as Record<string, unknown>;
-	const deployEnv = String(
-		env.KBTT_ENV || CONFIG.currentEnv || "dev",
-	).toLowerCase();
-	const isProd = deployEnv === "prod";
+	const deployEnv = getDeployEnv(platform);
+	const isProdFixed = deployEnv === "prod";
 
 	return json({
-		env: isProd ? "prod" : CONFIG.currentEnv,
-		deployEnv: isProd ? "prod" : "dev",
-		isProdFixed: isProd,
+		env: isProdFixed ? "prod" : CONFIG.currentEnv,
+		deployEnv,
+		isProdFixed,
 		baseUrl: CONFIG.BASE_URL,
 		devUrl: CONFIG.DEV_BASE_URL,
 		prodUrl: CONFIG.PROD_BASE_URL,
@@ -22,10 +31,7 @@ export const GET: RequestHandler = async ({ platform }) => {
 };
 
 export const POST: RequestHandler = async ({ request, platform }) => {
-	const env = (platform?.env || {}) as Record<string, unknown>;
-	const deployEnv = String(
-		env.KBTT_ENV || CONFIG.currentEnv || "dev",
-	).toLowerCase();
+	const deployEnv = getDeployEnv(platform);
 
 	// If running in PROD mode, prevent switching environment
 	if (deployEnv === "prod") {

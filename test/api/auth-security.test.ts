@@ -10,7 +10,12 @@ import {
 	verifySession,
 	verifyWebhookAuth,
 } from "../../src/lib/server/auth.js";
+import { CONFIG } from "../../src/lib/server/config.js";
 import { DELETE, GET, POST } from "../../src/routes/api/auth/login/+server.js";
+import {
+	GET as envGet,
+	POST as envPost,
+} from "../../src/routes/api/env/+server.js";
 
 async function runAuthSecurityApiTests(): Promise<void> {
 	console.log(
@@ -373,6 +378,67 @@ async function runAuthSecurityApiTests(): Promise<void> {
 
 	const resCsrf = await handle({ event: csrfEvent, resolve: mockResolve });
 	assert.equal(resCsrf.status, 403);
+
+	// 6. Environment Dynamic Switching Tests (DEV mode)
+	// In DEV: can check env status
+	const envGetData = await (
+		await envGet({ platform: devPlatform } as unknown as RequestEvent)
+	).json();
+	assert.equal(envGetData.deployEnv, "dev");
+	assert.equal(envGetData.isProdFixed, false);
+
+	// In DEV: can switch to PROD target dynamically
+	const switchReq = new Request("https://example.com/api/env", {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({ env: "prod" }),
+	});
+	const switchRes = await envPost({
+		request: switchReq,
+		platform: devPlatform,
+	} as unknown as RequestEvent);
+	assert.equal(switchRes.status, 200);
+	const switchData = await switchRes.json();
+	assert.equal(switchData.success, true);
+	assert.equal(switchData.env, "prod");
+	assert.equal(CONFIG.currentEnv, "prod");
+
+	// Subsequent request through handle must NOT revert CONFIG back to DEV
+	await handle({ event: devApiEvent, resolve: mockResolve });
+	assert.equal(
+		CONFIG.currentEnv,
+		"prod",
+		"handle must not overwrite dynamically switched env",
+	);
+
+	// Can switch back to DEV
+	const switchBackReq = new Request("https://example.com/api/env", {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({ env: "dev" }),
+	});
+	const switchBackRes = await envPost({
+		request: switchBackReq,
+		platform: devPlatform,
+	} as unknown as RequestEvent);
+	assert.equal(switchBackRes.status, 200);
+	assert.equal(CONFIG.currentEnv, "dev");
+
+	// In fixed PROD deployment: switching is forbidden
+	const prodSwitchReq = new Request("https://example.com/api/env", {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({ env: "dev" }),
+	});
+	const prodSwitchRes = await envPost({
+		request: prodSwitchReq,
+		platform: prodPlatform,
+	} as unknown as RequestEvent);
+	assert.equal(
+		prodSwitchRes.status,
+		403,
+		"Fixed PROD deployment must block environment switching",
+	);
 
 	console.log(
 		"✅ [API] Toàn bộ kiểm thử Authentication & Security mới đã pass 100%!",

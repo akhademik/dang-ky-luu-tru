@@ -81,8 +81,15 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-10-29 08:27 (GMT+7)
+- Cập nhật lần cuối: 2026-10-29 09:05 (GMT+7)
 - Đã hoàn thành:
+  - Khắc phục triệt để lỗi ghi đè môi trường API (Environment Switcher):
+    - Cập nhật [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts): Bổ sung cờ `envInitialized`, chỉ gán `CONFIG.setEnv` một lần duy nhất lúc khởi động worker/server từ `platform.env`. Ngăn chặn hoàn toàn tình trạng mỗi HTTP request tiếp theo tự động ghi đè môi trường về `KBTT_ENV=dev`.
+    - Cập nhật [`src/routes/api/env/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/env/+server.ts): Tách biệt logic xác định môi trường triển khai (`deployEnv`) và mục tiêu API động (`CONFIG.currentEnv`). Cho phép DEV tự do chuyển đổi giữa Sandbox DEV (`api-kbtt.ai-vlab.com`) và Cổng BCA Thật PROD (`api-tbltkbtt.bocongan.gov.vn`).
+    - Cập nhật [`src/lib/server/auth.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/auth.ts): Tách biệt chế độ xác thực người dùng (`isProduction`) khỏi mục tiêu API động `CONFIG.currentEnv`, đảm bảo việc chuyển API sang PROD trong môi trường DEV không làm gián đoạn tính năng DEV bypass auth.
+    - Bổ sung unit/API test trong [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts) xác nhận chuyển đổi môi trường 2 chiều qua `/api/env` hoạt động ổn định và không bị `hooks.server.ts` hoàn tác.
+  - Chuẩn hóa tài liệu kiến trúc & Case Study thực tế Cổng C06 BCA:
+    - Bổ sung Section 4.4 và Section 7 vào [`ARCHITECTURE.md`](file:///home/hajtran/dev/dang-ky-luu-tru/ARCHITECTURE.md) cùng Section 1.6 vào [`DESIGN_PATTERN.md`](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_PATTERN.md) ghi lại sơ đồ trình tự Sequence Diagram và cơ chế Network Resilience & Smart Fallback (xử lý tình huống cổng BCA phản hồi chậm 49s gây `fetch failed`, tự động retry và cứu hồ sơ thành công qua thông báo `ALREADY_REGISTERED`).
   - Cập nhật [`scripts/init-local-db.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/scripts/init-local-db.ts): Mỗi khi khởi động dev (`pnpm run dev`), hệ thống tự động tải snapshot toàn bộ dữ liệu từ Cloudflare D1 Remote (`guests`, `stays`, `kbtt_logs`) và thay thế hoàn toàn database Local SQLite, đảm bảo môi trường dev luôn có dữ liệu mới nhất (bao gồm đầy đủ 113 khách và 124 lượt ở, có các khách như PHẠM THÀNH CÔNG, NGUYỄN THÀNH CÔNG).
   - Vô hiệu hóa triệt để cơ chế Auto-checkout trong môi trường DEV: Bổ sung điều kiện kiểm tra `CONFIG.isProdMode` tại [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts#L568-L574), [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts), [`src/routes/api/stats/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stats/+server.ts) và [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts), ngăn chặn tình trạng tự động gửi API 12 sang BCA Sandbox gây lỗi bản ghi không tồn tại.
   - Tối ưu hóa giao diện danh sách khách tại [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte):
@@ -105,6 +112,15 @@ pnpm run build
 ## Changelog
 
 ### 2026-10-29
+
+- Sửa lỗi giữ trạng thái môi trường chuyển đổi (Dynamic Environment Switcher) & Cập nhật Tài liệu Kiến trúc:
+  - Cập nhật [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts): Khắc phục việc `CONFIG.setEnv` bị gọi đè lại bởi `penv.KBTT_ENV` trên mỗi HTTP request.
+  - Cập nhật [`src/routes/api/env/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/env/+server.ts): Sửa `getDeployEnv` không phụ thuộc vào `CONFIG.currentEnv`, cho phép chuyển đổi qua lại giữa PROD và DEV trên giao diện một cách ổn định.
+  - Cập nhật [`src/lib/server/auth.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/auth.ts): Bỏ tham chiếu `CONFIG.currentEnv` khỏi `isProduction`, không gây xung đột giữa chế độ xác thực và API target.
+  - Bổ sung test kiểm thử chuyển đổi môi trường và bảo toàn môi trường trong [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts).
+  - Cập nhật [`ARCHITECTURE.md`](file:///home/hajtran/dev/dang-ky-luu-tru/ARCHITECTURE.md) (Section 4.4 và Section 7 Sequence Diagram) cùng [`DESIGN_PATTERN.md`](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_PATTERN.md) ghi nhận cơ chế chống đứt gãy mạng và cứu hồ sơ C06 (Network Resilience & Smart Fallback) từ case study thực tế cổng BCA PROD.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts), [`src/routes/api/env/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/env/+server.ts), [`src/lib/server/auth.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/auth.ts), [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts), [`ARCHITECTURE.md`](file:///home/hajtran/dev/dang-ky-luu-tru/ARCHITECTURE.md), [`DESIGN_PATTERN.md`](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_PATTERN.md), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md).
 
 - Tối ưu giao diện Danh sách Khách & Chi tiết Lượt ở:
   - Cập nhật [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte): Bỏ badge nhấp nháy `{stay_count} lượt` ở hàng accordion ban đầu của khách có nhiều lượt ở, nhường chỗ hiển thị tên khách đầy đủ hơn; người dùng dễ dàng nhận diện khách có nhiều lượt qua mũi tên `▶` và nút bấm `Lịch sử (N) ▼`.

@@ -209,6 +209,13 @@ flowchart TD
 - **Không dùng RAM in-memory Map** trong Worker isolate.
 - Giới hạn 5 lần yêu cầu / 60 giây theo Client IP (`cf-connecting-ip`), trả về mã `HTTP 429`.
 
+### 4.4. Cơ Chế Chuyển Đổi Môi Trường API Động (Dynamic API Target Switcher)
+Hệ thống phân tách rạch ròi 2 khái niệm môi trường để đảm bảo nhà phát triển có thể test trực tiếp với Cổng BCA Production mà không ảnh hưởng tới trạng thái xác thực máy chủ:
+- **Môi trường Hosting (Deploy Mode)**: Xác định bởi biến hệ thống `KBTT_ENV` (`dev` | `prod`). Quyết định việc App yêu cầu xác thực `APP_PASSWORD` hay chạy chế độ DEV bypass hoàn toàn.
+- **Môi trường API Target (BCA Target Env)**: Điều khiển bởi `CONFIG.currentEnv` (`dev` sandbox `api-kbtt.ai-vlab.com` | `prod` cổng thật `api-tbltkbtt.bocongan.gov.vn`).
+- **Khởi tạo một lần tại `hooks.server.ts`**: Biến cờ module `let envInitialized = false` đảm bảo `hooks.server.ts` chỉ đọc giá trị gốc từ `platform.env` một lần duy nhất lúc khởi động worker/server. Khi người dùng bấm chuyển đổi môi trường API qua `POST /api/env`, các HTTP request tiếp theo không ghi đè lại giá trị `CONFIG.setEnv`.
+- **Tách biệt với xác thực người dùng**: Hàm `isProduction` trong `src/lib/server/auth.ts` độc lập hoàn toàn với `CONFIG.currentEnv`, giúp việc chuyển đổi API sang PROD trong lúc chạy dev không kích hoạt cơ chế khóa 401 Session của hệ thống.
+
 ---
 
 ## 5. Cấu Trúc Thư Mục Dự Án (Project Structure)
@@ -314,3 +321,44 @@ pnpm run build
 # 6. Cập nhật đồ thị kiến trúc
 graphify . --code-only && graphify cluster-only .
 ```
+
+---
+
+## 7. Cơ Chế Chống Đứt Gãy Mạng & Cứu Hồ Sơ C06 (Resilience & Smart Fallback Pattern)
+
+Khi tích hợp với Cổng Dịch vụ công C06 của Bộ Công An (`api-tbltkbtt.bocongan.gov.vn`), hệ thống phải xử lý những đặc thù hạ tầng thực tế:
+1. **Độ trễ cao và nghẽn mạng (High Upstream Latency)**: Cổng BCA thường xuyên có thời gian phản hồi kéo dài từ 30s đến 50s vào các khung giờ cao điểm, và kết nối HTTP có thể bị ngắt giữa chừng bởi Cloudflare Gateway phía C06 (`fetch failed` hoặc HTTP 502/520).
+2. **Nguy cơ mất đồng bộ giữa Client và BCA**: Trong nhiều trường hợp, máy chủ C06 **đã ghi nhận hồ sơ thành công vào cơ sở dữ liệu quốc gia**, nhưng gói tin phản hồi HTTP về client lại bị rớt mạng ở chặng cuối.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Dev as Người Dùng / App
+    participant KS as KbttClient
+    participant BCA as Cổng C06 BCA
+    participant SS as StayService
+    participant DB as Cloudflare D1
+
+    Dev->>KS: Gửi Thông báo lưu trú (Attempt 1)
+    KS->>BCA: POST /client-service/kbtt-vn/kbtt-3th
+    Note over BCA: C06 nhận dữ liệu và LƯU THÀNH CÔNG vào CSDL BCA.<br/>Gateway C06 phản hồi rất chậm (>48s)...
+    Note over KS,BCA: Rớt kết nối chặng phản hồi (fetch failed / timeout)!
+    KS->>KS: Bắt lỗi kết nối -> Tự động Retry Attempt 2 (sau 1s backoff)
+    KS->>BCA: Gửi lại Thông báo lưu trú (Attempt 2)
+    BCA-->>KS: HTTP 200 { code: "400", message: "Bản khai báo: ... đang tạm trú tại CSLT và chưa checkout" }
+    Note over KS: Log [ERROR] [ALREADY_REGISTERED] ở tầng API Client
+    KS-->>SS: Trả về kết quả cho StayService
+    Note over SS: SMART FALLBACK KÍCH HOẠT!<br/>Nhận diện khách ĐÃ ĐƯỢC LƯU HỢP LỆ ở Attempt 1.<br/>Khẳng định mục tiêu đăng ký đã thành công 100%.
+    SS->>DB: Cập nhật status = 'SYNCED_KBTT', ma_ho_so_kbtt = 'ALREADY_REGISTERED'
+    SS-->>Dev: Trả về Toast & Dev Log: ✓ Thành công (kèm tổng thời gian 48.6s)
+```
+
+### 7.1. Chính sách Tự Động Thử Lại (Retry Policy)
+- Trong `src/lib/server/kbttClient.ts`, mỗi lệnh POST payload được trang bị vòng lặp thử lại tối đa 3 lần với backoff lũy tiến (`1000 * attempt`).
+- Timeout an toàn được giới hạn ở mức 60 giây (`AbortSignal.timeout(60000)`).
+
+### 7.2. Cơ chế Smart Fallback (`isAlreadyRegisteredMessage`)
+- Khi BCA trả về mã lỗi nghiệp vụ với nội dung:
+  - `"đang tạm trú tại CSLT và chưa checkout"`
+  - `"Khách đã khai báo tạm trú từ ... đến ... tại cơ sở lưu trú này"`
+- `src/lib/server/stayService.ts` tự động nhận diện đây là ca khách **đã tồn tại hợp lệ trên cổng C06**. Thay vì ném lỗi khiến người dùng hoang mang hoặc làm kẹt bản ghi ở trạng thái `ERROR`, hệ thống đánh dấu thành công (`isSuccess = true`), cập nhật lượt ở thành `SYNCED_KBTT`, và báo thành công rõ ràng trên giao diện.

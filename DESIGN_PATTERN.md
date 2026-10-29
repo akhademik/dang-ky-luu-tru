@@ -37,6 +37,11 @@ Tài liệu này quy định các tiêu chuẩn kiến trúc (Architectural Patt
   - **Cơ chế Database nội bộ**: Khi thời gian thực tế GMT+7 vượt quá 12:00:00 trưa ngày đi dự kiến, database D1 tự động chuyển trạng thái khách sang `CHECKED_OUT` mà **TUYỆT ĐỐI KHÔNG gửi API lên BCA**.
   - **Thời điểm gửi API 12 (Trả phòng sớm - `loai: "TS"`)**: Hệ thống **chỉ gửi API 12 lên BCA khi người dùng bấm Checkout TRƯỚC 12:00:00 của ngày đi dự kiến**.
 
+### 1.6. Network Resilience & Smart Fallback Pattern
+- **Bắt lỗi kết nối & Tự động thử lại**: Cổng C06 BCA thường xuyên có độ trễ lớn (30–50s) và có thể gây đứt kết nối mạng (`fetch failed`). `KbttClient` tự động retry tối đa 3 lần với backoff để thiết lập lại kết nối.
+- **Smart Fallback cho `ALREADY_REGISTERED`**: Khi C06 từ chối tạo lượt trùng lặp vì khách đang lưu trú chưa checkout, `StayService` coi đây là bằng chứng khách đã được C06 lưu thành công (từ attempt trước), tự động cứu hồ sơ về trạng thái `SYNCED_KBTT` và báo thành công cho người dùng.
+- **Phân tách Môi trường API Động & Xác thực**: `CONFIG.currentEnv` cho phép chuyển đổi mục tiêu API sang PROD mà không làm ảnh hưởng tới chế độ bypass auth của môi trường DEV. Biến cờ `envInitialized` trong `hooks.server.ts` đảm bảo giá trị không bị ghi đè sau khi chuyển đổi.
+
 ---
 
 ## 2. COLOR CODE & THEME PALETTE (BẢNG MÃ MÀU CHUẨN)

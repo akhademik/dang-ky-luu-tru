@@ -1,17 +1,17 @@
 # Graph Report - dang-ky-luu-tru  (2026-10-29)
 
 ## Corpus Check
-- 93 files · ~72,787 words
+- 93 files · ~74,379 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: .example 1, (none) 1, .css 1)
 
 ## Summary
-- 634 nodes · 1321 edges · 43 communities (36 shown, 7 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 34 edges (avg confidence: 0.83)
+- 640 nodes · 1343 edges · 44 communities (36 shown, 8 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 41 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5037c5c9`
+- Built from commit: `5f163206`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,11 +19,11 @@
 - stayService.ts
 - @sveltejs/kit
 - compilerOptions
-- GoogleSheetService
+- devDependencies
 - package.json
 - D1PreparedStatement
 - DataTransformer
-- auth.ts
+- auth-security.test.ts
 - catalogManager.ts
 - types/index.ts
 - catalogManager
@@ -56,69 +56,70 @@
 - 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)
 - AI_WORKFLOW.md — Quy trình làm việc bắt buộc cho AI Coding Agent
 - 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)
-- Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1)
-- app.d.ts
+- svelte-deprecation.test.ts
+- svelte.config.js
+- @playwright/test
 
 ## God Nodes (most connected - your core abstractions)
 1. `DataTransformer` - 31 edges
 2. `catalogManager` - 29 edges
 3. `getDb()` - 29 edges
-4. `@sveltejs/kit` - 26 edges
-5. `stayService` - 26 edges
-6. `D1DatabaseLike` - 23 edges
-7. `CONFIG` - 22 edges
-8. `logger` - 22 edges
-9. `KbttClient` - 21 edges
+4. `stayService` - 27 edges
+5. `@sveltejs/kit` - 26 edges
+6. `CONFIG` - 23 edges
+7. `D1DatabaseLike` - 23 edges
+8. `KbttClient` - 22 edges
+9. `logger` - 22 edges
 10. `getStayById()` - 19 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `4.4. Cơ Chế Chuyển Đổi Môi Trường API Động (Dynamic API Target Switcher)` --references--> `isProduction()`  [INFERRED]
+  ARCHITECTURE.md → src/lib/server/auth.ts
 - `1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern` --references--> `timingSafeEqualStr()`  [INFERRED]
   DESIGN_PATTERN.md → src/lib/server/auth.ts
 - `1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern` --references--> `timingSafeEqualStr()`  [INFERRED]
   DESIGN_SYSTEM.md → src/lib/server/auth.ts
+- `7.2. Cơ chế Smart Fallback (`isAlreadyRegisteredMessage`)` --references--> `isAlreadyRegisteredMessage()`  [INFERRED]
+  ARCHITECTURE.md → src/lib/server/kbttClassifier.ts
 - `3.4. Strict Date & Time Pattern (Quy Định Bắt Buộc Về Định Dạng Ngày Tháng)` --references--> `isSameOrPastCheckoutTimeGmt7()`  [INFERRED]
   DESIGN_PATTERN.md → src/lib/server/time.ts
-- `3.4. Strict Date & Time Pattern (Quy Định Bắt Buộc Về Định Dạng Ngày Tháng)` --references--> `isSameOrPastCheckoutTimeGmt7()`  [INFERRED]
-  DESIGN_SYSTEM.md → src/lib/server/time.ts
-- `2026-09-30` --references--> `isSameOrPastCheckoutTimeGmt7()`  [INFERRED]
-  README.md → src/lib/server/time.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (43 total, 7 thin omitted)
+## Communities (44 total, 8 thin omitted)
 
 ### Community 0 - "stayService.ts"
-Cohesion: 0.10
-Nodes (42): getDb(), clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest() (+34 more)
+Cohesion: 0.09
+Nodes (47): App, Locals, Platform, src_lib_server_db_d1databaselike, getDb(), clearAuditLogs(), deleteAuditLog(), generateId() (+39 more)
 
 ### Community 1 - "@sveltejs/kit"
-Cohesion: 0.06
-Nodes (16): ref_node_http, ref_node_net, @sveltejs/kit, ApiEnvironment, CONFIG, src_lib_server_datatransformer_rawocrrow, ApiResponse, KbttClient (+8 more)
+Cohesion: 0.05
+Nodes (19): ref_node_http, ref_node_net, @sveltejs/kit, ApiEnvironment, CONFIG, src_lib_server_datatransformer_rawocrrow, GoogleSheetService, ApiResponse (+11 more)
 
 ### Community 2 - "compilerOptions"
 Cohesion: 0.13
 Nodes (14): ./.svelte-kit/tsconfig.json, compilerOptions, allowJs, checkJs, esModuleInterop, forceConsistentCasingInFileNames, moduleResolution, resolveJsonModule (+6 more)
 
-### Community 3 - "GoogleSheetService"
-Cohesion: 0.26
-Nodes (3): GoogleSheetService, TabInfo, runLiveBcaPipelineTests()
+### Community 3 - "devDependencies"
+Cohesion: 0.13
+Nodes (15): devDependencies, @biomejs/biome, jiti, @playwright/test, svelte, svelte-check, @sveltejs/adapter-cloudflare, @sveltejs/kit (+7 more)
 
 ### Community 4 - "package.json"
-Cohesion: 0.05
-Nodes (37): author, description, devDependencies, @biomejs/biome, jiti, @playwright/test, svelte, svelte-check (+29 more)
+Cohesion: 0.11
+Nodes (18): author, description, keywords, license, main, name, type, version (+10 more)
 
 ### Community 5 - "D1PreparedStatement"
 Cohesion: 0.15
 Nodes (4): RemoteD1Database, D1PreparedStatement, MockD1Database, Row
 
 ### Community 6 - "DataTransformer"
-Cohesion: 0.20
-Nodes (6): DataTransformer, CompletenessResult, RawOcrRow, TransformedRowResult, POST(), runTransformerUnitTests()
+Cohesion: 0.22
+Nodes (5): DataTransformer, CompletenessResult, RawOcrRow, TransformedRowResult, runTransformerUnitTests()
 
-### Community 7 - "auth.ts"
-Cohesion: 0.17
-Nodes (24): ref_node_child_process, ref_node_fs, ref_node_path, ref_types_js, handle(), base64UrlDecode(), base64UrlEncode(), checkRateLimit() (+16 more)
+### Community 7 - "auth-security.test.ts"
+Cohesion: 0.13
+Nodes (33): 2026-09-30, 2026-10-28, 2026-10-29, Changelog, 🚀 Các Tính Năng Chính (Core Features), 📂 Cấu Trúc Dự Án & Tài Liệu Kỹ Thuật, Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1), Kế hoạch theo dõi thực tế & Xử lý tiếp theo (Phase 2): (+25 more)
 
 ### Community 8 - "catalogManager.ts"
 Cohesion: 0.13
@@ -137,8 +138,8 @@ Cohesion: 0.17
 Nodes (25): ref_node_assert, formatDateTimeToGmt7(), formatDateToGmt7(), getNowGmt7Date(), getNowGmt7DateString(), getNowGmt7DateTimeString(), getNowGmt7IsoString(), isPastNoonGmt7() (+17 more)
 
 ### Community 13 - "Kiến Trúc Hệ Thống & Tài Liệu Kỹ Thuật (System Architecture & Technical Guide)"
-Cohesion: 0.12
-Nodes (15): 1. Tổng Quan Kiến Trúc (Architecture Overview), 2.1. Bảng `guests` (Thông tin nhân thân khách hàng), 2.2. Bảng `stays` (Lượt lưu trú), 2.3. Bảng `kbtt_logs` (Nhật ký giao tiếp API BCA), 2. Mô Hình Dữ Liệu Cloudflare D1 (Database Schema), 3. Vòng Đời Trạng Thái Lượt Lưu Trú (Stay Lifecycle State Machine), 4.1. Quy tắc Xác định Môi trường (Environment Resolution), 4.2. Kiến Trúc Token Không Trạng Thái (Stateless HMAC-SHA256 Session) (+7 more)
+Cohesion: 0.10
+Nodes (19): 1. Tổng Quan Kiến Trúc (Architecture Overview), 2.1. Bảng `guests` (Thông tin nhân thân khách hàng), 2.2. Bảng `stays` (Lượt lưu trú), 2.3. Bảng `kbtt_logs` (Nhật ký giao tiếp API BCA), 2. Mô Hình Dữ Liệu Cloudflare D1 (Database Schema), 3. Vòng Đời Trạng Thái Lượt Lưu Trú (Stay Lifecycle State Machine), 4.1. Quy tắc Xác định Môi trường (Environment Resolution), 4.2. Kiến Trúc Token Không Trạng Thái (Stateless HMAC-SHA256 Session) (+11 more)
 
 ### Community 14 - "apps_script_onedit.js"
 Cohesion: 0.32
@@ -221,36 +222,36 @@ Cohesion: 0.18
 Nodes (10): 0. Thứ tự đọc khi mở lại project (BẮT BUỘC, không được bỏ qua bước nào), 1. Ngăn xếp công nghệ & quy tắc code bắt buộc, 2.1 Quy tắc chỉnh sửa file (bắt buộc), 2. Pipeline bắt buộc sau MỌI lần chỉnh sửa code, 3.1 Cập nhật `README.md`, 3.2 Cập nhật `DESIGN_SYSTEM.md`, 3.3 Báo cáo `graphify`, 3. Cập nhật tài liệu sau khi pipeline pass (+2 more)
 
 ### Community 40 - "1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)"
-Cohesion: 0.12
-Nodes (16): 1.1. Single Source of Truth: Cloudflare D1 & Modular Repositories, 1.2. Zero-FS Edge Runtime Compatibility, 1.3. Svelte 5 Modern Runes & Callback Props Pattern, 1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern, 1.5. Strict GMT+7 Timezone & Stay State Machine Policy, 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG), 2.1. Backgrounds & Surfaces (Nền & Thẻ chứa), 2.2. Text & Typography (+8 more)
+Cohesion: 0.11
+Nodes (17): 1.1. Single Source of Truth: Cloudflare D1 & Modular Repositories, 1.2. Zero-FS Edge Runtime Compatibility, 1.3. Svelte 5 Modern Runes & Callback Props Pattern, 1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern, 1.5. Strict GMT+7 Timezone & Stay State Machine Policy, 1.6. Network Resilience & Smart Fallback Pattern, 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG), 2.1. Backgrounds & Surfaces (Nền & Thẻ chứa) (+9 more)
 
-### Community 41 - "Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1)"
-Cohesion: 0.17
-Nodes (11): 2026-09-30, 2026-10-28, 2026-10-29, Changelog, 🚀 Các Tính Năng Chính (Core Features), 📂 Cấu Trúc Dự Án & Tài Liệu Kỹ Thuật, Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1), Kế hoạch theo dõi thực tế & Xử lý tiếp theo (Phase 2): (+3 more)
+### Community 41 - "svelte-deprecation.test.ts"
+Cohesion: 0.32
+Nodes (5): ref_node_child_process, ref_node_fs, ref_node_path, runSvelteDeprecationCheck(), scanDirectoryForForbiddenPatterns()
 
-### Community 45 - "app.d.ts"
-Cohesion: 0.29
-Nodes (4): App, Locals, Platform, src_lib_server_db_d1databaselike
+### Community 42 - "svelte.config.js"
+Cohesion: 0.40
+Nodes (3): @sveltejs/adapter-cloudflare, @sveltejs/vite-plugin-svelte, config
 
 ## Knowledge Gaps
-- **217 isolated node(s):** `$schema`, `includes`, `enabled`, `indentStyle`, `organizeImports` (+212 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 283 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **218 isolated node(s):** `$schema`, `includes`, `enabled`, `indentStyle`, `organizeImports` (+213 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 282 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `@sveltejs/kit` connect `@sveltejs/kit` to `stayService.ts`, `package.json`, `DataTransformer`, `auth.ts`, `types/index.ts`?**
-  _High betweenness centrality (0.137) - this node is a cross-community bridge._
-- **Why does `isSameOrPastCheckoutTimeGmt7()` connect `time.ts` to `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1)`, `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `stayService.ts`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
+- **Why does `@sveltejs/kit` connect `@sveltejs/kit` to `stayService.ts`, `types/index.ts`, `package.json`, `auth-security.test.ts`?**
+  _High betweenness centrality (0.139) - this node is a cross-community bridge._
+- **Why does `stayService` connect `stayService.ts` to `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `@sveltejs/kit`, `catalogManager`, `DataTransformer`?**
+  _High betweenness centrality (0.048) - this node is a cross-community bridge._
 - **Why does `catalogManager` connect `catalogManager` to `stayService.ts`, `@sveltejs/kit`, `DataTransformer`, `catalogManager.ts`, `time.ts`?**
-  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **What connects `$schema`, `includes`, `enabled` to the rest of the system?**
-  _217 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _218 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `stayService.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.10491659350307288 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08624708624708624 - nodes in this community are weakly interconnected._
 - **Should `@sveltejs/kit` be split into smaller, more focused modules?**
-  _Cohesion score 0.06004543979227524 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05343320848938826 - nodes in this community are weakly interconnected._
 - **Should `compilerOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
