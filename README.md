@@ -81,14 +81,13 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-10-28 08:25 (GMT+7)
+- Cập nhật lần cuối: 2026-10-29 08:27 (GMT+7)
 - Đã hoàn thành:
-  - Khởi tạo Migration 0003 (`migrations/0003_enhance_kbtt_logs.sql`) mở rộng bảng `kbtt_logs` với các trường chẩn đoán chuyên sâu: mã HTTP thực tế (`http_status`), phân loại nguồn gốc lỗi (`error_class`), cờ kết quả chưa rõ (`outcome_unknown`), đo đạc thời gian (`duration_ms`, `ttfb_ms`), dấu vân tay Cloudflare (`cf_ray`, `server_header`), `request_id`, `host`, `env`.
-  - Xây dựng Module Phân loại lỗi tự động 8 nhóm (`UPSTREAM_GATEWAY`, `TIMEOUT`, `NETWORK`, `AUTH`, `BUSINESS_REJECT`, `SCHEMA_CHANGED`, `ALREADY_REGISTERED`, `APP_INTERNAL`) tại [`src/lib/server/kbttClassifier.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClassifier.ts).
-  - Khắc phục triệt để lỗi ghi cứng `http_status: 200` trong [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), ghi nhận chính xác HTTP code và độ trễ thực tế vào CSDL D1.
-  - Tích hợp Endpoint `/api/bca/probe` và Nút "Kiểm tra kết nối BCA" trên Tab Dev Logs (hoàn toàn read-only, an toàn tuyệt đối trên PROD & DEV, hiển thị trực quan độ trễ ms, HTTP code, CF-Ray, Server).
-  - Bổ sung bộ kiểm thử mô phỏng máy chủ BCA Offline (`test/integration/kbtt-mock-server.test.ts`) giả lập các kịch bản: 502 Cloudflare HTML, treo quá thời gian, thay đổi JSON schema, probe sức khỏe.
-  - Sửa lỗi date fixture trong `test/integration/stay-service.test.ts` dùng ngày động theo múi giờ GMT+7.
+  - Cập nhật [`scripts/init-local-db.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/scripts/init-local-db.ts): Mỗi khi khởi động dev (`pnpm run dev`), hệ thống tự động tải snapshot toàn bộ dữ liệu từ Cloudflare D1 Remote (`guests`, `stays`, `kbtt_logs`) và thay thế hoàn toàn database Local SQLite, đảm bảo môi trường dev luôn có dữ liệu mới nhất (bao gồm đầy đủ 113 khách và 124 lượt ở, có các khách như PHẠM THÀNH CÔNG, NGUYỄN THÀNH CÔNG).
+  - Vô hiệu hóa triệt để cơ chế Auto-checkout trong môi trường DEV: Bổ sung điều kiện kiểm tra `CONFIG.isProdMode` tại [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts#L568-L574), [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts), [`src/routes/api/stats/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stats/+server.ts) và [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts), ngăn chặn tình trạng tự động gửi API 12 sang BCA Sandbox gây lỗi bản ghi không tồn tại.
+  - Tối ưu hóa giao diện danh sách khách tại [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte):
+    - Bỏ badge nhấp nháy `{stay_count} lượt` ở hàng hiển thị khách ban đầu để giao diện thông thoáng, tối ưu độ rộng hiển thị cho tên khách; người dùng dễ dàng nhận biết khách có nhiều lượt ở qua icon mũi tên `▶` và nút bấm `Lịch sử (N) ▼`.
+    - Trong bảng chi tiết các lượt ở, thay thế badge chữ `Mới nhất` bằng dấu chấm đỏ (`red dot`) gọn gàng tinh tế bên cạnh mã lượt `#STT`, kèm tooltip hiển thị khi hover.
   - Toàn bộ pipeline kiểm tra chất lượng (`format`, `lint:biome`, `check:svelte`, `test`, `knip`, `build`, `graphify`) đạt 100% pass.
 - Đang dở: Không có.
 - Biết trước còn thiếu / nợ kỹ thuật: Cần chạy `wrangler d1 migrations apply dang-ky-luu-tru-db --remote` khi deploy lên Cloudflare D1 Production.
@@ -104,6 +103,22 @@ pnpm run build
    - **Đối soát với C06**: Khi có sự cố kéo dài, sử dụng cặp mã `request_id` và `cf_ray` được ghi nhận trong Dev Logs để cung cấp cho bộ phận kỹ thuật C06 BCA tra cứu chính xác log phía họ.
 
 ## Changelog
+
+### 2026-10-29
+
+- Tối ưu giao diện Danh sách Khách & Chi tiết Lượt ở:
+  - Cập nhật [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte): Bỏ badge nhấp nháy `{stay_count} lượt` ở hàng accordion ban đầu của khách có nhiều lượt ở, nhường chỗ hiển thị tên khách đầy đủ hơn; người dùng dễ dàng nhận diện khách có nhiều lượt qua mũi tên `▶` và nút bấm `Lịch sử (N) ▼`.
+  - Cập nhật bảng chi tiết: Bỏ text tag `Mới nhất`, thay thế bằng một chấm đỏ nhỏ (`red dot`) kèm hiệu ứng đổ bóng tinh tế và tooltip `Lượt lưu trú mới nhất` nằm ngay cạnh mã lượt `#STT`, giúp bảng lịch sử lưu trú nhỏ gọn, hiện đại và không bị rối mắt.
+- Tự động thay thế toàn bộ database Local SQLite từ Cloudflare D1 Remote mỗi khi chạy dev:
+  - Cập nhật [`scripts/init-local-db.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/scripts/init-local-db.ts): Bỏ điều kiện `count === 0`. Mỗi khi chạy `pnpm run dev`, script tự động kéo snapshot đầy đủ từ Cloudflare D1 Remote (`guests`, `stays`, `kbtt_logs`), làm sạch bảng cục bộ và thay thế toàn bộ Local SQLite bằng dữ liệu remote mới nhất.
+  - Tự động đối chiếu cấu trúc cột thực tế của Local table (`PRAGMA table_info`) để sinh câu lệnh `INSERT OR REPLACE` an toàn tuyệt đối.
+- Vô hiệu hóa tính năng Auto-checkout trong môi trường DEV:
+  - Cập nhật [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts): Trong `autoCheckoutExpiredStays`, nếu `!CONFIG.isProdMode && !force`, lập tức trả về `{ checkedOutCount: 0, results: [] }` mà không kích hoạt API BCA.
+  - Cập nhật [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts) và [`src/routes/api/stats/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stats/+server.ts): Chỉ kích hoạt `autoCheckoutExpiredStays` khi `CONFIG.isProdMode === true`.
+  - Cập nhật [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts): Báo tin rõ ràng khi endpoint bị gọi ở môi trường DEV mà không có cờ `force`.
+  - Bổ sung unit/integration test trong [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts) xác nhận auto-checkout bị vô hiệu hóa ở DEV và chỉ chạy khi `force = true` hoặc PROD.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`scripts/init-local-db.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/scripts/init-local-db.ts), [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`src/routes/api/stays/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/+server.ts), [`src/routes/api/stats/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stats/+server.ts), [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts), [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md).
 
 ### 2026-10-28
 

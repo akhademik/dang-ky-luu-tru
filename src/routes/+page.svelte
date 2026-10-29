@@ -3373,7 +3373,7 @@ onMount(async () => {
 										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleGuestExpand(group.guest_id); }}
 										class="p-3 flex items-center justify-between gap-3 cursor-pointer select-none bg-slate-900/90 hover:bg-slate-800/80 transition-colors overflow-x-auto {latestIsBusy ? 'opacity-50 grayscale' : ''}"
 									>
-										<!-- Col 1: Arrow, STT, Họ Tên, Giới Tính, Lượt ở -->
+										<!-- Col 1: Arrow, STT, Họ Tên, Giới Tính -->
 										<div class="w-60 min-w-[15rem] max-w-[15rem] flex items-center gap-2 flex-shrink-0">
 											<span class="text-slate-400 text-xs font-mono transition-transform duration-200 {isExpanded ? 'rotate-90 text-amber-400' : ''}">
 												▶
@@ -3381,7 +3381,7 @@ onMount(async () => {
 											<span class="text-xs font-mono text-slate-500 w-5 flex-shrink-0">#{gIdx + 1}</span>
 											<div class="font-bold text-slate-100 text-xs md:text-sm flex items-center gap-1.5 min-w-0">
 												<GuestTooltip stay={group.latestStay}>
-													<span class="truncate max-w-[120px] cursor-help hover:text-sky-300 hover:underline transition-colors">{group.ho_ten}</span>
+													<span class="truncate max-w-[130px] cursor-help hover:text-sky-300 hover:underline transition-colors">{group.ho_ten}</span>
 												</GuestTooltip>
 												{#if group.gioi_tinh === 'F'}
 													<span class="text-[10px] px-1 py-0.2 rounded font-semibold bg-pink-500/20 text-pink-300 border border-pink-500/40 flex-shrink-0">Nữ ♀</span>
@@ -3389,9 +3389,6 @@ onMount(async () => {
 													<span class="text-[10px] px-1 py-0.2 rounded font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/40 flex-shrink-0">Nam ♂</span>
 												{/if}
 											</div>
-											<span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex-shrink-0 animate-pulse">
-												{group.stay_count} lượt
-											</span>
 										</div>
 
 										<!-- Col 2: Số giấy tờ & Quốc tịch -->
@@ -3491,10 +3488,15 @@ onMount(async () => {
 															{@const badge = getStatusBadge(stay.status, val.hasErrors)}
 															<tr class="hover:bg-slate-800/40 transition-colors {isStayBusy ? 'opacity-40 select-none grayscale cursor-not-allowed' : ''} {isDeleting ? 'line-through opacity-30 bg-rose-950/30' : ''}">
 																<td class="p-2.5 text-center text-slate-500 font-bold">
-																	#{group.stays.length - sIdx}
-																	{#if sIdx === 0}
-																		<span class="ml-1 text-[9px] px-1 py-0.2 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-sans">Mới nhất</span>
-																	{/if}
+																	<div class="inline-flex items-center justify-center gap-1.5">
+																		<span>#{group.stays.length - sIdx}</span>
+																		{#if sIdx === 0}
+																			<span
+																				class="w-2 h-2 rounded-full bg-rose-500 shadow-sm shadow-rose-500/60 inline-block flex-shrink-0"
+																				title="Lượt lưu trú mới nhất"
+																			></span>
+																		{/if}
+																	</div>
 																</td>
 																<td class="p-2.5 font-bold text-sky-400">
 																	Phòng {stay.so_phong}

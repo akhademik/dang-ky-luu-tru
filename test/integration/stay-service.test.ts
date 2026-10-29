@@ -243,6 +243,16 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 		status: "SYNCED_KBTT",
 	});
 
+	// In DEV mode without force: autoCheckoutExpiredStays must be disabled and return 0
+	const devAutoCheckoutRes = await stayService.autoCheckoutExpiredStays(
+		db,
+		false,
+	);
+	assert.equal(devAutoCheckoutRes.checkedOutCount, 0);
+	const stayBeforeForce = await getStayById(db, expiredStay.id);
+	assert.equal(stayBeforeForce?.status, "SYNCED_KBTT");
+
+	// With force = true: autoCheckoutExpiredStays executes
 	const autoCheckoutRes = await stayService.autoCheckoutExpiredStays(db, true);
 	assert.ok(autoCheckoutRes.checkedOutCount >= 2);
 	const checkedExpiredStay = await getStayById(db, expiredStay.id);

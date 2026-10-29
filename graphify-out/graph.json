@@ -10,7 +10,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "dashboardstats",
       "source_file": "src/lib/server/repositories/statsRepository.ts",
@@ -23,11 +23,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "stayservice",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L1025"
+      "source_location": "L1031"
     },
     {
       "id": "src_lib_types_index_d1databaselike",
@@ -36,7 +36,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "d1databaselike",
       "source_file": "src/lib/types/index.ts",
@@ -49,7 +49,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "stay",
       "source_file": "src/lib/types/index.ts",
@@ -62,7 +62,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "staydetail",
       "source_file": "src/lib/types/index.ts",
@@ -75,7 +75,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "staystatus",
       "source_file": "src/lib/types/index.ts",
@@ -93,19 +93,6 @@
       "norm_label": "apienvironment",
       "source_file": "src/lib/server/config.ts",
       "source_location": "L50"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "googlesheetservice",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L5"
     },
     {
       "id": "src_lib_server_kbttclient_apiresponse",
@@ -199,17 +186,17 @@
       "source_location": "L4"
     },
     {
-      "id": "src_lib_types_index_tabinfo",
-      "label": "TabInfo",
+      "id": "src_lib_server_tokenmanager_tokenmanager",
+      "label": "tokenManager",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "@sveltejs/kit",
       "file_type": "code",
-      "norm_label": "tabinfo",
-      "source_file": "src/lib/types/index.ts",
-      "source_location": "L153"
+      "norm_label": "tokenmanager",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L224"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager",
@@ -238,17 +225,30 @@
       "source_location": "L109"
     },
     {
-      "id": "src_lib_server_tokenmanager_tokenmanager",
-      "label": "tokenManager",
+      "id": "src_lib_server_googlesheetservice_googlesheetservice",
+      "label": "GoogleSheetService",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
+      "community": 3,
+      "community_name": "GoogleSheetService",
       "file_type": "code",
-      "norm_label": "tokenmanager",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L224"
+      "norm_label": "googlesheetservice",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_types_index_tabinfo",
+      "label": "TabInfo",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "tabinfo",
+      "source_file": "src/lib/types/index.ts",
+      "source_location": "L153"
     },
     {
       "id": "src_app_d_locals",
@@ -555,7 +555,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "getdb()",
       "source_file": "src/lib/server/db.ts",
@@ -567,7 +567,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "clearauditlogs()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
@@ -579,7 +579,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "deleteauditlog()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
@@ -591,7 +591,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "generateid()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
@@ -603,7 +603,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "getauditlogs()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
@@ -615,7 +615,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "logkbttaction()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
@@ -627,7 +627,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "generateid()",
       "source_file": "src/lib/server/repositories/guestRepository.ts",
@@ -639,7 +639,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "updateguest()",
       "source_file": "src/lib/server/repositories/guestRepository.ts",
@@ -651,7 +651,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "upsertguest()",
       "source_file": "src/lib/server/repositories/guestRepository.ts",
@@ -663,7 +663,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "getdashboardstats()",
       "source_file": "src/lib/server/repositories/statsRepository.ts",
@@ -675,7 +675,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "checkoutstay()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -687,7 +687,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "deletestay()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -699,7 +699,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "extendstay()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -711,7 +711,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "generateid()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -723,7 +723,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "getexpiredstays()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -735,7 +735,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "getlatestvisabyguestid()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -747,7 +747,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "getstaybyid()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -759,7 +759,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "getstays()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -771,7 +771,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "updatestay()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -783,7 +783,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "upsertstay()",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -795,11 +795,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".autocheckoutexpiredstays()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L567"
+      "source_location": "L568"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_batchregisterstays",
@@ -807,11 +807,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".batchregisterstays()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L410"
+      "source_location": "L411"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_checkoutstay",
@@ -819,11 +819,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".checkoutstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L616"
+      "source_location": "L622"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_extendstay",
@@ -831,11 +831,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".extendstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L463"
+      "source_location": "L464"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_registerstaytokbtt",
@@ -843,11 +843,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".registerstaytokbtt()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L234"
+      "source_location": "L235"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_reregisterstay",
@@ -855,11 +855,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".reregisterstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L880"
+      "source_location": "L886"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_updateguestandstay",
@@ -867,11 +867,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".updateguestandstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L791"
+      "source_location": "L797"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_updatestaystatus",
@@ -879,11 +879,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".updatestaystatus()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L741"
+      "source_location": "L747"
     },
     {
       "id": "src_lib_types_index_d1databaselike_exec",
@@ -891,7 +891,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".exec()",
       "source_file": "src/lib/types/index.ts",
@@ -903,7 +903,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": ".prepare()",
       "source_file": "src/lib/types/index.ts",
@@ -915,7 +915,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/sheets/pull/+server.ts",
@@ -927,11 +927,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "src/routes/api/stats/+server.ts",
-      "source_location": "L9"
+      "source_location": "L10"
     },
     {
       "id": "src_routes_api_stays_audit_server_delete",
@@ -939,7 +939,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "delete()",
       "source_file": "src/routes/api/stays/audit/+server.ts",
@@ -951,7 +951,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "src/routes/api/stays/audit/+server.ts",
@@ -963,11 +963,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
-      "source_location": "L5"
+      "source_location": "L6"
     },
     {
       "id": "src_routes_api_stays_checkout_server_post",
@@ -975,7 +975,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/stays/checkout/+server.ts",
@@ -987,7 +987,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/stays/extend/+server.ts",
@@ -999,7 +999,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "delete()",
       "source_file": "src/routes/api/stays/[id]/+server.ts",
@@ -1011,7 +1011,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "src/routes/api/stays/[id]/+server.ts",
@@ -1023,7 +1023,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "patch()",
       "source_file": "src/routes/api/stays/[id]/+server.ts",
@@ -1035,7 +1035,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "put()",
       "source_file": "src/routes/api/stays/[id]/+server.ts",
@@ -1047,7 +1047,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/stays/re-register/+server.ts",
@@ -1059,7 +1059,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/stays/register/+server.ts",
@@ -1071,11 +1071,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L6"
+      "source_location": "L7"
     },
     {
       "id": "src_routes_api_stays_server_post",
@@ -1083,11 +1083,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L36"
+      "source_location": "L39"
     },
     {
       "id": "test_integration_stay_service_test_runstayserviceintegrationtests",
@@ -1095,143 +1095,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "runstayserviceintegrationtests()",
       "source_file": "test/integration/stay-service.test.ts",
       "source_location": "L23"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
-      "label": ".buildOrderedRowValues()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".buildorderedrowvalues()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L689"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
-      "label": ".deleteSheetRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".deletesheetrow()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L924"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
-      "label": ".fetchSheetData()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".fetchsheetdata()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L202"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
-      "label": ".fetchSheetTabs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".fetchsheettabs()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L40"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
-      "label": "._mapHeaderToKey()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "._mapheadertokey()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L571"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
-      "label": "._parseApiValues()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "._parseapivalues()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L519"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
-      "label": ".parseCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".parsecsv()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L330"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
-      "label": "._parseDateFromTabName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "._parsedatefromtabname()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L184"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
-      "label": ".parseSheetIdentifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".parsesheetidentifier()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L20"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
-      "label": ".updateSheetRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".updatesheetrow()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L784"
     },
     {
       "id": "src_lib_server_kbttclient_kbttclient_constructor",
@@ -1435,7 +1303,7 @@
       "file_type": "code",
       "norm_label": ".setkbttclient()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L48"
+      "source_location": "L49"
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline_constructor",
@@ -1472,6 +1340,114 @@
       "norm_label": ".getvalidtoken()",
       "source_file": "src/lib/server/tokenManager.ts",
       "source_location": "L5"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_clear",
+      "label": ".clear()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".clear()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L203"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_getinstance",
+      "label": ".getInstance()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".getinstance()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L209"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
+      "label": ".getValidToken()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".getvalidtoken()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_login",
+      "label": ".login()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".login()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L44"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_refresh",
+      "label": ".refresh()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".refresh()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L118"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_revoke",
+      "label": ".revoke()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".revoke()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L140"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_revoketoken",
+      "label": ".revokeToken()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".revoketoken()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L159"
+    },
+    {
+      "id": "src_lib_server_tokenmanager_tokenmanager_savetoken",
+      "label": ".saveToken()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": ".savetoken()",
+      "source_file": "src/lib/server/tokenManager.ts",
+      "source_location": "L163"
     },
     {
       "id": "src_routes_api_catalogs_server_get",
@@ -1628,18 +1604,6 @@
       "norm_label": "runmockservertests()",
       "source_file": "test/integration/kbtt-mock-server.test.ts",
       "source_location": "L8"
-    },
-    {
-      "id": "test_live_live_bca_pipeline_test_runlivebcapipelinetests",
-      "label": "runLiveBcaPipelineTests()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "runlivebcapipelinetests()",
-      "source_file": "test/live/live-bca-pipeline.test.ts",
-      "source_location": "L7"
     },
     {
       "id": "test_playwright_test_rune2etest",
@@ -1891,7 +1855,7 @@
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L36"
+      "source_location": "L37"
     },
     {
       "id": "src_lib_server_time_formatdatetimetogmt7",
@@ -2254,12 +2218,156 @@
       "source_location": "L101"
     },
     {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
+      "label": ".buildOrderedRowValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".buildorderedrowvalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L689"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
+      "label": ".deleteSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".deletesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L924"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
+      "label": ".fetchSheetData()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheetdata()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L202"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
+      "label": ".fetchSheetTabs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheettabs()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L40"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
+      "label": "._mapHeaderToKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._mapheadertokey()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L571"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
+      "label": "._parseApiValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parseapivalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L519"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
+      "label": ".parseCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsecsv()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L330"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
+      "label": "._parseDateFromTabName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parsedatefromtabname()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L184"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
+      "label": ".parseSheetIdentifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsesheetidentifier()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "label": ".updateSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".updatesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L784"
+    },
+    {
+      "id": "test_live_live_bca_pipeline_test_runlivebcapipelinetests",
+      "label": "runLiveBcaPipelineTests()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "runlivebcapipelinetests()",
+      "source_file": "test/live/live-bca-pipeline.test.ts",
+      "source_location": "L7"
+    },
+    {
       "id": "test_inspect_modal_speed_main",
       "label": "main()",
       "_callable": true,
       "_origin": "ast",
-      "community": 43,
-      "community_name": "@playwright/test",
+      "community": 4,
+      "community_name": "package.json",
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "test/inspect_modal_speed.ts",
@@ -2270,120 +2378,12 @@
       "label": "main()",
       "_callable": true,
       "_origin": "ast",
-      "community": 43,
-      "community_name": "@playwright/test",
+      "community": 4,
+      "community_name": "package.json",
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "test/inspect_ui.ts",
       "source_location": "L3"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_clear",
-      "label": ".clear()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".clear()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L203"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_getinstance",
-      "label": ".getInstance()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".getinstance()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L209"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
-      "label": ".getValidToken()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".getvalidtoken()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L22"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_login",
-      "label": ".login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".login()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L44"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_refresh",
-      "label": ".refresh()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".refresh()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L118"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_revoke",
-      "label": ".revoke()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".revoke()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L140"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_revoketoken",
-      "label": ".revokeToken()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".revoketoken()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L159"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_savetoken",
-      "label": ".saveToken()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "tokenManager",
-      "file_type": "code",
-      "norm_label": ".savetoken()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L163"
     },
     {
       "id": "src_app_d_limit",
@@ -2791,7 +2791,7 @@
       "file_type": "code",
       "norm_label": ".ingestocrrows()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L52"
+      "source_location": "L53"
     },
     {
       "id": "src_lib_server_syncpipeline_syncpipeline_processrows",
@@ -3194,7 +3194,7 @@
       "label": "db.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "db.ts",
       "source_file": "src/lib/server/db.ts",
@@ -3205,7 +3205,7 @@
       "label": "auditRepository.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "auditrepository.ts",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
@@ -3216,7 +3216,7 @@
       "label": "guestRepository.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "guestrepository.ts",
       "source_file": "src/lib/server/repositories/guestRepository.ts",
@@ -3227,7 +3227,7 @@
       "label": "repositories/index.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "repositories/index.ts",
       "source_file": "src/lib/server/repositories/index.ts",
@@ -3238,7 +3238,7 @@
       "label": "statsRepository.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "statsrepository.ts",
       "source_file": "src/lib/server/repositories/statsRepository.ts",
@@ -3249,7 +3249,7 @@
       "label": "stayRepository.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "stayrepository.ts",
       "source_file": "src/lib/server/repositories/stayRepository.ts",
@@ -3260,7 +3260,7 @@
       "label": "stayService.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "stayservice.ts",
       "source_file": "src/lib/server/stayService.ts",
@@ -3271,7 +3271,7 @@
       "label": "stats/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "stats/+server.ts",
       "source_file": "src/routes/api/stats/+server.ts",
@@ -3282,21 +3282,10 @@
       "label": "audit/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "audit/+server.ts",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_stays_auto_checkout_server",
-      "label": "auto-checkout/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "db.ts",
-      "file_type": "code",
-      "norm_label": "auto-checkout/+server.ts",
-      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L1"
     },
     {
@@ -3304,7 +3293,7 @@
       "label": "checkout/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "checkout/+server.ts",
       "source_file": "src/routes/api/stays/checkout/+server.ts",
@@ -3315,7 +3304,7 @@
       "label": "extend/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "extend/+server.ts",
       "source_file": "src/routes/api/stays/extend/+server.ts",
@@ -3326,7 +3315,7 @@
       "label": "[id]/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "[id]/+server.ts",
       "source_file": "src/routes/api/stays/[id]/+server.ts",
@@ -3337,7 +3326,7 @@
       "label": "re-register/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "re-register/+server.ts",
       "source_file": "src/routes/api/stays/re-register/+server.ts",
@@ -3348,7 +3337,7 @@
       "label": "register/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "register/+server.ts",
       "source_file": "src/routes/api/stays/register/+server.ts",
@@ -3359,7 +3348,7 @@
       "label": "stays/+server.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "stays/+server.ts",
       "source_file": "src/routes/api/stays/+server.ts",
@@ -3370,7 +3359,7 @@
       "label": "stay-service.test.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "db.ts",
+      "community_name": "stayService.ts",
       "file_type": "code",
       "norm_label": "stay-service.test.ts",
       "source_file": "test/integration/stay-service.test.ts",
@@ -3550,6 +3539,17 @@
       "file_type": "code",
       "norm_label": "update-row/+server.ts",
       "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_stays_auto_checkout_server",
+      "label": "auto-checkout/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": "auto-checkout/+server.ts",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L1"
     },
     {
@@ -5517,171 +5517,6 @@
       "source_location": "L674"
     },
     {
-      "id": "package_devdependencies",
-      "label": "devDependencies",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "devdependencies",
-      "source_file": "package.json",
-      "source_location": "L37"
-    },
-    {
-      "id": "package_devdependencies_biomejs_biome",
-      "label": "@biomejs/biome",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@biomejs/biome",
-      "source_file": "package.json",
-      "source_location": "L38"
-    },
-    {
-      "id": "package_devdependencies_jiti",
-      "label": "jiti",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "jiti",
-      "source_file": "package.json",
-      "source_location": "L45"
-    },
-    {
-      "id": "package_devdependencies_playwright_test",
-      "label": "@playwright/test",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@playwright/test",
-      "source_file": "package.json",
-      "source_location": "L39"
-    },
-    {
-      "id": "package_devdependencies_svelte",
-      "label": "svelte",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "svelte",
-      "source_file": "package.json",
-      "source_location": "L46"
-    },
-    {
-      "id": "package_devdependencies_svelte_check",
-      "label": "svelte-check",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "svelte-check",
-      "source_file": "package.json",
-      "source_location": "L47"
-    },
-    {
-      "id": "package_devdependencies_sveltejs_adapter_cloudflare",
-      "label": "@sveltejs/adapter-cloudflare",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@sveltejs/adapter-cloudflare",
-      "source_file": "package.json",
-      "source_location": "L40"
-    },
-    {
-      "id": "package_devdependencies_sveltejs_kit",
-      "label": "@sveltejs/kit",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@sveltejs/kit",
-      "source_file": "package.json",
-      "source_location": "L41"
-    },
-    {
-      "id": "package_devdependencies_sveltejs_vite_plugin_svelte",
-      "label": "@sveltejs/vite-plugin-svelte",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@sveltejs/vite-plugin-svelte",
-      "source_file": "package.json",
-      "source_location": "L42"
-    },
-    {
-      "id": "package_devdependencies_tailwindcss",
-      "label": "tailwindcss",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "tailwindcss",
-      "source_file": "package.json",
-      "source_location": "L48"
-    },
-    {
-      "id": "package_devdependencies_tailwindcss_vite",
-      "label": "@tailwindcss/vite",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@tailwindcss/vite",
-      "source_file": "package.json",
-      "source_location": "L43"
-    },
-    {
-      "id": "package_devdependencies_types_node",
-      "label": "@types/node",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/node",
-      "source_file": "package.json",
-      "source_location": "L44"
-    },
-    {
-      "id": "package_devdependencies_typescript",
-      "label": "typescript",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "typescript",
-      "source_file": "package.json",
-      "source_location": "L49"
-    },
-    {
-      "id": "package_devdependencies_vite",
-      "label": "vite",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "vite",
-      "source_file": "package.json",
-      "source_location": "L50"
-    },
-    {
-      "id": "package_devdependencies_wrangler",
-      "label": "wrangler",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "wrangler",
-      "source_file": "package.json",
-      "source_location": "L51"
-    },
-    {
       "id": "hd_tichhop_api_cslt_v1_3_4_1_th\u00f4ng_tin_endpoint",
       "label": "4\\.1. Th\u00f4ng tin endpoint",
       "_origin": "ast",
@@ -6253,6 +6088,17 @@
       "source_location": "L1"
     },
     {
+      "id": "kit",
+      "label": "@sveltejs/kit",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "confidence": "EXTRACTED",
+      "file_type": "code",
+      "norm_label": "@sveltejs/kit",
+      "source_file": "@sveltejs/kit"
+    },
+    {
       "id": "package",
       "label": "package.json",
       "_origin": "ast",
@@ -6284,6 +6130,171 @@
       "norm_label": "description",
       "source_file": "package.json",
       "source_location": "L4"
+    },
+    {
+      "id": "package_devdependencies",
+      "label": "devDependencies",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "devdependencies",
+      "source_file": "package.json",
+      "source_location": "L37"
+    },
+    {
+      "id": "package_devdependencies_biomejs_biome",
+      "label": "@biomejs/biome",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@biomejs/biome",
+      "source_file": "package.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "package_devdependencies_jiti",
+      "label": "jiti",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "jiti",
+      "source_file": "package.json",
+      "source_location": "L45"
+    },
+    {
+      "id": "package_devdependencies_playwright_test",
+      "label": "@playwright/test",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@playwright/test",
+      "source_file": "package.json",
+      "source_location": "L39"
+    },
+    {
+      "id": "package_devdependencies_svelte",
+      "label": "svelte",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "svelte",
+      "source_file": "package.json",
+      "source_location": "L46"
+    },
+    {
+      "id": "package_devdependencies_svelte_check",
+      "label": "svelte-check",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "svelte-check",
+      "source_file": "package.json",
+      "source_location": "L47"
+    },
+    {
+      "id": "package_devdependencies_sveltejs_adapter_cloudflare",
+      "label": "@sveltejs/adapter-cloudflare",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@sveltejs/adapter-cloudflare",
+      "source_file": "package.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "package_devdependencies_sveltejs_kit",
+      "label": "@sveltejs/kit",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@sveltejs/kit",
+      "source_file": "package.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "package_devdependencies_sveltejs_vite_plugin_svelte",
+      "label": "@sveltejs/vite-plugin-svelte",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@sveltejs/vite-plugin-svelte",
+      "source_file": "package.json",
+      "source_location": "L42"
+    },
+    {
+      "id": "package_devdependencies_tailwindcss",
+      "label": "tailwindcss",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "tailwindcss",
+      "source_file": "package.json",
+      "source_location": "L48"
+    },
+    {
+      "id": "package_devdependencies_tailwindcss_vite",
+      "label": "@tailwindcss/vite",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@tailwindcss/vite",
+      "source_file": "package.json",
+      "source_location": "L43"
+    },
+    {
+      "id": "package_devdependencies_types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@types/node",
+      "source_file": "package.json",
+      "source_location": "L44"
+    },
+    {
+      "id": "package_devdependencies_typescript",
+      "label": "typescript",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "typescript",
+      "source_file": "package.json",
+      "source_location": "L49"
+    },
+    {
+      "id": "package_devdependencies_vite",
+      "label": "vite",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "vite",
+      "source_file": "package.json",
+      "source_location": "L50"
+    },
+    {
+      "id": "package_devdependencies_wrangler",
+      "label": "wrangler",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "wrangler",
+      "source_file": "package.json",
+      "source_location": "L51"
     },
     {
       "id": "package_keywords",
@@ -6352,6 +6363,50 @@
       "source_location": "L3"
     },
     {
+      "id": "svelte_config",
+      "label": "svelte.config.js",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "svelte.config.js",
+      "source_file": "svelte.config.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "svelte_config_config",
+      "label": "config",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "config",
+      "source_file": "svelte.config.js",
+      "source_location": "L5"
+    },
+    {
+      "id": "test_inspect_modal_speed",
+      "label": "inspect_modal_speed.ts",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "inspect_modal_speed.ts",
+      "source_file": "test/inspect_modal_speed.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_inspect_ui",
+      "label": "inspect_ui.ts",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "inspect_ui.ts",
+      "source_file": "test/inspect_ui.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "vite_config",
       "label": "vite.config.ts",
       "_origin": "ast",
@@ -6385,6 +6440,17 @@
       "source_location": "L45"
     },
     {
+      "id": "ref_playwright_test",
+      "label": "@playwright/test",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "concept",
+      "norm_label": "@playwright/test",
+      "source_file": "package.json",
+      "source_location": "L39"
+    },
+    {
       "id": "ref_svelte",
       "label": "svelte",
       "_origin": "ast",
@@ -6405,6 +6471,28 @@
       "norm_label": "svelte-check",
       "source_file": "package.json",
       "source_location": "L47"
+    },
+    {
+      "id": "ref_sveltejs_adapter_cloudflare",
+      "label": "@sveltejs/adapter-cloudflare",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "concept",
+      "norm_label": "@sveltejs/adapter-cloudflare",
+      "source_file": "package.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "ref_sveltejs_vite_plugin_svelte",
+      "label": "@sveltejs/vite-plugin-svelte",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "package.json",
+      "file_type": "concept",
+      "norm_label": "@sveltejs/vite-plugin-svelte",
+      "source_file": "package.json",
+      "source_location": "L42"
     },
     {
       "id": "ref_tailwindcss",
@@ -6698,19 +6786,31 @@
       "node_kind": "heading",
       "norm_label": "2026-09-30",
       "source_file": "README.md",
-      "source_location": "L113"
+      "source_location": "L146"
     },
     {
-      "id": "readme_2026_10_26",
-      "label": "2026-10-26",
+      "id": "readme_2026_10_28",
+      "label": "2026-10-28",
       "_origin": "ast",
       "community": 41,
       "community_name": "H\u1ec7 Th\u1ed1ng Khai B\u00e1o T\u1ea1m Tr\u00fa T\u1ef1 \u0110\u1ed9ng (BCA KBTT API v1.4 & Cloudflare D1)",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "2026-10-26",
+      "norm_label": "2026-10-28",
       "source_file": "README.md",
-      "source_location": "L96"
+      "source_location": "L120"
+    },
+    {
+      "id": "readme_2026_10_29",
+      "label": "2026-10-29",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "H\u1ec7 Th\u1ed1ng Khai B\u00e1o T\u1ea1m Tr\u00fa T\u1ef1 \u0110\u1ed9ng (BCA KBTT API v1.4 & Cloudflare D1)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2026-10-29",
+      "source_file": "README.md",
+      "source_location": "L105"
     },
     {
       "id": "readme_changelog",
@@ -6722,7 +6822,7 @@
       "node_kind": "heading",
       "norm_label": "changelog",
       "source_file": "README.md",
-      "source_location": "L94"
+      "source_location": "L103"
     },
     {
       "id": "readme_c\u00e1c_t\u00ednh_n\u0103ng_ch\u00ednh_core_features",
@@ -6761,6 +6861,18 @@
       "source_location": "L1"
     },
     {
+      "id": "readme_k\u1ebf_ho\u1ea1ch_theo_d\u00f5i_th\u1ef1c_t\u1ebf_x\u1eed_l\u00fd_ti\u1ebfp_theo_phase_2",
+      "label": "K\u1ebf ho\u1ea1ch theo d\u00f5i th\u1ef1c t\u1ebf & X\u1eed l\u00fd ti\u1ebfp theo (Phase 2):",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "H\u1ec7 Th\u1ed1ng Khai B\u00e1o T\u1ea1m Tr\u00fa T\u1ef1 \u0110\u1ed9ng (BCA KBTT API v1.4 & Cloudflare D1)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "ke hoach theo doi thuc te & xu ly tiep theo (phase 2):",
+      "source_file": "README.md",
+      "source_location": "L93"
+    },
+    {
       "id": "readme_l\u1ec7nh_th\u1ef1c_thi_commands",
       "label": "\ud83d\udee0 L\u1ec7nh Th\u1ef1c Thi (Commands)",
       "_origin": "ast",
@@ -6795,94 +6907,6 @@
       "norm_label": "\ud83d\udccc tong quan he thong",
       "source_file": "README.md",
       "source_location": "L7"
-    },
-    {
-      "id": "kit",
-      "label": "@sveltejs/kit",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "svelte.config.js",
-      "confidence": "EXTRACTED",
-      "file_type": "code",
-      "norm_label": "@sveltejs/kit",
-      "source_file": "@sveltejs/kit"
-    },
-    {
-      "id": "svelte_config",
-      "label": "svelte.config.js",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "svelte.config.js",
-      "file_type": "code",
-      "norm_label": "svelte.config.js",
-      "source_file": "svelte.config.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "svelte_config_config",
-      "label": "config",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "svelte.config.js",
-      "file_type": "code",
-      "norm_label": "config",
-      "source_file": "svelte.config.js",
-      "source_location": "L5"
-    },
-    {
-      "id": "ref_sveltejs_adapter_cloudflare",
-      "label": "@sveltejs/adapter-cloudflare",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "svelte.config.js",
-      "file_type": "concept",
-      "norm_label": "@sveltejs/adapter-cloudflare",
-      "source_file": "package.json",
-      "source_location": "L40"
-    },
-    {
-      "id": "ref_sveltejs_vite_plugin_svelte",
-      "label": "@sveltejs/vite-plugin-svelte",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "svelte.config.js",
-      "file_type": "concept",
-      "norm_label": "@sveltejs/vite-plugin-svelte",
-      "source_file": "package.json",
-      "source_location": "L42"
-    },
-    {
-      "id": "test_inspect_modal_speed",
-      "label": "inspect_modal_speed.ts",
-      "_origin": "ast",
-      "community": 43,
-      "community_name": "@playwright/test",
-      "file_type": "code",
-      "norm_label": "inspect_modal_speed.ts",
-      "source_file": "test/inspect_modal_speed.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_inspect_ui",
-      "label": "inspect_ui.ts",
-      "_origin": "ast",
-      "community": 43,
-      "community_name": "@playwright/test",
-      "file_type": "code",
-      "norm_label": "inspect_ui.ts",
-      "source_file": "test/inspect_ui.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "ref_playwright_test",
-      "label": "@playwright/test",
-      "_origin": "ast",
-      "community": 43,
-      "community_name": "@playwright/test",
-      "file_type": "concept",
-      "norm_label": "@playwright/test",
-      "source_file": "package.json",
-      "source_location": "L39"
     },
     {
       "id": "src_app_d",
@@ -7270,6 +7294,30 @@
       "source_location": "L1"
     },
     {
+      "id": "ref_node_http",
+      "label": "ref_node_http",
+      "_origin": "semantic",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "ref_node_http",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "ref_node_net",
+      "label": "ref_node_net",
+      "_origin": "semantic",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "ref_node_net",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "src_lib_server_datatransformer_rawocrrow",
       "label": "src_lib_server_datatransformer_rawocrrow",
       "_origin": "semantic",
@@ -7410,28 +7458,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_types_js",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "ref_node_http",
-      "label": "ref_node_http",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "ref_node_http",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "ref_node_net",
-      "label": "ref_node_net",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "ref_node_net",
       "source_file": "",
       "type": "external"
     }
@@ -8622,7 +8648,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L580",
+      "source_location": "L586",
       "weight": 1.0
     },
     {
@@ -8634,7 +8660,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L594",
+      "source_location": "L600",
       "weight": 1.0
     },
     {
@@ -8646,7 +8672,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L426",
+      "source_location": "L427",
       "weight": 1.0
     },
     {
@@ -8658,7 +8684,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L440",
+      "source_location": "L441",
       "weight": 1.0
     },
     {
@@ -8670,7 +8696,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L441",
+      "source_location": "L442",
       "weight": 1.0
     },
     {
@@ -8682,7 +8708,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L620",
+      "source_location": "L626",
       "weight": 1.0
     },
     {
@@ -8694,7 +8720,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L640",
+      "source_location": "L646",
       "weight": 1.0
     },
     {
@@ -8706,7 +8732,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L656",
+      "source_location": "L662",
       "weight": 1.0
     },
     {
@@ -8718,7 +8744,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L468",
+      "source_location": "L469",
       "weight": 1.0
     },
     {
@@ -8730,7 +8756,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L487",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -8742,7 +8768,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L489",
+      "source_location": "L490",
       "weight": 1.0
     },
     {
@@ -8754,7 +8780,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L504",
+      "source_location": "L505",
       "weight": 1.0
     },
     {
@@ -8766,7 +8792,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L107",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -8778,7 +8804,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L112",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -8790,7 +8816,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L168",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -8802,7 +8828,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L201",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -8814,7 +8840,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L244",
+      "source_location": "L245",
       "weight": 1.0
     },
     {
@@ -8826,7 +8852,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L258",
+      "source_location": "L259",
       "weight": 1.0
     },
     {
@@ -8838,7 +8864,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L305",
+      "source_location": "L306",
       "weight": 1.0
     },
     {
@@ -8850,7 +8876,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L322",
+      "source_location": "L323",
       "weight": 1.0
     },
     {
@@ -8862,7 +8888,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L354",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -8874,7 +8900,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L384",
+      "source_location": "L385",
       "weight": 1.0
     },
     {
@@ -8886,7 +8912,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L898",
+      "source_location": "L904",
       "weight": 1.0
     },
     {
@@ -8898,7 +8924,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L907",
+      "source_location": "L913",
       "weight": 1.0
     },
     {
@@ -8910,7 +8936,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L914",
+      "source_location": "L920",
       "weight": 1.0
     },
     {
@@ -8922,7 +8948,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L921",
+      "source_location": "L927",
       "weight": 1.0
     },
     {
@@ -8934,7 +8960,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L941",
+      "source_location": "L947",
       "weight": 1.0
     },
     {
@@ -8946,7 +8972,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L953",
+      "source_location": "L959",
       "weight": 1.0
     },
     {
@@ -8958,7 +8984,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L957",
+      "source_location": "L963",
       "weight": 1.0
     },
     {
@@ -8970,7 +8996,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L968",
+      "source_location": "L974",
       "weight": 1.0
     },
     {
@@ -8982,7 +9008,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L990",
+      "source_location": "L996",
       "weight": 1.0
     },
     {
@@ -8994,7 +9020,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L814",
+      "source_location": "L820",
       "weight": 1.0
     },
     {
@@ -9006,7 +9032,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L819",
+      "source_location": "L825",
       "weight": 1.0
     },
     {
@@ -9018,7 +9044,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L822",
+      "source_location": "L828",
       "weight": 1.0
     },
     {
@@ -9030,7 +9056,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L846",
+      "source_location": "L852",
       "weight": 1.0
     },
     {
@@ -9042,7 +9068,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L867",
+      "source_location": "L873",
       "weight": 1.0
     },
     {
@@ -9054,7 +9080,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L746",
+      "source_location": "L752",
       "weight": 1.0
     },
     {
@@ -9066,7 +9092,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L767",
+      "source_location": "L773",
       "weight": 1.0
     },
     {
@@ -9534,7 +9560,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stats/+server.ts",
-      "source_location": "L46",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -9546,7 +9572,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stats/+server.ts",
-      "source_location": "L48",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -9618,7 +9644,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -9774,7 +9800,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L17",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -9786,7 +9812,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -9798,7 +9824,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L38",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -9810,7 +9836,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L61",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -9822,7 +9848,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L66",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -9834,7 +9860,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L83",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -9846,7 +9872,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L94",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -10031,18 +10057,6 @@
     },
     {
       "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
-      "target": "src_lib_server_time_getnowgmt7datestring",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L279",
-      "weight": 1.0
-    },
-    {
-      "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
       "target": "test_helpers_mock_d1_mockd1database",
       "relation": "calls",
       "_origin": "ast",
@@ -10055,6 +10069,18 @@
     },
     {
       "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
+      "target": "src_lib_server_time_getnowgmt7datestring",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/integration/stay-service.test.ts",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
       "target": "src_lib_server_time_formatdatetogmt7",
       "relation": "calls",
       "_origin": "ast",
@@ -10062,7 +10088,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L280",
+      "source_location": "L290",
       "weight": 1.0
     },
     {
@@ -10773,7 +10799,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -10785,7 +10811,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -10797,7 +10823,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -10905,7 +10931,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -10917,7 +10943,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L880",
+      "source_location": "L886",
       "weight": 1.0
     },
     {
@@ -11739,7 +11765,7 @@
     },
     {
       "source": "src_lib_server_stayservice",
-      "target": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_config_config",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11751,7 +11777,7 @@
     },
     {
       "source": "src_lib_server_stayservice",
-      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
+      "target": "src_lib_server_datatransformer_datatransformer",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11759,6 +11785,18 @@
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
       "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice",
+      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11770,7 +11808,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11782,7 +11820,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11794,7 +11832,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11806,7 +11844,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11818,7 +11856,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11830,7 +11868,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11842,7 +11880,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11854,7 +11892,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11866,7 +11904,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11878,7 +11916,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -11890,7 +11928,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -11902,7 +11940,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -11914,7 +11952,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -11926,7 +11964,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -12483,7 +12521,7 @@
     },
     {
       "source": "src_routes_api_stats_server",
-      "target": "src_lib_server_db_getdb",
+      "target": "src_lib_server_config_config",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12491,6 +12529,18 @@
       "context": "import",
       "source_file": "src/routes/api/stats/+server.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stats_server",
+      "target": "src_lib_server_db_getdb",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/stats/+server.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -12502,7 +12552,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stats/+server.ts",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -12514,7 +12564,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stats/+server.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -12579,7 +12629,7 @@
     },
     {
       "source": "src_routes_api_stays_auto_checkout_server",
-      "target": "src_lib_server_db_getdb",
+      "target": "src_lib_server_config_config",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12591,7 +12641,7 @@
     },
     {
       "source": "src_routes_api_stays_auto_checkout_server",
-      "target": "src_lib_server_stayservice_stayservice",
+      "target": "src_lib_server_db_getdb",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12599,6 +12649,18 @@
       "context": "import",
       "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stays_auto_checkout_server",
+      "target": "src_lib_server_stayservice_stayservice",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -12747,7 +12809,7 @@
     },
     {
       "source": "src_routes_api_stays_server",
-      "target": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_config_config",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12759,7 +12821,7 @@
     },
     {
       "source": "src_routes_api_stays_server",
-      "target": "src_lib_server_db_getdb",
+      "target": "src_lib_server_datatransformer_datatransformer",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12767,6 +12829,18 @@
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stays_server",
+      "target": "src_lib_server_db_getdb",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/stays/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -12778,7 +12852,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -12790,7 +12864,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -12802,7 +12876,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -12814,7 +12888,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -14041,7 +14115,7 @@
     },
     {
       "source": "src_lib_server_stayservice",
-      "target": "src_lib_server_datatransformer",
+      "target": "src_lib_server_config",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -14053,7 +14127,7 @@
     },
     {
       "source": "src_lib_server_stayservice",
-      "target": "src_lib_server_db",
+      "target": "src_lib_server_datatransformer",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -14065,6 +14139,18 @@
     },
     {
       "source": "src_lib_server_stayservice",
+      "target": "src_lib_server_db",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice",
       "target": "src_lib_server_kbttclassifier",
       "relation": "imports_from",
       "_origin": "ast",
@@ -14072,7 +14158,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -14084,7 +14170,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -14096,7 +14182,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -14680,7 +14766,7 @@
     },
     {
       "source": "src_routes_api_stats_server",
-      "target": "src_lib_server_db",
+      "target": "src_lib_server_config",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -14692,7 +14778,7 @@
     },
     {
       "source": "src_routes_api_stats_server",
-      "target": "src_lib_server_stayservice",
+      "target": "src_lib_server_db",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -14700,6 +14786,18 @@
       "context": "import",
       "source_file": "src/routes/api/stats/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stats_server",
+      "target": "src_lib_server_stayservice",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/stats/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -14752,7 +14850,7 @@
     },
     {
       "source": "src_routes_api_stays_auto_checkout_server",
-      "target": "src_lib_server_db",
+      "target": "src_lib_server_config",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -14764,7 +14862,7 @@
     },
     {
       "source": "src_routes_api_stays_auto_checkout_server",
-      "target": "src_lib_server_stayservice",
+      "target": "src_lib_server_db",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -14772,6 +14870,18 @@
       "context": "import",
       "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stays_auto_checkout_server",
+      "target": "src_lib_server_stayservice",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -14964,6 +15074,18 @@
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stays_server",
+      "target": "src_lib_server_config",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/stays/+server.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -14975,7 +15097,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -14987,7 +15109,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -14999,7 +15121,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -15846,7 +15968,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L567",
+      "source_location": "L568",
       "weight": 1.0
     },
     {
@@ -15858,7 +15980,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L410",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -15870,7 +15992,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L616",
+      "source_location": "L622",
       "weight": 1.0
     },
     {
@@ -15882,7 +16004,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -15894,7 +16016,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -15906,7 +16028,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -15918,7 +16040,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L463",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -15930,7 +16052,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -15942,7 +16064,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -15954,7 +16076,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L234",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -15966,7 +16088,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L880",
+      "source_location": "L886",
       "weight": 1.0
     },
     {
@@ -15978,7 +16100,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L48",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -15990,7 +16112,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L791",
+      "source_location": "L797",
       "weight": 1.0
     },
     {
@@ -16002,7 +16124,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L791",
+      "source_location": "L797",
       "weight": 1.0
     },
     {
@@ -16014,7 +16136,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L741",
+      "source_location": "L747",
       "weight": 1.0
     },
     {
@@ -16026,7 +16148,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L741",
+      "source_location": "L747",
       "weight": 1.0
     },
     {
@@ -18747,24 +18869,46 @@
     },
     {
       "source": "readme_changelog",
+      "target": "readme_2026_10_29",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_changelog",
+      "target": "readme_2026_10_28",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_changelog",
       "target": "readme_2026_09_30",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L113",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
-      "source": "readme_changelog",
-      "target": "readme_2026_10_26",
+      "source": "readme_h\u1ec7_th\u1ed1ng_khai_b\u00e1o_t\u1ea1m_tr\u00fa_t\u1ef1_\u0111\u1ed9ng_bca_kbtt_api_v1_4_cloudflare_d1",
+      "target": "readme_changelog",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L96",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -18823,14 +18967,14 @@
       "weight": 1.0
     },
     {
-      "source": "readme_h\u1ec7_th\u1ed1ng_khai_b\u00e1o_t\u1ea1m_tr\u00fa_t\u1ef1_\u0111\u1ed9ng_bca_kbtt_api_v1_4_cloudflare_d1",
-      "target": "readme_changelog",
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "readme_k\u1ebf_ho\u1ea1ch_theo_d\u00f5i_th\u1ef1c_t\u1ebf_x\u1eed_l\u00fd_ti\u1ebfp_theo_phase_2",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L94",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -19567,7 +19711,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L1025",
+      "source_location": "L1031",
       "weight": 1.0
     },
     {
@@ -20315,7 +20459,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/stats/+server.ts",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -20348,7 +20492,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -20447,7 +20591,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L36",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -20458,7 +20602,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/stays/+server.ts",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -21884,7 +22028,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L234",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -21895,7 +22039,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -21906,7 +22050,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L410",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -21917,7 +22061,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L463",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -21928,7 +22072,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L48",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -21939,7 +22083,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -21950,7 +22094,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L567",
+      "source_location": "L568",
       "weight": 1.0
     },
     {
@@ -21961,7 +22105,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L616",
+      "source_location": "L622",
       "weight": 1.0
     },
     {
@@ -21972,7 +22116,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L741",
+      "source_location": "L747",
       "weight": 1.0
     },
     {
@@ -21983,7 +22127,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L791",
+      "source_location": "L797",
       "weight": 1.0
     },
     {
@@ -21994,7 +22138,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L880",
+      "source_location": "L886",
       "weight": 1.0
     },
     {
@@ -22440,7 +22584,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L653",
+      "source_location": "L659",
       "weight": 1.0
     },
     {
@@ -22452,7 +22596,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L501",
+      "source_location": "L502",
       "weight": 1.0
     },
     {
@@ -22464,7 +22608,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L100",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -22476,7 +22620,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L286",
+      "source_location": "L287",
       "weight": 1.0
     },
     {
@@ -22488,7 +22632,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L302",
+      "source_location": "L303",
       "weight": 1.0
     },
     {
@@ -22500,7 +22644,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L303",
+      "source_location": "L304",
       "weight": 1.0
     },
     {
@@ -22564,6 +22708,18 @@
       "weight": 1.0
     },
     {
+      "source": "readme_2026_10_29",
+      "target": "src_lib_server_stayservice_stayservice_autocheckoutexpiredstays",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "autoCheckoutExpiredStays",
+      "source_file": "README.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
       "source": "workflow_instruction_4_chu\u1ea9n_h\u00f3a_m\u00fai_gi\u1edd_gmt_7_quy_chu\u1ea9n_\u0111\u1ecbnh_d\u1ea1ng_ng\u00e0y_th\u00e1ng_payload_api_c06_bca",
       "target": "src_lib_server_stayservice_stayservice_autocheckoutexpiredstays",
       "relation": "references",
@@ -22608,7 +22764,7 @@
       "confidence_score": 0.95,
       "context": "isSameOrPastCheckoutTimeGmt7",
       "source_file": "README.md",
-      "source_location": "L117",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -22637,5 +22793,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d81f19113d8cb715c018e578868b2c4e32cf6714"
+  "built_at_commit": "5037c5c99c5f15d1e57c31e854c9bc40ffb4f36e"
 }

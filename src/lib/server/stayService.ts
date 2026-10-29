@@ -7,6 +7,7 @@ import type {
 	StayStatus,
 } from "../types/index.js";
 import { CatalogManager } from "./catalogManager.js";
+import { CONFIG } from "./config.js";
 import { DataTransformer } from "./dataTransformer.js";
 import {
 	checkoutStay as dbCheckoutStay,
@@ -571,6 +572,11 @@ class StayService {
 		checkedOutCount: number;
 		results: Array<{ stayId: string; success: boolean; message: string }>;
 	}> {
+		// Vô hiệu hóa auto-checkout ở môi trường DEV trừ khi ép buộc (force = true)
+		if (!CONFIG.isProdMode && !force) {
+			return { checkedOutCount: 0, results: [] };
+		}
+
 		const now = Date.now();
 		if (!force && now - this.lastAutoCheckoutTime < 15_000) {
 			return { checkedOutCount: 0, results: [] };

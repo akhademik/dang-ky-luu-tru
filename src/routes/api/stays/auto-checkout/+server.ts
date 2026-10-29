@@ -1,4 +1,5 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
+import { CONFIG } from "$lib/server/config.js";
 import { getDb } from "$lib/server/db.js";
 import { stayService } from "$lib/server/stayService.js";
 
@@ -11,6 +12,14 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			force = Boolean(body?.force);
 		} catch {
 			// Body is optional
+		}
+
+		if (!CONFIG.isProdMode && !force) {
+			return json({
+				success: true,
+				data: { checkedOutCount: 0, results: [] },
+				message: "Auto-checkout đã được vô hiệu hóa trong môi trường DEV.",
+			});
 		}
 
 		const result = await stayService.autoCheckoutExpiredStays(db, force);

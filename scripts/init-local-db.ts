@@ -72,78 +72,78 @@ async function main() {
 
 		console.log("✅ Local SQLite database đã sẵn sàng với đầy đủ bảng biểu và indexes!");
 
-		// 2. Tự động đồng bộ snapshot từ Remote Cloudflare về Local SQLite nếu local chưa có dữ liệu
-		const countArgs = isDirectBin
-			? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "SELECT COUNT(*) as count FROM stays;", "--json"]
-			: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", "SELECT COUNT(*) as count FROM stays;", "--json"];
+		// 2. Tự động lấy toàn bộ database từ Cloudflare D1 Remote và thay thế hoàn toàn database Local
+		console.log("📥 Đang kéo toàn bộ snapshot từ Cloudflare D1 Remote để thay thế Local SQLite...");
+		try {
+			const remoteArgs = isDirectBin
+				? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--remote", "--command", "SELECT * FROM guests; SELECT * FROM stays; SELECT * FROM kbtt_logs;", "--json"]
+				: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--remote", "--command", "SELECT * FROM guests; SELECT * FROM stays; SELECT * FROM kbtt_logs;", "--json"];
+			const remoteStdout = cp.execFileSync(execCmd, remoteArgs, {
+				encoding: "utf8",
+				stdio: ["pipe", "pipe", "ignore"],
+				timeout: 30000,
+			});
+			const remoteParsed = JSON.parse(remoteStdout);
+			const remoteGuests = (remoteParsed?.[0]?.results || []) as Array<Record<string, unknown>>;
+			const remoteStays = (remoteParsed?.[1]?.results || []) as Array<Record<string, unknown>>;
+			const remoteLogs = (remoteParsed?.[2]?.results || []) as Array<Record<string, unknown>>;
 
-		const stdout = cp.execFileSync(execCmd, countArgs, {
-			encoding: "utf8",
-			stdio: ["pipe", "pipe", "ignore"],
-		});
-		const parsed = JSON.parse(stdout);
-		const count = parsed?.[0]?.results?.[0]?.count || 0;
+			console.log(`📦 Tìm thấy từ Remote: ${remoteGuests.length} guests, ${remoteStays.length} stays, ${remoteLogs.length} logs.`);
 
-		if (count === 0) {
-			console.log("📥 Local SQLite chưa có dữ liệu. Đang kéo dữ liệu snapshot từ Remote Cloudflare D1 về Local...");
-			try {
-				const remoteArgs = isDirectBin
-					? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--remote", "--command", "SELECT * FROM guests; SELECT * FROM stays;", "--json"]
-					: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--remote", "--command", "SELECT * FROM guests; SELECT * FROM stays;", "--json"];
-				const remoteStdout = cp.execFileSync(execCmd, remoteArgs, {
-					encoding: "utf8",
-					stdio: ["pipe", "pipe", "ignore"],
-					timeout: 15000,
-				});
-				const remoteParsed = JSON.parse(remoteStdout);
-				const remoteGuests = (remoteParsed?.[0]?.results || []) as Array<Record<string, unknown>>;
-				const remoteStays = (remoteParsed?.[1]?.results || []) as Array<Record<string, unknown>>;
+			const getLocalColumns = (tableName: string): Set<string> => {
+				const checkColArgs = isDirectBin
+					? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", `PRAGMA table_info(${tableName});`, "--json"]
+					: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", "--command", `PRAGMA table_info(${tableName});`, "--json"];
+				const colStdout = cp.execFileSync(execCmd, checkColArgs, { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
+				const colParsed = JSON.parse(colStdout);
+				const cols: Array<{ name: string }> = colParsed?.[0]?.results || [];
+				return new Set(cols.map((c) => c.name));
+			};
 
-				if (remoteGuests.length > 0 || remoteStays.length > 0) {
-					console.log(`📦 Tìm thấy ${remoteGuests.length} khách và ${remoteStays.length} lượt lưu trú từ remote. Đang nạp vào Local SQLite...`);
-					const sqlStatements: string[] = [];
-
-					for (const g of remoteGuests) {
-						const keys = Object.keys(g);
-						const cols = keys.join(", ");
-						const vals = keys.map((k) => {
-							const val = g[k];
-							if (val === null || val === undefined) return "NULL";
-							if (typeof val === "number") return val;
-							return `'${String(val).replace(/'/g, "''")}'`;
-						}).join(", ");
-						sqlStatements.push(`INSERT OR REPLACE INTO guests (${cols}) VALUES (${vals});`);
-					}
-
-					for (const s of remoteStays) {
-						const keys = Object.keys(s);
-						const cols = keys.join(", ");
-						const vals = keys.map((k) => {
-							const val = s[k];
-							if (val === null || val === undefined) return "NULL";
-							if (typeof val === "number") return val;
-							return `'${String(val).replace(/'/g, "''")}'`;
-						}).join(", ");
-						sqlStatements.push(`INSERT OR REPLACE INTO stays (${cols}) VALUES (${vals});`);
-					}
-
-					if (sqlStatements.length > 0) {
-						const tempSqlFile = path.resolve(process.cwd(), ".wrangler/state/v3/d1/seed_temp.sql");
-						fs.mkdirSync(path.dirname(tempSqlFile), { recursive: true });
-						fs.writeFileSync(tempSqlFile, sqlStatements.join("\n"), "utf8");
-
-						const insertArgs = isDirectBin
-							? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", `--file=${tempSqlFile}`]
-							: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", `--file=${tempSqlFile}`];
-						cp.execFileSync(execCmd, insertArgs, { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
-
-						try { fs.unlinkSync(tempSqlFile); } catch {}
-						console.log(`✅ Đồng bộ thành công ${remoteGuests.length} guests và ${remoteStays.length} stays vào Local SQLite!`);
-					}
+			const formatInserts = (tableName: string, rows: Array<Record<string, unknown>>): string[] => {
+				const localCols = getLocalColumns(tableName);
+				const statements: string[] = [];
+				for (const row of rows) {
+					const validKeys = Object.keys(row).filter((k) => localCols.has(k));
+					if (validKeys.length === 0) continue;
+					const cols = validKeys.join(", ");
+					const vals = validKeys.map((k) => {
+						const val = row[k];
+						if (val === null || val === undefined) return "NULL";
+						if (typeof val === "number") return val;
+						return `'${String(val).replace(/'/g, "''")}'`;
+					}).join(", ");
+					statements.push(`INSERT OR REPLACE INTO ${tableName} (${cols}) VALUES (${vals});`);
 				}
-			} catch (syncErr: unknown) {
-				console.log("ℹ️ Không thể clone data từ Remote D1 (hoặc bị rate limit). Sử dụng local SQLite database trống.");
-			}
+				return statements;
+			};
+
+			const sqlStatements: string[] = [
+				"PRAGMA foreign_keys = OFF;",
+				"DELETE FROM kbtt_logs;",
+				"DELETE FROM stays;",
+				"DELETE FROM guests;",
+				...formatInserts("guests", remoteGuests),
+				...formatInserts("stays", remoteStays),
+				...formatInserts("kbtt_logs", remoteLogs),
+				"PRAGMA foreign_keys = ON;",
+			];
+
+			const tempSqlFile = path.resolve(process.cwd(), ".wrangler/state/v3/d1/seed_temp.sql");
+			fs.mkdirSync(path.dirname(tempSqlFile), { recursive: true });
+			fs.writeFileSync(tempSqlFile, sqlStatements.join("\n"), "utf8");
+
+			const insertArgs = isDirectBin
+				? [wranglerBin, "d1", "execute", "dang-ky-luu-tru-db", "--local", `--file=${tempSqlFile}`]
+				: ["wrangler", "d1", "execute", "dang-ky-luu-tru-db", "--local", `--file=${tempSqlFile}`];
+			cp.execFileSync(execCmd, insertArgs, { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
+
+			try { fs.unlinkSync(tempSqlFile); } catch {}
+			console.log(`✅ Đã thay thế toàn bộ Local SQLite bằng dữ liệu Cloudflare D1 Remote (${remoteGuests.length} guests, ${remoteStays.length} stays, ${remoteLogs.length} logs)!`);
+		} catch (syncErr: unknown) {
+			const errMsg = syncErr instanceof Error ? syncErr.message : String(syncErr);
+			console.warn("⚠️ Không thể tải snapshot từ Remote D1 (có thể do offline hoặc lỗi xác thực):", errMsg);
+			console.log("ℹ️ Giữ nguyên dữ liệu hiện tại trong Local SQLite.");
 		}
 	} catch (err: unknown) {
 		console.warn("⚠️ Cảnh báo khởi tạo local sqlite:", err instanceof Error ? err.message : String(err));

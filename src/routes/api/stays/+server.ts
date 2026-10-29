@@ -1,4 +1,5 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
+import { CONFIG } from "$lib/server/config.js";
 import { DataTransformer } from "$lib/server/dataTransformer.js";
 import { getDb, getStays, upsertGuest, upsertStay } from "$lib/server/db.js";
 import { stayService } from "$lib/server/stayService.js";
@@ -6,7 +7,9 @@ import { stayService } from "$lib/server/stayService.js";
 export const GET: RequestHandler = async ({ url, platform }) => {
 	try {
 		const db = getDb(platform);
-		await stayService.autoCheckoutExpiredStays(db);
+		if (CONFIG.isProdMode) {
+			await stayService.autoCheckoutExpiredStays(db);
+		}
 		const status = url.searchParams.get("status") || "ALL";
 		const room = url.searchParams.get("room") || "";
 		const search = url.searchParams.get("search") || "";
