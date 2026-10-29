@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import type { RawOcrRow } from "../../src/lib/server/dataTransformer.js";
 import {
 	checkoutStay,
+	clearAuditLogs,
+	deleteAuditLog,
 	extendStay,
 	getAuditLogs,
 	getDashboardStats,
@@ -102,6 +104,30 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 		auditLogs[0].env,
 		"logKbttAction should automatically populate env",
 	);
+
+	// Test delete single audit log item
+	const logToDelete = auditLogs[0];
+	const deleteOk = await deleteAuditLog(db, logToDelete.id);
+	assert.equal(deleteOk, true, "deleteAuditLog should return true");
+	const logsAfterDelete = await getAuditLogs(db, { search: "TEST NGUYEN A" });
+	assert.equal(
+		logsAfterDelete.find((l) => l.id === logToDelete.id),
+		undefined,
+		"Deleted log must no longer be returned",
+	);
+
+	// Test clear all audit logs
+	await logKbttAction(db, {
+		stay_id: stay1.id,
+		api_endpoint: "API_5_VN",
+		guest_name: "TEST NGUYEN A",
+		so_giay_to: "001092000001",
+		is_success: 1,
+	});
+	const clearOk = await clearAuditLogs(db);
+	assert.equal(clearOk, true, "clearAuditLogs should return true");
+	const logsAfterClear = await getAuditLogs(db, {});
+	assert.equal(logsAfterClear.length, 0, "All logs should be cleared");
 
 	// 8. Test getDashboardStats
 	const stats = await getDashboardStats(db);

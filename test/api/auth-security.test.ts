@@ -16,6 +16,8 @@ import {
 	GET as envGet,
 	POST as envPost,
 } from "../../src/routes/api/env/+server.js";
+import { DELETE as auditDelete } from "../../src/routes/api/stays/audit/+server.js";
+import { MockD1Database } from "../helpers/mock-d1.js";
 
 async function runAuthSecurityApiTests(): Promise<void> {
 	console.log(
@@ -51,6 +53,7 @@ async function runAuthSecurityApiTests(): Promise<void> {
 		env: {
 			KBTT_ENV: "prod",
 			APP_PASSWORD: "SuperSecretProdPassword123!",
+			DB: new MockD1Database(),
 		},
 	} as unknown as App.Platform;
 
@@ -439,6 +442,38 @@ async function runAuthSecurityApiTests(): Promise<void> {
 		403,
 		"Fixed PROD deployment must block environment switching",
 	);
+
+	// 7. Dev Logs Deletion Permitted in PROD Mode (Production D1 Audit Cleanup)
+	const clearAuditReq = new Request(
+		"https://example.com/api/stays/audit?clear=true",
+		{
+			method: "DELETE",
+		},
+	);
+	const clearAuditRes = await auditDelete({
+		request: clearAuditReq,
+		url: new URL("https://example.com/api/stays/audit?clear=true"),
+		platform: prodPlatform,
+	} as unknown as RequestEvent);
+	assert.equal(
+		clearAuditRes.status,
+		200,
+		"Dev Logs bulk delete must succeed with 200 in PROD mode",
+	);
+	const clearAuditData = await clearAuditRes.json();
+	assert.equal(clearAuditData.success, true);
+	assert.equal(clearAuditData.message, "Đã xóa toàn bộ nhật ký Dev Logs");
+
+	// Test missing ID returns 400
+	const missingIdReq = new Request("https://example.com/api/stays/audit", {
+		method: "DELETE",
+	});
+	const missingIdRes = await auditDelete({
+		request: missingIdReq,
+		url: new URL("https://example.com/api/stays/audit"),
+		platform: prodPlatform,
+	} as unknown as RequestEvent);
+	assert.equal(missingIdRes.status, 400);
 
 	console.log(
 		"✅ [API] Toàn bộ kiểm thử Authentication & Security mới đã pass 100%!",

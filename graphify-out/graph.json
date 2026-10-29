@@ -303,32 +303,6 @@
       "source_location": "L99"
     },
     {
-      "id": "test_helpers_mock_d1_mockd1database",
-      "label": "MockD1Database",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "D1PreparedStatement",
-      "file_type": "code",
-      "norm_label": "mockd1database",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L10"
-    },
-    {
-      "id": "test_helpers_mock_d1_row",
-      "label": "Row",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "D1PreparedStatement",
-      "file_type": "code",
-      "norm_label": "row",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L6"
-    },
-    {
       "id": "src_lib_server_datatransformer_datatransformer",
       "label": "DataTransformer",
       "_callable": true,
@@ -379,6 +353,32 @@
       "norm_label": "transformedrowresult",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L127"
+    },
+    {
+      "id": "test_helpers_mock_d1_mockd1database",
+      "label": "MockD1Database",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "mockd1database",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "test_helpers_mock_d1_row",
+      "label": "Row",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "row",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_lib_data_catalogs_standardcatalogitem",
@@ -943,7 +943,7 @@
       "file_type": "code",
       "norm_label": "delete()",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L34"
+      "source_location": "L33"
     },
     {
       "id": "src_routes_api_stays_audit_server_get",
@@ -955,7 +955,7 @@
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L10"
+      "source_location": "L9"
     },
     {
       "id": "src_routes_api_stays_auto_checkout_server_post",
@@ -1099,7 +1099,7 @@
       "file_type": "code",
       "norm_label": "runstayserviceintegrationtests()",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L23"
+      "source_location": "L25"
     },
     {
       "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
@@ -2266,6 +2266,42 @@
       "source_location": "L101"
     },
     {
+      "id": "scripts_init_local_db_main",
+      "label": "main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "scripts/init-local-db.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
+      "label": "runSvelteDeprecationCheck()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "runsveltedeprecationcheck()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L41"
+    },
+    {
+      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
+      "label": "scanDirectoryForForbiddenPatterns()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "scandirectoryforforbiddenpatterns()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L5"
+    },
+    {
       "id": "test_inspect_modal_speed_main",
       "label": "main()",
       "_callable": true,
@@ -2408,42 +2444,6 @@
       "norm_label": ".run()",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L103"
-    },
-    {
-      "id": "test_helpers_mock_d1_mockd1database_exec",
-      "label": ".exec()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "D1PreparedStatement",
-      "file_type": "code",
-      "norm_label": ".exec()",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L26"
-    },
-    {
-      "id": "test_helpers_mock_d1_mockd1database_executequery",
-      "label": ".executeQuery()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "D1PreparedStatement",
-      "file_type": "code",
-      "norm_label": ".executequery()",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L104"
-    },
-    {
-      "id": "test_helpers_mock_d1_mockd1database_gettable",
-      "label": ".getTable()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "D1PreparedStatement",
-      "file_type": "code",
-      "norm_label": ".gettable()",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L17"
     },
     {
       "id": "test_helpers_mock_d1_mockd1database_prepare",
@@ -2710,18 +2710,6 @@
       "source_location": "L4"
     },
     {
-      "id": "scripts_init_local_db_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "src_hooks_server_handle",
       "label": "handle()",
       "_callable": true,
@@ -2959,31 +2947,43 @@
       "file_type": "code",
       "norm_label": "runauthsecurityapitests()",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L20"
+      "source_location": "L22"
     },
     {
-      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
-      "label": "runSvelteDeprecationCheck()",
+      "id": "test_helpers_mock_d1_mockd1database_exec",
+      "label": ".exec()",
       "_callable": true,
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
       "file_type": "code",
-      "norm_label": "runsveltedeprecationcheck()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L41"
+      "norm_label": ".exec()",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L26"
     },
     {
-      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
-      "label": "scanDirectoryForForbiddenPatterns()",
+      "id": "test_helpers_mock_d1_mockd1database_executequery",
+      "label": ".executeQuery()",
       "_callable": true,
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
       "file_type": "code",
-      "norm_label": "scandirectoryforforbiddenpatterns()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L5"
+      "norm_label": ".executequery()",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L104"
+    },
+    {
+      "id": "test_helpers_mock_d1_mockd1database_gettable",
+      "label": ".getTable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": ".gettable()",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L17"
     },
     {
       "id": "src_lib_utils_format_getcountryfullname",
@@ -3214,17 +3214,6 @@
       "file_type": "code",
       "norm_label": "audit/+server.ts",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_stays_auto_checkout_server",
-      "label": "auto-checkout/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "auto-checkout/+server.ts",
-      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L1"
     },
     {
@@ -3478,6 +3467,17 @@
       "file_type": "code",
       "norm_label": "update-row/+server.ts",
       "source_file": "src/routes/api/sheets/update-row/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_stays_auto_checkout_server",
+      "label": "auto-checkout/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": "auto-checkout/+server.ts",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L1"
     },
     {
@@ -6665,6 +6665,28 @@
       "source_location": "L1"
     },
     {
+      "id": "scripts_init_local_db",
+      "label": "init-local-db.ts",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "init-local-db.ts",
+      "source_file": "scripts/init-local-db.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_unit_svelte_deprecation_test",
+      "label": "svelte-deprecation.test.ts",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "svelte-deprecation.test.ts",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "kit",
       "label": "@sveltejs/kit",
       "_origin": "ast",
@@ -6775,17 +6797,6 @@
       "source_location": "L6"
     },
     {
-      "id": "test_helpers_mock_d1",
-      "label": "mock-d1.ts",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "D1PreparedStatement",
-      "file_type": "code",
-      "norm_label": "mock-d1.ts",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "src_lib_server_datatransformer",
       "label": "dataTransformer.ts",
       "_origin": "ast",
@@ -6828,7 +6839,7 @@
       "node_kind": "heading",
       "norm_label": "ke hoach theo doi thuc te & xu ly tiep theo (phase 2):",
       "source_file": "README.md",
-      "source_location": "L106"
+      "source_location": "L111"
     },
     {
       "id": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
@@ -6841,17 +6852,6 @@
       "norm_label": "trang thai he thong",
       "source_file": "README.md",
       "source_location": "L82"
-    },
-    {
-      "id": "scripts_init_local_db",
-      "label": "init-local-db.ts",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "init-local-db.ts",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L1"
     },
     {
       "id": "src_hooks_server",
@@ -6920,14 +6920,14 @@
       "source_location": "L1"
     },
     {
-      "id": "test_unit_svelte_deprecation_test",
-      "label": "svelte-deprecation.test.ts",
+      "id": "test_helpers_mock_d1",
+      "label": "mock-d1.ts",
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
       "file_type": "code",
-      "norm_label": "svelte-deprecation.test.ts",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "norm_label": "mock-d1.ts",
+      "source_file": "test/helpers/mock-d1.ts",
       "source_location": "L1"
     },
     {
@@ -6940,7 +6940,7 @@
       "node_kind": "heading",
       "norm_label": "2026-10-29",
       "source_file": "README.md",
-      "source_location": "L118"
+      "source_location": "L123"
     },
     {
       "id": "svelte",
@@ -7129,7 +7129,7 @@
       "node_kind": "heading",
       "norm_label": "2026-09-30",
       "source_file": "README.md",
-      "source_location": "L176"
+      "source_location": "L190"
     },
     {
       "id": "readme_2026_10_28",
@@ -7141,7 +7141,7 @@
       "node_kind": "heading",
       "norm_label": "2026-10-28",
       "source_file": "README.md",
-      "source_location": "L150"
+      "source_location": "L164"
     },
     {
       "id": "readme_changelog",
@@ -7153,7 +7153,7 @@
       "node_kind": "heading",
       "norm_label": "changelog",
       "source_file": "README.md",
-      "source_location": "L116"
+      "source_location": "L121"
     },
     {
       "id": "readme_c\u00e1c_t\u00ednh_n\u0103ng_ch\u00ednh_core_features",
@@ -7390,23 +7390,11 @@
       "type": "external"
     },
     {
-      "id": "src_lib_server_db_d1databaselike",
-      "label": "src_lib_server_db_d1databaselike",
-      "_origin": "semantic",
-      "community": 44,
-      "community_name": "app.d.ts",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_lib_server_db_d1databaselike",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "ref_node_child_process",
       "label": "ref_node_child_process",
       "_origin": "semantic",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_child_process",
@@ -7417,8 +7405,8 @@
       "id": "ref_node_fs",
       "label": "ref_node_fs",
       "_origin": "semantic",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_fs",
@@ -7429,11 +7417,23 @@
       "id": "ref_node_path",
       "label": "ref_node_path",
       "_origin": "semantic",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_path",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_lib_server_db_d1databaselike",
+      "label": "src_lib_server_db_d1databaselike",
+      "_origin": "semantic",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_lib_server_db_d1databaselike",
       "source_file": "",
       "type": "external"
     },
@@ -9548,7 +9548,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L48",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -9560,7 +9560,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L53",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -9572,7 +9572,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L67",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -9584,7 +9584,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -9596,7 +9596,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -9872,7 +9872,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L142",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -9884,7 +9884,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L212",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -9896,7 +9896,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L265",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -9908,7 +9908,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L280",
+      "source_location": "L283",
       "weight": 1.0
     },
     {
@@ -9920,7 +9920,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L345",
+      "source_location": "L348",
       "weight": 1.0
     },
     {
@@ -9932,7 +9932,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L385",
+      "source_location": "L388",
       "weight": 1.0
     },
     {
@@ -9944,7 +9944,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L396",
+      "source_location": "L399",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test_runauthsecurityapitests",
+      "target": "src_routes_api_stays_audit_server_delete",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L453",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test_runauthsecurityapitests",
+      "target": "test_helpers_mock_d1_mockd1database",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -9956,7 +9980,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L64",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -9968,7 +9992,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L69",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -9980,7 +10004,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L88",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -10033,6 +10057,42 @@
     },
     {
       "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
+      "target": "src_lib_server_repositories_auditrepository_getauditlogs",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/integration/stay-service.test.ts",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
+      "target": "src_lib_server_repositories_auditrepository_deleteauditlog",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/integration/stay-service.test.ts",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
+      "target": "src_lib_server_repositories_auditrepository_clearauditlogs",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/integration/stay-service.test.ts",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
       "target": "src_lib_server_repositories_statsrepository_getdashboardstats",
       "relation": "calls",
       "_origin": "ast",
@@ -10040,7 +10100,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L107",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -10052,7 +10112,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -10064,7 +10124,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L293",
+      "source_location": "L319",
       "weight": 1.0
     },
     {
@@ -10076,7 +10136,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L294",
+      "source_location": "L320",
       "weight": 1.0
     },
     {
@@ -10088,7 +10148,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L36",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -10100,7 +10160,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L50",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -10112,7 +10172,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L61",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -10124,7 +10184,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -10136,7 +10196,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L67",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -10148,7 +10208,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L68",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -10160,7 +10220,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L73",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -10172,7 +10232,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L80",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -10184,19 +10244,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L87",
-      "weight": 1.0
-    },
-    {
-      "source": "test_integration_stay_service_test_runstayserviceintegrationtests",
-      "target": "src_lib_server_repositories_auditrepository_getauditlogs",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L99",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -12533,7 +12581,7 @@
     },
     {
       "source": "src_routes_api_stays_audit_server",
-      "target": "src_lib_server_config_config",
+      "target": "src_lib_server_db_getdb",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12545,18 +12593,6 @@
     },
     {
       "source": "src_routes_api_stays_audit_server",
-      "target": "src_lib_server_db_getdb",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_api_stays_audit_server",
       "target": "src_lib_server_repositories_auditrepository_clearauditlogs",
       "relation": "imports",
       "_origin": "ast",
@@ -12564,7 +12600,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L3",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -12576,7 +12612,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L3",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -12588,7 +12624,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L3",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -13061,6 +13097,30 @@
     },
     {
       "source": "test_api_auth_security_test",
+      "target": "src_routes_api_stays_audit_server_delete",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
+      "target": "test_helpers_mock_d1_mockd1database",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
       "target": "src_hooks_server_handle",
       "relation": "imports",
       "_origin": "ast",
@@ -13200,7 +13260,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L16",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -13212,7 +13272,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L17",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -13224,7 +13284,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L17",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -13260,7 +13320,31 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L21",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "test_integration_stay_service_test",
+      "target": "src_lib_server_repositories_auditrepository_clearauditlogs",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/integration/stay-service.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_integration_stay_service_test",
+      "target": "src_lib_server_repositories_auditrepository_deleteauditlog",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/integration/stay-service.test.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -14814,18 +14898,6 @@
     },
     {
       "source": "src_routes_api_stays_audit_server",
-      "target": "src_lib_server_config",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_api_stays_audit_server",
       "target": "src_lib_server_db",
       "relation": "imports_from",
       "_origin": "ast",
@@ -14833,7 +14905,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L3",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -15357,6 +15429,18 @@
     },
     {
       "source": "test_api_auth_security_test",
+      "target": "src_routes_api_stays_audit_server",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
       "target": "ref_node_fs",
       "relation": "imports_from",
       "_origin": "ast",
@@ -15365,6 +15449,18 @@
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
+      "target": "test_helpers_mock_d1",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -15547,7 +15643,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L16",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -15559,7 +15655,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L17",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -15584,7 +15680,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L21",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -18942,7 +19038,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L118",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -18953,7 +19049,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L150",
+      "source_location": "L164",
       "weight": 1.0
     },
     {
@@ -18964,7 +19060,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L176",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -18975,7 +19071,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L116",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -19041,7 +19137,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L106",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -20542,24 +20638,24 @@
     },
     {
       "source": "src_routes_api_stays_audit_server",
-      "target": "src_routes_api_stays_audit_server_get",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_api_stays_audit_server",
       "target": "src_routes_api_stays_audit_server_delete",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/stays/audit/+server.ts",
-      "source_location": "L34",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stays_audit_server",
+      "target": "src_routes_api_stays_audit_server_get",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/api/stays/audit/+server.ts",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -20790,7 +20886,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L20",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -20856,7 +20952,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -22669,7 +22765,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -22741,7 +22837,7 @@
       "confidence_score": 0.95,
       "context": "autoCheckoutExpiredStays",
       "source_file": "README.md",
-      "source_location": "L143",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
@@ -22765,7 +22861,7 @@
       "confidence_score": 0.95,
       "context": "cleanDocNumber",
       "source_file": "README.md",
-      "source_location": "L87",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -22777,7 +22873,7 @@
       "confidence_score": 0.95,
       "context": "cleanRoomNumber",
       "source_file": "README.md",
-      "source_location": "L87",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -22789,7 +22885,7 @@
       "confidence_score": 0.95,
       "context": "formatAuditAction",
       "source_file": "README.md",
-      "source_location": "L191",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -22800,6 +22896,18 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "context": "formatDateTime",
+      "source_file": "README.md",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_repositories_auditrepository_getauditlogs",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "getAuditLogs",
       "source_file": "README.md",
       "source_location": "L87",
       "weight": 1.0
@@ -22813,7 +22921,7 @@
       "confidence_score": 0.95,
       "context": "getDeployEnv",
       "source_file": "README.md",
-      "source_location": "L129",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -22849,7 +22957,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L130",
+      "source_location": "L144",
       "weight": 1.0
     },
     {
@@ -22861,7 +22969,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L93",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -22897,7 +23005,7 @@
       "confidence_score": 0.95,
       "context": "isSameOrPastCheckoutTimeGmt7",
       "source_file": "README.md",
-      "source_location": "L180",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -22909,7 +23017,19 @@
       "confidence_score": 0.95,
       "context": "loadInitialCatalogs()",
       "source_file": "README.md",
-      "source_location": "L89",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "logKbttAction",
+      "source_file": "README.md",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -22921,7 +23041,7 @@
       "confidence_score": 0.95,
       "context": "revoke()",
       "source_file": "README.md",
-      "source_location": "L88",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -22950,5 +23070,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "78edaf02f3578ec8fb5526b479a86598c11b3f92"
+  "built_at_commit": "73ca8252527179fd7beb0f3c48f9cfcd3089b88a"
 }

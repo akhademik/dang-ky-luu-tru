@@ -1,17 +1,17 @@
 # Graph Report - dang-ky-luu-tru  (2026-10-29)
 
 ## Corpus Check
-- 93 files · ~74,622 words
+- 93 files · ~75,111 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: .example 1, (none) 1, .css 1)
 
 ## Summary
-- 633 nodes · 1335 edges · 44 communities (36 shown, 8 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 47 edges (avg confidence: 0.86)
+- 633 nodes · 1345 edges · 45 communities (36 shown, 9 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 49 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `78edaf02`
+- Built from commit: `73ca8252`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -56,6 +56,7 @@
 - 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)
 - AI_WORKFLOW.md — Quy trình làm việc bắt buộc cho AI Coding Agent
 - 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)
+- svelte-deprecation.test.ts
 - svelte.config.js
 - @playwright/test
 - app.d.ts
@@ -66,8 +67,8 @@
 3. `stayService` - 27 edges
 4. `@sveltejs/kit` - 26 edges
 5. `catalogManager` - 23 edges
-6. `CONFIG` - 23 edges
-7. `D1DatabaseLike` - 23 edges
+6. `D1DatabaseLike` - 23 edges
+7. `CONFIG` - 22 edges
 8. `KbttClient` - 22 edges
 9. `logger` - 22 edges
 10. `getStayById()` - 19 edges
@@ -87,10 +88,10 @@
 ## Import Cycles
 - None detected.
 
-## Communities (44 total, 8 thin omitted)
+## Communities (45 total, 9 thin omitted)
 
 ### Community 0 - "stayService.ts"
-Cohesion: 0.10
+Cohesion: 0.11
 Nodes (42): getDb(), clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest() (+34 more)
 
 ### Community 1 - "@sveltejs/kit"
@@ -109,17 +110,13 @@ Nodes (15): devDependencies, @biomejs/biome, jiti, @playwright/test, svelte, sve
 Cohesion: 0.11
 Nodes (18): author, description, keywords, license, main, name, type, version (+10 more)
 
-### Community 5 - "D1PreparedStatement"
-Cohesion: 0.15
-Nodes (4): RemoteD1Database, D1PreparedStatement, MockD1Database, Row
-
 ### Community 6 - "DataTransformer"
 Cohesion: 0.20
 Nodes (8): Kế hoạch theo dõi thực tế & Xử lý tiếp theo (Phase 2):, Trạng thái hệ thống, DataTransformer, CompletenessResult, RawOcrRow, TransformedRowResult, POST(), runTransformerUnitTests()
 
 ### Community 7 - "auth-security.test.ts"
-Cohesion: 0.15
-Nodes (28): 2026-10-29, ref_node_child_process, ref_node_fs, ref_node_path, ref_types_js, handle(), base64UrlDecode(), base64UrlEncode() (+20 more)
+Cohesion: 0.16
+Nodes (25): 2026-10-29, ref_types_js, handle(), base64UrlDecode(), base64UrlEncode(), checkRateLimit(), createSessionToken(), getIngestApiKey() (+17 more)
 
 ### Community 8 - "format.ts"
 Cohesion: 0.08
@@ -225,6 +222,10 @@ Nodes (10): 0. Thứ tự đọc khi mở lại project (BẮT BUỘC, không đ
 Cohesion: 0.11
 Nodes (17): 1.1. Single Source of Truth: Cloudflare D1 & Modular Repositories, 1.2. Zero-FS Edge Runtime Compatibility, 1.3. Svelte 5 Modern Runes & Callback Props Pattern, 1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern, 1.5. Strict GMT+7 Timezone & Stay State Machine Policy, 1.6. Network Resilience & Smart Fallback Pattern, 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG), 2.1. Backgrounds & Surfaces (Nền & Thẻ chứa) (+9 more)
 
+### Community 41 - "svelte-deprecation.test.ts"
+Cohesion: 0.32
+Nodes (5): ref_node_child_process, ref_node_fs, ref_node_path, runSvelteDeprecationCheck(), scanDirectoryForForbiddenPatterns()
+
 ### Community 42 - "svelte.config.js"
 Cohesion: 0.40
 Nodes (3): @sveltejs/adapter-cloudflare, @sveltejs/vite-plugin-svelte, config
@@ -236,7 +237,7 @@ Nodes (4): App, Locals, Platform, src_lib_server_db_d1databaselike
 ## Knowledge Gaps
 - **218 isolated node(s):** `$schema`, `includes`, `enabled`, `indentStyle`, `organizeImports` (+213 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 278 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -250,8 +251,8 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `$schema`, `includes`, `enabled` to the rest of the system?**
   _218 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `stayService.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.10400682011935208 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10667251975417033 - nodes in this community are weakly interconnected._
 - **Should `@sveltejs/kit` be split into smaller, more focused modules?**
-  _Cohesion score 0.054136874361593465 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05368289637952559 - nodes in this community are weakly interconnected._
 - **Should `compilerOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._

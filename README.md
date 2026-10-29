@@ -81,8 +81,11 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-10-29 09:30 (GMT+7)
+- Cập nhật lần cuối: 2026-10-29 09:35 (GMT+7)
 - Đã hoàn thành:
+  - Cho phép Xóa Dev Logs trên môi trường Production (Cloudflare Pages / D1):
+    - Cập nhật [`src/routes/api/stays/audit/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/audit/+server.ts): Loại bỏ điều kiện kiểm tra `if (CONFIG.isProdMode)` chặn mã lỗi 403 Forbidden. Cho phép quản trị viên/vận hành khi truy cập website production (đã đăng nhập xác thực) có toàn quyền xóa từng dòng log kiểm toán hoặc làm sạch toàn bộ bảng `kbtt_logs` trực tiếp từ giao diện Dev Logs. Dữ liệu khách (`guests`) và lượt lưu trú (`stays`) hoàn toàn độc lập và được bảo toàn an toàn tuyệt đối trong CSDL.
+    - Cập nhật integration test [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts) và API test [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts) kiểm tra tính năng xóa log đơn lẻ và xóa toàn bộ logs hoạt động 100% trong môi trường PROD.
   - Bổ sung Nhãn Môi trường `[DEV]` và `[PROD]` trong Dev Logs & Payload Inspector:
     - Cập nhật [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts): Tự động điền `env` (`CONFIG.currentEnv`) và `host` (URL hostname) nếu bản ghi log chưa có; mở rộng truy vấn `getAuditLogs` tìm kiếm theo `env` và `host` (`OR env LIKE ? OR host LIKE ?`).
     - Cập nhật [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts): Truyền rõ ràng `env: CONFIG.currentEnv` trong tất cả các lệnh ghi `logKbttAction` (check-in, check-out, gia hạn, đăng ký lại).
@@ -121,6 +124,14 @@ pnpm run build
 ## Changelog
 
 ### 2026-10-29
+
+- Mở khóa tính năng Xóa Dev Logs trên môi trường Production (Cloudflare Pages):
+  - Cập nhật [`src/routes/api/stays/audit/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/audit/+server.ts): Bỏ chặn 403 `if (CONFIG.isProdMode)`, dọn dẹp import `CONFIG` thừa. Người dùng trên website triển khai Cloudflare Pages sau khi đăng nhập có thể xóa từng bản ghi nhật ký hoặc xóa toàn bộ bảng `kbtt_logs` mà không gặp lỗi cấm quyền.
+  - Cập nhật [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts): Bổ sung kiểm thử cho `deleteAuditLog` và `clearAuditLogs`.
+  - Cập nhật [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts): Bổ sung kiểm thử gọi handler `DELETE /api/stays/audit` với `prodPlatform`, xác nhận phản hồi HTTP 200 thành công.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ (0 issues) | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/routes/api/stays/audit/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/audit/+server.ts), [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts), [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md).
+
 
 - Bổ sung Nhãn Môi trường `[DEV]` và `[PROD]` trong Dev Logs & Payload Inspector:
   - Cập nhật [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts): Tự động gán `env` (`CONFIG.currentEnv`) và `host` mặc định khi lưu audit log; bổ sung hỗ trợ tìm kiếm log theo `env` và `host`.
