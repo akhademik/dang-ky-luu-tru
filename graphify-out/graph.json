@@ -283,7 +283,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": "remoted1database",
       "source_file": "src/lib/server/db.ts",
@@ -296,11 +296,37 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": "d1preparedstatement",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L99"
+    },
+    {
+      "id": "test_helpers_mock_d1_mockd1database",
+      "label": "MockD1Database",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "MockD1Database",
+      "file_type": "code",
+      "norm_label": "mockd1database",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "test_helpers_mock_d1_row",
+      "label": "Row",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "MockD1Database",
+      "file_type": "code",
+      "norm_label": "row",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer",
@@ -353,32 +379,6 @@
       "norm_label": "transformedrowresult",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L127"
-    },
-    {
-      "id": "test_helpers_mock_d1_mockd1database",
-      "label": "MockD1Database",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "mockd1database",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L10"
-    },
-    {
-      "id": "test_helpers_mock_d1_row",
-      "label": "Row",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "row",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L6"
     },
     {
       "id": "src_lib_data_catalogs_standardcatalogitem",
@@ -571,7 +571,7 @@
       "file_type": "code",
       "norm_label": "clearauditlogs()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L98"
+      "source_location": "L140"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_deleteauditlog",
@@ -583,7 +583,7 @@
       "file_type": "code",
       "norm_label": "deleteauditlog()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L87"
+      "source_location": "L129"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_generateid",
@@ -595,7 +595,7 @@
       "file_type": "code",
       "norm_label": "generateid()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L4"
+      "source_location": "L5"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_getauditlogs",
@@ -607,7 +607,7 @@
       "file_type": "code",
       "norm_label": "getauditlogs()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L55"
+      "source_location": "L97"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_logkbttaction",
@@ -619,7 +619,7 @@
       "file_type": "code",
       "norm_label": "logkbttaction()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L8"
+      "source_location": "L9"
     },
     {
       "id": "src_lib_server_repositories_guestrepository_generateid",
@@ -2266,42 +2266,6 @@
       "source_location": "L101"
     },
     {
-      "id": "scripts_init_local_db_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
-      "label": "runSvelteDeprecationCheck()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "runsveltedeprecationcheck()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L41"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
-      "label": "scanDirectoryForForbiddenPatterns()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "scandirectoryforforbiddenpatterns()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "test_inspect_modal_speed_main",
       "label": "main()",
       "_callable": true,
@@ -2355,7 +2319,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".escapesql()",
       "source_file": "src/lib/server/db.ts",
@@ -2367,7 +2331,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".exec()",
       "source_file": "src/lib/server/db.ts",
@@ -2379,7 +2343,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".executequery()",
       "source_file": "src/lib/server/db.ts",
@@ -2391,7 +2355,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".prepare()",
       "source_file": "src/lib/server/db.ts",
@@ -2403,7 +2367,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".all()",
       "source_file": "src/lib/types/index.ts",
@@ -2415,7 +2379,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".bind()",
       "source_file": "src/lib/types/index.ts",
@@ -2427,7 +2391,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".first()",
       "source_file": "src/lib/types/index.ts",
@@ -2439,11 +2403,47 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".run()",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L103"
+    },
+    {
+      "id": "test_helpers_mock_d1_mockd1database_exec",
+      "label": ".exec()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "MockD1Database",
+      "file_type": "code",
+      "norm_label": ".exec()",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "test_helpers_mock_d1_mockd1database_executequery",
+      "label": ".executeQuery()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "MockD1Database",
+      "file_type": "code",
+      "norm_label": ".executequery()",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L104"
+    },
+    {
+      "id": "test_helpers_mock_d1_mockd1database_gettable",
+      "label": ".getTable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "MockD1Database",
+      "file_type": "code",
+      "norm_label": ".gettable()",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L17"
     },
     {
       "id": "test_helpers_mock_d1_mockd1database_prepare",
@@ -2451,7 +2451,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "D1PreparedStatement",
+      "community_name": "MockD1Database",
       "file_type": "code",
       "norm_label": ".prepare()",
       "source_file": "test/helpers/mock-d1.ts",
@@ -2710,6 +2710,18 @@
       "source_location": "L4"
     },
     {
+      "id": "scripts_init_local_db_main",
+      "label": "main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "scripts/init-local-db.ts",
+      "source_location": "L5"
+    },
+    {
       "id": "src_hooks_server_handle",
       "label": "handle()",
       "_callable": true,
@@ -2950,40 +2962,28 @@
       "source_location": "L22"
     },
     {
-      "id": "test_helpers_mock_d1_mockd1database_exec",
-      "label": ".exec()",
+      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
+      "label": "runSvelteDeprecationCheck()",
       "_callable": true,
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
       "file_type": "code",
-      "norm_label": ".exec()",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L26"
+      "norm_label": "runsveltedeprecationcheck()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L41"
     },
     {
-      "id": "test_helpers_mock_d1_mockd1database_executequery",
-      "label": ".executeQuery()",
+      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
+      "label": "scanDirectoryForForbiddenPatterns()",
       "_callable": true,
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
       "file_type": "code",
-      "norm_label": ".executequery()",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L104"
-    },
-    {
-      "id": "test_helpers_mock_d1_mockd1database_gettable",
-      "label": ".getTable()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": ".gettable()",
-      "source_file": "test/helpers/mock-d1.ts",
-      "source_location": "L17"
+      "norm_label": "scandirectoryforforbiddenpatterns()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L5"
     },
     {
       "id": "src_lib_utils_format_getcountryfullname",
@@ -3217,6 +3217,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_routes_api_stays_auto_checkout_server",
+      "label": "auto-checkout/+server.ts",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "stayService.ts",
+      "file_type": "code",
+      "norm_label": "auto-checkout/+server.ts",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_routes_api_stays_checkout_server",
       "label": "checkout/+server.ts",
       "_origin": "ast",
@@ -3292,6 +3303,18 @@
       "norm_label": "stay-service.test.ts",
       "source_file": "test/integration/stay-service.test.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "readme_2026_10_29",
+      "label": "2026-10-29",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "stayService.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2026-10-29",
+      "source_file": "README.md",
+      "source_location": "L126"
     },
     {
       "id": "src_index",
@@ -3467,17 +3490,6 @@
       "file_type": "code",
       "norm_label": "update-row/+server.ts",
       "source_file": "src/routes/api/sheets/update-row/+server.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_stays_auto_checkout_server",
-      "label": "auto-checkout/+server.ts",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "auto-checkout/+server.ts",
-      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L1"
     },
     {
@@ -5941,18 +5953,6 @@
       "source_location": "L17"
     },
     {
-      "id": "design_system_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
-      "label": "1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern",
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "1. ARCHITECTURAL PATTERNS (KI\u1ebeN TR\u00daC H\u1ec6 TH\u1ed0NG)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1.4. centralized security gateway, stateless hmac auth & rate limiting pattern",
-      "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L24"
-    },
-    {
       "id": "design_system_1_5_strict_gmt_7_timezone_stay_state_machine_policy",
       "label": "1.5. Strict GMT+7 Timezone & Stay State Machine Policy",
       "_origin": "ast",
@@ -6497,18 +6497,6 @@
       "source_location": "L17"
     },
     {
-      "id": "design_pattern_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
-      "label": "1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern",
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "1. ARCHITECTURAL PATTERNS (KI\u1ebeN TR\u00daC H\u1ec6 TH\u1ed0NG)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1.4. centralized security gateway, stateless hmac auth & rate limiting pattern",
-      "source_file": "DESIGN_PATTERN.md",
-      "source_location": "L24"
-    },
-    {
       "id": "design_pattern_1_5_strict_gmt_7_timezone_stay_state_machine_policy",
       "label": "1.5. Strict GMT+7 Timezone & Stay State Machine Policy",
       "_origin": "ast",
@@ -6665,28 +6653,6 @@
       "source_location": "L1"
     },
     {
-      "id": "scripts_init_local_db",
-      "label": "init-local-db.ts",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "init-local-db.ts",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test",
-      "label": "svelte-deprecation.test.ts",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "svelte-deprecation.test.ts",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "kit",
       "label": "@sveltejs/kit",
       "_origin": "ast",
@@ -6797,6 +6763,17 @@
       "source_location": "L6"
     },
     {
+      "id": "test_helpers_mock_d1",
+      "label": "mock-d1.ts",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "MockD1Database",
+      "file_type": "code",
+      "norm_label": "mock-d1.ts",
+      "source_file": "test/helpers/mock-d1.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_lib_server_datatransformer",
       "label": "dataTransformer.ts",
       "_origin": "ast",
@@ -6839,7 +6816,7 @@
       "node_kind": "heading",
       "norm_label": "ke hoach theo doi thuc te & xu ly tiep theo (phase 2):",
       "source_file": "README.md",
-      "source_location": "L111"
+      "source_location": "L114"
     },
     {
       "id": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
@@ -6852,6 +6829,17 @@
       "norm_label": "trang thai he thong",
       "source_file": "README.md",
       "source_location": "L82"
+    },
+    {
+      "id": "scripts_init_local_db",
+      "label": "init-local-db.ts",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "init-local-db.ts",
+      "source_file": "scripts/init-local-db.ts",
+      "source_location": "L1"
     },
     {
       "id": "src_hooks_server",
@@ -6920,27 +6908,39 @@
       "source_location": "L1"
     },
     {
-      "id": "test_helpers_mock_d1",
-      "label": "mock-d1.ts",
+      "id": "test_unit_svelte_deprecation_test",
+      "label": "svelte-deprecation.test.ts",
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
       "file_type": "code",
-      "norm_label": "mock-d1.ts",
-      "source_file": "test/helpers/mock-d1.ts",
+      "norm_label": "svelte-deprecation.test.ts",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
       "source_location": "L1"
     },
     {
-      "id": "readme_2026_10_29",
-      "label": "2026-10-29",
+      "id": "design_pattern_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
+      "label": "1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern",
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "2026-10-29",
-      "source_file": "README.md",
-      "source_location": "L123"
+      "norm_label": "1.4. centralized security gateway, stateless hmac auth & rate limiting pattern",
+      "source_file": "DESIGN_PATTERN.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "design_system_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
+      "label": "1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1.4. centralized security gateway, stateless hmac auth & rate limiting pattern",
+      "source_file": "DESIGN_SYSTEM.md",
+      "source_location": "L24"
     },
     {
       "id": "svelte",
@@ -7129,7 +7129,7 @@
       "node_kind": "heading",
       "norm_label": "2026-09-30",
       "source_file": "README.md",
-      "source_location": "L190"
+      "source_location": "L201"
     },
     {
       "id": "readme_2026_10_28",
@@ -7141,7 +7141,7 @@
       "node_kind": "heading",
       "norm_label": "2026-10-28",
       "source_file": "README.md",
-      "source_location": "L164"
+      "source_location": "L175"
     },
     {
       "id": "readme_changelog",
@@ -7153,7 +7153,7 @@
       "node_kind": "heading",
       "norm_label": "changelog",
       "source_file": "README.md",
-      "source_location": "L121"
+      "source_location": "L124"
     },
     {
       "id": "readme_c\u00e1c_t\u00ednh_n\u0103ng_ch\u00ednh_core_features",
@@ -7390,11 +7390,23 @@
       "type": "external"
     },
     {
+      "id": "src_lib_server_db_d1databaselike",
+      "label": "src_lib_server_db_d1databaselike",
+      "_origin": "semantic",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_lib_server_db_d1databaselike",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "ref_node_child_process",
       "label": "ref_node_child_process",
       "_origin": "semantic",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_child_process",
@@ -7405,8 +7417,8 @@
       "id": "ref_node_fs",
       "label": "ref_node_fs",
       "_origin": "semantic",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_fs",
@@ -7417,23 +7429,11 @@
       "id": "ref_node_path",
       "label": "ref_node_path",
       "_origin": "semantic",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_path",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "src_lib_server_db_d1databaselike",
-      "label": "src_lib_server_db_d1databaselike",
-      "_origin": "semantic",
-      "community": 44,
-      "community_name": "app.d.ts",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_lib_server_db_d1databaselike",
       "source_file": "",
       "type": "external"
     },
@@ -8480,7 +8480,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -11584,6 +11584,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_server_repositories_auditrepository",
+      "target": "src_lib_server_logger_logger",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/repositories/auditRepository.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_server_repositories_guestrepository",
       "target": "src_lib_types_index_d1databaselike",
       "relation": "imports",
@@ -14119,6 +14131,18 @@
       "context": "import",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_auditrepository",
+      "target": "src_lib_server_logger",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/repositories/auditRepository.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -19038,7 +19062,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L123",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -19049,7 +19073,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L164",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -19060,7 +19084,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L190",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -19071,7 +19095,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L121",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -19137,7 +19161,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L111",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -19648,46 +19672,13 @@
     },
     {
       "source": "src_lib_server_repositories_auditrepository",
-      "target": "src_lib_server_repositories_auditrepository_generateid",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_repositories_auditrepository",
-      "target": "src_lib_server_repositories_auditrepository_getauditlogs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L55",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_repositories_auditrepository",
-      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_repositories_auditrepository",
       "target": "src_lib_server_repositories_auditrepository_deleteauditlog",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L87",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -19698,7 +19689,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L98",
+      "source_location": "L140",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_auditrepository",
+      "target": "src_lib_server_repositories_auditrepository_generateid",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/repositories/auditRepository.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_auditrepository",
+      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/repositories/auditRepository.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_auditrepository",
+      "target": "src_lib_server_repositories_auditrepository_getauditlogs",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/repositories/auditRepository.ts",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -22489,7 +22513,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L99",
+      "source_location": "L141",
       "weight": 1.0
     },
     {
@@ -22501,7 +22525,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L91",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -22513,7 +22537,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L80",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -22525,7 +22549,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L21",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -22837,7 +22861,7 @@
       "confidence_score": 0.95,
       "context": "autoCheckoutExpiredStays",
       "source_file": "README.md",
-      "source_location": "L157",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -22861,7 +22885,7 @@
       "confidence_score": 0.95,
       "context": "cleanDocNumber",
       "source_file": "README.md",
-      "source_location": "L92",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -22873,7 +22897,31 @@
       "confidence_score": 0.95,
       "context": "cleanRoomNumber",
       "source_file": "README.md",
-      "source_location": "L92",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_2026_10_29",
+      "target": "src_lib_server_repositories_auditrepository_clearauditlogs",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "clearAuditLogs",
+      "source_file": "README.md",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_2026_10_29",
+      "target": "src_lib_server_repositories_auditrepository_deleteauditlog",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "deleteAuditLog",
+      "source_file": "README.md",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -22885,7 +22933,7 @@
       "confidence_score": 0.95,
       "context": "formatAuditAction",
       "source_file": "README.md",
-      "source_location": "L205",
+      "source_location": "L216",
       "weight": 1.0
     },
     {
@@ -22897,7 +22945,7 @@
       "confidence_score": 0.95,
       "context": "formatDateTime",
       "source_file": "README.md",
-      "source_location": "L92",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -22909,7 +22957,7 @@
       "confidence_score": 0.95,
       "context": "getAuditLogs",
       "source_file": "README.md",
-      "source_location": "L87",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -22921,7 +22969,7 @@
       "confidence_score": 0.95,
       "context": "getDeployEnv",
       "source_file": "README.md",
-      "source_location": "L143",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -22957,7 +23005,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L144",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -22969,7 +23017,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L98",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -23005,7 +23053,7 @@
       "confidence_score": 0.95,
       "context": "isSameOrPastCheckoutTimeGmt7",
       "source_file": "README.md",
-      "source_location": "L194",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -23017,7 +23065,7 @@
       "confidence_score": 0.95,
       "context": "loadInitialCatalogs()",
       "source_file": "README.md",
-      "source_location": "L94",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -23029,7 +23077,7 @@
       "confidence_score": 0.95,
       "context": "logKbttAction",
       "source_file": "README.md",
-      "source_location": "L88",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -23041,7 +23089,7 @@
       "confidence_score": 0.95,
       "context": "revoke()",
       "source_file": "README.md",
-      "source_location": "L93",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -23070,5 +23118,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "73ca8252527179fd7beb0f3c48f9cfcd3089b88a"
+  "built_at_commit": "c8eae93793c38fd8f678afae18edb2e7a45bfabd"
 }

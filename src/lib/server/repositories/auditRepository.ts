@@ -1,5 +1,6 @@
 import type { D1DatabaseLike, KbttLog } from "../../types/index.js";
 import { CONFIG } from "../config.js";
+import { logger } from "../logger.js";
 
 function generateId(): string {
 	return `log_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -18,38 +19,79 @@ export async function logKbttAction(
 		} catch {}
 	}
 	const host = log.host || defaultHost;
-	await db
-		.prepare(`
-			INSERT INTO kbtt_logs (
-				id, stay_id, api_endpoint, guest_name, so_giay_to, so_phong,
-				request_payload, response_payload, http_status, code, is_success, error_message,
-				error_class, outcome_unknown, duration_ms, ttfb_ms, cf_ray, server_header, request_id, env, host
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-		`)
-		.bind(
-			id,
-			log.stay_id || null,
-			log.api_endpoint,
-			log.guest_name || "",
-			log.so_giay_to || "",
-			log.so_phong || "",
-			log.request_payload || "",
-			log.response_payload || "",
-			log.http_status ?? 200,
-			log.code || "",
-			log.is_success ? 1 : 0,
-			log.error_message || "",
-			log.error_class || null,
-			log.outcome_unknown ? 1 : 0,
-			log.duration_ms ?? null,
-			log.ttfb_ms ?? null,
-			log.cf_ray || null,
-			log.server_header || null,
-			log.request_id || null,
-			env,
-			host,
-		)
-		.run();
+	try {
+		await db
+			.prepare(`
+				INSERT INTO kbtt_logs (
+					id, stay_id, api_endpoint, guest_name, so_giay_to, so_phong,
+					request_payload, response_payload, http_status, code, is_success, error_message,
+					error_class, outcome_unknown, duration_ms, ttfb_ms, cf_ray, server_header, request_id, env, host
+				) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			`)
+			.bind(
+				id,
+				log.stay_id || null,
+				log.api_endpoint,
+				log.guest_name || "",
+				log.so_giay_to || "",
+				log.so_phong || "",
+				log.request_payload || "",
+				log.response_payload || "",
+				log.http_status ?? 200,
+				log.code || "",
+				log.is_success ? 1 : 0,
+				log.error_message || "",
+				log.error_class || null,
+				log.outcome_unknown ? 1 : 0,
+				log.duration_ms ?? null,
+				log.ttfb_ms ?? null,
+				log.cf_ray || null,
+				log.server_header || null,
+				log.request_id || null,
+				env,
+				host,
+			)
+			.run();
+	} catch (err: unknown) {
+		const errMsg = err instanceof Error ? err.message : String(err);
+		logger.warn(
+			"AuditRepository",
+			`Ghi log mở rộng thất bại (${errMsg}), đang thử ghi log cơ bản...`,
+		);
+		try {
+			await db
+				.prepare(`
+					INSERT INTO kbtt_logs (
+						id, stay_id, api_endpoint, guest_name, so_giay_to, so_phong,
+						request_payload, response_payload, http_status, code, is_success, error_message
+					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				`)
+				.bind(
+					id,
+					log.stay_id || null,
+					log.api_endpoint,
+					log.guest_name || "",
+					log.so_giay_to || "",
+					log.so_phong || "",
+					log.request_payload || "",
+					log.response_payload || "",
+					log.http_status ?? 200,
+					log.code || "",
+					log.is_success ? 1 : 0,
+					log.error_message || "",
+				)
+				.run();
+		} catch (fallbackErr: unknown) {
+			const fallbackMsg =
+				fallbackErr instanceof Error
+					? fallbackErr.message
+					: String(fallbackErr);
+			logger.error(
+				"AuditRepository",
+				`Lỗi nghiêm trọng khi ghi audit log: ${fallbackMsg}`,
+			);
+		}
+	}
 }
 
 export async function getAuditLogs(

@@ -81,8 +81,11 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-10-29 09:35 (GMT+7)
+- Cập nhật lần cuối: 2026-10-29 10:25 (GMT+7)
 - Đã hoàn thành:
+  - Khắc phục triệt để lỗi luồng Đăng ký & Đồng bộ C06 trên môi trường Production (Cloudflare D1 Remote):
+    - Đã áp dụng hoàn tất migration [`migrations/0003_enhance_kbtt_logs.sql`](file:///home/hajtran/dev/dang-ky-luu-tru/migrations/0003_enhance_kbtt_logs.sql) lên Cloudflare D1 Production (`dang-ky-luu-tru-db`), bổ sung đủ 9 cột chẩn đoán (`error_class`, `outcome_unknown`, `duration_ms`, `ttfb_ms`, `cf_ray`, `server_header`, `request_id`, `env`, `host`) và các indexes. Khắc phục triệt để lỗi thiếu cột khiến `INSERT INTO kbtt_logs` bị từ chối trên PROD.
+    - Cập nhật [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts): Triển khai cơ chế Fail-safe & Graceful Fallback cho `logKbttAction`. Thao tác ghi log kiểm toán không bao giờ throw ngoại lệ làm gián đoạn tiến trình lưu trú; tự động fallback về câu lệnh INSERT 12 cột truyền thống nếu gặp sự cố schema.
   - Cho phép Xóa Dev Logs trên môi trường Production (Cloudflare Pages / D1):
     - Cập nhật [`src/routes/api/stays/audit/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/audit/+server.ts): Loại bỏ điều kiện kiểm tra `if (CONFIG.isProdMode)` chặn mã lỗi 403 Forbidden. Cho phép quản trị viên/vận hành khi truy cập website production (đã đăng nhập xác thực) có toàn quyền xóa từng dòng log kiểm toán hoặc làm sạch toàn bộ bảng `kbtt_logs` trực tiếp từ giao diện Dev Logs. Dữ liệu khách (`guests`) và lượt lưu trú (`stays`) hoàn toàn độc lập và được bảo toàn an toàn tuyệt đối trong CSDL.
     - Cập nhật integration test [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts) và API test [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts) kiểm tra tính năng xóa log đơn lẻ và xóa toàn bộ logs hoạt động 100% trong môi trường PROD.
@@ -109,7 +112,7 @@ pnpm run build
     - Trong bảng chi tiết các lượt ở, thay thế badge chữ `Mới nhất` bằng dấu chấm đỏ (`red dot`) gọn gàng tinh tế bên cạnh mã lượt `#STT`, kèm tooltip hiển thị khi hover.
   - Toàn bộ pipeline kiểm tra chất lượng (`format`, `lint:biome`, `check:svelte`, `test`, `knip`, `build`, `graphify`) đạt 100% pass.
 - Đang dở: Không có.
-- Biết trước còn thiếu / nợ kỹ thuật: Cần chạy `wrangler d1 migrations apply dang-ky-luu-tru-db --remote` khi deploy lên Cloudflare D1 Production.
+- Biết trước còn thiếu / nợ kỹ thuật: Không có. (Đã áp dụng toàn bộ migrations lên Cloudflare D1 Remote).
 
 ### Kế hoạch theo dõi thực tế & Xử lý tiếp theo (Phase 2):
 1. **Quan sát & Thu thập số liệu thực tế qua Dev Logs**:
@@ -124,6 +127,13 @@ pnpm run build
 ## Changelog
 
 ### 2026-10-29
+
+- Khắc phục lỗi Crash Luồng Ghi Audit Log trên Cloudflare D1 Production & Triển khai Fail-safe Logging:
+  - Áp dụng migration [`migrations/0003_enhance_kbtt_logs.sql`](file:///home/hajtran/dev/dang-ky-luu-tru/migrations/0003_enhance_kbtt_logs.sql) lên Cloudflare D1 Remote (`dang-ky-luu-tru-db`): Bổ sung đủ 9 cột chẩn đoán (`error_class`, `outcome_unknown`, `duration_ms`, `ttfb_ms`, `cf_ray`, `server_header`, `request_id`, `env`, `host`) và index tương ứng. Khắc phục dứt điểm nguyên nhân khiến luồng đăng ký trên PROD bị crash ở bước ghi log ngay sau khi gọi C06 thành công.
+  - Cập nhật [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts): Triển khai cơ chế Fail-safe & Graceful Fallback cho `logKbttAction`. Thao tác ghi log kiểm toán không bao giờ throw ngoại lệ làm gián đoạn tiến trình lưu trú; tự động fallback về câu lệnh INSERT 12 cột truyền thống nếu gặp sự cố schema.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ (0 issues) | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md).
+
 
 - Mở khóa tính năng Xóa Dev Logs trên môi trường Production (Cloudflare Pages):
   - Cập nhật [`src/routes/api/stays/audit/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/audit/+server.ts): Bỏ chặn 403 `if (CONFIG.isProdMode)`, dọn dẹp import `CONFIG` thừa. Người dùng trên website triển khai Cloudflare Pages sau khi đăng nhập có thể xóa từng bản ghi nhật ký hoặc xóa toàn bộ bảng `kbtt_logs` mà không gặp lỗi cấm quyền.
