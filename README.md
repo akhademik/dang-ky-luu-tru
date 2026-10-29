@@ -81,8 +81,17 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-10-29 09:05 (GMT+7)
+- Cập nhật lần cuối: 2026-10-29 09:30 (GMT+7)
 - Đã hoàn thành:
+  - Bổ sung Nhãn Môi trường `[DEV]` và `[PROD]` trong Dev Logs & Payload Inspector:
+    - Cập nhật [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts): Tự động điền `env` (`CONFIG.currentEnv`) và `host` (URL hostname) nếu bản ghi log chưa có; mở rộng truy vấn `getAuditLogs` tìm kiếm theo `env` và `host` (`OR env LIKE ? OR host LIKE ?`).
+    - Cập nhật [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts): Truyền rõ ràng `env: CONFIG.currentEnv` trong tất cả các lệnh ghi `logKbttAction` (check-in, check-out, gia hạn, đăng ký lại).
+    - Cập nhật [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte): Bổ sung hàm `getLogEnvBadge(log)` nhận diện thông minh môi trường (dựa vào `log.env`, `log.host` hoặc URL trong payloads). Hiển thị badge trực quan màu hổ phách `[DEV]` hoặc tím thẫm `[PROD]` trên từng dòng của bảng Dev Logs và trong tiêu đề thanh chẩn đoán / JSON Inspector modal.
+    - Cập nhật integration test [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts) kiểm tra trường `env` được lưu tự động trong audit log.
+  - Dọn dẹp triệt để Dead Code & Unused Class Members (Knip Clean-up):
+    - [`src/lib/server/dataTransformer.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/dataTransformer.ts): Xóa bỏ 5 wrapper instance methods trùng lặp (`cleanRoomNumber`, `normalizeGender`, `cleanDocNumber`, `checkRowCompleteness`, `formatDateTime`), chỉ giữ lại các static methods tương ứng đang được toàn bộ codebase gọi đến.
+    - [`src/lib/server/tokenManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/tokenManager.ts): Xóa bỏ alias thừa `revokeToken()` (dùng `revoke()`) và thuộc tính `tokenType` không được sử dụng.
+    - [`src/lib/server/catalogManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/catalogManager.ts): Xóa hàm mạng cũ `fetchPublicCatalog()` và các hàm fallback thừa `getFallback*`, inline danh mục nơi cư trú tĩnh trong `loadInitialCatalogs()`.
   - Khắc phục triệt để lỗi ghi đè môi trường API (Environment Switcher):
     - Cập nhật [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts): Bổ sung cờ `envInitialized`, chỉ gán `CONFIG.setEnv` một lần duy nhất lúc khởi động worker/server từ `platform.env`. Ngăn chặn hoàn toàn tình trạng mỗi HTTP request tiếp theo tự động ghi đè môi trường về `KBTT_ENV=dev`.
     - Cập nhật [`src/routes/api/env/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/env/+server.ts): Tách biệt logic xác định môi trường triển khai (`deployEnv`) và mục tiêu API động (`CONFIG.currentEnv`). Cho phép DEV tự do chuyển đổi giữa Sandbox DEV (`api-kbtt.ai-vlab.com`) và Cổng BCA Thật PROD (`api-tbltkbtt.bocongan.gov.vn`).
@@ -112,6 +121,22 @@ pnpm run build
 ## Changelog
 
 ### 2026-10-29
+
+- Bổ sung Nhãn Môi trường `[DEV]` và `[PROD]` trong Dev Logs & Payload Inspector:
+  - Cập nhật [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts): Tự động gán `env` (`CONFIG.currentEnv`) và `host` mặc định khi lưu audit log; bổ sung hỗ trợ tìm kiếm log theo `env` và `host`.
+  - Cập nhật [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts): Ghi nhận tường minh `env: CONFIG.currentEnv` cho toàn bộ các hành động lưu trú (check-in, check-out, gia hạn, đăng ký lại).
+  - Cập nhật [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte): Bổ sung hàm nhận diện môi trường `getLogEnvBadge(log)` và hiển thị badge nhãn trực quan `[PROD]` (màu tím sang trọng) hoặc `[DEV]` (màu vàng hổ phách) cạnh tên hành động trong bảng Dev Logs và trong tiêu đề thanh chẩn đoán / JSON Inspector modal.
+  - Cập nhật integration test [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts) xác nhận trường `env` được lưu tự động trong audit log.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ (0 issues) | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts), [`src/lib/server/stayService.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/stayService.ts), [`src/routes/+page.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/+page.svelte), [`test/integration/stay-service.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/integration/stay-service.test.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md).
+
+
+- Dọn dẹp Dead Code & Tối ưu hóa Class Members (Knip Clean-up):
+  - Xóa 5 wrapper instance methods trùng lặp trong [`src/lib/server/dataTransformer.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/dataTransformer.ts), chuyển toàn bộ luồng xử lý sang các static methods tập trung.
+  - Xóa alias `revokeToken()` và thuộc tính không đọc `tokenType` trong [`src/lib/server/tokenManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/tokenManager.ts).
+  - Xóa `fetchPublicCatalog()` và các hàm `getFallback*` không sử dụng trong [`src/lib/server/catalogManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/catalogManager.ts), dọn dẹp import `CONFIG` thừa.
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ (0 issues) | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/lib/server/dataTransformer.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/dataTransformer.ts), [`src/lib/server/tokenManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/tokenManager.ts), [`src/lib/server/catalogManager.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/catalogManager.ts), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md).
 
 - Sửa lỗi giữ trạng thái môi trường chuyển đổi (Dynamic Environment Switcher) & Cập nhật Tài liệu Kiến trúc:
   - Cập nhật [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts): Khắc phục việc `CONFIG.setEnv` bị gọi đè lại bởi `penv.KBTT_ENV` trên mỗi HTTP request.

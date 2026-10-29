@@ -10,7 +10,6 @@ export class TokenManager implements ITokenManager {
 	public accessToken: string | null = null;
 	public refreshToken: string | null = null;
 	public expiresAt: number = 0; // Milliseconds Unix timestamp
-	public tokenType: string = "Bearer";
 
 	public static getInstance(): TokenManager {
 		if (!TokenManager.instance) {
@@ -156,10 +155,6 @@ export class TokenManager implements ITokenManager {
 		}
 	}
 
-	public async revokeToken(): Promise<boolean> {
-		return this.revoke();
-	}
-
 	private saveToken(resData: Record<string, unknown>): void {
 		const payload = (resData.data || resData) as Record<string, unknown>;
 		const token = (payload.AccessToken ||
@@ -194,10 +189,6 @@ export class TokenManager implements ITokenManager {
 		this.accessToken = token || null;
 		this.refreshToken = refresh;
 		this.expiresAt = expMs;
-		this.tokenType =
-			(payload.TokenType as string) ||
-			(payload.token_type as string) ||
-			"Bearer";
 	}
 
 	public clear(): void {

@@ -4,7 +4,6 @@ import {
 	QUOC_TICH_DATA,
 	type StandardCatalogItem,
 } from "../data/catalogs.js";
-import { CONFIG } from "./config.js";
 
 type CatalogItem = StandardCatalogItem;
 
@@ -147,47 +146,17 @@ export class CatalogManager {
 		this.quocTichList = [...QUOC_TICH_DATA];
 		this.lyDoCuTruList = [...LY_DO_CU_TRU_DATA];
 		this.loaiGiayToList = [...LOAI_GIAY_TO_DATA];
-		this.noiCuTruList = this.getFallbackNoiCuTru();
+		this.noiCuTruList = [
+			{ id: 1, name: "Thường trú (1)" },
+			{ id: 2, name: "Tạm trú (2)" },
+			{ id: 3, name: "Nơi ở hiện tại (3)" },
+		];
 		this.isLoaded = true;
-	}
-
-	public async fetchPublicCatalog(endpoint: string): Promise<CatalogItem[]> {
-		try {
-			const res = await fetch(`${CONFIG.BASE_URL}${endpoint}`, {
-				method: "GET",
-				headers: { "Content-Type": "application/json" },
-			});
-			if (!res.ok) return [];
-			const data = await res.json();
-			return (data.data || data || []) as CatalogItem[];
-		} catch {
-			return [];
-		}
 	}
 
 	public async initialize(): Promise<void> {
 		if (this.isLoaded && this.quocTichList.length > 0) return;
 		this.loadInitialCatalogs();
-	}
-
-	public getFallbackQuocTich(): CatalogItem[] {
-		return [...QUOC_TICH_DATA];
-	}
-
-	public getFallbackLyDoCuTru(): CatalogItem[] {
-		return [...LY_DO_CU_TRU_DATA];
-	}
-
-	public getFallbackLoaiGiayTo(): CatalogItem[] {
-		return [...LOAI_GIAY_TO_DATA];
-	}
-
-	public getFallbackNoiCuTru(): CatalogItem[] {
-		return [
-			{ id: 1, name: "Thường trú (1)" },
-			{ id: 2, name: "Tạm trú (2)" },
-			{ id: 3, name: "Nơi ở hiện tại (3)" },
-		];
 	}
 
 	public normalizeQuocTich(raw: string): string {

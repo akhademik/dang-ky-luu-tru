@@ -8,15 +8,8 @@ import { type CatalogManager, catalogManager } from "./catalogManager.js";
 export type { RawOcrRow };
 
 export class DataTransformer {
-	public catalogManager: CatalogManager;
-
-	public constructor(catalog: CatalogManager = catalogManager) {
-		this.catalogManager = catalog;
-	}
-
-	public cleanRoomNumber(roomRaw: unknown): string {
-		return DataTransformer.cleanRoomNumber(roomRaw);
-	}
+	// biome-ignore lint/complexity/noUselessConstructor: Constructor accepts CatalogManager for dependency injection compatibility
+	public constructor(_catalog: CatalogManager = catalogManager) {}
 
 	public static cleanRoomNumber(roomRaw: unknown): string {
 		const raw = String(roomRaw ?? "").trim();
@@ -154,19 +147,11 @@ export class DataTransformer {
 		return "";
 	}
 
-	public normalizeGender(genderRaw: unknown): "M" | "F" {
-		return DataTransformer.mapGender(genderRaw);
-	}
-
 	public static mapGender(genderRaw: unknown): "M" | "F" {
 		if (!genderRaw) return "M";
 		const str = String(genderRaw).trim().toLowerCase();
 		if (["f", "female", "nữ", "nu", "gái", "w"].includes(str)) return "F";
 		return "M";
-	}
-
-	public cleanDocNumber(docRaw: unknown): string {
-		return DataTransformer.cleanDocNumber(docRaw);
 	}
 
 	public static cleanDocNumber(docRaw: unknown): string {
@@ -284,12 +269,6 @@ export class DataTransformer {
 			return false;
 		if (docNum.length === 12 || docNum.length === 9) return true;
 		return false;
-	}
-
-	public async checkRowCompleteness(
-		row: RawOcrRow,
-	): Promise<CompletenessResult> {
-		return DataTransformer.checkCompleteness(row);
 	}
 
 	public static checkCompleteness(row: RawOcrRow): CompletenessResult {
@@ -765,9 +744,5 @@ export class DataTransformer {
 		}
 
 		return { ngayDen, ngayDi };
-	}
-
-	public formatDateTime(dateRaw: unknown, defaultTime = "12:00:00"): string {
-		return DataTransformer.formatDateTime(dateRaw, defaultTime);
 	}
 }

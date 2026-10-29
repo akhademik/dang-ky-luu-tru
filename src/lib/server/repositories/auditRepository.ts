@@ -1,4 +1,5 @@
 import type { D1DatabaseLike, KbttLog } from "../../types/index.js";
+import { CONFIG } from "../config.js";
 
 function generateId(): string {
 	return `log_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -9,6 +10,14 @@ export async function logKbttAction(
 	log: Omit<KbttLog, "id" | "created_at">,
 ): Promise<void> {
 	const id = generateId();
+	const env = (log.env || CONFIG.currentEnv || "dev").toLowerCase();
+	let defaultHost: string | null = null;
+	if (CONFIG.BASE_URL) {
+		try {
+			defaultHost = new URL(CONFIG.BASE_URL).host;
+		} catch {}
+	}
+	const host = log.host || defaultHost;
 	await db
 		.prepare(`
 			INSERT INTO kbtt_logs (
@@ -37,8 +46,8 @@ export async function logKbttAction(
 			log.cf_ray || null,
 			log.server_header || null,
 			log.request_id || null,
-			log.env || null,
-			log.host || null,
+			env,
+			host,
 		)
 		.run();
 }
@@ -53,8 +62,8 @@ export async function getAuditLogs(
 	if (filter?.search?.trim()) {
 		const term = `%${filter.search.trim()}%`;
 		query +=
-			" AND (guest_name LIKE ? OR so_giay_to LIKE ? OR so_phong LIKE ? OR api_endpoint LIKE ?)";
-		params.push(term, term, term, term);
+			" AND (guest_name LIKE ? OR so_giay_to LIKE ? OR so_phong LIKE ? OR api_endpoint LIKE ? OR env LIKE ? OR host LIKE ?)";
+		params.push(term, term, term, term, term, term);
 	}
 
 	query += " ORDER BY created_at DESC";

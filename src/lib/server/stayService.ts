@@ -344,6 +344,7 @@ class StayService {
 				server_header: response.serverHeader,
 				request_id: response.requestId,
 				host: response.host,
+				env: CONFIG.currentEnv,
 			});
 
 			if (isSuccess) {
@@ -397,6 +398,7 @@ class StayService {
 				error_message: errMsg,
 				error_class: classification.errorClass,
 				outcome_unknown: classification.outcomeUnknown ? 1 : 0,
+				env: CONFIG.currentEnv,
 			});
 
 			return {
@@ -512,6 +514,7 @@ class StayService {
 					response_payload: JSON.stringify({ error: errMsg }),
 					is_success: 0,
 					error_message: errMsg,
+					env: CONFIG.currentEnv,
 				});
 				return {
 					success: false,
@@ -543,6 +546,7 @@ class StayService {
 				server_header: bcaRes.serverHeader,
 				request_id: bcaRes.requestId,
 				host: bcaRes.host,
+				env: CONFIG.currentEnv,
 			});
 
 			if (!bcaRes.success) {
@@ -669,6 +673,7 @@ class StayService {
 					response_payload: JSON.stringify({ error: errMsg }),
 					is_success: 0,
 					error_message: errMsg,
+					env: CONFIG.currentEnv,
 				});
 				return {
 					success: false,
@@ -700,6 +705,7 @@ class StayService {
 				server_header: bcaRes.serverHeader,
 				request_id: bcaRes.requestId,
 				host: bcaRes.host,
+				env: CONFIG.currentEnv,
 			});
 
 			if (!bcaRes.success) {

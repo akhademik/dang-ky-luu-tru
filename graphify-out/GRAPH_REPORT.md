@@ -1,17 +1,17 @@
 # Graph Report - dang-ky-luu-tru  (2026-10-29)
 
 ## Corpus Check
-- 93 files · ~74,379 words
+- 93 files · ~74,622 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: .example 1, (none) 1, .css 1)
 
 ## Summary
-- 640 nodes · 1343 edges · 44 communities (36 shown, 8 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 41 edges (avg confidence: 0.85)
+- 633 nodes · 1335 edges · 44 communities (36 shown, 8 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 47 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5f163206`
+- Built from commit: `78edaf02`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,7 +24,7 @@
 - D1PreparedStatement
 - DataTransformer
 - auth-security.test.ts
-- catalogManager.ts
+- format.ts
 - types/index.ts
 - catalogManager
 - biome.json
@@ -56,16 +56,16 @@
 - 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)
 - AI_WORKFLOW.md — Quy trình làm việc bắt buộc cho AI Coding Agent
 - 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)
-- svelte-deprecation.test.ts
 - svelte.config.js
 - @playwright/test
+- app.d.ts
 
 ## God Nodes (most connected - your core abstractions)
-1. `DataTransformer` - 31 edges
-2. `catalogManager` - 29 edges
-3. `getDb()` - 29 edges
-4. `stayService` - 27 edges
-5. `@sveltejs/kit` - 26 edges
+1. `getDb()` - 29 edges
+2. `DataTransformer` - 28 edges
+3. `stayService` - 27 edges
+4. `@sveltejs/kit` - 26 edges
+5. `catalogManager` - 23 edges
 6. `CONFIG` - 23 edges
 7. `D1DatabaseLike` - 23 edges
 8. `KbttClient` - 22 edges
@@ -90,8 +90,8 @@
 ## Communities (44 total, 8 thin omitted)
 
 ### Community 0 - "stayService.ts"
-Cohesion: 0.09
-Nodes (47): App, Locals, Platform, src_lib_server_db_d1databaselike, getDb(), clearAuditLogs(), deleteAuditLog(), generateId() (+39 more)
+Cohesion: 0.10
+Nodes (42): getDb(), clearAuditLogs(), deleteAuditLog(), generateId(), getAuditLogs(), logKbttAction(), generateId(), updateGuest() (+34 more)
 
 ### Community 1 - "@sveltejs/kit"
 Cohesion: 0.05
@@ -114,16 +114,16 @@ Cohesion: 0.15
 Nodes (4): RemoteD1Database, D1PreparedStatement, MockD1Database, Row
 
 ### Community 6 - "DataTransformer"
-Cohesion: 0.22
-Nodes (5): DataTransformer, CompletenessResult, RawOcrRow, TransformedRowResult, runTransformerUnitTests()
+Cohesion: 0.20
+Nodes (8): Kế hoạch theo dõi thực tế & Xử lý tiếp theo (Phase 2):, Trạng thái hệ thống, DataTransformer, CompletenessResult, RawOcrRow, TransformedRowResult, POST(), runTransformerUnitTests()
 
 ### Community 7 - "auth-security.test.ts"
-Cohesion: 0.13
-Nodes (33): 2026-09-30, 2026-10-28, 2026-10-29, Changelog, 🚀 Các Tính Năng Chính (Core Features), 📂 Cấu Trúc Dự Án & Tài Liệu Kỹ Thuật, Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1), Kế hoạch theo dõi thực tế & Xử lý tiếp theo (Phase 2): (+25 more)
+Cohesion: 0.15
+Nodes (28): 2026-10-29, ref_node_child_process, ref_node_fs, ref_node_path, ref_types_js, handle(), base64UrlDecode(), base64UrlEncode() (+20 more)
 
-### Community 8 - "catalogManager.ts"
-Cohesion: 0.13
-Nodes (11): LOAI_GIAY_TO_DATA, LY_DO_CU_TRU_DATA, QUOC_TICH_DATA, StandardCatalogItem, CatalogItem, COUNTRY_OPTIONS, countryNameMap, LOAI_GIAY_TO_OPTIONS (+3 more)
+### Community 8 - "format.ts"
+Cohesion: 0.08
+Nodes (20): 2026-09-30, 2026-10-28, Changelog, 🚀 Các Tính Năng Chính (Core Features), 📂 Cấu Trúc Dự Án & Tài Liệu Kỹ Thuật, Hệ Thống Khai Báo Tạm Trú Tự Động (BCA KBTT API v1.4 & Cloudflare D1), 🛠 Lệnh Thực Thi (Commands), 📌 Tổng Quan Hệ Thống (+12 more)
 
 ### Community 9 - "types/index.ts"
 Cohesion: 0.18
@@ -225,33 +225,33 @@ Nodes (10): 0. Thứ tự đọc khi mở lại project (BẮT BUỘC, không đ
 Cohesion: 0.11
 Nodes (17): 1.1. Single Source of Truth: Cloudflare D1 & Modular Repositories, 1.2. Zero-FS Edge Runtime Compatibility, 1.3. Svelte 5 Modern Runes & Callback Props Pattern, 1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern, 1.5. Strict GMT+7 Timezone & Stay State Machine Policy, 1.6. Network Resilience & Smart Fallback Pattern, 1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG), 2.1. Backgrounds & Surfaces (Nền & Thẻ chứa) (+9 more)
 
-### Community 41 - "svelte-deprecation.test.ts"
-Cohesion: 0.32
-Nodes (5): ref_node_child_process, ref_node_fs, ref_node_path, runSvelteDeprecationCheck(), scanDirectoryForForbiddenPatterns()
-
 ### Community 42 - "svelte.config.js"
 Cohesion: 0.40
 Nodes (3): @sveltejs/adapter-cloudflare, @sveltejs/vite-plugin-svelte, config
 
+### Community 44 - "app.d.ts"
+Cohesion: 0.29
+Nodes (4): App, Locals, Platform, src_lib_server_db_d1databaselike
+
 ## Knowledge Gaps
 - **218 isolated node(s):** `$schema`, `includes`, `enabled`, `indentStyle`, `organizeImports` (+213 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 282 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 278 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `@sveltejs/kit` connect `@sveltejs/kit` to `stayService.ts`, `types/index.ts`, `package.json`, `auth-security.test.ts`?**
+- **Why does `@sveltejs/kit` connect `@sveltejs/kit` to `stayService.ts`, `package.json`, `DataTransformer`, `auth-security.test.ts`, `types/index.ts`?**
   _High betweenness centrality (0.139) - this node is a cross-community bridge._
 - **Why does `stayService` connect `stayService.ts` to `1. ARCHITECTURAL PATTERNS (KIẾN TRÚC HỆ THỐNG)`, `@sveltejs/kit`, `catalogManager`, `DataTransformer`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
-- **Why does `catalogManager` connect `catalogManager` to `stayService.ts`, `@sveltejs/kit`, `DataTransformer`, `catalogManager.ts`, `time.ts`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+- **Why does `scripts` connect `scripts` to `package.json`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **What connects `$schema`, `includes`, `enabled` to the rest of the system?**
   _218 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `stayService.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08624708624708624 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10400682011935208 - nodes in this community are weakly interconnected._
 - **Should `@sveltejs/kit` be split into smaller, more focused modules?**
-  _Cohesion score 0.05343320848938826 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.054136874361593465 - nodes in this community are weakly interconnected._
 - **Should `compilerOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._

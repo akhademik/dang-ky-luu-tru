@@ -98,6 +98,10 @@ async function runStayServiceIntegrationTests(): Promise<void> {
 	});
 	const auditLogs = await getAuditLogs(db, { search: "TEST NGUYEN A" });
 	assert.ok(auditLogs.length >= 1);
+	assert.ok(
+		auditLogs[0].env,
+		"logKbttAction should automatically populate env",
+	);
 
 	// 8. Test getDashboardStats
 	const stats = await getDashboardStats(db);

@@ -4,32 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "id": "src_app_d_locals",
-      "label": "Locals",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "locals",
-      "source_file": "src/app.d.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_app_d_platform",
-      "label": "Platform",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "platform",
-      "source_file": "src/app.d.ts",
-      "source_location": "L13"
-    },
-    {
       "id": "src_lib_server_repositories_statsrepository_dashboardstats",
       "label": "DashboardStats",
       "_callable": true,
@@ -53,7 +27,7 @@
       "file_type": "code",
       "norm_label": "stayservice",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L1031"
+      "source_location": "L1037"
     },
     {
       "id": "src_lib_types_index_d1databaselike",
@@ -235,7 +209,7 @@
       "file_type": "code",
       "norm_label": "tokenmanager",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L224"
+      "source_location": "L215"
     },
     {
       "id": "src_lib_types_index_tabinfo",
@@ -261,7 +235,7 @@
       "file_type": "code",
       "norm_label": "catalogmanager",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L268"
+      "source_location": "L237"
     },
     {
       "id": "src_lib_types_index_validationresult",
@@ -275,6 +249,32 @@
       "norm_label": "validationresult",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L109"
+    },
+    {
+      "id": "src_app_d_locals",
+      "label": "Locals",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "file_type": "code",
+      "norm_label": "locals",
+      "source_file": "src/app.d.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_app_d_platform",
+      "label": "Platform",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "file_type": "code",
+      "norm_label": "platform",
+      "source_file": "src/app.d.ts",
+      "source_location": "L13"
     },
     {
       "id": "src_lib_server_db_remoted1database",
@@ -387,7 +387,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "standardcatalogitem",
       "source_file": "src/lib/data/catalogs.ts",
@@ -400,11 +400,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "catalogitem",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L9"
+      "source_location": "L8"
     },
     {
       "id": "src_lib_types_index_guest",
@@ -550,30 +550,6 @@
       "source_location": "L27"
     },
     {
-      "id": "src_app_d_limit",
-      "label": "limit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "limit()",
-      "source_file": "src/app.d.ts",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_app_d_waituntil",
-      "label": "waitUntil()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "waituntil()",
-      "source_file": "src/app.d.ts",
-      "source_location": "L30"
-    },
-    {
       "id": "src_lib_server_db_getdb",
       "label": "getDb()",
       "_callable": true,
@@ -595,7 +571,7 @@
       "file_type": "code",
       "norm_label": "clearauditlogs()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L89"
+      "source_location": "L98"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_deleteauditlog",
@@ -607,7 +583,7 @@
       "file_type": "code",
       "norm_label": "deleteauditlog()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L78"
+      "source_location": "L87"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_generateid",
@@ -619,7 +595,7 @@
       "file_type": "code",
       "norm_label": "generateid()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L3"
+      "source_location": "L4"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_getauditlogs",
@@ -631,7 +607,7 @@
       "file_type": "code",
       "norm_label": "getauditlogs()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L46"
+      "source_location": "L55"
     },
     {
       "id": "src_lib_server_repositories_auditrepository_logkbttaction",
@@ -643,7 +619,7 @@
       "file_type": "code",
       "norm_label": "logkbttaction()",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "src_lib_server_repositories_guestrepository_generateid",
@@ -823,7 +799,7 @@
       "file_type": "code",
       "norm_label": ".autocheckoutexpiredstays()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L568"
+      "source_location": "L572"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_batchregisterstays",
@@ -835,7 +811,7 @@
       "file_type": "code",
       "norm_label": ".batchregisterstays()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L411"
+      "source_location": "L413"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_checkoutstay",
@@ -847,7 +823,7 @@
       "file_type": "code",
       "norm_label": ".checkoutstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L622"
+      "source_location": "L626"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_extendstay",
@@ -859,7 +835,7 @@
       "file_type": "code",
       "norm_label": ".extendstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L464"
+      "source_location": "L466"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_registerstaytokbtt",
@@ -883,7 +859,7 @@
       "file_type": "code",
       "norm_label": ".reregisterstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L886"
+      "source_location": "L892"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_updateguestandstay",
@@ -895,7 +871,7 @@
       "file_type": "code",
       "norm_label": ".updateguestandstay()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L797"
+      "source_location": "L803"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_updatestaystatus",
@@ -907,7 +883,7 @@
       "file_type": "code",
       "norm_label": ".updatestaystatus()",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L747"
+      "source_location": "L753"
     },
     {
       "id": "src_lib_types_index_d1databaselike_exec",
@@ -932,18 +908,6 @@
       "norm_label": ".prepare()",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L95"
-    },
-    {
-      "id": "src_routes_api_ingest_ocr_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/ingest/ocr/+server.ts",
-      "source_location": "L6"
     },
     {
       "id": "src_routes_api_sheets_pull_server_post",
@@ -1519,7 +1483,7 @@
       "file_type": "code",
       "norm_label": ".clear()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L203"
+      "source_location": "L194"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getinstance",
@@ -1531,7 +1495,7 @@
       "file_type": "code",
       "norm_label": ".getinstance()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L15"
+      "source_location": "L14"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getstatus",
@@ -1543,7 +1507,7 @@
       "file_type": "code",
       "norm_label": ".getstatus()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L209"
+      "source_location": "L200"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_getvalidtoken",
@@ -1555,7 +1519,7 @@
       "file_type": "code",
       "norm_label": ".getvalidtoken()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L22"
+      "source_location": "L21"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_login",
@@ -1567,7 +1531,7 @@
       "file_type": "code",
       "norm_label": ".login()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L44"
+      "source_location": "L43"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_refresh",
@@ -1579,7 +1543,7 @@
       "file_type": "code",
       "norm_label": ".refresh()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L118"
+      "source_location": "L117"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_revoke",
@@ -1591,19 +1555,7 @@
       "file_type": "code",
       "norm_label": ".revoke()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L140"
-    },
-    {
-      "id": "src_lib_server_tokenmanager_tokenmanager_revoketoken",
-      "label": ".revokeToken()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".revoketoken()",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L159"
+      "source_location": "L139"
     },
     {
       "id": "src_lib_server_tokenmanager_tokenmanager_savetoken",
@@ -1615,7 +1567,7 @@
       "file_type": "code",
       "norm_label": ".savetoken()",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L163"
+      "source_location": "L158"
     },
     {
       "id": "src_routes_api_catalogs_server_get",
@@ -1783,19 +1735,7 @@
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
-      "label": ".fetchPublicCatalog()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "catalogManager",
-      "file_type": "code",
-      "norm_label": ".fetchpubliccatalog()",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L154"
+      "source_location": "L23"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_findloaigiayto",
@@ -1807,7 +1747,7 @@
       "file_type": "code",
       "norm_label": ".findloaigiayto()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L237"
+      "source_location": "L206"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_findlydocutru",
@@ -1819,7 +1759,7 @@
       "file_type": "code",
       "norm_label": ".findlydocutru()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L257"
+      "source_location": "L226"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_findquoctich",
@@ -1831,55 +1771,7 @@
       "file_type": "code",
       "norm_label": ".findquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L229"
-    },
-    {
-      "id": "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
-      "label": ".getFallbackLoaiGiayTo()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "catalogManager",
-      "file_type": "code",
-      "norm_label": ".getfallbackloaigiayto()",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L181"
-    },
-    {
-      "id": "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
-      "label": ".getFallbackLyDoCuTru()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "catalogManager",
-      "file_type": "code",
-      "norm_label": ".getfallbacklydocutru()",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L177"
-    },
-    {
-      "id": "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
-      "label": ".getFallbackNoiCuTru()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "catalogManager",
-      "file_type": "code",
-      "norm_label": ".getfallbacknoicutru()",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L185"
-    },
-    {
-      "id": "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "label": ".getFallbackQuocTich()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "catalogManager",
-      "file_type": "code",
-      "norm_label": ".getfallbackquoctich()",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L173"
+      "source_location": "L198"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getinstance",
@@ -1891,7 +1783,7 @@
       "file_type": "code",
       "norm_label": ".getinstance()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L30"
+      "source_location": "L29"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_getquoctichinfo",
@@ -1903,7 +1795,7 @@
       "file_type": "code",
       "norm_label": ".getquoctichinfo()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L217"
+      "source_location": "L186"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_initaliases",
@@ -1915,7 +1807,7 @@
       "file_type": "code",
       "norm_label": ".initaliases()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L37"
+      "source_location": "L36"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_initialize",
@@ -1927,7 +1819,7 @@
       "file_type": "code",
       "norm_label": ".initialize()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L168"
+      "source_location": "L157"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_isvalidquoctich",
@@ -1939,7 +1831,7 @@
       "file_type": "code",
       "norm_label": ".isvalidquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L224"
+      "source_location": "L193"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_isvalidquoctichcode",
@@ -1951,7 +1843,7 @@
       "file_type": "code",
       "norm_label": ".isvalidquoctichcode()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L233"
+      "source_location": "L202"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_loadinitialcatalogs",
@@ -1963,7 +1855,7 @@
       "file_type": "code",
       "norm_label": ".loadinitialcatalogs()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L146"
+      "source_location": "L145"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_loadstandardquoctich",
@@ -1975,7 +1867,7 @@
       "file_type": "code",
       "norm_label": ".loadstandardquoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L130"
+      "source_location": "L129"
     },
     {
       "id": "src_lib_server_catalogmanager_catalogmanager_normalizequoctich",
@@ -1987,7 +1879,7 @@
       "file_type": "code",
       "norm_label": ".normalizequoctich()",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L193"
+      "source_location": "L162"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_constructor",
@@ -1999,7 +1891,7 @@
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L13"
+      "source_location": "L12"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_constructor",
@@ -2374,42 +2266,6 @@
       "source_location": "L101"
     },
     {
-      "id": "scripts_init_local_db_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
-      "label": "runSvelteDeprecationCheck()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "runsveltedeprecationcheck()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L41"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
-      "label": "scanDirectoryForForbiddenPatterns()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "scandirectoryforforbiddenpatterns()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "test_inspect_modal_speed_main",
       "label": "main()",
       "_callable": true,
@@ -2432,6 +2288,30 @@
       "norm_label": "main()",
       "source_file": "test/inspect_ui.ts",
       "source_location": "L3"
+    },
+    {
+      "id": "src_app_d_limit",
+      "label": "limit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "file_type": "code",
+      "norm_label": "limit()",
+      "source_file": "src/app.d.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_app_d_waituntil",
+      "label": "waitUntil()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "file_type": "code",
+      "norm_label": "waituntil()",
+      "source_file": "src/app.d.ts",
+      "source_location": "L30"
     },
     {
       "id": "src_lib_server_db_remoted1database_escapesql",
@@ -2587,19 +2467,7 @@
       "file_type": "code",
       "norm_label": ".checkcompleteness()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L295"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
-      "label": ".checkRowCompleteness()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": ".checkrowcompleteness()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L289"
+      "source_location": "L274"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
@@ -2611,7 +2479,7 @@
       "file_type": "code",
       "norm_label": ".cleandocnumber()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L168"
+      "source_location": "L157"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
@@ -2623,7 +2491,7 @@
       "file_type": "code",
       "norm_label": ".cleanroomnumber()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L17"
+      "source_location": "L14"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_formatdateonly",
@@ -2635,7 +2503,7 @@
       "file_type": "code",
       "norm_label": ".formatdateonly()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L35"
+      "source_location": "L28"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_formatdatetime",
@@ -2647,7 +2515,7 @@
       "file_type": "code",
       "norm_label": ".formatdatetime()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L636"
+      "source_location": "L615"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_getvnnow",
@@ -2659,7 +2527,7 @@
       "file_type": "code",
       "norm_label": ".getvnnow()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L179"
+      "source_location": "L164"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_isarrivaldatevalid",
@@ -2671,7 +2539,7 @@
       "file_type": "code",
       "norm_label": ".isarrivaldatevalid()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L216"
+      "source_location": "L201"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_isguestvn",
@@ -2683,7 +2551,7 @@
       "file_type": "code",
       "norm_label": ".isguestvn()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L255"
+      "source_location": "L240"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_mapgender",
@@ -2695,7 +2563,7 @@
       "file_type": "code",
       "norm_label": ".mapgender()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L161"
+      "source_location": "L150"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
@@ -2707,7 +2575,7 @@
       "file_type": "code",
       "norm_label": ".maploaigiayto()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L661"
+      "source_location": "L640"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_mapquoctich",
@@ -2719,19 +2587,7 @@
       "file_type": "code",
       "norm_label": ".mapquoctich()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L665"
-    },
-    {
-      "id": "src_lib_server_datatransformer_datatransformer_normalizegender",
-      "label": ".normalizeGender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": ".normalizegender()",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L157"
+      "source_location": "L644"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_parsedatetime",
@@ -2743,7 +2599,7 @@
       "file_type": "code",
       "norm_label": ".parsedatetime()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L39"
+      "source_location": "L32"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_resolvecheckincheckout",
@@ -2755,7 +2611,7 @@
       "file_type": "code",
       "norm_label": ".resolvecheckincheckout()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L682"
+      "source_location": "L661"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_transformbatch",
@@ -2767,7 +2623,7 @@
       "file_type": "code",
       "norm_label": ".transformbatch()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L472"
+      "source_location": "L451"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_transformrow",
@@ -2779,7 +2635,7 @@
       "file_type": "code",
       "norm_label": ".transformrow()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L449"
+      "source_location": "L428"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
@@ -2791,7 +2647,7 @@
       "file_type": "code",
       "norm_label": ".transformtopayloadforeign()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L580"
+      "source_location": "L559"
     },
     {
       "id": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
@@ -2803,7 +2659,7 @@
       "file_type": "code",
       "norm_label": ".transformtopayloadvn()",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L507"
+      "source_location": "L486"
     },
     {
       "id": "src_lib_server_stayservice_stayservice_ingestocrrows",
@@ -2830,6 +2686,18 @@
       "source_location": "L27"
     },
     {
+      "id": "src_routes_api_ingest_ocr_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/ingest/ocr/+server.ts",
+      "source_location": "L6"
+    },
+    {
       "id": "test_unit_transformer_test_runtransformerunittests",
       "label": "runTransformerUnitTests()",
       "_callable": true,
@@ -2840,6 +2708,18 @@
       "norm_label": "runtransformerunittests()",
       "source_file": "test/unit/transformer.test.ts",
       "source_location": "L4"
+    },
+    {
+      "id": "scripts_init_local_db_main",
+      "label": "main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "scripts/init-local-db.ts",
+      "source_location": "L5"
     },
     {
       "id": "src_hooks_server_handle",
@@ -3082,12 +2962,36 @@
       "source_location": "L20"
     },
     {
+      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
+      "label": "runSvelteDeprecationCheck()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "runsveltedeprecationcheck()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L41"
+    },
+    {
+      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
+      "label": "scanDirectoryForForbiddenPatterns()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "scandirectoryforforbiddenpatterns()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L5"
+    },
+    {
       "id": "src_lib_utils_format_getcountryfullname",
       "label": "getCountryFullName()",
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "getcountryfullname()",
       "source_file": "src/lib/utils/format.ts",
@@ -3099,7 +3003,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "getfulladdress()",
       "source_file": "src/lib/utils/format.ts",
@@ -3111,11 +3015,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "getstaystatusbadgeclass()",
       "source_file": "src/lib/utils/format.ts",
       "source_location": "L70"
+    },
+    {
+      "id": "src_routes_page_formatauditaction",
+      "label": "formatAuditAction()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "code",
+      "norm_label": "formatauditaction()",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L4351"
     },
     {
       "id": "src_routes_page_if",
@@ -3123,7 +3039,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "if()",
       "source_file": "src/routes/+page.svelte",
@@ -3135,7 +3051,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "showtoast()",
       "source_file": "src/routes/+page.svelte",
@@ -3200,28 +3116,6 @@
       "norm_label": "runclassifierunittests()",
       "source_file": "test/unit/kbtt-classifier.test.ts",
       "source_location": "L7"
-    },
-    {
-      "id": "src_app_d",
-      "label": "app.d.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "app.d.ts",
-      "source_file": "src/app.d.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_app_d_app",
-      "label": "App",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "app",
-      "source_file": "src/app.d.ts",
-      "source_location": "L6"
     },
     {
       "id": "src_lib_server_db",
@@ -3298,17 +3192,6 @@
       "file_type": "code",
       "norm_label": "stayservice.ts",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_ingest_ocr_server",
-      "label": "ocr/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "ocr/+server.ts",
-      "source_file": "src/routes/api/ingest/ocr/+server.ts",
       "source_location": "L1"
     },
     {
@@ -6782,28 +6665,6 @@
       "source_location": "L1"
     },
     {
-      "id": "scripts_init_local_db",
-      "label": "init-local-db.ts",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "init-local-db.ts",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test",
-      "label": "svelte-deprecation.test.ts",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
-      "file_type": "code",
-      "norm_label": "svelte-deprecation.test.ts",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "kit",
       "label": "@sveltejs/kit",
       "_origin": "ast",
@@ -6892,6 +6753,28 @@
       "source_location": "L39"
     },
     {
+      "id": "src_app_d",
+      "label": "app.d.ts",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "file_type": "code",
+      "norm_label": "app.d.ts",
+      "source_file": "src/app.d.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_app_d_app",
+      "label": "App",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "file_type": "code",
+      "norm_label": "app",
+      "source_file": "src/app.d.ts",
+      "source_location": "L6"
+    },
+    {
       "id": "test_helpers_mock_d1",
       "label": "mock-d1.ts",
       "_origin": "ast",
@@ -6914,6 +6797,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_routes_api_ingest_ocr_server",
+      "label": "ocr/+server.ts",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "code",
+      "norm_label": "ocr/+server.ts",
+      "source_file": "src/routes/api/ingest/ocr/+server.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "test_unit_transformer_test",
       "label": "transformer.test.ts",
       "_origin": "ast",
@@ -6922,6 +6816,41 @@
       "file_type": "code",
       "norm_label": "transformer.test.ts",
       "source_file": "test/unit/transformer.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "readme_k\u1ebf_ho\u1ea1ch_theo_d\u00f5i_th\u1ef1c_t\u1ebf_x\u1eed_l\u00fd_ti\u1ebfp_theo_phase_2",
+      "label": "K\u1ebf ho\u1ea1ch theo d\u00f5i th\u1ef1c t\u1ebf & X\u1eed l\u00fd ti\u1ebfp theo (Phase 2):",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "ke hoach theo doi thuc te & xu ly tiep theo (phase 2):",
+      "source_file": "README.md",
+      "source_location": "L106"
+    },
+    {
+      "id": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "label": "Tr\u1ea1ng th\u00e1i h\u1ec7 th\u1ed1ng",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "DataTransformer",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "trang thai he thong",
+      "source_file": "README.md",
+      "source_location": "L82"
+    },
+    {
+      "id": "scripts_init_local_db",
+      "label": "init-local-db.ts",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "init-local-db.ts",
+      "source_file": "scripts/init-local-db.ts",
       "source_location": "L1"
     },
     {
@@ -6991,40 +6920,15 @@
       "source_location": "L1"
     },
     {
-      "id": "readme",
-      "label": "README.md",
+      "id": "test_unit_svelte_deprecation_test",
+      "label": "svelte-deprecation.test.ts",
       "_origin": "ast",
       "community": 7,
       "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "readme.md",
-      "source_file": "README.md",
+      "file_type": "code",
+      "norm_label": "svelte-deprecation.test.ts",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "readme_2026_09_30",
-      "label": "2026-09-30",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "2026-09-30",
-      "source_file": "README.md",
-      "source_location": "L165"
-    },
-    {
-      "id": "readme_2026_10_28",
-      "label": "2026-10-28",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "2026-10-28",
-      "source_file": "README.md",
-      "source_location": "L139"
     },
     {
       "id": "readme_2026_10_29",
@@ -7036,110 +6940,14 @@
       "node_kind": "heading",
       "norm_label": "2026-10-29",
       "source_file": "README.md",
-      "source_location": "L114"
-    },
-    {
-      "id": "readme_changelog",
-      "label": "Changelog",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "changelog",
-      "source_file": "README.md",
-      "source_location": "L112"
-    },
-    {
-      "id": "readme_c\u00e1c_t\u00ednh_n\u0103ng_ch\u00ednh_core_features",
-      "label": "\ud83d\ude80 C\u00e1c T\u00ednh N\u0103ng Ch\u00ednh (Core Features)",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "\ud83d\ude80 cac tinh nang chinh (core features)",
-      "source_file": "README.md",
-      "source_location": "L24"
-    },
-    {
-      "id": "readme_c\u1ea5u_tr\u00fac_d\u1ef1_\u00e1n_t\u00e0i_li\u1ec7u_k\u1ef9_thu\u1eadt",
-      "label": "\ud83d\udcc2 C\u1ea5u Tr\u00fac D\u1ef1 \u00c1n & T\u00e0i Li\u1ec7u K\u1ef9 Thu\u1eadt",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "\ud83d\udcc2 cau truc du an & tai lieu ky thuat",
-      "source_file": "README.md",
-      "source_location": "L45"
-    },
-    {
-      "id": "readme_h\u1ec7_th\u1ed1ng_khai_b\u00e1o_t\u1ea1m_tr\u00fa_t\u1ef1_\u0111\u1ed9ng_bca_kbtt_api_v1_4_cloudflare_d1",
-      "label": "H\u1ec7 Th\u1ed1ng Khai B\u00e1o T\u1ea1m Tr\u00fa T\u1ef1 \u0110\u1ed9ng (BCA KBTT API v1.4 & Cloudflare D1)",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "he thong khai bao tam tru tu \u0111ong (bca kbtt api v1.4 & cloudflare d1)",
-      "source_file": "README.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "readme_k\u1ebf_ho\u1ea1ch_theo_d\u00f5i_th\u1ef1c_t\u1ebf_x\u1eed_l\u00fd_ti\u1ebfp_theo_phase_2",
-      "label": "K\u1ebf ho\u1ea1ch theo d\u00f5i th\u1ef1c t\u1ebf & X\u1eed l\u00fd ti\u1ebfp theo (Phase 2):",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "ke hoach theo doi thuc te & xu ly tiep theo (phase 2):",
-      "source_file": "README.md",
-      "source_location": "L102"
-    },
-    {
-      "id": "readme_l\u1ec7nh_th\u1ef1c_thi_commands",
-      "label": "\ud83d\udee0 L\u1ec7nh Th\u1ef1c Thi (Commands)",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "\ud83d\udee0 lenh thuc thi (commands)",
-      "source_file": "README.md",
-      "source_location": "L54"
-    },
-    {
-      "id": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
-      "label": "Tr\u1ea1ng th\u00e1i h\u1ec7 th\u1ed1ng",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "trang thai he thong",
-      "source_file": "README.md",
-      "source_location": "L82"
-    },
-    {
-      "id": "readme_t\u1ed5ng_quan_h\u1ec7_th\u1ed1ng",
-      "label": "\ud83d\udccc T\u1ed5ng Quan H\u1ec7 Th\u1ed1ng",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "\ud83d\udccc tong quan he thong",
-      "source_file": "README.md",
-      "source_location": "L7"
+      "source_location": "L118"
     },
     {
       "id": "svelte",
       "label": "svelte",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "confidence": "EXTRACTED",
       "file_type": "code",
       "norm_label": "svelte",
@@ -7150,7 +6958,7 @@
       "label": "DatePicker.svelte",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "datepicker.svelte",
       "source_file": "src/lib/components/DatePicker.svelte",
@@ -7161,7 +6969,7 @@
       "label": "GuestTooltip.svelte",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "guesttooltip.svelte",
       "source_file": "src/lib/components/GuestTooltip.svelte",
@@ -7172,7 +6980,7 @@
       "label": "StayStatusBadge.svelte",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "staystatusbadge.svelte",
       "source_file": "src/lib/components/StayStatusBadge.svelte",
@@ -7183,7 +6991,7 @@
       "label": "catalogs.ts",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "catalogs.ts",
       "source_file": "src/lib/data/catalogs.ts",
@@ -7194,7 +7002,7 @@
       "label": "LOAI_GIAY_TO_DATA",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "loai_giay_to_data",
       "source_file": "src/lib/data/catalogs.ts",
@@ -7205,7 +7013,7 @@
       "label": "LY_DO_CU_TRU_DATA",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "ly_do_cu_tru_data",
       "source_file": "src/lib/data/catalogs.ts",
@@ -7216,7 +7024,7 @@
       "label": "QUOC_TICH_DATA",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "quoc_tich_data",
       "source_file": "src/lib/data/catalogs.ts",
@@ -7227,7 +7035,7 @@
       "label": "catalogManager.ts",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "catalogmanager.ts",
       "source_file": "src/lib/server/catalogManager.ts",
@@ -7238,7 +7046,7 @@
       "label": "format.ts",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "format.ts",
       "source_file": "src/lib/utils/format.ts",
@@ -7249,7 +7057,7 @@
       "label": "COUNTRY_OPTIONS",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "country_options",
       "source_file": "src/lib/utils/format.ts",
@@ -7260,7 +7068,7 @@
       "label": "countryNameMap",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "countrynamemap",
       "source_file": "src/lib/utils/format.ts",
@@ -7271,7 +7079,7 @@
       "label": "LOAI_GIAY_TO_OPTIONS",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "loai_giay_to_options",
       "source_file": "src/lib/utils/format.ts",
@@ -7282,7 +7090,7 @@
       "label": "ROOM_OPTIONS",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "room_options",
       "source_file": "src/lib/utils/format.ts",
@@ -7293,11 +7101,119 @@
       "label": "+page.svelte",
       "_origin": "ast",
       "community": 8,
-      "community_name": "catalogManager.ts",
+      "community_name": "format.ts",
       "file_type": "code",
       "norm_label": "+page.svelte",
       "source_file": "src/routes/+page.svelte",
       "source_location": "L1"
+    },
+    {
+      "id": "readme",
+      "label": "README.md",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "readme.md",
+      "source_file": "README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "readme_2026_09_30",
+      "label": "2026-09-30",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2026-09-30",
+      "source_file": "README.md",
+      "source_location": "L176"
+    },
+    {
+      "id": "readme_2026_10_28",
+      "label": "2026-10-28",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2026-10-28",
+      "source_file": "README.md",
+      "source_location": "L150"
+    },
+    {
+      "id": "readme_changelog",
+      "label": "Changelog",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "changelog",
+      "source_file": "README.md",
+      "source_location": "L116"
+    },
+    {
+      "id": "readme_c\u00e1c_t\u00ednh_n\u0103ng_ch\u00ednh_core_features",
+      "label": "\ud83d\ude80 C\u00e1c T\u00ednh N\u0103ng Ch\u00ednh (Core Features)",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\ude80 cac tinh nang chinh (core features)",
+      "source_file": "README.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "readme_c\u1ea5u_tr\u00fac_d\u1ef1_\u00e1n_t\u00e0i_li\u1ec7u_k\u1ef9_thu\u1eadt",
+      "label": "\ud83d\udcc2 C\u1ea5u Tr\u00fac D\u1ef1 \u00c1n & T\u00e0i Li\u1ec7u K\u1ef9 Thu\u1eadt",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\udcc2 cau truc du an & tai lieu ky thuat",
+      "source_file": "README.md",
+      "source_location": "L45"
+    },
+    {
+      "id": "readme_h\u1ec7_th\u1ed1ng_khai_b\u00e1o_t\u1ea1m_tr\u00fa_t\u1ef1_\u0111\u1ed9ng_bca_kbtt_api_v1_4_cloudflare_d1",
+      "label": "H\u1ec7 Th\u1ed1ng Khai B\u00e1o T\u1ea1m Tr\u00fa T\u1ef1 \u0110\u1ed9ng (BCA KBTT API v1.4 & Cloudflare D1)",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "he thong khai bao tam tru tu \u0111ong (bca kbtt api v1.4 & cloudflare d1)",
+      "source_file": "README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "readme_l\u1ec7nh_th\u1ef1c_thi_commands",
+      "label": "\ud83d\udee0 L\u1ec7nh Th\u1ef1c Thi (Commands)",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\udee0 lenh thuc thi (commands)",
+      "source_file": "README.md",
+      "source_location": "L54"
+    },
+    {
+      "id": "readme_t\u1ed5ng_quan_h\u1ec7_th\u1ed1ng",
+      "label": "\ud83d\udccc T\u1ed5ng Quan H\u1ec7 Th\u1ed1ng",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\udccc tong quan he thong",
+      "source_file": "README.md",
+      "source_location": "L7"
     },
     {
       "id": "src_lib_server_bcaprobe",
@@ -7364,18 +7280,6 @@
       "norm_label": "kbtt-classifier.test.ts",
       "source_file": "test/unit/kbtt-classifier.test.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "src_lib_server_db_d1databaselike",
-      "label": "src_lib_server_db_d1databaselike",
-      "_origin": "semantic",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_lib_server_db_d1databaselike",
-      "source_file": "",
-      "type": "external"
     },
     {
       "id": "ref_node_http",
@@ -7486,11 +7390,23 @@
       "type": "external"
     },
     {
+      "id": "src_lib_server_db_d1databaselike",
+      "label": "src_lib_server_db_d1databaselike",
+      "_origin": "semantic",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_lib_server_db_d1databaselike",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "ref_node_child_process",
       "label": "ref_node_child_process",
       "_origin": "semantic",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_child_process",
@@ -7501,8 +7417,8 @@
       "id": "ref_node_fs",
       "label": "ref_node_fs",
       "_origin": "semantic",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_fs",
@@ -7513,8 +7429,8 @@
       "id": "ref_node_path",
       "label": "ref_node_path",
       "_origin": "semantic",
-      "community": 41,
-      "community_name": "svelte-deprecation.test.ts",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_path",
@@ -7748,7 +7664,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L25",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -7760,7 +7676,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -7772,7 +7688,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L27",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -7784,7 +7700,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L230",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -7796,7 +7712,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L32",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -7808,7 +7724,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L220",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -7820,7 +7736,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L170",
+      "source_location": "L159",
       "weight": 1.0
     },
     {
@@ -7832,7 +7748,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L225",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -7844,19 +7760,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L234",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager_loadinitialcatalogs",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L150",
+      "source_location": "L203",
       "weight": 1.0
     },
     {
@@ -7868,7 +7772,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L296",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -7880,7 +7784,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L310",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -7892,7 +7796,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L323",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -7904,7 +7808,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L335",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -7916,7 +7820,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L362",
+      "source_location": "L341",
       "weight": 1.0
     },
     {
@@ -7928,7 +7832,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L409",
+      "source_location": "L388",
       "weight": 1.0
     },
     {
@@ -7940,19 +7844,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L430",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
-      "target": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L292",
+      "source_location": "L409",
       "weight": 1.0
     },
     {
@@ -7964,7 +7856,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L133",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -7976,7 +7868,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L644",
+      "source_location": "L623",
       "weight": 1.0
     },
     {
@@ -7988,7 +7880,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L224",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -8000,19 +7892,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L229",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_normalizegender",
-      "target": "src_lib_server_datatransformer_datatransformer_mapgender",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L158",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -8024,7 +7904,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L687",
+      "source_location": "L666",
       "weight": 1.0
     },
     {
@@ -8036,96 +7916,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L695",
+      "source_location": "L674",
       "weight": 1.0
     },
     {
       "source": "src_lib_server_datatransformer_datatransformer_transformbatch",
       "target": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L482",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_transformbatch",
-      "target": "src_lib_server_datatransformer_datatransformer_isguestvn",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L485",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_transformbatch",
-      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L488",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_transformbatch",
-      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L493",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
-      "target": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L450",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
-      "target": "src_lib_server_datatransformer_datatransformer_isguestvn",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L451",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
-      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L460",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
-      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8133,6 +7929,90 @@
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
       "source_location": "L461",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer_transformbatch",
+      "target": "src_lib_server_datatransformer_datatransformer_isguestvn",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L464",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer_transformbatch",
+      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L467",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer_transformbatch",
+      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L472",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
+      "target": "src_lib_server_datatransformer_datatransformer_checkcompleteness",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L429",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
+      "target": "src_lib_server_datatransformer_datatransformer_isguestvn",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L430",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
+      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadvn",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L439",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer_transformrow",
+      "target": "src_lib_server_datatransformer_datatransformer_transformtopayloadforeign",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L440",
       "weight": 1.0
     },
     {
@@ -8144,7 +8024,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L583",
+      "source_location": "L562",
       "weight": 1.0
     },
     {
@@ -8156,7 +8036,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L603",
+      "source_location": "L582",
       "weight": 1.0
     },
     {
@@ -8168,7 +8048,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L605",
+      "source_location": "L584",
       "weight": 1.0
     },
     {
@@ -8180,7 +8060,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L609",
+      "source_location": "L588",
       "weight": 1.0
     },
     {
@@ -8192,7 +8072,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L615",
+      "source_location": "L594",
       "weight": 1.0
     },
     {
@@ -8204,7 +8084,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L625",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -8216,7 +8096,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L537",
+      "source_location": "L516",
       "weight": 1.0
     },
     {
@@ -8228,7 +8108,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L546",
+      "source_location": "L525",
       "weight": 1.0
     },
     {
@@ -8240,7 +8120,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L550",
+      "source_location": "L529",
       "weight": 1.0
     },
     {
@@ -8252,7 +8132,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L557",
+      "source_location": "L536",
       "weight": 1.0
     },
     {
@@ -8264,7 +8144,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L568",
+      "source_location": "L547",
       "weight": 1.0
     },
     {
@@ -8276,7 +8156,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L571",
+      "source_location": "L550",
       "weight": 1.0
     },
     {
@@ -8600,7 +8480,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -8720,7 +8600,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L586",
+      "source_location": "L590",
       "weight": 1.0
     },
     {
@@ -8732,7 +8612,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L600",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -8744,7 +8624,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L427",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -8756,7 +8636,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L441",
+      "source_location": "L443",
       "weight": 1.0
     },
     {
@@ -8768,7 +8648,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L442",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -8780,7 +8660,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L626",
+      "source_location": "L630",
       "weight": 1.0
     },
     {
@@ -8792,7 +8672,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L646",
+      "source_location": "L650",
       "weight": 1.0
     },
     {
@@ -8804,7 +8684,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L662",
+      "source_location": "L666",
       "weight": 1.0
     },
     {
@@ -8816,24 +8696,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L469",
+      "source_location": "L471",
       "weight": 1.0
     },
     {
       "source": "src_lib_server_stayservice_stayservice_extendstay",
       "target": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L488",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_extendstay",
-      "target": "src_lib_server_datatransformer_datatransformer_formatdatetime",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8845,6 +8713,18 @@
     },
     {
       "source": "src_lib_server_stayservice_stayservice_extendstay",
+      "target": "src_lib_server_datatransformer_datatransformer_formatdatetime",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L492",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_extendstay",
       "target": "src_lib_server_repositories_auditrepository_logkbttaction",
       "relation": "calls",
       "_origin": "ast",
@@ -8852,7 +8732,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L505",
+      "source_location": "L507",
       "weight": 1.0
     },
     {
@@ -8960,7 +8840,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L355",
+      "source_location": "L356",
       "weight": 1.0
     },
     {
@@ -8972,103 +8852,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L385",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_repositories_stayrepository_getstaybyid",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L904",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_datatransformer_datatransformer_getvnnow",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L913",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_datatransformer_datatransformer_formatdatetime",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L920",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_datatransformer_datatransformer_parsedatetime",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L927",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L947",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_repositories_stayrepository_getlatestvisabyguestid",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L959",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_repositories_stayrepository_upsertstay",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L963",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
-      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L974",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -9080,7 +8864,103 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L996",
+      "source_location": "L1002",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_repositories_stayrepository_getstaybyid",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L910",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_datatransformer_datatransformer_getvnnow",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L919",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_datatransformer_datatransformer_formatdatetime",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L926",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_datatransformer_datatransformer_parsedatetime",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L933",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L953",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_repositories_stayrepository_getlatestvisabyguestid",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L965",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_repositories_stayrepository_upsertstay",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L969",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_stayservice_stayservice_reregisterstay",
+      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/stayService.ts",
+      "source_location": "L980",
       "weight": 1.0
     },
     {
@@ -9092,7 +8972,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L820",
+      "source_location": "L826",
       "weight": 1.0
     },
     {
@@ -9104,7 +8984,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L825",
+      "source_location": "L831",
       "weight": 1.0
     },
     {
@@ -9116,7 +8996,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L828",
+      "source_location": "L834",
       "weight": 1.0
     },
     {
@@ -9128,7 +9008,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L852",
+      "source_location": "L858",
       "weight": 1.0
     },
     {
@@ -9140,7 +9020,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L873",
+      "source_location": "L879",
       "weight": 1.0
     },
     {
@@ -9152,7 +9032,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L752",
+      "source_location": "L758",
       "weight": 1.0
     },
     {
@@ -9164,7 +9044,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L773",
+      "source_location": "L779",
       "weight": 1.0
     },
     {
@@ -9380,7 +9260,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -9392,7 +9272,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L31",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -9404,7 +9284,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L41",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -9416,7 +9296,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L80",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -9428,7 +9308,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L129",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -9440,7 +9320,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L133",
+      "source_location": "L132",
       "weight": 1.0
     },
     {
@@ -9452,19 +9332,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L151",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_tokenmanager_tokenmanager_revoketoken",
-      "target": "src_lib_server_tokenmanager_tokenmanager_revoke",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L160",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -10172,7 +10040,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L103",
+      "source_location": "L107",
       "weight": 1.0
     },
     {
@@ -10196,7 +10064,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L289",
+      "source_location": "L293",
       "weight": 1.0
     },
     {
@@ -10208,7 +10076,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/integration/stay-service.test.ts",
-      "source_location": "L290",
+      "source_location": "L294",
       "weight": 1.0
     },
     {
@@ -10887,18 +10755,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_catalogmanager_catalogmanager",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
       "source": "src_lib_server_kbttclient_kbttclient",
       "target": "src_lib_server_tokenmanager_itokenmanager",
       "relation": "references",
@@ -11007,18 +10863,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
-      "target": "src_lib_types_index_completenessresult",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "generic_arg",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L289",
-      "weight": 1.0
-    },
-    {
       "source": "src_lib_server_datatransformer_datatransformer_transformrow",
       "target": "src_lib_types_index_transformedrowresult",
       "relation": "references",
@@ -11027,7 +10871,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L449",
+      "source_location": "L428",
       "weight": 1.0
     },
     {
@@ -11063,7 +10907,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L886",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -11440,18 +11284,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_lib_server_catalogmanager",
-      "target": "src_lib_server_config_config",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
       "source": "src_lib_server_datatransformer",
       "target": "src_lib_types_index_completenessresult",
       "relation": "imports",
@@ -11689,6 +11521,18 @@
       "context": "import",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_auditrepository",
+      "target": "src_lib_server_config_config",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/repositories/auditRepository.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -14010,18 +13854,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_lib_server_catalogmanager",
-      "target": "src_lib_server_config",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
       "source": "src_lib_server_datatransformer",
       "target": "src_lib_server_catalogmanager",
       "relation": "imports_from",
@@ -14191,6 +14023,18 @@
       "source_file": "src/lib/server/repositories/auditRepository.ts",
       "source_location": "L1",
       "type_only": true,
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_auditrepository",
+      "target": "src_lib_server_config",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/repositories/auditRepository.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -16040,19 +15884,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L295",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
-      "target": "src_lib_types_index_rawocrrow",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "parameter_type",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L289",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -16064,7 +15896,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -16076,7 +15908,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L255",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -16088,7 +15920,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L472",
+      "source_location": "L451",
       "weight": 1.0
     },
     {
@@ -16100,7 +15932,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L449",
+      "source_location": "L428",
       "weight": 1.0
     },
     {
@@ -16112,7 +15944,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L580",
+      "source_location": "L559",
       "weight": 1.0
     },
     {
@@ -16124,7 +15956,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L507",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -16148,7 +15980,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L568",
+      "source_location": "L572",
       "weight": 1.0
     },
     {
@@ -16160,7 +15992,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L411",
+      "source_location": "L413",
       "weight": 1.0
     },
     {
@@ -16172,7 +16004,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L622",
+      "source_location": "L626",
       "weight": 1.0
     },
     {
@@ -16220,7 +16052,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L464",
+      "source_location": "L466",
       "weight": 1.0
     },
     {
@@ -16268,7 +16100,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L886",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -16292,7 +16124,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L797",
+      "source_location": "L803",
       "weight": 1.0
     },
     {
@@ -16304,7 +16136,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L797",
+      "source_location": "L803",
       "weight": 1.0
     },
     {
@@ -16316,7 +16148,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L747",
+      "source_location": "L753",
       "weight": 1.0
     },
     {
@@ -16328,7 +16160,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L747",
+      "source_location": "L753",
       "weight": 1.0
     },
     {
@@ -16706,7 +16538,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L295",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -19110,7 +18942,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L114",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -19121,7 +18953,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L139",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -19132,7 +18964,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L165",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
@@ -19143,7 +18975,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L112",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -19209,7 +19041,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L102",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -19561,7 +19393,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L268",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -19572,7 +19404,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -19726,7 +19558,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -19737,7 +19569,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L46",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -19748,7 +19580,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -19759,7 +19591,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L78",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -19770,7 +19602,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L89",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -19946,7 +19778,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L1031",
+      "source_location": "L1037",
       "weight": 1.0
     },
     {
@@ -20100,7 +19932,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L224",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -20897,6 +20729,17 @@
     },
     {
       "source": "src_routes_page",
+      "target": "src_routes_page_formatauditaction",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": "L4351",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_page",
       "target": "src_routes_page_if",
       "relation": "contains",
       "_origin": "ast",
@@ -21537,7 +21380,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L130",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -21548,18 +21391,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L146",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_fetchpubliccatalog",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L154",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -21570,51 +21402,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L168",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackquoctich",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L173",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacklydocutru",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L177",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbackloaigiayto",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L181",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_getfallbacknoicutru",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L185",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
@@ -21625,7 +21413,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L193",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -21636,7 +21424,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L217",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -21647,7 +21435,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L224",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -21658,7 +21446,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L229",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -21669,7 +21457,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L233",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -21680,18 +21468,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L237",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_catalogmanager_catalogmanager",
-      "target": "src_lib_server_catalogmanager_catalogmanager_constructor",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L24",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -21702,7 +21479,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L257",
+      "source_location": "L226",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_catalogmanager_catalogmanager",
+      "target": "src_lib_server_catalogmanager_catalogmanager_constructor",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/catalogManager.ts",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -21713,7 +21501,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/catalogManager.ts",
-      "source_location": "L37",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -21724,7 +21512,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -21735,51 +21523,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L131",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_normalizegender",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L157",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_mapgender",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L161",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L172",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_getvnnow",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L179",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -21790,7 +21534,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L21",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_datatransformer_datatransformer_mapgender",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_datatransformer_datatransformer_getvnnow",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L164",
       "weight": 1.0
     },
     {
@@ -21801,7 +21578,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L216",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -21812,18 +21589,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L255",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_checkrowcompleteness",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L289",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -21834,7 +21600,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L295",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -21845,7 +21611,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L39",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -21856,7 +21622,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L449",
+      "source_location": "L428",
       "weight": 1.0
     },
     {
@@ -21867,7 +21633,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L472",
+      "source_location": "L451",
       "weight": 1.0
     },
     {
@@ -21878,7 +21644,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L507",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -21889,40 +21655,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L580",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L661",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_mapquoctich",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L665",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_datatransformer_datatransformer",
-      "target": "src_lib_server_datatransformer_datatransformer_resolvecheckincheckout",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L682",
+      "source_location": "L559",
       "weight": 1.0
     },
     {
@@ -21933,7 +21666,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L770",
+      "source_location": "L615",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_datatransformer_datatransformer_maploaigiayto",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L640",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_datatransformer_datatransformer_mapquoctich",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L644",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_datatransformer_datatransformer",
+      "target": "src_lib_server_datatransformer_datatransformer_resolvecheckincheckout",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L661",
       "weight": 1.0
     },
     {
@@ -22296,7 +22062,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L411",
+      "source_location": "L413",
       "weight": 1.0
     },
     {
@@ -22307,7 +22073,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L464",
+      "source_location": "L466",
       "weight": 1.0
     },
     {
@@ -22340,7 +22106,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L568",
+      "source_location": "L572",
       "weight": 1.0
     },
     {
@@ -22351,7 +22117,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L622",
+      "source_location": "L626",
       "weight": 1.0
     },
     {
@@ -22362,7 +22128,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L747",
+      "source_location": "L753",
       "weight": 1.0
     },
     {
@@ -22373,7 +22139,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L797",
+      "source_location": "L803",
       "weight": 1.0
     },
     {
@@ -22384,7 +22150,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L886",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -22439,7 +22205,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L118",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -22450,18 +22216,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L140",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_tokenmanager_tokenmanager",
-      "target": "src_lib_server_tokenmanager_tokenmanager_revoketoken",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L159",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -22472,7 +22227,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L163",
+      "source_location": "L158",
       "weight": 1.0
     },
     {
@@ -22483,7 +22238,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L203",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -22494,7 +22249,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L209",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -22505,7 +22260,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L22",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -22516,7 +22271,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/tokenManager.ts",
-      "source_location": "L44",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -22638,7 +22393,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L90",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -22650,7 +22405,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L82",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -22662,7 +22417,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L71",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -22674,7 +22429,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/repositories/auditRepository.ts",
-      "source_location": "L12",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -22830,7 +22585,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L659",
+      "source_location": "L663",
       "weight": 1.0
     },
     {
@@ -22842,7 +22597,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/lib/server/stayService.ts",
-      "source_location": "L502",
+      "source_location": "L504",
       "weight": 1.0
     },
     {
@@ -22986,7 +22741,7 @@
       "confidence_score": 0.95,
       "context": "autoCheckoutExpiredStays",
       "source_file": "README.md",
-      "source_location": "L132",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -23002,6 +22757,54 @@
       "weight": 1.0
     },
     {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_datatransformer_datatransformer_cleandocnumber",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "cleanDocNumber",
+      "source_file": "README.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_datatransformer_datatransformer_cleanroomnumber",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "cleanRoomNumber",
+      "source_file": "README.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_2026_09_30",
+      "target": "src_routes_page_formatauditaction",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "formatAuditAction",
+      "source_file": "README.md",
+      "source_location": "L191",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_datatransformer_datatransformer_formatdatetime",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "formatDateTime",
+      "source_file": "README.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
       "source": "readme_2026_10_29",
       "target": "src_routes_api_env_server_getdeployenv",
       "relation": "references",
@@ -23010,7 +22813,7 @@
       "confidence_score": 0.95,
       "context": "getDeployEnv",
       "source_file": "README.md",
-      "source_location": "L118",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -23046,7 +22849,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L119",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -23058,7 +22861,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L89",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -23094,7 +22897,31 @@
       "confidence_score": 0.95,
       "context": "isSameOrPastCheckoutTimeGmt7",
       "source_file": "README.md",
-      "source_location": "L169",
+      "source_location": "L180",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_catalogmanager_catalogmanager_loadinitialcatalogs",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "loadInitialCatalogs()",
+      "source_file": "README.md",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_tokenmanager_tokenmanager_revoke",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "revoke()",
+      "source_file": "README.md",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -23123,5 +22950,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5f16320697ca81933f9af4737cb2156bf7fd0736"
+  "built_at_commit": "78edaf02f3578ec8fb5526b479a86598c11b3f92"
 }

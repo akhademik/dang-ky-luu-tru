@@ -2271,6 +2271,31 @@ function formatDuration(ms?: number | null): string {
 	return `${(ms / 1000).toFixed(1)}s`;
 }
 
+function getLogEnvBadge(log: KbttLog): { label: "DEV" | "PROD"; class: string } {
+	const envStr = String(log.env || "").toLowerCase().trim();
+	const hostStr = String(log.host || "").toLowerCase().trim();
+	const payloadStr = String(log.response_payload || "").toLowerCase();
+	const reqPayloadStr = String(log.request_payload || "").toLowerCase();
+
+	const isProd =
+		envStr === "prod" ||
+		hostStr.includes("bocongan.gov.vn") ||
+		payloadStr.includes("bocongan.gov.vn") ||
+		reqPayloadStr.includes("bocongan.gov.vn");
+
+	if (isProd) {
+		return {
+			label: "PROD",
+			class: "bg-purple-950/90 text-purple-300 border-purple-600/80 shadow-sm",
+		};
+	}
+
+	return {
+		label: "DEV",
+		class: "bg-amber-950/90 text-amber-300 border-amber-600/80 shadow-sm",
+	};
+}
+
 function getAuditLogFailureReason(log: KbttLog): string {
 	if (log.is_success) return "";
 
@@ -3639,12 +3664,21 @@ onMount(async () => {
 								{:else}
 									{#each auditLogs as log (log.id)}
 										{@const act = formatAuditAction(log.api_endpoint, log.request_payload)}
+										{@const envBadge = getLogEnvBadge(log)}
 										<tr class="hover:bg-slate-700/30 transition-colors">
 											<td class="p-3.5 text-slate-400 font-mono whitespace-nowrap">{formatDateTimeDisplay(log.created_at)}</td>
 											<td class="p-3.5 whitespace-nowrap">
-												<span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] border {act.class}">
-													{act.name}
-												</span>
+												<div class="flex items-center gap-1.5">
+													<span
+														class="px-1.5 py-0.5 rounded font-mono font-bold text-[10px] border {envBadge.class}"
+														title="Môi trường API: {envBadge.label === 'PROD' ? 'Cổng BCA Thật (api-tbltkbtt.bocongan.gov.vn)' : 'Sandbox Giả Lập (api-kbtt.ai-vlab.com)'}"
+													>
+														{envBadge.label}
+													</span>
+													<span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] border {act.class}">
+														{act.name}
+													</span>
+												</div>
 											</td>
 											<td class="p-3.5 font-semibold text-slate-200 whitespace-nowrap">{log.guest_name || '-'}</td>
 											<td class="p-3.5 font-mono text-sky-400 whitespace-nowrap">{log.so_phong ? `Phòng ${log.so_phong}` : '-'}</td>
@@ -4315,11 +4349,14 @@ onMount(async () => {
 	<!-- MODAL: JSON PAYLOAD INSPECTOR -->
 	{#if showPayloadModal && selectedLog}
 		{@const modalAct = formatAuditAction(selectedLog.api_endpoint, selectedLog.request_payload)}
+		{@const modalEnv = getLogEnvBadge(selectedLog)}
 		<div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
 			<div class="bg-slate-800 border border-slate-700 w-full max-w-3xl rounded-2xl p-6 shadow-2xl max-h-[85vh] flex flex-col">
 				<div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
 					<h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
-						<span>🔍</span> Chi Tiết Audit Log: <span class="px-2 py-0.5 rounded font-mono font-bold text-xs border {modalAct.class}">{modalAct.name}</span>
+						<span>🔍</span> Chi Tiết Audit Log:
+						<span class="px-1.5 py-0.5 rounded font-mono font-bold text-[10px] border {modalEnv.class}">{modalEnv.label}</span>
+						<span class="px-2 py-0.5 rounded font-mono font-bold text-xs border {modalAct.class}">{modalAct.name}</span>
 						{#if selectedLog.guest_name}
 							<span class="text-slate-300 font-normal">({selectedLog.guest_name})</span>
 						{/if}
@@ -4336,6 +4373,7 @@ onMount(async () => {
 
 				<!-- Diagnostic Details Banner -->
 				<div class="mb-4 grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-slate-900 rounded-xl border border-slate-700/80 text-[11px] font-mono text-slate-300">
+					<div>Môi trường: <strong class="{modalEnv.label === 'PROD' ? 'text-purple-300' : 'text-amber-300'}">{modalEnv.label} ({modalEnv.label === 'PROD' ? 'BCA Thật' : 'Sandbox'})</strong></div>
 					<div>Mã HTTP: <strong class="text-white">{selectedLog.http_status ?? '-'}</strong></div>
 					<div>Độ trễ: <strong class="text-amber-400">{formatDuration(selectedLog.duration_ms)}</strong></div>
 					{#if selectedLog.error_class}
