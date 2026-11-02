@@ -109,27 +109,46 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		// C. Auto-checkout endpoint is protected by APP_PASSWORD or active session (kèm Rate Limiting chống dò pass)
 		if (pathname.startsWith("/api/stays/auto-checkout")) {
+			// Pre-auth Rate Limiting: Kiểm tra giới hạn tần suất đối với mọi yêu cầu không có phiên đăng nhập hợp lệ
+			if (!isAuth) {
+				let clientIp = "127.0.0.1";
+				try {
+					clientIp =
+						event.request.headers.get("cf-connecting-ip") ||
+						event.request.headers
+							.get("x-forwarded-for")
+							?.split(",")[0]
+							?.trim() ||
+						event.getClientAddress() ||
+						"127.0.0.1";
+				} catch {
+					clientIp =
+						event.request.headers.get("cf-connecting-ip") ||
+						event.request.headers
+							.get("x-forwarded-for")
+							?.split(",")[0]
+							?.trim() ||
+						"127.0.0.1";
+				}
+
+				const rateCheck = await checkRateLimit(event.platform, clientIp);
+				if (!rateCheck.allowed) {
+					return json(
+						{
+							success: false,
+							message: `Quá nhiều yêu cầu. Vui lòng thử lại sau ${rateCheck.waitSeconds || 60} giây.`,
+						},
+						{ status: 429 },
+					);
+				}
+			}
+
 			const isValidCron = await verifyCronAuth(
 				event.request,
 				event.cookies,
 				event.platform,
 			);
 			if (!isValidCron) {
-				const clientIp =
-					event.request.headers.get("cf-connecting-ip") ||
-					event.request.headers.get("x-forwarded-for") ||
-					"127.0.0.1";
-				const rateCheck = await checkRateLimit(event.platform, clientIp);
-				if (!rateCheck.allowed) {
-					return json(
-						{
-							success: false,
-							message: `Quá nhiều lần thử sai. Vui lòng thử lại sau ${rateCheck.waitSeconds || 60} giây.`,
-						},
-						{ status: 429 },
-					);
-				}
-
 				return json(
 					{
 						success: false,

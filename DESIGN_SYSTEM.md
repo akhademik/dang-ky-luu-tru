@@ -31,7 +31,8 @@
 - **Scheduled Cron Gateway & Zero-Leak Security Pattern**:
   - Endpoint `/api/stays/auto-checkout` được bảo vệ tập trung tại `hooks.server.ts` qua `verifyCronAuth`.
   - Hỗ trợ xác thực qua HTTP Headers (`x-cron-key`, `x-api-key`, `Authorization: Bearer <key>`) hoặc active session cookie.
-  - Thứ tự ưu tiên khóa: `CRON_SECRET_KEY` -> `AUTO_CHECKOUT_KEY` -> `APP_PASSWORD` (fallback an toàn trên Cloudflare).
+  - Khóa bí mật Cron: Chấp nhận khóa bí mật được cấu hình qua `APP_PASSWORD` (dùng chung với mật khẩu admin hệ thống trên Cloudflare / GitHub Actions) hoặc `CRON_SECRET_KEY` / `AUTO_CHECKOUT_KEY`.
+  - **Pre-auth Rate Limiting chống Brute-Force**: Đối với mọi request gọi từ bên ngoài không có active session, gateway kích hoạt `checkRateLimit` (5 lần / 60 giây) TRƯỚC KHI kiểm tra khóa. Kẻ tấn công dò mật khẩu sẽ bị chặn ngay lập tức bằng HTTP 429 kể cả khi đoán đúng mật khẩu sau khi đã vượt ngưỡng giới hạn.
   - Tuyệt đối cấm truyền key qua URL query parameters (`?key=...`) nhằm ngăn chặn nguy cơ rò rỉ secret qua access logs, proxy logs hoặc Cloudflare CDN URL tracking.
   - Tích hợp GitHub Actions workflow chạy tự động lúc 12:01 GMT+7 (`05:01 UTC`) với cơ chế curl silent, không log token và không dump dữ liệu định danh khách (PII) ra console log.
 

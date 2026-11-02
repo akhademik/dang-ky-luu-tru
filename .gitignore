@@ -30,11 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Graphify (only track essential files: GRAPH_REPORT.md, graph.json, graph.html)
+# Graphify (only track essential summary report: GRAPH_REPORT.md)
 graphify-out/*
 !graphify-out/GRAPH_REPORT.md
-!graphify-out/graph.json
-!graphify-out/graph.html
 
 # Cloudflare Wrangler & Local DB
 .wrangler/

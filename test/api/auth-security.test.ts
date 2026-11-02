@@ -724,6 +724,30 @@ async function runAuthSecurityApiTests(): Promise<void> {
 		"Invalid cron attempt exceeding rate limit must return 429",
 	);
 
+	// 8.12 Pre-auth Rate Limiting: When rate limit is exceeded, even with the CORRECT key, request must receive 429
+	const rateLimitedValidKeyEvent = {
+		url: new URL("https://example.com/api/stays/auto-checkout"),
+		request: new Request("https://example.com/api/stays/auto-checkout", {
+			method: "POST",
+			headers: {
+				"x-cron-key": "SuperSecretProdPassword123!",
+				"cf-connecting-ip": "1.2.3.4",
+			},
+		}),
+		cookies: emptyCookies,
+		locals: {},
+		platform: rateLimitedCronPlatform,
+	} as unknown as RequestEvent;
+	const validKeyRateLimitedRes = await handle({
+		event: rateLimitedValidKeyEvent,
+		resolve: mockResolve,
+	});
+	assert.equal(
+		validKeyRateLimitedRes.status,
+		429,
+		"Pre-auth rate limiting must block requests even with correct key when rate limit is exceeded (anti-bruteforce)",
+	);
+
 	console.log(
 		"✅ [API] Toàn bộ kiểm thử Authentication & Security mới đã pass 100%!",
 	);

@@ -81,8 +81,13 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-11-02 15:35 (GMT+7)
+- Cập nhật lần cuối: 2026-11-02 16:05 (GMT+7)
 - Đã hoàn thành:
+  - Tối ưu hóa Cơ chế Pre-auth Rate Limiting & Thắt chặt Bảo vệ Endpoint Auto-Checkout:
+    - Cập nhật [`src/hooks.server.ts`](src/hooks.server.ts): Di chuyển `checkRateLimit` lên thực thi TRƯỚC `verifyCronAuth` đối với toàn bộ các yêu cầu từ bên ngoài không có active session (`!isAuth`). Khắc phục triệt để nguy cơ brute-force dò mật khẩu `APP_PASSWORD`, đảm bảo kẻ tấn công nếu vượt ngưỡng tần suất (5 requests / 60s) sẽ bị chặn ngay lập tức bằng mã lỗi HTTP 429 kể cả khi đoán đúng mật khẩu.
+    - Cập nhật [`test/api/auth-security.test.ts`](test/api/auth-security.test.ts): Bổ sung bài kiểm thử 8.12 xác nhận khi rate limiter cạn kiệt, ngay cả request mang đúng `APP_PASSWORD` hợp lệ vẫn bị chặn với HTTP 429.
+    - Cập nhật [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md): Đồng bộ hóa tài liệu về quy chuẩn secret key (`APP_PASSWORD` dùng chung cho cả admin login và GitHub Actions cron) và ghi nhận cơ chế Pre-auth Rate Limiting.
+    - Cập nhật [`.gitignore`](.gitignore): Loại bỏ các file sinh tự động dung lượng lớn `graphify-out/graph.json` và `graphify-out/graph.html` khỏi git tracking, chỉ theo dõi file báo cáo tóm tắt `graphify-out/GRAPH_REPORT.md` giúp lịch sử git và pull request luôn sạch sẽ, không bị phình to bởi hàng ngàn dòng JSON sinh tự động.
   - Triển khai Hệ thống Tự Động Checkout Chạy Ngầm Lúc 12:01 GMT+7 Hàng Ngày (Scheduled Auto-Checkout) & Bảo Mật Tuyệt Đối:
     - Khắc phục triệt để hạn chế của kiến trúc Serverless (Cloudflare Pages): Hệ thống tự động thức dậy và thực thi chuẩn xác vào lúc 12:01 trưa GMT+7 hàng ngày thông qua GitHub Actions Scheduled Workflow mà không cần bất kỳ ai truy cập website.
     - Cập nhật [`src/lib/server/auth.ts`](src/lib/server/auth.ts): Triển khai hàm `verifyCronAuth` kiểm tra xác thực độc lập. Ưu tiên khóa bí mật `APP_PASSWORD` (tận dụng ngay mật khẩu admin đã có sẵn trên Cloudflare) đồng thời hỗ trợ `CRON_SECRET_KEY` / `AUTO_CHECKOUT_KEY`.
@@ -138,6 +143,14 @@ pnpm run build
 ## Changelog
 
 ### 2026-11-02
+
+- Thắt chặt Cơ chế Pre-auth Rate Limiting Chống Brute-Force & Tối Ưu Git Tracking:
+  - Cập nhật [`src/hooks.server.ts`](src/hooks.server.ts): Thực thi `checkRateLimit` TRƯỚC KHI gọi `verifyCronAuth` đối với request không có active session (`!isAuth`). Ngăn chặn hoàn toàn việc brute-force dò mật khẩu `APP_PASSWORD` (kẻ tấn công kể cả khi đoán đúng mật khẩu vẫn nhận HTTP 429 nếu vượt ngưỡng tần suất 5 req / 60s).
+  - Cập nhật [`test/api/auth-security.test.ts`](test/api/auth-security.test.ts): Bổ sung kiểm thử 8.12 xác nhận request có `APP_PASSWORD` chính xác nhưng vượt quá giới hạn tần suất vẫn nhận HTTP 429.
+  - Cập nhật [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md): Đồng bộ hóa mô tả secret keys (chấp nhận `APP_PASSWORD` dùng chung cho admin & cron) và ghi nhận cơ chế Pre-auth Rate Limiting.
+  - Cập nhật [`.gitignore`](.gitignore): Ngừng theo dõi các file sinh tự động dung lượng lớn `graphify-out/graph.json` và `graphify-out/graph.html`, chỉ lưu trữ file báo cáo markdown `graphify-out/GRAPH_REPORT.md` phục vụ AI quy trình.
+  - Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ (0 issues) | build ✅ | graphify ✅
+  - File chính bị ảnh hưởng: [`src/hooks.server.ts`](src/hooks.server.ts), [`test/api/auth-security.test.ts`](test/api/auth-security.test.ts), [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md), [`.gitignore`](.gitignore), [`README.md`](README.md).
 
 - Hoàn thiện Hệ thống Tự Động Checkout Chạy Ngầm Lúc 12:01 GMT+7 Hàng Ngày & Tăng Cường Bảo Mật Gateway (Rate Limiting, CSRF Origin, Clean-up):
   - Khắc phục sự cố Serverless Idle: Khắc phục triệt để tình trạng auto-checkout chỉ chạy khi có người dùng đăng nhập vào website. Hệ thống tự động thức dậy và thực thi chuẩn xác qua GitHub Actions scheduled workflow.
