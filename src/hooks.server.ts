@@ -1,5 +1,9 @@
 import { type Handle, json } from "@sveltejs/kit";
-import { verifySession, verifyWebhookAuth } from "./lib/server/auth.js";
+import {
+	verifyCronAuth,
+	verifySession,
+	verifyWebhookAuth,
+} from "./lib/server/auth.js";
 import { CONFIG } from "./lib/server/config.js";
 
 let envInitialized = false;
@@ -33,8 +37,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		["POST", "PUT", "PATCH", "DELETE"].includes(event.request.method)
 	) {
 		const origin = event.request.headers.get("origin");
-		// Exempt server-to-server webhook endpoints with valid API key from strict browser origin check
-		if (origin && !pathname.startsWith("/api/ingest/ocr")) {
+		// Exempt server-to-server webhook & cron endpoints with valid API key from strict browser origin check
+		if (
+			origin &&
+			!pathname.startsWith("/api/ingest/ocr") &&
+			!pathname.startsWith("/api/stays/auto-checkout")
+		) {
 			try {
 				const originHost = new URL(origin).host;
 				if (originHost !== event.url.host) {
@@ -85,7 +93,27 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return resolve(event);
 		}
 
-		// C. All other /api/* endpoints require authenticated session in PROD (bypassed in DEV)
+		// C. Auto-checkout endpoint is protected by Cron Secret Key or active session
+		if (pathname.startsWith("/api/stays/auto-checkout")) {
+			const isValidCron = await verifyCronAuth(
+				event.request,
+				event.cookies,
+				event.platform,
+			);
+			if (!isValidCron) {
+				return json(
+					{
+						success: false,
+						message:
+							"Yêu cầu khóa Cron xác thực hợp lệ (Unauthorized Auto-Checkout - Invalid or Missing Cron Key).",
+					},
+					{ status: 401 },
+				);
+			}
+			return resolve(event);
+		}
+
+		// D. All other /api/* endpoints require authenticated session in PROD (bypassed in DEV)
 		if (!isAuth) {
 			return json(
 				{

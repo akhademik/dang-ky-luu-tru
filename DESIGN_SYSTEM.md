@@ -28,6 +28,12 @@
 - **Chống Timing Attacks**: So sánh mật khẩu và token bằng hàm so sánh hằng số thời gian (`timingSafeEqualStr`).
 - **Cloudflare Native Rate Limiter**: Tích hợp binding `RATE_LIMITER` phân tán tại Edge (`5 req / 60s`), trả HTTP 429 khi vượt ngưỡng mà không duy trì state trong RAM của Worker.
 - **Gateway Hooks**: Toàn bộ API browser được bảo vệ tập trung tại `hooks.server.ts`. Webhook `/api/ingest/ocr` được xác thực độc lập qua API Key. Giao diện client tự động chuyển hướng về form Login khi nhận mã `401 Unauthorized`.
+- **Scheduled Cron Gateway & Zero-Leak Security Pattern**:
+  - Endpoint `/api/stays/auto-checkout` được bảo vệ tập trung tại `hooks.server.ts` qua `verifyCronAuth`.
+  - Hỗ trợ xác thực qua HTTP Headers (`x-cron-key`, `x-api-key`, `Authorization: Bearer <key>`) hoặc active session cookie.
+  - Thứ tự ưu tiên khóa: `CRON_SECRET_KEY` -> `AUTO_CHECKOUT_KEY` -> `APP_PASSWORD` (fallback an toàn trên Cloudflare).
+  - Tuyệt đối cấm truyền key qua URL query parameters (`?key=...`) nhằm ngăn chặn nguy cơ rò rỉ secret qua access logs, proxy logs hoặc Cloudflare CDN URL tracking.
+  - Tích hợp GitHub Actions workflow chạy tự động lúc 12:01 GMT+7 (`05:01 UTC`) với cơ chế curl silent, không log token và không dump dữ liệu định danh khách (PII) ra console log.
 
 ### 1.5. Strict GMT+7 Timezone & Stay State Machine Policy
 - **Múi giờ duy nhất**: Tất cả thời gian lưu trữ trong Cloudflare D1, xử lý logic, đồng bộ Sheets, gửi API BCA và hiển thị giao diện bắt buộc dùng **GMT+7 (`Asia/Ho_Chi_Minh`)** được quản lý tập trung tại `src/lib/server/time.ts`.

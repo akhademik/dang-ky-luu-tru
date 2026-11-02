@@ -74,6 +74,40 @@ function getIngestApiKey(platform?: App.Platform): string {
 }
 
 /**
+ * Lấy danh sách Cron / Auto-checkout secret keys hợp lệ từ platform.env hoặc process.env.
+ * Hỗ trợ APP_PASSWORD (mật khẩu hệ thống trên Cloudflare) lẫn CRON_SECRET_KEY / AUTO_CHECKOUT_KEY.
+ */
+function getValidCronApiKeys(platform?: App.Platform): string[] {
+	const platformEnv = (platform?.env || {}) as Record<string, unknown>;
+	const keys: string[] = [];
+
+	const add = (k: unknown) => {
+		if (typeof k === "string") {
+			const trimmed = k.trim();
+			if (trimmed && !keys.includes(trimmed)) {
+				keys.push(trimmed);
+			}
+		}
+	};
+
+	if (platformEnv) {
+		add(platformEnv.APP_PASSWORD);
+		add(platformEnv.CRON_SECRET_KEY);
+		add(platformEnv.AUTO_CHECKOUT_KEY);
+	}
+
+	if (typeof process !== "undefined" && process.env) {
+		add(process.env.APP_PASSWORD);
+		add(process.env.CRON_SECRET_KEY);
+		add(process.env.AUTO_CHECKOUT_KEY);
+	}
+
+	add(CONFIG.APP_PASSWORD);
+
+	return keys;
+}
+
+/**
  * So sánh chuỗi thời gian cố định (Constant-time string comparison) chống tấn công Timing Attack
  */
 export function timingSafeEqualStr(a: string, b: string): boolean {
@@ -325,6 +359,60 @@ export async function verifyWebhookAuth(
 	// Nếu chưa thiết lập INGEST_API_KEY:
 	// Ở chế độ PROD, từ chối request unauthenticated.
 	// Ở chế độ DEV, cho phép nếu local.
+	if (isProduction(platform)) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Xác thực Cron Job / Tự động Checkout chạy ngầm:
+ * 1. Chấp nhận nếu có session cookie hợp lệ của người dùng (gọi từ Dashboard UI).
+ * 2. Chấp nhận nếu có Cron API key hợp lệ trong HTTP headers:
+ *    - 'x-cron-key': <secret>
+ *    - 'x-api-key': <secret>
+ *    - 'Authorization: Bearer <secret>'
+ * 3. ⚠️ NGUYÊN TẮC BẢO MẬT CHỐNG LEAK: Tuyệt đối KHÔNG chấp nhận key trong URL query parameter
+ *    để ngăn chặn việc lộ secret qua web server logs, proxy access logs, hoặc Cloudflare CDN URL tracking.
+ * 4. Ở chế độ DEV mode: tự động bypass nếu không cấu hình key.
+ * 5. Ở chế độ PROD mode: bắt buộc khớp key thông qua so sánh an toàn timingSafeEqualStr.
+ */
+export async function verifyCronAuth(
+	request: Request,
+	cookies?: { get: (name: string) => string | undefined },
+	platform?: App.Platform,
+): Promise<boolean> {
+	// 1. Kiểm tra session cookie trước (nếu người dùng đăng nhập trên giao diện web gọi sang)
+	if (await verifySession(cookies, platform)) {
+		return true;
+	}
+
+	// 2. Lấy danh sách Cron Keys cấu hình hợp lệ
+	const expectedKeys = getValidCronApiKeys(platform);
+
+	// 3. Lấy key từ HTTP headers (chống leak qua URL query params)
+	const headerKey =
+		request.headers.get("x-cron-key") || request.headers.get("x-api-key") || "";
+
+	let bearerToken = "";
+	const authHeader = request.headers.get("authorization") || "";
+	if (authHeader.toLowerCase().startsWith("bearer ")) {
+		bearerToken = authHeader.substring(7).trim();
+	}
+
+	const providedKey = headerKey || bearerToken;
+
+	if (expectedKeys.length > 0) {
+		if (!providedKey) return false;
+		return expectedKeys.some((expectedKey) =>
+			timingSafeEqualStr(providedKey, expectedKey),
+		);
+	}
+
+	// Nếu chưa cấu hình key:
+	// Ở chế độ PROD: từ chối tuyệt đối để bảo mật
+	// Ở chế độ DEV: cho phép bypass phục vụ test cục bộ
 	if (isProduction(platform)) {
 		return false;
 	}

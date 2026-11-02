@@ -1,0 +1,75 @@
+name: Scheduled Daily Auto-Checkout
+
+on:
+  schedule:
+    # 05:01 UTC = 12:01 GMT+7 (Asia/Ho_Chi_Minh) trưa mỗi ngày
+    - cron: '1 5 * * *'
+  # Cho phép kích hoạt thủ công từ GitHub Actions UI bởi quản trị viên repo
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Ép buộc checkout (true / false)'
+        required: false
+        default: 'false'
+
+# Ràng buộc quyền tối thiểu (Least Privilege) - Tuyệt đối không cấp quyền ghi repo
+permissions:
+  contents: read
+
+# Ngăn chặn nhiều workflow chạy đồng thời
+concurrency:
+  group: auto-checkout-cron
+  cancel-in-progress: false
+
+jobs:
+  auto_checkout:
+    name: Execute Auto-Checkout at 12:01 GMT+7
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger Auto-Checkout API
+        env:
+          # Secret được inject qua biến môi trường an toàn (tự động masked bởi GitHub runner)
+          CRON_SECRET: ${{ secrets.APP_PASSWORD || secrets.CRON_SECRET_KEY }}
+          APP_URL: ${{ vars.APP_URL || 'https://dang-ky-luu-tru.pages.dev' }}
+          FORCE_CHECKOUT: ${{ github.event.inputs.force || 'false' }}
+        run: |
+          # 1. Kiểm tra cấu hình secret (tuyệt đối không echo secret ra console)
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::Thiếu secret APP_PASSWORD trong GitHub Secrets! Vui lòng cấu hình tại Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+          TARGET_URL="${APP_URL%/}/api/stays/auto-checkout"
+          echo "📡 Đang kích hoạt tự động checkout tại: $TARGET_URL (Thời điểm $(date -u '+%Y-%m-%d %H:%M:%S UTC'))"
+
+          # 2. Tạo file phản hồi tạm thời
+          TMP_RESP=$(mktemp)
+
+          # 3. Gọi API với curl bảo mật:
+          # -s: Silent mode (không hiển thị thanh tiến trình)
+          # -S: Chỉ in thông báo lỗi chuẩn nếu có sự cố
+          # Tuyệt đối không dùng cờ -v để tránh in header chứa secret ra logs
+          HTTP_CODE=$(curl -s -S -w "%{http_code}" -o "$TMP_RESP" \
+            -X POST "$TARGET_URL" \
+            -H "X-Cron-Key: $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            -d "{\"force\": $FORCE_CHECKOUT}" || echo "FAILED")
+
+          # 4. Đánh giá kết quả trả về an toàn
+          if [ "$HTTP_CODE" = "200" ]; then
+            # Chỉ trích xuất tóm tắt nghiệp vụ (message, count) - không dump dữ liệu PII của khách ra log
+            MSG=$(jq -r '.message // "Thành công"' "$TMP_RESP" 2>/dev/null || echo "Hoàn tất")
+            COUNT=$(jq -r '.data.checkedOutCount // 0' "$TMP_RESP" 2>/dev/null || echo "0")
+            echo "✅ Kích hoạt Auto-Checkout thành công! (HTTP 200)"
+            echo "📊 Kết quả: $MSG (Tổng số khách đã checkout: $COUNT)"
+            rm -f "$TMP_RESP"
+            exit 0
+          else
+            echo "::error::Gọi API Auto-Checkout thất bại với mã HTTP: $HTTP_CODE"
+            ERR_MSG=$(jq -r '.message // .error // "Unknown error"' "$TMP_RESP" 2>/dev/null || echo "Không nhận được phản hồi hợp lệ")
+            echo "Chi tiết: $ERR_MSG"
+            rm -f "$TMP_RESP"
+            exit 1
+          fi

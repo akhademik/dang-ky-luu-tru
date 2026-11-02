@@ -95,19 +95,6 @@
       "source_location": "L50"
     },
     {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice",
-      "label": "GoogleSheetService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "googlesheetservice",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "src_lib_server_kbttclient_apiresponse",
       "label": "ApiResponse",
       "_callable": true,
@@ -212,19 +199,6 @@
       "source_location": "L215"
     },
     {
-      "id": "src_lib_types_index_tabinfo",
-      "label": "TabInfo",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "tabinfo",
-      "source_file": "src/lib/types/index.ts",
-      "source_location": "L153"
-    },
-    {
       "id": "src_lib_server_catalogmanager_catalogmanager",
       "label": "catalogManager",
       "_callable": true,
@@ -275,6 +249,32 @@
       "norm_label": "platform",
       "source_file": "src/app.d.ts",
       "source_location": "L13"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice",
+      "label": "GoogleSheetService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "googlesheetservice",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_types_index_tabinfo",
+      "label": "TabInfo",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "tabinfo",
+      "source_file": "src/lib/types/index.ts",
+      "source_location": "L153"
     },
     {
       "id": "src_lib_server_db_remoted1database",
@@ -342,19 +342,6 @@
       "source_location": "L10"
     },
     {
-      "id": "src_lib_types_index_completenessresult",
-      "label": "CompletenessResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": "completenessresult",
-      "source_file": "src/lib/types/index.ts",
-      "source_location": "L118"
-    },
-    {
       "id": "src_lib_types_index_rawocrrow",
       "label": "RawOcrRow",
       "_callable": true,
@@ -366,19 +353,6 @@
       "norm_label": "rawocrrow",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L114"
-    },
-    {
-      "id": "src_lib_types_index_transformedrowresult",
-      "label": "TransformedRowResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": "transformedrowresult",
-      "source_file": "src/lib/types/index.ts",
-      "source_location": "L127"
     },
     {
       "id": "src_lib_data_catalogs_standardcatalogitem",
@@ -405,6 +379,19 @@
       "norm_label": "catalogitem",
       "source_file": "src/lib/server/catalogManager.ts",
       "source_location": "L8"
+    },
+    {
+      "id": "src_lib_types_index_completenessresult",
+      "label": "CompletenessResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "types/index.ts",
+      "file_type": "code",
+      "norm_label": "completenessresult",
+      "source_file": "src/lib/types/index.ts",
+      "source_location": "L118"
     },
     {
       "id": "src_lib_types_index_guest",
@@ -470,6 +457,19 @@
       "norm_label": "syncresult",
       "source_file": "src/lib/types/index.ts",
       "source_location": "L161"
+    },
+    {
+      "id": "src_lib_types_index_transformedrowresult",
+      "label": "TransformedRowResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "types/index.ts",
+      "file_type": "code",
+      "norm_label": "transformedrowresult",
+      "source_file": "src/lib/types/index.ts",
+      "source_location": "L127"
     },
     {
       "id": "src_lib_types_kbtt_bcahealthproberesult",
@@ -958,18 +958,6 @@
       "source_location": "L9"
     },
     {
-      "id": "src_routes_api_stays_auto_checkout_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
-      "source_location": "L6"
-    },
-    {
       "id": "src_routes_api_stays_checkout_server_post",
       "label": "POST()",
       "_callable": true,
@@ -1100,138 +1088,6 @@
       "norm_label": "runstayserviceintegrationtests()",
       "source_file": "test/integration/stay-service.test.ts",
       "source_location": "L25"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
-      "label": ".buildOrderedRowValues()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".buildorderedrowvalues()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L689"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
-      "label": ".deleteSheetRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".deletesheetrow()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L924"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
-      "label": ".fetchSheetData()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".fetchsheetdata()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L202"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
-      "label": ".fetchSheetTabs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".fetchsheettabs()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L40"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
-      "label": "._mapHeaderToKey()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "._mapheadertokey()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L571"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
-      "label": "._parseApiValues()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "._parseapivalues()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L519"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
-      "label": ".parseCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".parsecsv()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L330"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
-      "label": "._parseDateFromTabName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "._parsedatefromtabname()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L184"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
-      "label": ".parseSheetIdentifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".parsesheetidentifier()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L20"
-    },
-    {
-      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
-      "label": ".updateSheetRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": ".updatesheetrow()",
-      "source_file": "src/lib/server/googleSheetService.ts",
-      "source_location": "L784"
     },
     {
       "id": "src_lib_server_kbttclient_kbttclient_constructor",
@@ -1582,6 +1438,18 @@
       "source_location": "L4"
     },
     {
+      "id": "src_routes_api_ingest_ocr_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/ingest/ocr/+server.ts",
+      "source_location": "L6"
+    },
+    {
       "id": "src_routes_api_logs_server_delete",
       "label": "DELETE()",
       "_callable": true,
@@ -1700,18 +1568,6 @@
       "norm_label": "runmockservertests()",
       "source_file": "test/integration/kbtt-mock-server.test.ts",
       "source_location": "L8"
-    },
-    {
-      "id": "test_live_live_bca_pipeline_test_runlivebcapipelinetests",
-      "label": "runLiveBcaPipelineTests()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "@sveltejs/kit",
-      "file_type": "code",
-      "norm_label": "runlivebcapipelinetests()",
-      "source_file": "test/live/live-bca-pipeline.test.ts",
-      "source_location": "L7"
     },
     {
       "id": "test_playwright_test_rune2etest",
@@ -2266,6 +2122,42 @@
       "source_location": "L101"
     },
     {
+      "id": "scripts_init_local_db_main",
+      "label": "main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "scripts/init-local-db.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
+      "label": "runSvelteDeprecationCheck()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "runsveltedeprecationcheck()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L41"
+    },
+    {
+      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
+      "label": "scanDirectoryForForbiddenPatterns()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "scandirectoryforforbiddenpatterns()",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L5"
+    },
+    {
       "id": "test_inspect_modal_speed_main",
       "label": "main()",
       "_callable": true,
@@ -2312,6 +2204,150 @@
       "norm_label": "waituntil()",
       "source_file": "src/app.d.ts",
       "source_location": "L30"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_buildorderedrowvalues",
+      "label": ".buildOrderedRowValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".buildorderedrowvalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L689"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_deletesheetrow",
+      "label": ".deleteSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".deletesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L924"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheetdata",
+      "label": ".fetchSheetData()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheetdata()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L202"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_fetchsheettabs",
+      "label": ".fetchSheetTabs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".fetchsheettabs()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L40"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_mapheadertokey",
+      "label": "._mapHeaderToKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._mapheadertokey()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L571"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parseapivalues",
+      "label": "._parseApiValues()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parseapivalues()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L519"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsecsv",
+      "label": ".parseCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsecsv()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L330"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsedatefromtabname",
+      "label": "._parseDateFromTabName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "._parsedatefromtabname()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L184"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_parsesheetidentifier",
+      "label": ".parseSheetIdentifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".parsesheetidentifier()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_lib_server_googlesheetservice_googlesheetservice_updatesheetrow",
+      "label": ".updateSheetRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": ".updatesheetrow()",
+      "source_file": "src/lib/server/googleSheetService.ts",
+      "source_location": "L784"
+    },
+    {
+      "id": "test_live_live_bca_pipeline_test_runlivebcapipelinetests",
+      "label": "runLiveBcaPipelineTests()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "GoogleSheetService",
+      "file_type": "code",
+      "norm_label": "runlivebcapipelinetests()",
+      "source_file": "test/live/live-bca-pipeline.test.ts",
+      "source_location": "L7"
     },
     {
       "id": "src_lib_server_db_remoted1database_escapesql",
@@ -2686,18 +2722,6 @@
       "source_location": "L27"
     },
     {
-      "id": "src_routes_api_ingest_ocr_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/ingest/ocr/+server.ts",
-      "source_location": "L6"
-    },
-    {
       "id": "test_unit_transformer_test_runtransformerunittests",
       "label": "runTransformerUnitTests()",
       "_callable": true,
@@ -2710,18 +2734,6 @@
       "source_location": "L4"
     },
     {
-      "id": "scripts_init_local_db_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "src_hooks_server_handle",
       "label": "handle()",
       "_callable": true,
@@ -2731,7 +2743,7 @@
       "file_type": "code",
       "norm_label": "handle()",
       "source_file": "src/hooks.server.ts",
-      "source_location": "L7"
+      "source_location": "L11"
     },
     {
       "id": "src_lib_server_auth_base64urldecode",
@@ -2743,7 +2755,7 @@
       "file_type": "code",
       "norm_label": "base64urldecode()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L144"
+      "source_location": "L178"
     },
     {
       "id": "src_lib_server_auth_base64urlencode",
@@ -2755,7 +2767,7 @@
       "file_type": "code",
       "norm_label": "base64urlencode()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L135"
+      "source_location": "L169"
     },
     {
       "id": "src_lib_server_auth_checkratelimit",
@@ -2767,7 +2779,7 @@
       "file_type": "code",
       "norm_label": "checkratelimit()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L106"
+      "source_location": "L140"
     },
     {
       "id": "src_lib_server_auth_createsessiontoken",
@@ -2779,7 +2791,7 @@
       "file_type": "code",
       "norm_label": "createsessiontoken()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L180"
+      "source_location": "L214"
     },
     {
       "id": "src_lib_server_auth_getingestapikey",
@@ -2815,7 +2827,19 @@
       "file_type": "code",
       "norm_label": "getsigningkey()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L164"
+      "source_location": "L198"
+    },
+    {
+      "id": "src_lib_server_auth_getvalidcronapikeys",
+      "label": "getValidCronApiKeys()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "getvalidcronapikeys()",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L80"
     },
     {
       "id": "src_lib_server_auth_isproduction",
@@ -2839,7 +2863,19 @@
       "file_type": "code",
       "norm_label": "timingsafeequalstr()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L79"
+      "source_location": "L113"
+    },
+    {
+      "id": "src_lib_server_auth_verifycronauth",
+      "label": "verifyCronAuth()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "verifycronauth()",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L381"
     },
     {
       "id": "src_lib_server_auth_verifysession",
@@ -2851,7 +2887,7 @@
       "file_type": "code",
       "norm_label": "verifysession()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L214"
+      "source_location": "L248"
     },
     {
       "id": "src_lib_server_auth_verifywebhookauth",
@@ -2863,7 +2899,7 @@
       "file_type": "code",
       "norm_label": "verifywebhookauth()",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L284"
+      "source_location": "L318"
     },
     {
       "id": "src_routes_api_auth_login_server_delete",
@@ -2938,6 +2974,30 @@
       "source_location": "L33"
     },
     {
+      "id": "src_routes_api_stays_auto_checkout_server_get",
+      "label": "GET()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_routes_api_stays_auto_checkout_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L31"
+    },
+    {
       "id": "src_routes_page_server_load",
       "label": "load()",
       "_callable": true,
@@ -2959,31 +3019,7 @@
       "file_type": "code",
       "norm_label": "runauthsecurityapitests()",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L22"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test_runsveltedeprecationcheck",
-      "label": "runSvelteDeprecationCheck()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "runsveltedeprecationcheck()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L41"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test_scandirectoryforforbiddenpatterns",
-      "label": "scanDirectoryForForbiddenPatterns()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "scandirectoryforforbiddenpatterns()",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L5"
+      "source_location": "L27"
     },
     {
       "id": "src_lib_utils_format_getcountryfullname",
@@ -3217,17 +3253,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_routes_api_stays_auto_checkout_server",
-      "label": "auto-checkout/+server.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "stayService.ts",
-      "file_type": "code",
-      "norm_label": "auto-checkout/+server.ts",
-      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "src_routes_api_stays_checkout_server",
       "label": "checkout/+server.ts",
       "_origin": "ast",
@@ -3314,7 +3339,7 @@
       "node_kind": "heading",
       "norm_label": "2026-10-29",
       "source_file": "README.md",
-      "source_location": "L126"
+      "source_location": "L150"
     },
     {
       "id": "src_index",
@@ -3348,6 +3373,17 @@
       "norm_label": "config",
       "source_file": "src/lib/server/config.ts",
       "source_location": "L81"
+    },
+    {
+      "id": "src_lib_server_datatransformer",
+      "label": "dataTransformer.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": "datatransformer.ts",
+      "source_file": "src/lib/server/dataTransformer.ts",
+      "source_location": "L1"
     },
     {
       "id": "src_lib_server_googlesheetservice",
@@ -3424,6 +3460,17 @@
       "file_type": "code",
       "norm_label": "env/+server.ts",
       "source_file": "src/routes/api/env/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_ingest_ocr_server",
+      "label": "ocr/+server.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "@sveltejs/kit",
+      "file_type": "code",
+      "norm_label": "ocr/+server.ts",
+      "source_file": "src/routes/api/ingest/ocr/+server.ts",
       "source_location": "L1"
     },
     {
@@ -5962,7 +6009,7 @@
       "node_kind": "heading",
       "norm_label": "1.5. strict gmt+7 timezone & stay state machine policy",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L32"
+      "source_location": "L38"
     },
     {
       "id": "design_system_1_architectural_patterns_ki\u1ebfn_tr\u00fac_h\u1ec7_th\u1ed1ng",
@@ -5986,7 +6033,7 @@
       "node_kind": "heading",
       "norm_label": "2.1. backgrounds & surfaces (nen & the chua)",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L46"
+      "source_location": "L52"
     },
     {
       "id": "design_system_2_2_text_typography",
@@ -5998,7 +6045,7 @@
       "node_kind": "heading",
       "norm_label": "2.2. text & typography",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L55"
+      "source_location": "L61"
     },
     {
       "id": "design_system_2_3_semantic_accents_m\u00e0u_tr\u1ea1ng_th\u00e1i_nghi\u1ec7p_v\u1ee5",
@@ -6010,7 +6057,7 @@
       "node_kind": "heading",
       "norm_label": "2.3. semantic accents (mau trang thai nghiep vu)",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L63"
+      "source_location": "L69"
     },
     {
       "id": "design_system_2_color_code_theme_palette_b\u1ea3ng_m\u00e3_m\u00e0u_chu\u1ea9n",
@@ -6022,7 +6069,7 @@
       "node_kind": "heading",
       "norm_label": "2. color code & theme palette (bang ma mau chuan)",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L42"
+      "source_location": "L48"
     },
     {
       "id": "design_system_3_1_buttons_action_elements",
@@ -6034,7 +6081,7 @@
       "node_kind": "heading",
       "norm_label": "3.1. buttons & action elements",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L76"
+      "source_location": "L82"
     },
     {
       "id": "design_system_3_2_form_inputs_selects",
@@ -6046,7 +6093,7 @@
       "node_kind": "heading",
       "norm_label": "3.2. form inputs & selects",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L86"
+      "source_location": "L92"
     },
     {
       "id": "design_system_3_3_custom_modals_dialogs_no_native_browser_dialogs",
@@ -6058,7 +6105,7 @@
       "node_kind": "heading",
       "norm_label": "3.3. custom modals & dialogs (no native browser dialogs)",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L91"
+      "source_location": "L97"
     },
     {
       "id": "design_system_3_4_strict_date_time_pattern_quy_\u0111\u1ecbnh_b\u1eaft_bu\u1ed9c_v\u1ec1_\u0111\u1ecbnh_d\u1ea1ng_ng\u00e0y_th\u00e1ng",
@@ -6070,7 +6117,7 @@
       "node_kind": "heading",
       "norm_label": "3.4. strict date & time pattern (quy \u0111inh bat buoc ve \u0111inh dang ngay thang)",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L95"
+      "source_location": "L101"
     },
     {
       "id": "design_system_3_ui_component_patterns_chu\u1ea9n_thi\u1ebft_k\u1ebf_giao_di\u1ec7n",
@@ -6082,7 +6129,7 @@
       "node_kind": "heading",
       "norm_label": "3. ui component patterns (chuan thiet ke giao dien)",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L74"
+      "source_location": "L80"
     },
     {
       "id": "design_system_design_system_patterns_h\u1ec7_th\u1ed1ng_\u0111\u0103ng_k\u00fd_qu\u1ea3n_l\u00fd_l\u01b0u_tr\u00fa",
@@ -6497,6 +6544,18 @@
       "source_location": "L17"
     },
     {
+      "id": "design_pattern_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
+      "label": "1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern",
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "1. ARCHITECTURAL PATTERNS (KI\u1ebeN TR\u00daC H\u1ec6 TH\u1ed0NG)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1.4. centralized security gateway, stateless hmac auth & rate limiting pattern",
+      "source_file": "DESIGN_PATTERN.md",
+      "source_location": "L24"
+    },
+    {
       "id": "design_pattern_1_5_strict_gmt_7_timezone_stay_state_machine_policy",
       "label": "1.5. Strict GMT+7 Timezone & Stay State Machine Policy",
       "_origin": "ast",
@@ -6653,6 +6712,28 @@
       "source_location": "L1"
     },
     {
+      "id": "scripts_init_local_db",
+      "label": "init-local-db.ts",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "init-local-db.ts",
+      "source_file": "scripts/init-local-db.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_unit_svelte_deprecation_test",
+      "label": "svelte-deprecation.test.ts",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
+      "file_type": "code",
+      "norm_label": "svelte-deprecation.test.ts",
+      "source_file": "test/unit/svelte-deprecation.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "kit",
       "label": "@sveltejs/kit",
       "_origin": "ast",
@@ -6774,28 +6855,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_server_datatransformer",
-      "label": "dataTransformer.ts",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": "datatransformer.ts",
-      "source_file": "src/lib/server/dataTransformer.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_api_ingest_ocr_server",
-      "label": "ocr/+server.ts",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "DataTransformer",
-      "file_type": "code",
-      "norm_label": "ocr/+server.ts",
-      "source_file": "src/routes/api/ingest/ocr/+server.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "test_unit_transformer_test",
       "label": "transformer.test.ts",
       "_origin": "ast",
@@ -6816,7 +6875,7 @@
       "node_kind": "heading",
       "norm_label": "ke hoach theo doi thuc te & xu ly tiep theo (phase 2):",
       "source_file": "README.md",
-      "source_location": "L114"
+      "source_location": "L125"
     },
     {
       "id": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
@@ -6829,17 +6888,6 @@
       "norm_label": "trang thai he thong",
       "source_file": "README.md",
       "source_location": "L82"
-    },
-    {
-      "id": "scripts_init_local_db",
-      "label": "init-local-db.ts",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "init-local-db.ts",
-      "source_file": "scripts/init-local-db.ts",
-      "source_location": "L1"
     },
     {
       "id": "src_hooks_server",
@@ -6886,6 +6934,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_routes_api_stays_auto_checkout_server",
+      "label": "auto-checkout/+server.ts",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "auth-security.test.ts",
+      "file_type": "code",
+      "norm_label": "auto-checkout/+server.ts",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_routes_page_server",
       "label": "+page.server.ts",
       "_origin": "ast",
@@ -6906,29 +6965,6 @@
       "norm_label": "auth-security.test.ts",
       "source_file": "test/api/auth-security.test.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "test_unit_svelte_deprecation_test",
-      "label": "svelte-deprecation.test.ts",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "code",
-      "norm_label": "svelte-deprecation.test.ts",
-      "source_file": "test/unit/svelte-deprecation.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "design_pattern_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
-      "label": "1.4. Centralized Security Gateway, Stateless HMAC Auth & Rate Limiting Pattern",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1.4. centralized security gateway, stateless hmac auth & rate limiting pattern",
-      "source_file": "DESIGN_PATTERN.md",
-      "source_location": "L24"
     },
     {
       "id": "design_system_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
@@ -7129,7 +7165,7 @@
       "node_kind": "heading",
       "norm_label": "2026-09-30",
       "source_file": "README.md",
-      "source_location": "L201"
+      "source_location": "L232"
     },
     {
       "id": "readme_2026_10_28",
@@ -7141,7 +7177,19 @@
       "node_kind": "heading",
       "norm_label": "2026-10-28",
       "source_file": "README.md",
-      "source_location": "L175"
+      "source_location": "L206"
+    },
+    {
+      "id": "readme_2026_11_02",
+      "label": "2026-11-02",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "format.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2026-11-02",
+      "source_file": "README.md",
+      "source_location": "L137"
     },
     {
       "id": "readme_changelog",
@@ -7153,7 +7201,7 @@
       "node_kind": "heading",
       "norm_label": "changelog",
       "source_file": "README.md",
-      "source_location": "L124"
+      "source_location": "L135"
     },
     {
       "id": "readme_c\u00e1c_t\u00ednh_n\u0103ng_ch\u00ednh_core_features",
@@ -7390,23 +7438,11 @@
       "type": "external"
     },
     {
-      "id": "src_lib_server_db_d1databaselike",
-      "label": "src_lib_server_db_d1databaselike",
-      "_origin": "semantic",
-      "community": 44,
-      "community_name": "app.d.ts",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_lib_server_db_d1databaselike",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "ref_node_child_process",
       "label": "ref_node_child_process",
       "_origin": "semantic",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_child_process",
@@ -7417,8 +7453,8 @@
       "id": "ref_node_fs",
       "label": "ref_node_fs",
       "_origin": "semantic",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_fs",
@@ -7429,11 +7465,23 @@
       "id": "ref_node_path",
       "label": "ref_node_path",
       "_origin": "semantic",
-      "community": 7,
-      "community_name": "auth-security.test.ts",
+      "community": 41,
+      "community_name": "svelte-deprecation.test.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_path",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_lib_server_db_d1databaselike",
+      "label": "src_lib_server_db_d1databaselike",
+      "_origin": "semantic",
+      "community": 44,
+      "community_name": "app.d.ts",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_lib_server_db_d1databaselike",
       "source_file": "",
       "type": "external"
     },
@@ -7484,7 +7532,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/hooks.server.ts",
-      "source_location": "L27",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -7496,7 +7544,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/hooks.server.ts",
-      "source_location": "L70",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hooks_server_handle",
+      "target": "src_lib_server_auth_verifycronauth",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/hooks.server.ts",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -7508,7 +7568,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L111",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -7520,7 +7580,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L183",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -7532,7 +7592,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L187",
+      "source_location": "L221",
       "weight": 1.0
     },
     {
@@ -7544,7 +7604,55 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L193",
+      "source_location": "L227",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_auth_verifycronauth",
+      "target": "src_lib_server_auth_verifysession",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L387",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_auth_verifycronauth",
+      "target": "src_lib_server_auth_getvalidcronapikeys",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L392",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_auth_verifycronauth",
+      "target": "src_lib_server_auth_timingsafeequalstr",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L409",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_auth_verifycronauth",
+      "target": "src_lib_server_auth_isproduction",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L416",
       "weight": 1.0
     },
     {
@@ -7556,7 +7664,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L219",
+      "source_location": "L253",
       "weight": 1.0
     },
     {
@@ -7568,7 +7676,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L238",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -7580,7 +7688,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L244",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -7592,7 +7700,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L248",
+      "source_location": "L282",
       "weight": 1.0
     },
     {
@@ -7604,7 +7712,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L290",
+      "source_location": "L324",
       "weight": 1.0
     },
     {
@@ -7616,7 +7724,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L295",
+      "source_location": "L329",
       "weight": 1.0
     },
     {
@@ -7628,7 +7736,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L322",
+      "source_location": "L356",
       "weight": 1.0
     },
     {
@@ -7640,7 +7748,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L328",
+      "source_location": "L362",
       "weight": 1.0
     },
     {
@@ -9600,7 +9708,7 @@
       "weight": 1.0
     },
     {
-      "source": "src_routes_api_stays_auto_checkout_server_post",
+      "source": "src_routes_api_stays_auto_checkout_server_get",
       "target": "src_lib_server_db_getdb",
       "relation": "calls",
       "_origin": "ast",
@@ -9609,6 +9717,18 @@
       "context": "call",
       "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stays_auto_checkout_server_post",
+      "target": "src_lib_server_db_getdb",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -9872,7 +9992,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L145",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -9884,7 +10004,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L215",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -9896,7 +10016,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L268",
+      "source_location": "L273",
       "weight": 1.0
     },
     {
@@ -9908,7 +10028,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L283",
+      "source_location": "L288",
       "weight": 1.0
     },
     {
@@ -9920,7 +10040,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L348",
+      "source_location": "L353",
       "weight": 1.0
     },
     {
@@ -9932,7 +10052,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L388",
+      "source_location": "L393",
       "weight": 1.0
     },
     {
@@ -9944,7 +10064,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L399",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -9956,7 +10076,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L453",
+      "source_location": "L458",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test_runauthsecurityapitests",
+      "target": "src_lib_server_auth_verifycronauth",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L501",
       "weight": 1.0
     },
     {
@@ -9968,7 +10100,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L56",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test_runauthsecurityapitests",
+      "target": "src_routes_api_stays_auto_checkout_server_get",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L638",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test_runauthsecurityapitests",
+      "target": "src_routes_api_stays_auto_checkout_server_post",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L647",
       "weight": 1.0
     },
     {
@@ -9980,7 +10136,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L67",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -9992,7 +10148,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L72",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -10004,7 +10160,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L91",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -11189,6 +11345,18 @@
     },
     {
       "source": "src_hooks_server",
+      "target": "src_lib_server_auth_verifycronauth",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/hooks.server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hooks_server",
       "target": "src_lib_server_auth_verifysession",
       "relation": "imports",
       "_origin": "ast",
@@ -11220,7 +11388,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/hooks.server.ts",
-      "source_location": "L3",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -13044,7 +13212,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -13056,7 +13224,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -13068,7 +13236,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -13080,7 +13248,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -13092,7 +13260,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -13104,7 +13272,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -13116,7 +13284,31 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L19",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
+      "target": "src_routes_api_stays_auto_checkout_server_get",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
+      "target": "src_routes_api_stays_auto_checkout_server_post",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -13128,7 +13320,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L20",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -13170,6 +13362,18 @@
     {
       "source": "test_api_auth_security_test",
       "target": "src_lib_server_auth_session_ttl_seconds",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
+      "target": "src_lib_server_auth_verifycronauth",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -13885,7 +14089,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/hooks.server.ts",
-      "source_location": "L3",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -15424,7 +15628,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -15436,7 +15640,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -15448,19 +15652,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L15",
-      "weight": 1.0
-    },
-    {
-      "source": "test_api_auth_security_test",
-      "target": "src_routes_api_stays_audit_server",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L19",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -15477,7 +15669,7 @@
     },
     {
       "source": "test_api_auth_security_test",
-      "target": "test_helpers_mock_d1",
+      "target": "src_routes_api_stays_audit_server",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -15485,6 +15677,30 @@
       "context": "import",
       "source_file": "test/api/auth-security.test.ts",
       "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
+      "target": "src_routes_api_stays_auto_checkout_server",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "test_api_auth_security_test",
+      "target": "test_helpers_mock_d1",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/api/auth-security.test.ts",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -17489,7 +17705,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L32",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -17511,7 +17727,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L46",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -17522,7 +17738,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L55",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -17533,40 +17749,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L63",
-      "weight": 1.0
-    },
-    {
-      "source": "design_system_3_ui_component_patterns_chu\u1ea9n_thi\u1ebft_k\u1ebf_giao_di\u1ec7n",
-      "target": "design_system_3_1_buttons_action_elements",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L76",
-      "weight": 1.0
-    },
-    {
-      "source": "design_system_3_ui_component_patterns_chu\u1ea9n_thi\u1ebft_k\u1ebf_giao_di\u1ec7n",
-      "target": "design_system_3_2_form_inputs_selects",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L86",
-      "weight": 1.0
-    },
-    {
-      "source": "design_system_3_ui_component_patterns_chu\u1ea9n_thi\u1ebft_k\u1ebf_giao_di\u1ec7n",
-      "target": "design_system_3_3_custom_modals_dialogs_no_native_browser_dialogs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L91",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -17577,7 +17760,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L95",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "design_system_3_ui_component_patterns_chu\u1ea9n_thi\u1ebft_k\u1ebf_giao_di\u1ec7n",
+      "target": "design_system_3_1_buttons_action_elements",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN_SYSTEM.md",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "design_system_3_ui_component_patterns_chu\u1ea9n_thi\u1ebft_k\u1ebf_giao_di\u1ec7n",
+      "target": "design_system_3_2_form_inputs_selects",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN_SYSTEM.md",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "design_system_3_ui_component_patterns_chu\u1ea9n_thi\u1ebft_k\u1ebf_giao_di\u1ec7n",
+      "target": "design_system_3_3_custom_modals_dialogs_no_native_browser_dialogs",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN_SYSTEM.md",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -17588,7 +17804,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L42",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -17610,7 +17826,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L74",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -19056,13 +19272,24 @@
     },
     {
       "source": "readme_changelog",
+      "target": "readme_2026_11_02",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L137",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_changelog",
       "target": "readme_2026_10_29",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L126",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -19073,7 +19300,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L175",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -19084,7 +19311,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L201",
+      "source_location": "L232",
       "weight": 1.0
     },
     {
@@ -19095,7 +19322,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L124",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -19161,7 +19388,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L114",
+      "source_location": "L125",
       "weight": 1.0
     },
     {
@@ -19315,7 +19542,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/hooks.server.ts",
-      "source_location": "L7",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -19364,13 +19591,13 @@
     },
     {
       "source": "src_lib_server_auth",
-      "target": "src_lib_server_auth_checkratelimit",
+      "target": "src_lib_server_auth_timingsafeequalstr",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L106",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -19386,13 +19613,24 @@
     },
     {
       "source": "src_lib_server_auth",
+      "target": "src_lib_server_auth_checkratelimit",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L140",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_auth",
       "target": "src_lib_server_auth_base64urlencode",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L135",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -19403,7 +19641,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L144",
+      "source_location": "L178",
       "weight": 1.0
     },
     {
@@ -19414,7 +19652,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L164",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -19425,7 +19663,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L180",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -19436,18 +19674,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L214",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_auth",
-      "target": "src_lib_server_auth_verifywebhookauth",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/auth.ts",
-      "source_location": "L284",
+      "source_location": "L248",
       "weight": 1.0
     },
     {
@@ -19459,6 +19686,28 @@
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_auth",
+      "target": "src_lib_server_auth_verifywebhookauth",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L318",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_auth",
+      "target": "src_lib_server_auth_verifycronauth",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L381",
       "weight": 1.0
     },
     {
@@ -19485,13 +19734,13 @@
     },
     {
       "source": "src_lib_server_auth",
-      "target": "src_lib_server_auth_timingsafeequalstr",
+      "target": "src_lib_server_auth_getvalidcronapikeys",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/auth.ts",
-      "source_location": "L79",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -20690,6 +20939,17 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_stays_auto_checkout_server",
+      "target": "src_routes_api_stays_auto_checkout_server_get",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/routes/api/stays/auto-checkout/+server.ts",
       "source_location": "L6",
       "weight": 1.0
     },
@@ -20910,7 +21170,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "test/api/auth-security.test.ts",
-      "source_location": "L22",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -22861,7 +23121,7 @@
       "confidence_score": 0.95,
       "context": "autoCheckoutExpiredStays",
       "source_file": "README.md",
-      "source_location": "L168",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -22885,7 +23145,7 @@
       "confidence_score": 0.95,
       "context": "cleanDocNumber",
       "source_file": "README.md",
-      "source_location": "L95",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -22897,7 +23157,7 @@
       "confidence_score": 0.95,
       "context": "cleanRoomNumber",
       "source_file": "README.md",
-      "source_location": "L95",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -22909,7 +23169,7 @@
       "confidence_score": 0.95,
       "context": "clearAuditLogs",
       "source_file": "README.md",
-      "source_location": "L130",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -22921,7 +23181,7 @@
       "confidence_score": 0.95,
       "context": "deleteAuditLog",
       "source_file": "README.md",
-      "source_location": "L130",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -22933,7 +23193,7 @@
       "confidence_score": 0.95,
       "context": "formatAuditAction",
       "source_file": "README.md",
-      "source_location": "L216",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
@@ -22945,7 +23205,7 @@
       "confidence_score": 0.95,
       "context": "formatDateTime",
       "source_file": "README.md",
-      "source_location": "L95",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -22957,7 +23217,7 @@
       "confidence_score": 0.95,
       "context": "getAuditLogs",
       "source_file": "README.md",
-      "source_location": "L90",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -22969,7 +23229,7 @@
       "confidence_score": 0.95,
       "context": "getDeployEnv",
       "source_file": "README.md",
-      "source_location": "L154",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -23005,7 +23265,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L155",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -23017,7 +23277,7 @@
       "confidence_score": 0.95,
       "context": "isProduction",
       "source_file": "README.md",
-      "source_location": "L101",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -23041,7 +23301,7 @@
       "confidence_score": 0.95,
       "context": "isSameOrPastCheckoutTimeGmt7",
       "source_file": "DESIGN_SYSTEM.md",
-      "source_location": "L108",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -23053,7 +23313,7 @@
       "confidence_score": 0.95,
       "context": "isSameOrPastCheckoutTimeGmt7",
       "source_file": "README.md",
-      "source_location": "L205",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -23065,7 +23325,19 @@
       "confidence_score": 0.95,
       "context": "loadInitialCatalogs()",
       "source_file": "README.md",
-      "source_location": "L97",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_2026_10_29",
+      "target": "src_lib_server_repositories_auditrepository_logkbttaction",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "logKbttAction",
+      "source_file": "README.md",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -23077,7 +23349,7 @@
       "confidence_score": 0.95,
       "context": "logKbttAction",
       "source_file": "README.md",
-      "source_location": "L91",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -23089,7 +23361,7 @@
       "confidence_score": 0.95,
       "context": "revoke()",
       "source_file": "README.md",
-      "source_location": "L96",
+      "source_location": "L107",
       "weight": 1.0
     },
     {
@@ -23115,8 +23387,44 @@
       "source_file": "DESIGN_SYSTEM.md",
       "source_location": "L28",
       "weight": 1.0
+    },
+    {
+      "source": "design_system_1_4_centralized_security_gateway_stateless_hmac_auth_rate_limiting_pattern",
+      "target": "src_lib_server_auth_verifycronauth",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "verifyCronAuth",
+      "source_file": "DESIGN_SYSTEM.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_2026_11_02",
+      "target": "src_lib_server_auth_verifycronauth",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "verifyCronAuth",
+      "source_file": "README.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_tr\u1ea1ng_th\u00e1i_h\u1ec7_th\u1ed1ng",
+      "target": "src_lib_server_auth_verifycronauth",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "verifyCronAuth",
+      "source_file": "README.md",
+      "source_location": "L88",
+      "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c8eae93793c38fd8f678afae18edb2e7a45bfabd"
+  "built_at_commit": "659328a9dce93310deec34044f38726f00679bab"
 }

@@ -81,8 +81,16 @@ pnpm run build
 
 ## Trạng thái hệ thống
 
-- Cập nhật lần cuối: 2026-10-29 10:25 (GMT+7)
+- Cập nhật lần cuối: 2026-11-02 15:35 (GMT+7)
 - Đã hoàn thành:
+  - Triển khai Hệ thống Tự Động Checkout Chạy Ngầm Lúc 12:01 GMT+7 Hàng Ngày (Scheduled Auto-Checkout) & Cơ chế Xác thực Cron Bảo Mật Tuyệt Đối (Zero-Leak Security):
+    - Khắc phục triệt để hạn chế của kiến trúc Serverless (Cloudflare Pages) trước đây: Trước kia auto-checkout chỉ được kích hoạt "ký sinh" khi người dùng đăng nhập vào website và gọi `GET /api/stays` hoặc `GET /api/stats`. Giờ đây hệ thống tự động thức dậy và thực thi chuẩn xác vào lúc 12:01 trưa GMT+7 hàng ngày mà không cần bất kỳ ai truy cập website.
+    - Cập nhật [`src/lib/server/auth.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/auth.ts): Triển khai hàm `verifyCronAuth` kiểm tra xác thực độc lập. Hỗ trợ xác thực qua HTTP Headers (`X-Cron-Key`, `X-Api-Key`, `Authorization: Bearer <key>`) hoặc session cookie của quản trị viên; cơ chế fallback thông minh tự nhận diện `CRON_SECRET_KEY` -> `AUTO_CHECKOUT_KEY` -> `APP_PASSWORD` (tận dụng ngay secret đã có trên Cloudflare mà không cần tạo thêm nếu không muốn).
+    - Ràng buộc an ninh chống rò rỉ secret (Zero-Leak Rule): Tuyệt đối từ chối truyền secret qua URL query parameters (`?key=...`) nhằm ngăn chặn rò rỉ secret vào access logs, proxy logs hoặc Cloudflare Ray logging.
+    - Cập nhật [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts): Kiểm soát tập trung endpoint `/api/stays/auto-checkout` tại tầng gateway; miễn trừ kiểm tra browser CSRF origin cho các lệnh gọi server-to-server có khóa bảo mật hợp lệ.
+    - Cập nhật [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts): Hỗ trợ cả 2 phương thức `POST` và `GET` linh hoạt cho mọi công cụ scheduler/cron pingers.
+    - Xây dựng GitHub Actions Scheduled Workflow [`.github/workflows/auto-checkout-cron.yml`](file:///home/hajtran/dev/dang-ky-luu-tru/.github/workflows/auto-checkout-cron.yml): Tự động kích hoạt lúc 12:01 GMT+7 (`05:01 UTC`) mỗi ngày với cấu hình bảo mật tối đa: giới hạn quyền `permissions: contents: read`, không kích hoạt trên PR/push ngoài, secret được inject qua environment variables (được GitHub runner tự động mask), curl chạy chế độ silent không in verbose header, chỉ hiển thị số lượng checkout tóm tắt mà không dump thông tin cá nhân khách (PII) ra console log.
+    - Bổ sung 9 bài kiểm thử bảo mật & cron auth chuyên sâu trong [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts).
   - Khắc phục triệt để lỗi luồng Đăng ký & Đồng bộ C06 trên môi trường Production (Cloudflare D1 Remote):
     - Đã áp dụng hoàn tất migration [`migrations/0003_enhance_kbtt_logs.sql`](file:///home/hajtran/dev/dang-ky-luu-tru/migrations/0003_enhance_kbtt_logs.sql) lên Cloudflare D1 Production (`dang-ky-luu-tru-db`), bổ sung đủ 9 cột chẩn đoán (`error_class`, `outcome_unknown`, `duration_ms`, `ttfb_ms`, `cf_ray`, `server_header`, `request_id`, `env`, `host`) và các indexes. Khắc phục triệt để lỗi thiếu cột khiến `INSERT INTO kbtt_logs` bị từ chối trên PROD.
     - Cập nhật [`src/lib/server/repositories/auditRepository.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/repositories/auditRepository.ts): Triển khai cơ chế Fail-safe & Graceful Fallback cho `logKbttAction`. Thao tác ghi log kiểm toán không bao giờ throw ngoại lệ làm gián đoạn tiến trình lưu trú; tự động fallback về câu lệnh INSERT 12 cột truyền thống nếu gặp sự cố schema.
@@ -125,6 +133,19 @@ pnpm run build
    - **Đối soát với C06**: Khi có sự cố kéo dài, sử dụng cặp mã `request_id` và `cf_ray` được ghi nhận trong Dev Logs để cung cấp cho bộ phận kỹ thuật C06 BCA tra cứu chính xác log phía họ.
 
 ## Changelog
+
+### 2026-11-02
+
+- Triển khai Hệ thống Tự Động Checkout Chạy Ngầm Lúc 12:01 GMT+7 Hàng Ngày & Bảo Mật Khóa Cron (Zero-Leak Security):
+  - Khắc phục sự cố Serverless Idle: Khắc phục triệt để tình trạng auto-checkout chỉ chạy khi có người dùng đăng nhập vào website. Hệ thống giờ đây có thể chạy tự động hoàn toàn ngầm không cần bất kỳ ai truy cập website.
+  - Cập nhật [`src/lib/server/auth.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/auth.ts): Bổ sung hàm `verifyCronAuth` kiểm tra xác thực độc lập qua HTTP Headers (`X-Cron-Key`, `X-Api-Key`, `Authorization: Bearer <key>`) hoặc session cookie; cơ chế fallback an toàn tự nhận diện `CRON_SECRET_KEY` -> `AUTO_CHECKOUT_KEY` -> `APP_PASSWORD`.
+  - Nghiêm cấm tuyệt đối truyền key qua query string (`?key=...`) nhằm loại bỏ nguy cơ lộ bí mật qua access logs hay Cloudflare Ray logs.
+  - Cập nhật [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts): Bảo vệ endpoint `/api/stays/auto-checkout`, miễn trừ kiểm tra browser CSRF origin cho server-to-server requests hợp lệ.
+  - Cập nhật [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts): Hỗ trợ cả 2 phương thức `POST` và `GET`, chuẩn hóa relative imports tương thích Node test environment.
+  - Thiết lập GitHub Actions workflow [`.github/workflows/auto-checkout-cron.yml`](file:///home/hajtran/dev/dang-ky-luu-tru/.github/workflows/auto-checkout-cron.yml) tự động chạy lúc 12:01 GMT+7 (`05:01 UTC`) trưa mỗi ngày với cơ chế curl silent, masked secrets và không dump dữ liệu cá nhân khách (PII) ra console log.
+  - Bổ sung 9 bài kiểm thử bảo mật & cron auth chuyên sâu trong [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts).
+- Kết quả pipeline: format ✅ | lint ✅ | type ✅ | test ✅ (8/8 test suites pass) | knip ✅ (0 issues) | build ✅ | graphify ✅
+- File chính bị ảnh hưởng: [`src/lib/server/auth.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/auth.ts), [`src/hooks.server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/hooks.server.ts), [`src/routes/api/stays/auto-checkout/+server.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/auto-checkout/+server.ts), [`.github/workflows/auto-checkout-cron.yml`](file:///home/hajtran/dev/dang-ky-luu-tru/.github/workflows/auto-checkout-cron.yml), [`test/api/auth-security.test.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/test/api/auth-security.test.ts), [`DESIGN_SYSTEM.md`](file:///home/hajtran/dev/dang-ky-luu-tru/DESIGN_SYSTEM.md), [`README.md`](file:///home/hajtran/dev/dang-ky-luu-tru/README.md).
 
 ### 2026-10-29
 

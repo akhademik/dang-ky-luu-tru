@@ -7,6 +7,7 @@ import {
 	createSessionToken,
 	isProduction,
 	SESSION_TTL_SECONDS,
+	verifyCronAuth,
 	verifySession,
 	verifyWebhookAuth,
 } from "../../src/lib/server/auth.js";
@@ -17,6 +18,10 @@ import {
 	POST as envPost,
 } from "../../src/routes/api/env/+server.js";
 import { DELETE as auditDelete } from "../../src/routes/api/stays/audit/+server.js";
+import {
+	GET as autoCheckoutGet,
+	POST as autoCheckoutPost,
+} from "../../src/routes/api/stays/auto-checkout/+server.js";
 import { MockD1Database } from "../helpers/mock-d1.js";
 
 async function runAuthSecurityApiTests(): Promise<void> {
@@ -474,6 +479,183 @@ async function runAuthSecurityApiTests(): Promise<void> {
 		platform: prodPlatform,
 	} as unknown as RequestEvent);
 	assert.equal(missingIdRes.status, 400);
+
+	// 8. Scheduled Auto-Checkout Security & Cron Auth Tests
+	const mockPlatformWithCronKey = {
+		env: {
+			KBTT_ENV: "prod",
+			CRON_SECRET_KEY: "cron-secret-xyz-789",
+			APP_PASSWORD: "SuperSecretProdPassword123!",
+			DB: new MockD1Database(),
+		},
+	} as unknown as App.Platform;
+
+	// 8.1 PROD unauthenticated cron request -> 401
+	const unauthCronReq = new Request(
+		"https://example.com/api/stays/auto-checkout",
+		{
+			method: "POST",
+		},
+	);
+	assert.equal(
+		await verifyCronAuth(unauthCronReq, emptyCookies, mockPlatformWithCronKey),
+		false,
+		"Unauthenticated cron request must be rejected",
+	);
+
+	const unauthCronEvent = {
+		url: new URL("https://example.com/api/stays/auto-checkout"),
+		request: unauthCronReq,
+		cookies: emptyCookies,
+		locals: {},
+		platform: mockPlatformWithCronKey,
+	} as unknown as RequestEvent;
+	const unauthCronHandleRes = await handle({
+		event: unauthCronEvent,
+		resolve: mockResolve,
+	});
+	assert.equal(
+		unauthCronHandleRes.status,
+		401,
+		"handle() must reject unauthenticated auto-checkout with 401",
+	);
+
+	// 8.2 PROD with invalid cron key -> 401
+	const invalidCronReq = new Request(
+		"https://example.com/api/stays/auto-checkout",
+		{
+			method: "POST",
+			headers: { "x-cron-key": "wrong-key" },
+		},
+	);
+	assert.equal(
+		await verifyCronAuth(invalidCronReq, emptyCookies, mockPlatformWithCronKey),
+		false,
+		"Invalid cron key must be rejected",
+	);
+
+	// 8.3 PROD with valid x-cron-key header -> 200
+	const validCronReq = new Request(
+		"https://example.com/api/stays/auto-checkout",
+		{
+			method: "POST",
+			headers: { "x-cron-key": "cron-secret-xyz-789" },
+		},
+	);
+	assert.equal(
+		await verifyCronAuth(validCronReq, emptyCookies, mockPlatformWithCronKey),
+		true,
+		"Valid x-cron-key must be accepted",
+	);
+	const validCronEvent = {
+		url: new URL("https://example.com/api/stays/auto-checkout"),
+		request: validCronReq,
+		cookies: emptyCookies,
+		locals: {},
+		platform: mockPlatformWithCronKey,
+	} as unknown as RequestEvent;
+	const validCronHandleRes = await handle({
+		event: validCronEvent,
+		resolve: mockResolve,
+	});
+	assert.equal(
+		validCronHandleRes.status,
+		200,
+		"handle() must permit valid x-cron-key",
+	);
+
+	// 8.4 PROD with valid Authorization: Bearer header -> 200
+	const validBearerCronReq = new Request(
+		"https://example.com/api/stays/auto-checkout",
+		{
+			method: "POST",
+			headers: { authorization: "Bearer cron-secret-xyz-789" },
+		},
+	);
+	assert.equal(
+		await verifyCronAuth(
+			validBearerCronReq,
+			emptyCookies,
+			mockPlatformWithCronKey,
+		),
+		true,
+		"Valid Authorization Bearer must be accepted",
+	);
+
+	// 8.5 Anti-Leak Security: Query params must NOT be accepted for cron auth
+	const queryLeakCronReq = new Request(
+		"https://example.com/api/stays/auto-checkout?key=cron-secret-xyz-789",
+		{
+			method: "POST",
+		},
+	);
+	assert.equal(
+		await verifyCronAuth(
+			queryLeakCronReq,
+			emptyCookies,
+			mockPlatformWithCronKey,
+		),
+		false,
+		"Cron key in query string MUST be rejected to prevent URL leaks",
+	);
+
+	// 8.6 PROD fallback to APP_PASSWORD if CRON_SECRET_KEY is not defined
+	const fallbackPlatform = {
+		env: {
+			KBTT_ENV: "prod",
+			APP_PASSWORD: "SuperSecretProdPassword123!",
+			DB: new MockD1Database(),
+		},
+	} as unknown as App.Platform;
+	const fallbackCronReq = new Request(
+		"https://example.com/api/stays/auto-checkout",
+		{
+			method: "POST",
+			headers: { "x-cron-key": "SuperSecretProdPassword123!" },
+		},
+	);
+	assert.equal(
+		await verifyCronAuth(fallbackCronReq, emptyCookies, fallbackPlatform),
+		true,
+		"Should accept APP_PASSWORD as fallback if CRON_SECRET_KEY is omitted",
+	);
+
+	// 8.7 User with active session cookie can also trigger auto-checkout
+	assert.equal(
+		await verifyCronAuth(unauthCronReq, validCookies, mockPlatformWithCronKey),
+		true,
+		"Active session cookie must allow auto-checkout",
+	);
+
+	// 8.8 DEV mode automatically bypasses auth
+	assert.equal(
+		await verifyCronAuth(unauthCronReq, emptyCookies, devPlatform),
+		true,
+		"DEV mode must bypass cron authentication",
+	);
+
+	// 8.9 Test GET and POST handlers of /api/stays/auto-checkout directly
+	const getRes = await autoCheckoutGet({
+		url: new URL("https://example.com/api/stays/auto-checkout"),
+		platform: devPlatform,
+	} as unknown as RequestEvent);
+	assert.equal(getRes.status, 200);
+	const getData = await getRes.json();
+	assert.equal(getData.success, true);
+	assert.ok(typeof getData.data.checkedOutCount === "number");
+
+	const postRes = await autoCheckoutPost({
+		request: new Request("https://example.com/api/stays/auto-checkout", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ force: false }),
+		}),
+		platform: devPlatform,
+	} as unknown as RequestEvent);
+	assert.equal(postRes.status, 200);
+	const postData = await postRes.json();
+	assert.equal(postData.success, true);
+	assert.ok(typeof postData.data.checkedOutCount === "number");
 
 	console.log(
 		"✅ [API] Toàn bộ kiểm thử Authentication & Security mới đã pass 100%!",
