@@ -1,5 +1,6 @@
 import { type Handle, json } from "@sveltejs/kit";
 import {
+	checkRateLimit,
 	verifyCronAuth,
 	verifySession,
 	verifyWebhookAuth,
@@ -37,22 +38,35 @@ export const handle: Handle = async ({ event, resolve }) => {
 		["POST", "PUT", "PATCH", "DELETE"].includes(event.request.method)
 	) {
 		const origin = event.request.headers.get("origin");
-		// Exempt server-to-server webhook & cron endpoints with valid API key from strict browser origin check
-		if (
-			origin &&
-			!pathname.startsWith("/api/ingest/ocr") &&
-			!pathname.startsWith("/api/stays/auto-checkout")
-		) {
+		if (origin) {
 			try {
 				const originHost = new URL(origin).host;
 				if (originHost !== event.url.host) {
-					return json(
-						{
-							success: false,
-							message: "Truy cập bị từ chối do vi phạm Cross-Origin (CSRF).",
-						},
-						{ status: 403 },
-					);
+					// Chỉ miễn trừ kiểm tra Origin đối với các yêu cầu server-to-server có mang theo khóa API/Cron trong headers
+					const hasWebhookKey =
+						pathname.startsWith("/api/ingest/ocr") &&
+						Boolean(
+							event.request.headers.get("x-api-key") ||
+								event.request.headers.get("x-webhook-secret") ||
+								event.request.headers.get("authorization"),
+						);
+					const hasCronKey =
+						pathname.startsWith("/api/stays/auto-checkout") &&
+						Boolean(
+							event.request.headers.get("x-cron-key") ||
+								event.request.headers.get("x-api-key") ||
+								event.request.headers.get("authorization"),
+						);
+
+					if (!hasWebhookKey && !hasCronKey) {
+						return json(
+							{
+								success: false,
+								message: "Truy cập bị từ chối do vi phạm Cross-Origin (CSRF).",
+							},
+							{ status: 403 },
+						);
+					}
 				}
 			} catch {
 				return json(
@@ -93,7 +107,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return resolve(event);
 		}
 
-		// C. Auto-checkout endpoint is protected by Cron Secret Key or active session
+		// C. Auto-checkout endpoint is protected by APP_PASSWORD or active session (kèm Rate Limiting chống dò pass)
 		if (pathname.startsWith("/api/stays/auto-checkout")) {
 			const isValidCron = await verifyCronAuth(
 				event.request,
@@ -101,6 +115,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 				event.platform,
 			);
 			if (!isValidCron) {
+				const clientIp =
+					event.request.headers.get("cf-connecting-ip") ||
+					event.request.headers.get("x-forwarded-for") ||
+					"127.0.0.1";
+				const rateCheck = await checkRateLimit(event.platform, clientIp);
+				if (!rateCheck.allowed) {
+					return json(
+						{
+							success: false,
+							message: `Quá nhiều lần thử sai. Vui lòng thử lại sau ${rateCheck.waitSeconds || 60} giây.`,
+						},
+						{ status: 429 },
+					);
+				}
+
 				return json(
 					{
 						success: false,

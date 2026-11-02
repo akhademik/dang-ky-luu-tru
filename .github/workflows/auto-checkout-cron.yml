@@ -41,29 +41,42 @@ jobs:
             exit 1
           fi
 
-          TARGET_URL="${APP_URL%/}/api/stays/auto-checkout"
-          echo "📡 Đang kích hoạt tự động checkout tại: $TARGET_URL (Thời điểm $(date -u '+%Y-%m-%d %H:%M:%S UTC'))"
+          # 2. Chuẩn hóa & kiểm tra an toàn input force
+          FORCE_FLAG="false"
+          if [ "$FORCE_CHECKOUT" = "true" ]; then
+            FORCE_FLAG="true"
+          fi
 
-          # 2. Tạo file phản hồi tạm thời
+          TARGET_URL="${APP_URL%/}/api/stays/auto-checkout"
+          echo "📡 Đang kích hoạt tự động checkout qua Cloudflare Edge (UTC $(date -u '+%Y-%m-%d %H:%M:%S'))"
+
+          # 3. Tạo file phản hồi tạm thời
           TMP_RESP=$(mktemp)
 
-          # 3. Gọi API với curl bảo mật:
+          # 4. Gọi API với curl bảo mật & retry chống lỗi mạng thoáng qua:
           # -s: Silent mode (không hiển thị thanh tiến trình)
           # -S: Chỉ in thông báo lỗi chuẩn nếu có sự cố
+          # --retry 3 --retry-all-errors --max-time 60: Tự động retry tối đa 3 lần nếu gặp sự cố mạng
           # Tuyệt đối không dùng cờ -v để tránh in header chứa secret ra logs
-          HTTP_CODE=$(curl -s -S -w "%{http_code}" -o "$TMP_RESP" \
+          HTTP_CODE=$(curl -s -S --retry 3 --retry-all-errors --max-time 60 -w "%{http_code}" -o "$TMP_RESP" \
             -X POST "$TARGET_URL" \
             -H "X-Cron-Key: $CRON_SECRET" \
             -H "Content-Type: application/json" \
-            -d "{\"force\": $FORCE_CHECKOUT}" || echo "FAILED")
+            -d "{\"force\": $FORCE_FLAG}" || echo "FAILED")
 
-          # 4. Đánh giá kết quả trả về an toàn
+          # 5. Đánh giá kết quả trả về an toàn
           if [ "$HTTP_CODE" = "200" ]; then
-            # Chỉ trích xuất tóm tắt nghiệp vụ (message, count) - không dump dữ liệu PII của khách ra log
-            MSG=$(jq -r '.message // "Thành công"' "$TMP_RESP" 2>/dev/null || echo "Hoàn tất")
-            COUNT=$(jq -r '.data.checkedOutCount // 0' "$TMP_RESP" 2>/dev/null || echo "0")
+            # Kiểm tra nếu hệ thống đang ở chế độ DEV thì cảnh báo và fail
+            SKIPPED=$(jq -r '.skipped // false' "$TMP_RESP" 2>/dev/null || echo "false")
+            if [ "$SKIPPED" = "true" ]; then
+              MSG=$(jq -r '.message // "Bị bỏ qua do ở chế độ DEV"' "$TMP_RESP" 2>/dev/null)
+              echo "::error::Auto-checkout bị bỏ qua vì Cloudflare đang ở chế độ DEV: $MSG"
+              rm -f "$TMP_RESP"
+              exit 1
+            fi
+
             echo "✅ Kích hoạt Auto-Checkout thành công! (HTTP 200)"
-            echo "📊 Kết quả: $MSG (Tổng số khách đã checkout: $COUNT)"
+            echo "📊 Kết quả: Hoàn tất kiểm tra và xử lý các lượt lưu trú hết hạn."
             rm -f "$TMP_RESP"
             exit 0
           else

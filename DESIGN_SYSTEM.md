@@ -96,7 +96,7 @@ Dự án áp dụng phong cách **Modern Dark Slate Glassmorphism** hiện đạ
 
 ### 3.3. Custom Modals & Dialogs (No Native Browser Dialogs)
 - **CẤM SỬ DỤNG**: Tuyệt đối không sử dụng các hộp thoại mặc định `window.alert()`, `window.confirm()`.
-- **BẮT BUỘC CUSTOM MODAL**: Sử dụng [`ConfirmModal.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/ConfirmModal.svelte) hoặc modal custom Svelte 5 đồng bộ toàn hệ thống.
+- **BẮT BUỘC CUSTOM MODAL**: Sử dụng [`ConfirmModal.svelte`](src/lib/components/ConfirmModal.svelte) hoặc modal custom Svelte 5 đồng bộ toàn hệ thống.
 
 ### 3.4. Strict Date & Time Pattern (Quy Định Bắt Buộc Về Định Dạng Ngày Tháng)
 
@@ -104,17 +104,17 @@ Hệ thống áp dụng kiến trúc **3 tầng phân tách nghiêm ngặt** v�
 
 1. **Tầng Giao Diện Người Dùng (UI Layer) — BẮT BUỘC `DD/MM/YYYY`**:
    - **User Requirement**: Người dùng **LUÔN LUÔN** nhìn thấy, chọn trên lịch và nhập liệu theo định dạng **`DD/MM/YYYY`** (hoặc `DD/MM/YYYY HH:mm` / `DD/MM/YYYY HH:mm:ss` khi có hiển thị giờ).
-   - Áp dụng trên 100% các thành phần UI: Bảng danh sách tất cả các Tab, Date Picker ([`DatePicker.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/DatePicker.svelte)), Modal Sửa (Quick-Edit), Modal Thêm mới, Modal Gia hạn, Modal Khai báo lại, Tooltip hover ([`GuestTooltip.svelte`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/components/GuestTooltip.svelte)), và Nhật ký Dev Logs.
+   - Áp dụng trên 100% các thành phần UI: Bảng danh sách tất cả các Tab, Date Picker ([`DatePicker.svelte`](src/lib/components/DatePicker.svelte)), Modal Sửa (Quick-Edit), Modal Thêm mới, Modal Gia hạn, Modal Khai báo lại, Tooltip hover ([`GuestTooltip.svelte`](src/lib/components/GuestTooltip.svelte)), và Nhật ký Dev Logs.
    - Tuyệt đối không hiển thị định dạng `YYYY-MM-DD` cho người dùng cuối trên giao diện.
 
 2. **Tầng Cơ Sở Dữ Liệu (Database Storage Layer — Cloudflare D1) — BẮT BUỘC ISO `YYYY-MM-DD`**:
    - Để các hàm SQL của SQLite (`datetime()`, `date()`, so sánh chuỗi thời gian) hoạt động chính xác tuyệt đối, toàn bộ dữ liệu ghi vào D1 **BẮT BUỘC** phải chuẩn hóa về:
      - Ngày sinh (`ngay_sinh`), Hạn thị thực (`thoi_han_thi_thuc`): Lưu dạng **`YYYY-MM-DD`**.
      - Ngày đến (`ngay_den`), Ngày đi dự kiến (`ngay_di_du_kien`), Ngày đi thực tế (`ngay_di_thuc_te`): Lưu dạng **`YYYY-MM-DD HH:mm:ss`**.
-   - Tầng Repository (`stayRepository.ts`, `guestRepository.ts`) lọc và so sánh thời gian an toàn thông qua [`time.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/time.ts) (`isSameOrPastCheckoutTimeGmt7`).
+   - Tầng Repository (`stayRepository.ts`, `guestRepository.ts`) lọc và so sánh thời gian an toàn thông qua [`time.ts`](src/lib/server/time.ts) (`isSameOrPastCheckoutTimeGmt7`).
 
 3. **Tầng Tích Hợp API Bộ Công An (BCA C06 API Layer) — BẮT BUỘC Chuẩn Payload API v1.4**:
-   - Payload gửi sang C06 BCA qua [`kbttClient.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/kbttClient.ts) và [`dataTransformer.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/dataTransformer.ts) phải chuyển đổi sang:
+   - Payload gửi sang C06 BCA qua [`kbttClient.ts`](src/lib/server/kbttClient.ts) và [`dataTransformer.ts`](src/lib/server/dataTransformer.ts) phải chuyển đổi sang:
      - `ngayDenCsltStr`: `DD/MM/YYYY HH:mm:ss` (Giờ thực tế lúc nạp hoặc giờ phiên sửa đổi).
      - `ngayDiDuKienStr`: `DD/MM/YYYY 12:00:00` (Cố định 12:00:00 theo quy chuẩn BCA).
      - `ngayThangNamSinhStr`: `DD/MM/YYYY` (hoặc `YYYY` nếu chỉ có năm sinh).
@@ -122,4 +122,4 @@ Hệ thống áp dụng kiến trúc **3 tầng phân tách nghiêm ngặt** v�
      - `thoiGianStr` (API 12 Gia hạn): `DD/MM/YYYY 12:00:00`.
 
 4. **Tầng Chuẩn Hóa Hai Chiều Tự Động (Two-Way Normalization Layer)**:
-   - Tầng backend ([`dataTransformer.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/dataTransformer.ts), [`time.ts`](file:///home/hajtran/dev/dang-ky-luu-tru/src/lib/server/time.ts), [`src/routes/api/stays/`](file:///home/hajtran/dev/dang-ky-luu-tru/src/routes/api/stays/)) tự động nhận diện mọi chuỗi ngày đầu vào (`DD/MM/YYYY`, `YYYY-MM-DD`, Google Sheets OCR) -> Chuyển về chuẩn D1 khi lưu -> Chuyển về chuẩn BCA khi gửi API -> Chuyển về `DD/MM/YYYY` khi trả về UI.
+   - Tầng backend ([`dataTransformer.ts`](src/lib/server/dataTransformer.ts), [`time.ts`](src/lib/server/time.ts), [`src/routes/api/stays/`](src/routes/api/stays/)) tự động nhận diện mọi chuỗi ngày đầu vào (`DD/MM/YYYY`, `YYYY-MM-DD`, Google Sheets OCR) -> Chuyển về chuẩn D1 khi lưu -> Chuyển về chuẩn BCA khi gửi API -> Chuyển về `DD/MM/YYYY` khi trả về UI.

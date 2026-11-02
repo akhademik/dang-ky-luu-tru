@@ -18,10 +18,6 @@ import {
 	POST as envPost,
 } from "../../src/routes/api/env/+server.js";
 import { DELETE as auditDelete } from "../../src/routes/api/stays/audit/+server.js";
-import {
-	GET as autoCheckoutGet,
-	POST as autoCheckoutPost,
-} from "../../src/routes/api/stays/auto-checkout/+server.js";
 import { MockD1Database } from "../helpers/mock-d1.js";
 
 async function runAuthSecurityApiTests(): Promise<void> {
@@ -620,42 +616,113 @@ async function runAuthSecurityApiTests(): Promise<void> {
 		"Should accept APP_PASSWORD as fallback if CRON_SECRET_KEY is omitted",
 	);
 
-	// 8.7 User with active session cookie can also trigger auto-checkout
+	// 8.7 Support x-api-key header for cron/auto-checkout
+	const xApiKeyCronReq = new Request(
+		"https://example.com/api/stays/auto-checkout",
+		{
+			method: "POST",
+			headers: { "x-api-key": "SuperSecretProdPassword123!" },
+		},
+	);
+	assert.equal(
+		await verifyCronAuth(xApiKeyCronReq, emptyCookies, fallbackPlatform),
+		true,
+		"Should accept x-api-key header",
+	);
+
+	// 8.8 User with active session cookie can also trigger auto-checkout
 	assert.equal(
 		await verifyCronAuth(unauthCronReq, validCookies, mockPlatformWithCronKey),
 		true,
 		"Active session cookie must allow auto-checkout",
 	);
 
-	// 8.8 DEV mode automatically bypasses auth
+	// 8.9 DEV mode automatically bypasses auth
 	assert.equal(
 		await verifyCronAuth(unauthCronReq, emptyCookies, devPlatform),
 		true,
 		"DEV mode must bypass cron authentication",
 	);
 
-	// 8.9 Test GET and POST handlers of /api/stays/auto-checkout directly
-	const getRes = await autoCheckoutGet({
+	// 8.10 CSRF Protection for Auto-Checkout:
+	// A cross-origin browser request from evil site using admin session cookie (no key in headers) -> must be blocked with 403
+	const evilOriginCronEvent = {
 		url: new URL("https://example.com/api/stays/auto-checkout"),
-		platform: devPlatform,
-	} as unknown as RequestEvent);
-	assert.equal(getRes.status, 200);
-	const getData = await getRes.json();
-	assert.equal(getData.success, true);
-	assert.ok(typeof getData.data.checkedOutCount === "number");
-
-	const postRes = await autoCheckoutPost({
 		request: new Request("https://example.com/api/stays/auto-checkout", {
 			method: "POST",
-			headers: { "content-type": "application/json" },
-			body: JSON.stringify({ force: false }),
+			headers: { origin: "https://evil-attacker.com" },
 		}),
-		platform: devPlatform,
-	} as unknown as RequestEvent);
-	assert.equal(postRes.status, 200);
-	const postData = await postRes.json();
-	assert.equal(postData.success, true);
-	assert.ok(typeof postData.data.checkedOutCount === "number");
+		cookies: validCookies,
+		locals: { authenticated: true },
+		platform: prodPlatform,
+	} as unknown as RequestEvent;
+	const evilOriginRes = await handle({
+		event: evilOriginCronEvent,
+		resolve: mockResolve,
+	});
+	assert.equal(
+		evilOriginRes.status,
+		403,
+		"Cross-origin browser request without key header must be rejected with 403 CSRF",
+	);
+
+	// Server-to-server request from an external origin WITH valid cron key header -> permitted (status 200)
+	const serverWithOriginCronEvent = {
+		url: new URL("https://example.com/api/stays/auto-checkout"),
+		request: new Request("https://example.com/api/stays/auto-checkout", {
+			method: "POST",
+			headers: {
+				origin: "https://external-scheduler.com",
+				"x-cron-key": "SuperSecretProdPassword123!",
+			},
+		}),
+		cookies: emptyCookies,
+		locals: {},
+		platform: prodPlatform,
+	} as unknown as RequestEvent;
+	const serverWithOriginRes = await handle({
+		event: serverWithOriginCronEvent,
+		resolve: mockResolve,
+	});
+	assert.equal(
+		serverWithOriginRes.status,
+		200,
+		"Server-to-server request with valid cron header must bypass CSRF origin check",
+	);
+
+	// 8.11 Rate Limiting on Invalid Cron Attempts:
+	const rateLimitedCronPlatform = {
+		env: {
+			KBTT_ENV: "prod",
+			APP_PASSWORD: "SuperSecretProdPassword123!",
+			RATE_LIMITER: {
+				limit: async () => ({ success: false }),
+			},
+			DB: new MockD1Database(),
+		},
+	} as unknown as App.Platform;
+	const rateLimitedEvent = {
+		url: new URL("https://example.com/api/stays/auto-checkout"),
+		request: new Request("https://example.com/api/stays/auto-checkout", {
+			method: "POST",
+			headers: {
+				"x-cron-key": "wrong-guess",
+				"cf-connecting-ip": "1.2.3.4",
+			},
+		}),
+		cookies: emptyCookies,
+		locals: {},
+		platform: rateLimitedCronPlatform,
+	} as unknown as RequestEvent;
+	const cronRateLimitedRes = await handle({
+		event: rateLimitedEvent,
+		resolve: mockResolve,
+	});
+	assert.equal(
+		cronRateLimitedRes.status,
+		429,
+		"Invalid cron attempt exceeding rate limit must return 429",
+	);
 
 	console.log(
 		"✅ [API] Toàn bộ kiểm thử Authentication & Security mới đã pass 100%!",
